@@ -13,42 +13,52 @@ If you are developing a production application, we recommend updating the config
 
 ```js
 export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+	extends: [
+		// Remove ...tseslint.configs.recommended and replace with this
+		...tseslint.configs.recommendedTypeChecked,
+		// Alternatively, use this for stricter rules
+		...tseslint.configs.strictTypeChecked,
+		// Optionally, add this for stylistic rules
+		...tseslint.configs.stylisticTypeChecked,
+	],
+	languageOptions: {
+		// other options...
+		parserOptions: {
+			project: ['./tsconfig.node.json', './tsconfig.app.json'],
+			tsconfigRootDir: import.meta.dirname,
+		},
+	},
+});
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
 export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+	plugins: {
+		// Add the react-x and react-dom plugins
+		'react-x': reactX,
+		'react-dom': reactDom,
+	},
+	rules: {
+		// other rules...
+		// Enable its recommended typescript rules
+		...reactX.configs['recommended-typescript'].rules,
+		...reactDom.configs.recommended.rules,
+	},
+});
+```
+
+## Session and XSRF tokens
+
+Backend is running in laravel and has an own repo called sanctum cookie. It can be found in the sibling folder of this frontend project.
+
+To make this application work got the sanctum-cookie folder and run this command from the console:
+
+```bash
+php artisan serve
 ```
