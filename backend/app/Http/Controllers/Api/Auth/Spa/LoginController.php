@@ -17,7 +17,8 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            # todo regenerate session analyze the need for regenerating sessions
+            // $request->session()->regenerate();
 
             return response()->json(['message' => __('Welcome!')]);
         }

@@ -51,7 +51,11 @@ By installing a new project with breeze and mysql a lot is pre configured and re
 laravel new sanctum-cookie
 ```
 
-It added an api.php file to the routes folder. Here are the routes for the api configured. The routes are prefixed with /api. Get rid of the pre-shipped protected user route that is sanctum protected and us a simple get user route to check if the /api/test route works.
+```bash
+php artisan install:api
+```
+
+Find api.php file in the routes folder. Here are the routes for the api configured. The routes are prefixed with /api. Get rid of the pre-shipped protected user route that is sanctum protected and us a simple get user route to check if the /api/test route works.
 
 ```php api.php
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -129,7 +133,7 @@ Bootstrap a sanctum provider service statefulApi to the bootstrap/app.php to mak
 })
 ```
 
-## setup sanctum
+## setup config/sanctum.php
 
 In config/sanctum.php we declare the stateful domains with SANCTUM_STATEFUL_DOMAINS (frontend domains) from the env files and domains with port number. Be aware that the passed domains are for the backend and the frontend.
 
@@ -164,18 +168,44 @@ Furthermore we prefix the api route for sanctum authentication.
 
 ```
 
-## setup laravel env
+## adjust config/cors.php
 
-Frontend and Api need to share the same top-level-domain. By default, the cookie will be available to the top-level domain and all subdomains.
+Enable cors features for laravel backend used by sanctum and frontend app
 
-So we set the session domain for development and production.
+```php cors.php
 
-```.env
-SESSION_DOMAIN=localhost,.sokdesign.de
-# SESSION_DOMAIN=null
+# allows the FRONTEND_URL defined in env file to have access on the rest api
+'allowed_origins' => [env('FRONTEND_URL', '*')],
+# allows user login from the frontend app (post login user)
+'supports_credentials' => true,
 ```
 
-So we set the The SANCTUM_STATEFUL_DOMAINS for development and production.
+## setup cookie authentication (session and xsrf)
+
+A good guide can be found here: <https://madewithlove.com/blog/cookie-based-authentication-with-laravel-sanctum/>, the resources are worth to look at.
+Since the setup is easy but it is even easier to miss things that make debugging very hard. FYI: some things have to be debugged though.
+
+## adjust laravel env file
+
+For development purposes, frontend and backend are running on different ports.
+
+```.env
+APP_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:5173
+```
+
+FYI sanctum:
+Frontend and Api need to share the same top-level-domain. By default, the cookie will be available to the top-level domain and all subdomains.
+
+We need to set the session domain
+
+```.env
+SESSION_DOMAIN=localhost
+# SESSION_DOMAIN=.example.test -> valet or Herd
+# SESSION_DOMAIN=.example.com -> production
+```
+
+The value for SANCTUM_STATEFUL_DOMAINS needed in config/sanctum.php for development should be the localhost with port that is used by the frontend dev server and for production the top level domain. In production the fe react application will be served on frontend.sokdesign.de and the backend will be served on sokdesign.de.
 
 ```.env
 SANCTUM_STATEFUL_DOMAINS=localhost:5173,frontend.sokdesign.de
@@ -223,7 +253,7 @@ PASS  Tests\Feature\ExampleTest
 ✓ example
 ```
 
-### Implement api route with stateful sanctum
+### Implement a LoginController and a Route Endpoint
 
 Testing the sanctum statefulness requires a sanctum protected route.
 Remember the configuration in sanctum.php where we prefixed sanctum with the api route?
@@ -289,7 +319,8 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            # todo
+            // $request->session()->regenerate();
 
             return response()->json(['message' => __('Welcome!')]);
         }
@@ -309,7 +340,6 @@ will show the implemented routes and their controllers:
 
 -   post api/auth/spa/login
 -   get | head api/csrf-cookie
--   get | head api/test
 
 ```bash
 php artisan route:list
@@ -330,8 +360,144 @@ GET|HEAD   user ................................................................
 GET|HEAD   verify-email/{id}/{hash} ............... verification.verify › Auth\VerifyEmailController
 ```
 
-drop old db and seed new user table
+## Create Test User
+
+To try out the login endpoint, we need a one test user.
+
+```php DatabaseSeeder.php
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        // User::factory(10)->create();
+
+        User::factory()->create([
+            'name' => 'Sok',
+            'email' => 'sok@example.com',
+            'password' => bcrypt('manager101'),
+        ]);
+    }
+}
+
+```
+
+To seed the new user you can seed the new user and if a user already exits it can not be overwritten by default,
+then just drop old db and seed new user table
 
 ```bash
+php artisan db:seed
+# or drop db and migrate and seed
 php artisan migrate:fresh --seed
+```
+
+## Test cookie creation and login with Postman
+
+Postman collections have the ability to structure use cases and make cookies available for the whole collection.
+
+-   endpoint csrf-cookie (created by sanctum): We will check if the csrf and the session cookie will be created on the cookie route (api/csrf-cookie).
+    This behavior mocks that the cookies are available in the browser.
+-   endpoint login (in api.php): We will use a postman script that takes the cookie values and write it in a own cookie called x-xsrf-token that authenticates the user in postman (mocked browser behavior).
+-   endpoint user (in api.php): if logged in it displays user data
+
+More Information on <https://madewithlove.com/blog/cookie-based-authentication-with-laravel-sanctum/>
+
+Before every request a script will be executed that adds parameters to the request header.
+
+-   accept: application/json (to be able display json data on the response)
+-   referer: localhost:5173 (locally running frontend)
+-   X-XSRF-TOKEN: cookies.get("XSRF-TOKEN")
+
+FYI: The script checks if a post method is called (login with post action for credentials), if so it sets a X-XSRF-TOKEN with the value of the cookies set by calling <http://localhost:8000/api/csrf-cookie>
+
+```js scripts on root collection folder
+pm.request.headers.add({ key: "accept", value: "application/json" });
+pm.request.headers.add({
+    key: "referer",
+    // refer variable localhost:5173
+    value: pm.collectionVariables.get("referer"),
+});
+
+if (pm.request.method.toLowerCase() !== "get") {
+    // baseUrl variable http://localhost:8000/api
+    const baseUrl = pm.collectionVariables.get("base_url");
+
+    pm.sendRequest(
+        {
+            url: `${baseUrl}/csrf-cookie`,
+            method: "GET",
+        },
+        function (error, response, { cookies }) {
+            if (!error) {
+                pm.request.headers.add({
+                    key: "X-XSRF-TOKEN",
+                    value: cookies.get("XSRF-TOKEN"),
+                });
+            }
+        }
+    );
+}
+```
+
+It is recommended to debug and test the user authentication states in Postman before implementing and debugging the frontend rest calls.
+
+## Frontend is react based and in another repository
+
+With the configured LaravelAxiosClient we intercept requests and set a x-xsrf-token cookie from csrf-cookies if the request is not a get request.
+Have look at the console tab for axios errors, network tab for http code, application tab for set cookies for debugging purposes.
+
+```tsx
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const LaravelAxiosClient = axios.create({
+ // baseURL: http://localhost:8000/api
+ baseURL: import.meta.env.VITE_BACKEND_URL,
+ headers: {
+  'X-Requested-With': 'XMLHttpRequest',
+  Accept: 'application/json',
+ },
+});
+
+LaravelAxiosClient.defaults.withCredentials = true; // allow sending cookies
+
+LaravelAxiosClient.interceptors.request.use(async (config) => {
+ if ((config.method as string).toLowerCase() !== 'get') {
+  await LaravelAxiosClient.get('/csrf-cookie').then();
+  config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+ }
+
+ return config;
+});
+
+
+function App() {
+ useEffect(() => {
+  const setAuth = async () => {
+   await LaravelAxiosClient.post('/auth/spa/login', {
+    email: 'sok@example.com',
+    password: 'manager101',
+   });
+
+   const { data } = await LaravelAxiosClient.get('/user');
+   console.log(data); // should output user details.
+  };
+
+  setAuth();
+ }, []);
+
+    return(
+        // your html
+    )
+}
 ```
