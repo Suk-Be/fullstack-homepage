@@ -1,7 +1,9 @@
-import RatingAndLoginTest from '../components/LoginTest';
+// import RatingAndLoginTest from '../components/LoginTest';
+import ProfileHP from '../components/profile';
 
 const PlaygroundPage = () => {
-	return <RatingAndLoginTest />;
+    return <ProfileHP />;
+    // return <RatingAndLoginTest />;
 };
 
 export default PlaygroundPage;
