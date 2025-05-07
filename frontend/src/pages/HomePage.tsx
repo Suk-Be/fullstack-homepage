@@ -1,11 +1,13 @@
-import SignUp from '../components/SignUp';
+import OfferHP from '../components/offer';
+import ProfileHP from '../components/profile';
 
 const HomePage = () => {
-	return (
-		<>
-			<SignUp />
-		</>
-	);
+    return (
+        <>
+            <ProfileHP />
+            <OfferHP />
+        </>
+    );
 };
 
 export default HomePage;

@@ -10,4 +10,57 @@ const SimpleContainer = ({ children }: PropsWithChildren) => {
     );
 };
 
+// HomePage
+
+interface SectionHPProps extends PropsWithChildren {
+    background?: string;
+    color?: string;
+    textAlign?: string;
+    padding?: string;
+}
+
+const SectionHP = ({
+    children,
+    background = 'rgba(33,29,29, 1)',
+    color = 'rgba(255,255,255, 1)',
+    textAlign = 'left',
+    padding = '2rem',
+}: SectionHPProps) => {
+    return (
+        <Box
+            component="section"
+            sx={{
+                marginRight: '2rem',
+                padding: padding,
+                background: background,
+                color: color,
+                textAlign: textAlign,
+            }}
+        >
+            {children}
+        </Box>
+    );
+};
+
+const SectionHPRelative = ({ children }: PropsWithChildren) => {
+    return (
+        <Box
+            component="section"
+            sx={{
+                maxWidth: 'calc(100%-2rem)',
+                margin: '0 auto',
+                padding: '2rem',
+                marginRight: '2rem',
+                position: 'relative',
+                background: 'rgba(33,29,29, 1)',
+                color: 'rgba(255,255,255, 1)',
+                textAlign: 'left',
+            }}
+        >
+            {children}
+        </Box>
+    );
+};
+
 export default SimpleContainer;
+export { SectionHP, SectionHPRelative };
