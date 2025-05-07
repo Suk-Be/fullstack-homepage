@@ -17,6 +17,7 @@ interface SectionHPProps extends PropsWithChildren {
     color?: string;
     textAlign?: string;
     padding?: string;
+    paddingTop?: string;
 }
 
 const SectionHP = ({
@@ -25,6 +26,7 @@ const SectionHP = ({
     color = 'rgba(255,255,255, 1)',
     textAlign = 'left',
     padding = '2rem',
+    paddingTop = '0',
 }: SectionHPProps) => {
     return (
         <Box
@@ -35,6 +37,7 @@ const SectionHP = ({
                 background: background,
                 color: color,
                 textAlign: textAlign,
+                paddingTop: paddingTop,
             }}
         >
             {children}

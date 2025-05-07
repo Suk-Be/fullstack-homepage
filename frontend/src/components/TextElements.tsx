@@ -5,8 +5,15 @@ import { PropsWithChildren } from 'react';
 interface LogoHPProps extends PropsWithChildren {
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    fontSize?: string;
+    lineHeight?: string;
 }
-const LogoHP = ({ component = 'h1', variant = 'h1' }: LogoHPProps) => {
+const Logo = ({
+    component = 'h1',
+    variant = 'h1',
+    fontSize = '3rem',
+    lineHeight = '1',
+}: LogoHPProps) => {
     return (
         <Typography
             variant={variant}
@@ -15,9 +22,9 @@ const LogoHP = ({ component = 'h1', variant = 'h1' }: LogoHPProps) => {
                 color: 'rgb(56,255,148)',
                 fontFamily: 'Eczar, serif',
                 fontWeight: 800,
-                fontSize: '3rem',
+                fontSize: fontSize,
                 fontStyle: 'normal',
-                lineHeight: '1',
+                lineHeight: lineHeight,
             }}
         >
             Suk-Be Jang
@@ -26,11 +33,17 @@ const LogoHP = ({ component = 'h1', variant = 'h1' }: LogoHPProps) => {
 };
 
 interface ClaimProps extends PropsWithChildren {
-    fontSize?: '1.3rem' | '2.5rem';
+    fontSize?: '0.8rem' | '2.5rem';
     color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
+    marginBottom?: string;
 }
 
-const Claim = ({ fontSize = '2.5rem', color = 'rgba(56,255,148, 1)', children }: ClaimProps) => {
+const Claim = ({
+    fontSize = '2.5rem',
+    color = 'rgba(56,255,148, 1)',
+    marginBottom = '1rem',
+    children,
+}: ClaimProps) => {
     return (
         <Typography
             component="p"
@@ -40,7 +53,7 @@ const Claim = ({ fontSize = '2.5rem', color = 'rgba(56,255,148, 1)', children }:
                 fontWeight: 300,
                 fontSize: fontSize,
                 fontStyle: 'normal',
-                marginBottom: '1rem',
+                marginBottom: marginBottom,
             }}
         >
             {children}
@@ -110,4 +123,4 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
     );
 };
 
-export { Claim, HeadlineHP, LogoHP, ParagraphHP };
+export { Claim, HeadlineHP, Logo, ParagraphHP };

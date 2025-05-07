@@ -1,13 +1,13 @@
 import { SectionHP, SectionHPRelative } from '../ContainerElements';
-import { Claim, LogoHP, ParagraphHP } from '../TextElements';
+import { Claim, Logo, ParagraphHP } from '../TextElements';
 import ProfilePic from './ProfilePicture';
 import RibbonLayout from './Ribbon';
 
 export default function ProfileHP() {
     return (
         <>
-            <SectionHP textAlign="center">
-                <LogoHP component="h1" />
+            <SectionHP textAlign="center" paddingTop="7rem">
+                <Logo component="h1" />
                 <Claim>(Web Developer)</Claim>
                 <ProfilePic />
             </SectionHP>
