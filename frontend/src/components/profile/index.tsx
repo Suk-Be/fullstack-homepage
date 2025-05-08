@@ -6,12 +6,12 @@ import RibbonLayout from './Ribbon';
 export default function ProfileHP() {
     return (
         <>
-            <Section textAlign="center" paddingTop="7rem">
+            <Section textAlign="center" paddingTop="7rem" paddingTopMd="7rem">
                 <Logo component="h1" />
                 <Claim>(Web Developer)</Claim>
                 <ProfilePic />
             </Section>
-            <SectionRelative>
+            <SectionRelative paddingBottom="3rem">
                 <RibbonLayout variant="h2" component="h2" />
                 <ParagraphHP marginTop="3rem">
                     Als Frontend Entwickler sehe ich mich in einer unterstützenden Rolle für das

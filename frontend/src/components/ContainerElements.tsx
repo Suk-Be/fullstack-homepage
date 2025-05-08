@@ -18,6 +18,7 @@ interface SectionProps extends PropsWithChildren {
     textAlign?: string;
     padding?: string;
     paddingTop?: string;
+    paddingTopMd?: string;
 }
 
 const Section = ({
@@ -27,6 +28,7 @@ const Section = ({
     textAlign = 'left',
     padding = '2rem',
     paddingTop = '0',
+    paddingTopMd = '0',
 }: SectionProps) => {
     return (
         <Box
@@ -37,7 +39,10 @@ const Section = ({
                 background: background,
                 color: color,
                 textAlign: textAlign,
-                paddingTop: paddingTop,
+                paddingTop: {
+                    xs: paddingTop,
+                    md: paddingTopMd,
+                },
             }}
         >
             {children}
@@ -45,7 +50,11 @@ const Section = ({
     );
 };
 
-const SectionRelative = ({ children }: PropsWithChildren) => {
+interface SectionRelativeProps extends PropsWithChildren {
+    paddingBottom?: string;
+}
+
+const SectionRelative = ({ children, paddingBottom = '0px' }: SectionRelativeProps) => {
     return (
         <Box
             component="section"
@@ -58,6 +67,9 @@ const SectionRelative = ({ children }: PropsWithChildren) => {
                 background: 'rgba(33,29,29, 1)',
                 color: 'rgba(255,255,255, 1)',
                 textAlign: 'left',
+                paddingBottom: {
+                    md: paddingBottom,
+                },
             }}
         >
             {children}
@@ -67,7 +79,6 @@ const SectionRelative = ({ children }: PropsWithChildren) => {
 
 const breakpointsContainer = {
     margin: '0 auto',
-    height: '100vh',
     backgroundColor: 'transparent',
     width: {
         xs: '500px',

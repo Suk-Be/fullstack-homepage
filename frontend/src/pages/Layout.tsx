@@ -17,8 +17,8 @@ const Layout = () => {
                     <Outlet />
                     <Toaster />
                 </main>
-                <Footer />
             </ResponsiveContainer>
+            <Footer />
         </>
     );
 };

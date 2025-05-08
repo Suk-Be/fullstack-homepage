@@ -6,8 +6,24 @@ const Footer = () => {
     const [value, setValue] = useState(0);
 
     return (
-        <footer>
-            <Box component="nav" sx={{ width: '100%', height: '50px' }}>
+        <footer
+            style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+            }}
+        >
+            <Box
+                component="nav"
+                sx={{
+                    width: '100%',
+                    height: {
+                        xs: '30px',
+                        md: '50px',
+                    },
+                }}
+            >
                 <BottomNavigation
                     showLabels
                     value={value}
@@ -15,12 +31,16 @@ const Footer = () => {
                         setValue(newValue);
                     }}
                     sx={{
-                        height: '30px',
+                        height: {
+                            xs: '30px',
+                            md: '50px',
+                        },
                         backgroundColor: '#fff',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                         color: 'rgba(33,29,29, 0.5)',
+                        background: 'rgba(255, 255, 255, 0.75)',
                     }}
                 >
                     <Link to="/impressum">Impressum</Link>

@@ -5,7 +5,7 @@ import { PropsWithChildren } from 'react';
 interface LogoHPProps extends PropsWithChildren {
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-    color: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)';
+    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)';
     marginTop?: string;
     fontSize?: string;
     lineHeight?: string;
@@ -26,7 +26,11 @@ const Logo = ({
                 color: color,
                 fontFamily: 'Eczar, serif',
                 fontWeight: 800,
-                fontSize: fontSize,
+                fontSize: {
+                    xs: fontSize,
+                    md: `calc(${fontSize} * 0.75)`,
+                    lg: fontSize,
+                },
                 fontStyle: 'normal',
                 lineHeight: lineHeight,
                 marginTop: marginTop,
@@ -56,7 +60,11 @@ const Claim = ({
                 color: color,
                 fontFamily: 'Fira Sans',
                 fontWeight: 300,
-                fontSize: fontSize,
+                fontSize: {
+                    xs: fontSize,
+                    md: `calc(${fontSize} * 0.75)`,
+                    lg: fontSize,
+                },
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
             }}
