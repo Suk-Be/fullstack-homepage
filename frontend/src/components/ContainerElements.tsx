@@ -65,5 +65,22 @@ const SectionRelative = ({ children }: PropsWithChildren) => {
     );
 };
 
+const breakpointsContainer = {
+    margin: '0 auto',
+    height: '100vh',
+    backgroundColor: 'transparent',
+    width: {
+        xs: '500px',
+        sm: '800px',
+        md: '1024px',
+        lg: '1600px',
+        xl: '1920px',
+    },
+};
+
+const ResponsiveContainer = ({ children }: PropsWithChildren) => {
+    return <Box sx={breakpointsContainer}>{children}</Box>;
+};
+
 export default SimpleContainer;
-export { Section, SectionRelative };
+export { ResponsiveContainer, Section, SectionRelative };

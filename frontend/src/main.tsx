@@ -3,12 +3,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
 import routes from './routes';
-import theme from './themes/LinkButtonRouter';
+import theme from './themes/CustomThemes';
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<ThemeProvider theme={theme}>
-			<RouterProvider router={routes} />
-		</ThemeProvider>
-	</StrictMode>
+    <StrictMode>
+        <ThemeProvider theme={theme}>
+            <RouterProvider router={routes} />
+        </ThemeProvider>
+    </StrictMode>,
 );

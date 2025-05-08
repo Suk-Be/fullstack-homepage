@@ -1,5 +1,4 @@
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
-import { Grid } from '@mui/material';
+import { Avatar, Grid } from '@mui/material';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Menu from '@mui/material/Menu';
@@ -31,35 +30,34 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
 
     console.log('isUrlPlayground', isUrlPlayground);
 
-    const setLogo = () => {
-        if (isUrlPlayground) {
-            return (
-                <Link
-                    href="/"
-                    sx={{
-                        textAlign: 'center',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Logo fontSize="1rem" lineHeight="0.5" />
-                    <Claim fontSize="0.8rem" marginBottom="0rem">
-                        (Web Developer)
-                    </Claim>
-                </Link>
-            );
-        }
-    };
-
-    const setAvatar = () => {
-        return isUrlPlayground ? (
-            <AccountCircleTwoToneIcon sx={{ color: '#000', fontSize: '2rem' }} />
-        ) : (
-            <AccountCircleTwoToneIcon sx={{ color: '#fff', fontSize: '2rem' }} />
+    const LinkedLogo = () => {
+        return (
+            <Link
+                href="/"
+                sx={{
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textDecoration: 'none',
+                }}
+            >
+                <Logo fontSize="1rem" lineHeight="0.5" color="rgba(33,29,29, 1)" marginTop="1rem" />
+                <Claim fontSize="0.8rem" marginBottom="0rem" color="rgba(33,29,29, 1)">
+                    (Web Developer)
+                </Claim>
+            </Link>
         );
     };
+
+    // const setAvatar = () => {
+    //     return isUrlPlayground ? (
+    //         <AccountCircleTwoToneIcon sx={{ color: '#000', fontSize: '2rem' }} />
+    //     ) : (
+    //         <AccountCircleTwoToneIcon sx={{ color: '#fff', fontSize: '2rem' }} />
+    //     );
+    // };
 
     return (
         <>
@@ -67,13 +65,21 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                 container
                 spacing={2}
                 sx={{
-                    width: '100vw',
-                    padding: '0 1rem',
+                    width: {
+                        xs: '500px',
+                        sm: '800px',
+                        md: '1024px',
+                        lg: '1600px',
+                        xl: '1920px',
+                    },
+                    padding: '0 2rem 0 1rem',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}
             >
-                <Grid sx={{ color: '#ffff' }}>{setLogo()}</Grid>
+                <Grid sx={{ color: '#ffff' }}>
+                    <LinkedLogo />
+                </Grid>
                 <Grid sx={{ color: '#ffff' }}>
                     <Button
                         id="basic-button"
@@ -82,7 +88,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleClick}
                     >
-                        {setAvatar()}
+                        <Avatar alt="Hulk AI" src="https://sokdesign.de/images/avatar.jpg" />
                     </Button>
                     <Menu
                         id="basic-menu"

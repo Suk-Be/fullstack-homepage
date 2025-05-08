@@ -5,6 +5,8 @@ import { PropsWithChildren } from 'react';
 interface LogoHPProps extends PropsWithChildren {
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    color: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)';
+    marginTop?: string;
     fontSize?: string;
     lineHeight?: string;
 }
@@ -13,18 +15,21 @@ const Logo = ({
     variant = 'h1',
     fontSize = '3rem',
     lineHeight = '1',
+    color = 'rgba(56,255,148, 1)',
+    marginTop = '0',
 }: LogoHPProps) => {
     return (
         <Typography
             variant={variant}
             component={component}
             sx={{
-                color: 'rgb(56,255,148)',
+                color: color,
                 fontFamily: 'Eczar, serif',
                 fontWeight: 800,
                 fontSize: fontSize,
                 fontStyle: 'normal',
                 lineHeight: lineHeight,
+                marginTop: marginTop,
             }}
         >
             Suk-Be Jang
