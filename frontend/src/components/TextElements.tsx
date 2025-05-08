@@ -33,7 +33,7 @@ const Logo = ({
 };
 
 interface ClaimProps extends PropsWithChildren {
-    fontSize?: '0.8rem' | '2.5rem';
+    fontSize?: '0.8rem' | '1.3rem' | '2.5rem';
     color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
     marginBottom?: string;
 }

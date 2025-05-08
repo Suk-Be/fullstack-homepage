@@ -1,4 +1,4 @@
-import { SectionHP, SectionHPRelative } from '../ContainerElements';
+import { Section, SectionRelative } from '../ContainerElements';
 import { Claim, Logo, ParagraphHP } from '../TextElements';
 import ProfilePic from './ProfilePicture';
 import RibbonLayout from './Ribbon';
@@ -6,12 +6,12 @@ import RibbonLayout from './Ribbon';
 export default function ProfileHP() {
     return (
         <>
-            <SectionHP textAlign="center" paddingTop="7rem">
+            <Section textAlign="center" paddingTop="7rem">
                 <Logo component="h1" />
                 <Claim>(Web Developer)</Claim>
                 <ProfilePic />
-            </SectionHP>
-            <SectionHPRelative>
+            </Section>
+            <SectionRelative>
                 <RibbonLayout variant="h2" component="h2" />
                 <ParagraphHP marginTop="3rem">
                     Als Frontend Entwickler sehe ich mich in einer unterstützenden Rolle für das
@@ -36,7 +36,7 @@ export default function ProfileHP() {
                     gehören klassischerweise Schätzungen zur Komplexität und mögliche Dauern - und
                     die gemeinsame Gestaltung von REST Schnittstellen.
                 </ParagraphHP>
-            </SectionHPRelative>
+            </SectionRelative>
         </>
     );
 }

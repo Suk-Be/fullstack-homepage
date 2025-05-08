@@ -1,15 +1,16 @@
-import { SectionHP } from '../ContainerElements';
+import { Section } from '../ContainerElements';
 import { Claim, HeadlineHP, ParagraphHP } from '../TextElements';
 import NumberedList from './List';
 
 const OfferHP = () => {
     return (
         <>
-            <SectionHP
+            <Section
                 textAlign="center"
                 background="rgba(255,255,255, 1)"
                 color="rgba(33,29,29, 1)"
-                padding="2.5rem 0 2rem 2rem"
+                padding="2rem 0 0.5rem 2rem"
+                paddingTop="2.5rem"
             >
                 <HeadlineHP variant="h3" component="h3" marginBottom="0.3rem">
                     FRONTEND / DESIGN
@@ -18,8 +19,8 @@ const OfferHP = () => {
                     Konzeption und Weiterentwicklung
                 </Claim>
                 <NumberedList />
-            </SectionHP>
-            <SectionHP
+            </Section>
+            <Section
                 textAlign="left"
                 background="rgba(255,255,255, 1)"
                 color="rgba(33,29,29, 1)"
@@ -53,9 +54,9 @@ const OfferHP = () => {
                     Sie können davon ausgehen, dass ich sorgsam mit dem bereits implementierten Code
                     umgehe, ob im mono oder verteilten Repo.
                 </ParagraphHP>
-            </SectionHP>
+            </Section>
 
-            <SectionHP
+            <Section
                 textAlign="left"
                 background="rgba(255,255,255, 1)"
                 color="rgba(33,29,29, 1)"
@@ -83,7 +84,7 @@ const OfferHP = () => {
                     Wenn Sie Mockups, Layouts, Widgets oder Styleguides für Corporate Designs
                     benötigen, kann ich diese auch erstellen.
                 </ParagraphHP>
-            </SectionHP>
+            </Section>
         </>
     );
 };

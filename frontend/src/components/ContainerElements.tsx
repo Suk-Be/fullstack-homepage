@@ -12,7 +12,7 @@ const SimpleContainer = ({ children }: PropsWithChildren) => {
 
 // HomePage
 
-interface SectionHPProps extends PropsWithChildren {
+interface SectionProps extends PropsWithChildren {
     background?: string;
     color?: string;
     textAlign?: string;
@@ -20,14 +20,14 @@ interface SectionHPProps extends PropsWithChildren {
     paddingTop?: string;
 }
 
-const SectionHP = ({
+const Section = ({
     children,
     background = 'rgba(33,29,29, 1)',
     color = 'rgba(255,255,255, 1)',
     textAlign = 'left',
     padding = '2rem',
     paddingTop = '0',
-}: SectionHPProps) => {
+}: SectionProps) => {
     return (
         <Box
             component="section"
@@ -45,7 +45,7 @@ const SectionHP = ({
     );
 };
 
-const SectionHPRelative = ({ children }: PropsWithChildren) => {
+const SectionRelative = ({ children }: PropsWithChildren) => {
     return (
         <Box
             component="section"
@@ -66,4 +66,4 @@ const SectionHPRelative = ({ children }: PropsWithChildren) => {
 };
 
 export default SimpleContainer;
-export { SectionHP, SectionHPRelative };
+export { Section, SectionRelative };
