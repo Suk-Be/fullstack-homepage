@@ -1,0 +1,39 @@
+import { createTheme } from '@mui/material';
+import { LinkProps } from '@mui/material/Link';
+import React from 'react';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router';
+
+const LinkBehavior = React.forwardRef<
+    HTMLAnchorElement,
+    Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
+>((props, ref) => {
+    const { href, ...other } = props;
+    // Map href (Material UI) -> to (react-router)
+    return <RouterLink ref={ref} to={href} {...other} />;
+});
+
+const theme = createTheme({
+    components: {
+        MuiLink: {
+            defaultProps: {
+                component: LinkBehavior,
+            } as LinkProps,
+        },
+        MuiButtonBase: {
+            defaultProps: {
+                LinkComponent: LinkBehavior,
+            },
+        },
+    },
+    breakpoints: {
+        values: {
+            xs: 500,
+            sm: 800,
+            md: 1024,
+            lg: 1600,
+            xl: 1920,
+        },
+    },
+});
+
+export default theme;
