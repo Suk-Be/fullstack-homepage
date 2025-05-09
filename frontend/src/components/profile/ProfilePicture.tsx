@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-const ProfilePic = () => {
+const ProfilePic = ({ imgSrc }: { imgSrc: string }) => {
     const img = {
         maxWidth: '100%',
         height: 'auto',
@@ -8,9 +8,7 @@ const ProfilePic = () => {
         m: 0,
         borderRadius: '1rem',
     };
-    return (
-        <Box component="img" src="https://sokdesign.de/images/Sok.jpg" alt="Suk-Be Jang" sx={img} />
-    );
+    return <Box component="img" src={imgSrc} alt="Suk-Be Jang" sx={img} />;
 };
 
 export default ProfilePic;

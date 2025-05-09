@@ -43,7 +43,14 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                     textDecoration: 'none',
                 }}
             >
-                <Logo fontSize="1rem" lineHeight="0.5" color="rgba(33,29,29, 1)" marginTop="1rem" />
+                <Logo
+                    fontSize="1rem"
+                    lineHeight="0.5"
+                    color="rgba(33,29,29, 1)"
+                    marginTop="1rem"
+                    variant="h5"
+                    component="h5"
+                />
                 <Claim fontSize="0.8rem" marginBottom="0rem" color="rgba(33,29,29, 1)">
                     (Web Developer)
                 </Claim>
@@ -51,13 +58,9 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
         );
     };
 
-    // const setAvatar = () => {
-    //     return isUrlPlayground ? (
-    //         <AccountCircleTwoToneIcon sx={{ color: '#000', fontSize: '2rem' }} />
-    //     ) : (
-    //         <AccountCircleTwoToneIcon sx={{ color: '#fff', fontSize: '2rem' }} />
-    //     );
-    // };
+    // todo
+    // https://mui.com/material-ui/react-avatar/#letter-avatars
+    // Letter Avatars
 
     return (
         <>

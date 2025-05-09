@@ -20,25 +20,26 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-const NumberedList = () => {
+type Props = {
+    list: [
+        {
+            number: number;
+            text: string;
+        },
+    ];
+};
+
+const NumberedList = ({ list }: Props) => {
+    const List = list.map((item) => (
+        <Item key={item.number}>
+            <ListNumber>{item.number}</ListNumber>
+            <ListEntry>{item.text}</ListEntry>
+        </Item>
+    ));
+
     return (
         <Stack spacing={2} justifyContent="center" sx={{ marginBottom: '3rem' }}>
-            <Item>
-                <ListNumber>1</ListNumber>
-                <ListEntry>Über 10 Jahre Frontend</ListEntry>
-            </Item>
-            <Item>
-                <ListNumber>2</ListNumber>
-                <ListEntry>Über 10 Jahre Design</ListEntry>
-            </Item>
-            <Item>
-                <ListNumber>3</ListNumber>
-                <ListEntry>Mitarbeit in wachsenden Systemen</ListEntry>
-            </Item>
-            <Item>
-                <ListNumber>4</ListNumber>
-                <ListEntry>erfahren in Industrie und Agenturen</ListEntry>
-            </Item>
+            {List}
         </Stack>
     );
 };

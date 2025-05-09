@@ -12,7 +12,7 @@ interface HeadlineProps extends PropsWithChildren {
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }
 
-const RibbonLayout = ({ variant = 'h2', component = 'h2' }: HeadlineProps) => {
+const RibbonLayout = ({ children, variant = 'h2', component = 'h2' }: HeadlineProps) => {
     return (
         <Box
             sx={{
@@ -46,7 +46,7 @@ const RibbonLayout = ({ variant = 'h2', component = 'h2' }: HeadlineProps) => {
                     position: 'relative',
                 }}
             >
-                Das fehlende Puzzlestück
+                {children}
             </Typography>
         </Box>
     );

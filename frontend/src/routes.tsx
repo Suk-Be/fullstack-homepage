@@ -1,11 +1,11 @@
-import { createBrowserRouter } from 'react-router';
+import { RouteObject } from 'react-router';
 import App from './App';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 
-const router = createBrowserRouter([
+const routes: RouteObject[] = [
     {
         path: '/',
         element: <App />,
@@ -16,6 +16,6 @@ const router = createBrowserRouter([
             { path: 'impressum', element: <ImprintPage /> },
         ],
     },
-]);
+];
 
-export default router;
+export default routes;
