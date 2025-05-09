@@ -1,4 +1,4 @@
-import { BottomNavigation, Box } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router';
 
@@ -43,7 +43,12 @@ const Footer = () => {
                         background: 'rgba(255, 255, 255, 0.75)',
                     }}
                 >
-                    <Link to="/impressum">Impressum</Link>
+                    <BottomNavigationAction
+                        component={Link}
+                        to="/impressum"
+                        label="Impressum"
+                        style={{ color: 'rgba(33,29,29, 0.5)' }}
+                    />
                 </BottomNavigation>
             </Box>
         </footer>
