@@ -26,9 +26,9 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
         setAnchorEl(null);
     };
 
-    const isUrlPlayground = window.location.href.indexOf('playground') !== -1 ? true : false;
+    // const isUrlPlayground = window.location.href.indexOf('playground') !== -1 ? true : false;
 
-    console.log('isUrlPlayground', isUrlPlayground);
+    // console.log('isUrlPlayground', isUrlPlayground);
 
     const LinkedLogo = () => {
         return (
