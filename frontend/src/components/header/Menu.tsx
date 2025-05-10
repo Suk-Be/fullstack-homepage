@@ -85,7 +85,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                 </Grid>
                 <Grid sx={{ color: '#ffff' }}>
                     <Button
-                        id="basic-button"
+                        id="avatar-button"
                         aria-controls={open ? 'basic-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
