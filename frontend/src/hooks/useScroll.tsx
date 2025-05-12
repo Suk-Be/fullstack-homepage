@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * Hook to make the header appear and disappear
+ * @html
+ * header tag - header component used in LayoutPage for every page
+ * @css classes needed for hook behavior
+ * in App.css
+ * .trigger-menu-wrapper
+ * .scroll-down .trigger-menu-wrapper
+ * .scroll-up .trigger-menu-wrapper
+ * .scroll-up:not(.menu-open) .trigger-menu-wrapper
+ */
+
 const useScroll = () => {
     let [lastScroll, setScroll] = useState(0);
 
