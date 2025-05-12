@@ -19,6 +19,7 @@ interface SectionProps extends PropsWithChildren {
     padding?: string;
     paddingTop?: string;
     paddingTopMd?: string;
+    marginBottom?: string;
 }
 
 const Section = ({
@@ -29,6 +30,7 @@ const Section = ({
     padding = '2rem',
     paddingTop = '0',
     paddingTopMd = '0',
+    marginBottom = '0',
 }: SectionProps) => {
     return (
         <Box
@@ -43,6 +45,7 @@ const Section = ({
                     xs: paddingTop,
                     md: paddingTopMd,
                 },
+                marginBottom: marginBottom,
             }}
         >
             {children}
@@ -87,6 +90,8 @@ const breakpointsContainer = {
         lg: '1600px',
         xl: '1920px',
     },
+    boxShadow:
+        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 };
 
 const ResponsiveContainer = ({ children }: PropsWithChildren) => {
