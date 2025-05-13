@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import { Section } from '../ContainerElements';
-import { Claim, HeadlineHP, ParagraphHP } from '../TextElements';
+import { HeadlineHP, ParagraphHP, SubTitle } from '../TextElements';
 import NumberedList from './List';
 
 type Props = {
@@ -48,9 +48,9 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 <HeadlineHP variant="h3" component="h3" marginBottom="0.3rem">
                     {teaser.attributes.title}
                 </HeadlineHP>
-                <Claim fontSize="1.3rem" color="rgba(33,29,29, 0.5)">
+                <SubTitle fontSize="clamp(1rem, 10vw, 1.3rem)">
                     {teaser.attributes.subtitle}
-                </Claim>
+                </SubTitle>
                 <NumberedList list={teaser.attributes.list} />
             </Section>
             <Section
@@ -79,8 +79,8 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 marginBottom="2rem"
             >
                 <HeadlineHP
-                    variant="h4"
-                    component="h4"
+                    variant="h5"
+                    component="h5"
                     marginBottom="1rem"
                     fontWeight={300}
                     color="rgba(53,102,64, 1)"

@@ -38,8 +38,6 @@ const RibbonLayout = ({ children, variant = 'h2', component = 'h2' }: HeadlinePr
                 variant={variant}
                 component={component}
                 sx={{
-                    color: 'rgb(33,29,29)',
-                    fontFamily: 'Fira Sans',
                     fontWeight: 600,
                     fontSize: '1.3rem',
                     fontStyle: 'normal',

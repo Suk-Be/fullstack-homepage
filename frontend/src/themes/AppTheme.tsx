@@ -47,14 +47,14 @@ export default function AppTheme(props: AppThemeProps) {
                   components: {
                       MuiCssBaseline: {
                           styleOverrides: `
-                         @font-face {
-                            font-family: 'Fira Sans';
-                            font-style: normal;
-                            font-display: swap;
-                            font-weight: 400;
-                            src: url('https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&family=Fira+Sans:wght@100;200;300;400&display=swap') format('woff2');
-                          }
-                      `,
+                            @font-face {
+                                font-family: 'Fira Sans';
+                                font-style: normal;
+                                font-display: swap;
+                                font-weight: 400;
+                                src: url('https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&family=Fira+Sans:wght@100;200;300;400&display=swap') format('woff2');
+                              }
+                          `,
                       },
                       ...inputsCustomizations,
                       ...dataDisplayCustomizations,

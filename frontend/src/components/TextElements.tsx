@@ -58,13 +58,40 @@ const Claim = ({
             component="p"
             sx={{
                 color: color,
-                fontFamily: 'Fira Sans',
                 fontWeight: 300,
                 fontSize: {
                     xs: fontSize,
                     md: `calc(${fontSize} * 0.75)`,
                     lg: fontSize,
                 },
+                fontStyle: 'normal',
+                marginBottom: marginBottom,
+            }}
+        >
+            {children}
+        </Typography>
+    );
+};
+
+interface SubTitleProps extends PropsWithChildren {
+    fontSize?: '0.8rem' | '1.3rem' | '2.5rem' | string;
+    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
+    marginBottom?: string;
+}
+
+const SubTitle = ({
+    fontSize = '1.3rem',
+    color = 'rgba(33,29,29, 0.5)',
+    marginBottom = '1rem',
+    children,
+}: SubTitleProps) => {
+    return (
+        <Typography
+            component="p"
+            sx={{
+                color: color,
+                fontWeight: 300,
+                fontSize: fontSize,
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
             }}
@@ -91,7 +118,7 @@ const HeadlineHP = ({
     variant = 'h2',
     component = 'h3',
     fontWeight = 600,
-    color = 'rgba(33,29,29, 1)',
+    color,
     textAlign = 'center',
 }: HeadlineHPPProps) => {
     return (
@@ -99,7 +126,6 @@ const HeadlineHP = ({
             component={component}
             variant={variant}
             sx={{
-                fontFamily: 'Fira Sans',
                 fontWeight: fontWeight,
                 fontSize: fontSize,
                 fontStyle: 'normal',
@@ -123,9 +149,7 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
         <Typography
             component="p"
             sx={{
-                fontFamily: 'Fira Sans',
                 fontWeight: 300,
-                fontSize: '1rem',
                 fontStyle: 'normal',
                 marginTop: marginTop,
                 marginBottom: marginBottom,
@@ -136,4 +160,4 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
     );
 };
 
-export { Claim, HeadlineHP, Logo, ParagraphHP };
+export { Claim, HeadlineHP, Logo, ParagraphHP, SubTitle };
