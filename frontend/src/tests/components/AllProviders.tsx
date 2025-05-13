@@ -1,13 +1,12 @@
-import { ThemeProvider } from '@mui/material/styles';
 import { PropsWithChildren } from 'react';
 import GlobalStylesProvider from '../../providers/GlobalStylesProvider';
 import ReactQueryProvider from '../../providers/ReactQueryProvider';
-import theme from '../../themes/CustomThemes';
+import { default as ThemeProvider } from '../../themes/AppTheme';
 
 const AllProviders = ({ children }: PropsWithChildren) => {
     return (
         <>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider>
                 <ReactQueryProvider>
                     <GlobalStylesProvider />
                     {children}
