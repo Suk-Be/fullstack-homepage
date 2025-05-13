@@ -41,6 +41,10 @@ export default function AppTheme(props: AppThemeProps) {
                   colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
                   typography: {
                       fontFamily: ['Fira Sans', 'sans-serif'].join(','),
+                      body1: {
+                          fontWeight: '300',
+                          lineHeight: 1.3,
+                      },
                   },
                   shadows,
                   shape,
@@ -51,8 +55,8 @@ export default function AppTheme(props: AppThemeProps) {
                                 font-family: 'Fira Sans';
                                 font-style: normal;
                                 font-display: swap;
-                                font-weight: 400;
-                                src: url('https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&family=Fira+Sans:wght@100;200;300;400&display=swap') format('woff2');
+                                font-weight: 300;
+                                src: url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@100;200;300;400&display=Eczar:wght@400..800&family=swap') format('woff2');
                               }
                           `,
                       },

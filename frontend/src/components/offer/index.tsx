@@ -48,9 +48,7 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 <HeadlineHP variant="h3" component="h3" marginBottom="0.3rem">
                     {teaser.attributes.title}
                 </HeadlineHP>
-                <SubTitle fontSize="clamp(1rem, 10vw, 1.3rem)">
-                    {teaser.attributes.subtitle}
-                </SubTitle>
+                <SubTitle>{teaser.attributes.subtitle}</SubTitle>
                 <NumberedList list={teaser.attributes.list} />
             </Section>
             <Section
@@ -59,13 +57,7 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 color="rgba(33,29,29, 1)"
                 padding="0rem 2rem 2rem 4rem"
             >
-                <HeadlineHP
-                    variant="h4"
-                    component="h4"
-                    marginBottom="1rem"
-                    fontWeight={300}
-                    textAlign="left"
-                >
+                <HeadlineHP variant="h4" component="h4" marginBottom="1rem" textAlign="left">
                     {offer[0].attributes.title}
                 </HeadlineHP>
                 <ParagraphHP>{parse(sanitizedData0)}</ParagraphHP>
@@ -82,7 +74,6 @@ const OfferHP = ({ offer, teaser }: Props) => {
                     variant="h5"
                     component="h5"
                     marginBottom="1rem"
-                    fontWeight={300}
                     color="rgba(53,102,64, 1)"
                 >
                     {/* @ts-ignore*/}

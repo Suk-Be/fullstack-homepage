@@ -58,7 +58,6 @@ const Claim = ({
             component="p"
             sx={{
                 color: color,
-                fontWeight: 300,
                 fontSize: {
                     xs: fontSize,
                     md: `calc(${fontSize} * 0.75)`,
@@ -90,7 +89,6 @@ const SubTitle = ({
             component="p"
             sx={{
                 color: color,
-                fontWeight: 300,
                 fontSize: fontSize,
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
@@ -149,7 +147,6 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
         <Typography
             component="p"
             sx={{
-                fontWeight: 300,
                 fontStyle: 'normal',
                 marginTop: marginTop,
                 marginBottom: marginBottom,
