@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import AppTheme from '../themes/AppTheme';
 import { FacebookIcon, GithubIcon, GoogleIcon } from './shared-components/CustomIcons';
+import { ParagraphHP } from './TextElements';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -69,7 +70,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
         if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
             setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address.');
+            setEmailErrorMessage('Bitte geben Sie eine nutzbare Email Adresse an.');
             isValid = false;
         } else {
             setEmailError(false);
@@ -78,7 +79,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
         if (!password.value || password.value.length < 6) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
+            setPasswordErrorMessage('Passwort benötigt minimum 6 Zeichen.');
             isValid = false;
         } else {
             setPasswordError(false);
@@ -87,7 +88,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
         if (!name.value || name.value.length < 1) {
             setNameError(true);
-            setNameErrorMessage('Name is required.');
+            setNameErrorMessage('Bitte geben Sie Ihren Name an.');
             isValid = false;
         } else {
             setNameError(false);
@@ -127,15 +128,20 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             color: (theme) => theme.palette.primary.main,
                         }}
                     >
-                        Sign up
+                        Registrierung
                     </Typography>
+                    <ParagraphHP marginTop="1rem">
+                        Bitte registrieren Sie sich, um sich hier hinterlegte Prototypen Projekte
+                        anschauen zu können. Bei Bedarf können Sie das angelegte Konto im Nutzer
+                        Menü löschen oder verwalten.
+                    </ParagraphHP>
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="name">Full name</FormLabel>
+                            <FormLabel htmlFor="name">Vor- und Nachname</FormLabel>
                             <TextField
                                 autoComplete="name"
                                 name="name"
@@ -164,7 +170,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
                                 required
                                 fullWidth
@@ -181,7 +187,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                         </FormControl>
                         <FormControlLabel
                             control={<Checkbox value="allowExtraEmails" color="primary" />}
-                            label="I want to receive updates via email."
+                            label="Ich habe die Bedingungen gelesen nund stimme zu"
                         />
                         <Button
                             type="submit"
@@ -189,7 +195,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             variant="contained"
                             onClick={validateInputs}
                         >
-                            Sign up
+                            registrieren
                         </Button>
                     </Box>
                     <Divider>
@@ -202,7 +208,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             onClick={() => alert('Sign up with Github')}
                             startIcon={<GithubIcon />}
                         >
-                            Sign up with Github
+                            registrieren mit Github
                         </Button>
                         <Button
                             fullWidth
@@ -210,7 +216,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             onClick={() => alert('Sign up with Google')}
                             startIcon={<GoogleIcon />}
                         >
-                            Sign up with Google
+                            registrieren mit Google
                         </Button>
                         <Button
                             fullWidth
@@ -218,17 +224,17 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                             onClick={() => alert('Sign up with Facebook')}
                             startIcon={<FacebookIcon />}
                         >
-                            Sign up with Facebook
+                            registrieren mit Facebook
                         </Button>
 
                         <Typography sx={{ textAlign: 'center' }}>
-                            Already have an account?{' '}
+                            Verfügen Sie über ein Konto?{' '}
                             <Link
                                 href="/material-ui/getting-started/templates/sign-in/"
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
                             >
-                                Sign in
+                                Log in
                             </Link>
                         </Typography>
                     </Box>
