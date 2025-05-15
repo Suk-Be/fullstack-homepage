@@ -501,3 +501,124 @@ function App() {
     )
 }
 ```
+
+## Implement Register, Login, Logout Controller and the according routes
+
+As reference this page was helpful but had issues to run. The fixed on is found here.
+
+The routes:
+
+```php routes/api.php
+
+use App\Http\Controllers\Api\Auth\Spa\AuthController;
+use App\Http\Controllers\Api\Auth\Spa\RegisteredUserController;
+// ...
+Route::prefix('auth/spa')->group(function () {
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+```
+
+The Methods of the Controllers:
+
+```php
+
+// Controllers/Api/Auth/AuthController.php
+
+namespace App\Http\Controllers\Api\Auth\Spa;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+
+class AuthController extends Controller
+{
+    public function login(Request $request)
+    { {
+            $credentials = $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ]);
+
+            if (Auth::attempt($credentials)) {
+                # todo regenerate session analyze the need for regenerating sessions
+                // $request->session()->regenerate();
+
+                return response()->json(['message' => __('Welcome!')]);
+            }
+
+            throw ValidationException::withMessages([
+                'email' => __('The provided credentials do not match our records.'),
+            ]);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout(); // For session-based authentication
+
+        return response()->json([
+            'message' => 'Successfully logged out!',
+        ]);
+    }
+}
+
+// RegisteredUserController
+namespace App\Http\Controllers\Api\Auth\Spa;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+
+class RegisteredUserController extends Controller
+{
+    /**
+     * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): Response
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->string('password')),
+        ]);
+
+        event(new Registered($user));
+
+        // Auto login after registration (optional)
+        Auth::login($user);
+
+        return response()->noContent();
+    }
+}
+
+```
+
+Tested in Postman
+
+```js
+// base_url: http://localhost:8000/api
+// POST {{base_url}}/auth/spa/register
+{
+    "name": "Foodie User",
+    "email": "user@foodly.com",
+    "password": "secret123",
+    "password_confirmation": "secret123"
+}
+```

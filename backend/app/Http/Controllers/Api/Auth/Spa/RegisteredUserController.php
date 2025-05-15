@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -22,7 +22,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -34,6 +34,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Auto login after registration (optional)
         Auth::login($user);
 
         return response()->noContent();
