@@ -1,3 +1,4 @@
+import CssBaseline from '@mui/material/CssBaseline';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router';
@@ -9,6 +10,7 @@ const router = createBrowserRouter(routes);
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ThemeProvider>
+            <CssBaseline enableColorScheme />
             <RouterProvider router={router} />
         </ThemeProvider>
     </StrictMode>,

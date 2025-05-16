@@ -157,4 +157,21 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
     );
 };
 
-export { Claim, HeadlineHP, Logo, ParagraphHP, SubTitle };
+const HeadlineSignInUp = ({ children }: PropsWithChildren) => {
+    return (
+        <Typography
+            component="h1"
+            variant="h4"
+            sx={{
+                width: '100%',
+                fontSize: 'clamp(1.3rem, 10vw, 2rem)',
+                fontFamily: 'Eczar, serif',
+                color: (theme) => theme.palette.primary.main,
+            }}
+        >
+            {children}
+        </Typography>
+    );
+};
+
+export { Claim, HeadlineHP, HeadlineSignInUp, Logo, ParagraphHP, SubTitle };

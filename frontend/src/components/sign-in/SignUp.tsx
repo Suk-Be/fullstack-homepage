@@ -1,69 +1,35 @@
-import LockOpenIcon from '@mui/icons-material/LockOpen';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import MuiCard from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
-import AppTheme from '../themes/AppTheme';
-import { FacebookIcon, GithubIcon, GoogleIcon } from './shared-components/CustomIcons';
-import { ParagraphHP } from './TextElements';
+import { FormEvent, useState } from 'react';
+import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
+import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
+import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
 
-const Card = styled(MuiCard)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignSelf: 'center',
-    width: '100%',
-    padding: theme.spacing(4),
-    gap: theme.spacing(2),
-    margin: 'auto',
-    boxShadow:
-        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-    ...theme.applyStyles('dark', {
-        boxShadow:
-            'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-    }),
-}));
-
-const SignUpContainer = styled(Stack)(({ theme }) => ({
-    minHeight: '100%',
-    '&::before': {
-        content: '""',
-        display: 'block',
-        position: 'absolute',
-        zIndex: -1,
-        inset: 0,
-        backgroundImage:
-            'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-        backgroundRepeat: 'no-repeat',
-        ...theme.applyStyles('dark', {
-            backgroundImage:
-                'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-        }),
-    },
-    marginBottom: '4rem',
-}));
-
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [nameError, setNameError] = React.useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+export default function SignUp() {
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
+    const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
+    const [nameError, setNameError] = useState(false);
+    const [nameErrorMessage, setNameErrorMessage] = useState('');
 
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
         const password = document.getElementById('password') as HTMLInputElement;
+        const passwordConfirmation = document.getElementById(
+            'passwordConfirmation',
+        ) as HTMLInputElement;
         const name = document.getElementById('name') as HTMLInputElement;
 
         let isValid = true;
@@ -79,11 +45,22 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
         if (!password.value || password.value.length < 6) {
             setPasswordError(true);
-            setPasswordErrorMessage('Passwort benötigt minimum 6 Zeichen.');
+            setPasswordErrorMessage('Das Passwort benötigt minimum 6 Zeichen.');
             isValid = false;
         } else {
             setPasswordError(false);
             setPasswordErrorMessage('');
+        }
+
+        if (!passwordConfirmation.value || passwordConfirmation.value != password.value) {
+            setPasswordConfirmationError(true);
+            setPasswordConfirmationErrorMessage(
+                'Die Passwort Wiederholung stimmt nicht mit dem vergebenen Passwort überein.',
+            );
+            isValid = false;
+        } else {
+            setPasswordConfirmationError(false);
+            setPasswordConfirmationErrorMessage('');
         }
 
         if (!name.value || name.value.length < 1) {
@@ -95,10 +72,18 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             setNameErrorMessage('');
         }
 
+        console.log('form', {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            passwordConfirmation: passwordConfirmation.value,
+            isValid: isValid,
+        });
+
         return isValid;
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         if (nameError || emailError || passwordError) {
             event.preventDefault();
             return;
@@ -109,27 +94,16 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             lastName: data.get('lastName'),
             email: data.get('email'),
             password: data.get('password'),
+            passwordConfirmation: data.get('passwordConfirmation'),
         });
     };
 
     return (
-        <AppTheme {...props}>
-            <CssBaseline enableColorScheme />
+        <>
             <SignUpContainer direction="column" justifyContent="space-between">
                 <Card variant="outlined">
-                    <LockOpenIcon sx={{ color: (theme) => theme.palette.primary.main }} />
-                    <Typography
-                        component="h1"
-                        variant="h4"
-                        sx={{
-                            width: '100%',
-                            fontSize: 'clamp(1.3rem, 10vw, 2rem)',
-                            fontFamily: 'Eczar, serif',
-                            color: (theme) => theme.palette.primary.main,
-                        }}
-                    >
-                        Registrierung
-                    </Typography>
+                    <HowToRegIcon sx={{ color: (theme) => theme.palette.primary.main }} />
+                    <HeadlineSignInUp>Registrierung</HeadlineSignInUp>
                     <ParagraphHP marginTop="1rem">
                         Bitte registrieren Sie sich, um sich hier hinterlegte Prototypen Projekte
                         anschauen zu können. Bei Bedarf können Sie das angelegte Konto im Nutzer
@@ -183,6 +157,24 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel htmlFor="passwordConfirmation">
+                                Passwort Bestätigung
+                            </FormLabel>
+                            <TextField
+                                required
+                                fullWidth
+                                name="passwordConfirmation"
+                                placeholder="••••••"
+                                type="password"
+                                id="passwordConfirmation"
+                                autoComplete="new-password"
+                                variant="outlined"
+                                error={passwordConfirmationError}
+                                helperText={passwordConfirmationErrorMessage}
+                                color={passwordConfirmationError ? 'error' : 'primary'}
                             />
                         </FormControl>
                         <FormControlLabel
@@ -240,6 +232,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                     </Box>
                 </Card>
             </SignUpContainer>
-        </AppTheme>
+        </>
     );
 }

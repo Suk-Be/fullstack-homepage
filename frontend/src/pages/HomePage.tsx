@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import OfferHP from '../components/offer';
 import ProfileHP from '../components/profile';
-import SignUp from '../components/SignUp';
+import ToggleSignIn from '../components/sign-in';
 import { HPProps } from '../data/HomePage';
 
 const HomePage = () => {
@@ -32,7 +32,7 @@ const HomePage = () => {
                 <Box sx={{ width: { md: '67%' } }}>
                     {/* @ts-ignore*/}
                     <OfferHP offer={offer} teaser={teaser} />
-                    <SignUp />
+                    <ToggleSignIn />
                 </Box>
             </Box>
         </>
