@@ -533,10 +533,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): Response
     { {
             $credentials = $request->validate([
                 'email' => ['required', 'email'],
@@ -544,10 +545,10 @@ class AuthController extends Controller
             ]);
 
             if (Auth::attempt($credentials)) {
-                # todo regenerate session analyze the need for regenerating sessions
-                // $request->session()->regenerate();
+                $request->session()->regenerate(); // REGENERATE SESSION ID
 
-                return response()->json(['message' => __('Welcome!')]);
+                // return response()->json(['user' => Auth::user()]);
+                return response('User logged successfully', 200);
             }
 
             throw ValidationException::withMessages([
@@ -556,13 +557,13 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): Response
     {
         Auth::logout(); // For session-based authentication
 
-        return response()->json([
-            'message' => 'Successfully logged out!',
-        ]);
+        // $request->user()->currentAccessToken()->delete();
+
+        return response('Successfully logged out!');
     }
 }
 
@@ -571,7 +572,7 @@ namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+// use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -599,12 +600,13 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->string('password')),
         ]);
 
-        event(new Registered($user));
+        // event(new Registered($user));
 
         // Auto login after registration (optional)
         Auth::login($user);
 
-        return response()->noContent();
+        return response('User registered successfully', 200);
+
     }
 }
 
@@ -621,4 +623,253 @@ Tested in Postman
     "password": "secret123",
     "password_confirmation": "secret123"
 }
+```
+
+# Social Auth Services
+
+Laravel offers a plugin for auth services to logins called sociallite.
+
+-   <https://laravel.com/docs/12.x/socialite>
+-   <https://www.itsolutionstuff.com/post/laravel-12-socialite-login-with-google-account-exampleexample.html>
+
+## Google cloud
+
+-   <https://console.cloud.google.com/>
+
+Offers Api services like OAuth2.0 that laravel sociallite needs to authenticate with. Please use the step by step example to create a 'project' in the google cloud.
+
+The configuration of this project provides that are needed to connec with the sociallite service:
+
+-   client-id
+-   client-key
+-   redirect-url
+
+## install sociallite and connect to google cloud oauth service
+
+```
+composer require laravel/socialite
+```
+
+In the config/services.php you need to pass client-id, client-key and redirect-url from the google OAUTH service
+
+```php services.php
+return [
+    ....
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'), // client-id
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // client-key
+        'redirect' => env('GOOGLE_REDIRECT'), // redirect-url
+    ],
+]
+```
+
+The env file with the data
+
+```bash .env
+GOOGLE_CLIENT_ID=XXXXXsvqcn3d.apps.googleusercontent.com # client-id
+GOOGLE_CLIENT_SECRET=XXXXXT6tR1rWpR-Jxy3jkdzs  # client-key
+GOOGLE_REDIRECT=http://localhost:8000/auth/google/callback # redirect-url
+```
+
+## Add google_id Column to migration and user table
+
+In this step, first, we have to create a migration to add the google_id in your user table.
+
+```bash
+php artisan make:migration add_google_id_column
+
+```
+
+Migration:
+replace '$table->string(')->nullable();'
+with '$table->string('google_id')->nullable();'
+in the migration table
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->string('google_id')->nullable();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+    }
+};
+```
+
+Add the google ID to the to the user model.
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'google_id'
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+}
+```
+
+## Create Routes and Controller
+
+Add the authentication route to auth.php
+
+```php routes/auth.php
+
+<?php
+
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+...
+use App\Http\Controllers\Auth\GoogleController;
+use Illuminate\Support\Facades\Route;
+
+...
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+```
+
+Create the needed GoogleController and its methods: redirectToGoogle, handleGoogleCallback
+
+```php app/Http/Controllers/Auth/GoogleController.php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Laravel\Socialite\Facades\Socialite;
+use Exception;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+class GoogleController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function redirectToGoogle(): RedirectResponse
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function handleGoogleCallback()
+    {
+        try {
+
+            $user = Socialite::driver('google')->user();
+            $finduser = User::where('google_id', $user->id)->first();
+
+            if ($finduser) {
+
+                Auth::login($finduser);
+                return redirect()->intended('home');
+
+            } else {
+                $newUser = User::updateOrCreate(['email' => $user->email], [
+                    'name' => $user->name,
+                    'google_id' => $user->id,
+                    'password' => encrypt('123456dummy')
+                ]);
+
+                Auth::login($newUser);
+
+                return redirect()->intended('home');
+            }
+
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+}
+
 ```
