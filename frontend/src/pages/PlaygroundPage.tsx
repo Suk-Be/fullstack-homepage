@@ -1,9 +1,11 @@
 import { Box } from '@mui/material';
-import SignUp from '../components/SignUp';
+import LoginTest from '../components/LoginTest';
+import SignUp from '../components/sign-in/SignUp';
 
 const PlaygroundPage = () => {
     return (
         <Box sx={{ padding: '7rem 0rem' }}>
+            <LoginTest />
             <SignUp />
         </Box>
     );

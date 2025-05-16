@@ -20,37 +20,18 @@ import LaravelAxiosClient from '../plugins/axios';
 // };
 
 const useLogin = () =>
-	useEffect(() => {
-		const setAuth = async () => {
-			await LaravelAxiosClient.post('/auth/spa/login', {
-				email: 'sok@example.com',
-				password: 'manager101',
-			});
+    useEffect(() => {
+        const setAuth = async () => {
+            await LaravelAxiosClient.post('/auth/spa/login', {
+                email: 'sok@example.com',
+                password: 'manager101',
+            });
 
-			const { data } = await LaravelAxiosClient.get('/user');
-			console.log(data); // should output user details.
-		};
+            const { data } = await LaravelAxiosClient.get('/user');
+            console.log('get User data, successful login', data); // should output user details.
+        };
 
-		setAuth();
-	}, []);
+        setAuth();
+    }, []);
 
 export default useLogin;
-
-// const setAuth = async () => {
-//   try {
-//     await LaravelAxiosClient.post('/auth/spa/login', {
-//       email: 'sok@example.com',
-//       password: 'manager101',
-//     });
-//     const { data } = await LaravelAxiosClient.get('/user');
-// 		console.log(data);
-//   } catch (error) {
-//     if (
-//       error instanceof AxiosError &&
-//       error.response &&
-//       error.response.status === 404
-//     )
-//       return null;
-//     throw error;
-//   }
-// };
