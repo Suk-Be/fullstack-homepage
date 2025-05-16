@@ -56,7 +56,6 @@ export default function AppTheme(props: AppThemeProps) {
                                 font-style: normal;
                                 font-display: swap;
                                 font-weight: 300;
-                                src: url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@100;200;300;400&display=Eczar:wght@400..800&family=swap') format('woff2');
                               }
                           `,
                       },
