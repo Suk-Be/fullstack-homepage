@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+// use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -32,11 +32,12 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->string('password')),
         ]);
 
-        event(new Registered($user));
+        // event(new Registered($user));
 
         // Auto login after registration (optional)
         Auth::login($user);
 
-        return response()->noContent();
+        return response('User registered successfully', 200);
+
     }
 }

@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): Response
     { {
             $credentials = $request->validate([
                 'email' => ['required', 'email'],
@@ -17,10 +18,10 @@ class AuthController extends Controller
             ]);
 
             if (Auth::attempt($credentials)) {
-                # todo regenerate session analyze the need for regenerating sessions
-                // $request->session()->regenerate();
+                $request->session()->regenerate(); // REGENERATE SESSION ID
 
-                return response()->json(['message' => __('Welcome!')]);
+                // return response()->json(['user' => Auth::user()]);
+                return response('User logged successfully', 200);
             }
 
             throw ValidationException::withMessages([
@@ -29,14 +30,12 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): Response
     {
         Auth::logout(); // For session-based authentication
 
         // $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Successfully logged out!',
-        ]);
+        return response('Successfully logged out!');
     }
 }
