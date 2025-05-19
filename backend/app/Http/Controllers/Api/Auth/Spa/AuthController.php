@@ -3,13 +3,34 @@
 namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+    public function register(Request $request): Response
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed', // <-- erwartet password_confirmation
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Logs in in the user after registration
+        Auth::login($user);
+
+        return response('User registered successfully and logged in after that');
+    }
     public function login(Request $request): Response
     { {
             $credentials = $request->validate([
@@ -20,7 +41,6 @@ class AuthController extends Controller
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate(); // REGENERATE SESSION ID
 
-                // return response()->json(['user' => Auth::user()]);
                 return response('User logged successfully', 200);
             }
 
@@ -34,8 +54,11 @@ class AuthController extends Controller
     {
         Auth::logout(); // For session-based authentication
 
-        // $request->user()->currentAccessToken()->delete();
-
         return response('Successfully logged out!');
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json($request->user());
     }
 }

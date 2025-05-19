@@ -487,6 +487,7 @@ function App() {
    await LaravelAxiosClient.post('/auth/spa/login', {
     email: 'sok@example.com',
     password: 'manager101',
+    password_confirmation: 'manager101',
    });
 
    const { data } = await LaravelAxiosClient.get('/user');
@@ -511,11 +512,13 @@ The routes:
 ```php routes/api.php
 
 use App\Http\Controllers\Api\Auth\Spa\AuthController;
-use App\Http\Controllers\Api\Auth\Spa\RegisteredUserController;
 // ...
-Route::prefix('auth/spa')->group(function () {
-    Route::post('/register', [RegisteredUserController::class, 'store']);
+Route::middleware(['auth:sanctum'])->get('/user', fn(Request $request) => $request->user());
+Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 
+Route::prefix('auth/spa')->group(function () {
+    // Route::post('/register', [RegisteredUserController::class, 'store']);
+    Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -537,6 +540,25 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+    public function register(Request $request): Response
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed', // <-- erwartet password_confirmation
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Login the user after registration
+        Auth::login($user);
+
+        return response('User registered successfully and logged in after that');
+    }
     public function login(Request $request): Response
     { {
             $credentials = $request->validate([
@@ -547,7 +569,13 @@ class AuthController extends Controller
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate(); // REGENERATE SESSION ID
 
-                // return response()->json(['user' => Auth::user()]);
+                // the current authenticated user is now available
+                // http://localhost:8000/api/user
+                // http://localhost:8000/api/get
+                /**
+                 * Route::middleware(['auth:sanctum'])->get('/user', fn(Request $request) => $request->user());
+                 * Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
+                 */
                 return response('User logged successfully', 200);
             }
 
@@ -561,58 +589,18 @@ class AuthController extends Controller
     {
         Auth::logout(); // For session-based authentication
 
-        // $request->user()->currentAccessToken()->delete();
-
         return response('Successfully logged out!');
     }
-}
 
-// RegisteredUserController
-namespace App\Http\Controllers\Api\Auth\Spa;
-
-use App\Http\Controllers\Controller;
-use App\Models\User;
-// use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-
-class RegisteredUserController extends Controller
-{
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): Response
+    public function me(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->string('password')),
-        ]);
-
-        // event(new Registered($user));
-
-        // Auto login after registration (optional)
-        Auth::login($user);
-
-        return response('User registered successfully', 200);
-
+        return response()->json($request->user());
     }
 }
 
 ```
 
-Tested in Postman
+Tested in Postman and Browser
 
 ```js
 // base_url: http://localhost:8000/api
@@ -623,6 +611,179 @@ Tested in Postman
     "password": "secret123",
     "password_confirmation": "secret123"
 }
+```
+
+FYI: Bitte bedenken, dass das Frontend die password_confimration ebenfalls an den AuthController schickt.
+Obwohl im AuthController der key password_confirmation nicht validiert oder in den User table geschreiben wird, wird die password_confirmation erwartet. Es wird Snake case erwartet.
+
+# Frontend Implementierung in react
+
+With axios we create an LaravelApiClient with axios to intercept all requests that have the baseUrl
+localhost:<http://localhost:8000/api>.
+
+1. axios.create() creates a config that needs credentials.
+
+2. The axios interceptors.request.use fetches the current sanctum spa csrf-cookie every request (so the regenerated cookies are covered).
+   And the csrf-cookie content will set to the to be config headers as X-XSRF-TOKEN. If the session cookie and the X-XSRF-TOKEN cookie match you are authenticated.
+   As a reminder:
+   the session cookie is set automatically by the laravel server (localhost:8000) and the csrf-cookie matches that cookie.
+   The session cookie from laravel is httpOnly which makes it unnecessary to delete cookies on the frontend site.
+   If the session cookie and the X-XSRF-TOKEN cookie divert you are not authenticated and you have to login again.
+
+3. The axios interceptors.response.use provides logs on the most common http error status
+
+```ts
+import axios from "axios";
+import Cookies from "js-cookie";
+
+const LaravelApiClient = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        Accept: "application/json",
+    },
+    withCredentials: true,
+});
+
+LaravelApiClient.interceptors.request.use(
+    async (config) => {
+        const needsCsrf = ["post", "put", "patch", "delete"].includes(
+            (config.method ?? "").toLowerCase()
+        );
+        if (needsCsrf) {
+            await LaravelApiClient.get("/csrf-cookie").then();
+            config.headers["X-XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+LaravelApiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401) {
+                console.warn("Nicht autorisiert – ggf. ausgeloggt");
+            }
+
+            if (status === 419) {
+                console.warn("CSRF-Token abgelaufen");
+            }
+
+            if (status === 422) {
+                console.warn("Validierungsfehler:", error.response.data.errors);
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export default LaravelApiClient;
+```
+
+Register Requests with the LaravelApiClient calls the backend route that calls the AuthController with its according method.
+
+logState is a boolean helper that can log the newly registered user.
+
+```ts
+import LaravelApiClient from "../plugins/axios";
+
+const registerUser = async ({
+    logState,
+    name,
+    email,
+    password,
+    password_confirmation,
+}: {
+    logState: boolean;
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+}) => {
+    await LaravelApiClient.post("/auth/spa/register", {
+        name,
+        email,
+        password,
+        password_confirmation,
+    }).then((res) => {
+        console.log("User", res.data);
+    });
+
+    if (logState) {
+        // after await post, now get user data
+        const { data } = await LaravelApiClient.get("/user");
+        console.log("get User data, successful login", data);
+    }
+};
+
+export default registerUser;
+```
+
+login Requests with the LaravelApiClient calls the backend route that calls the AuthController with its according method.
+
+logState is a boolean helper that can log the currently logged in user.
+
+```ts
+import LaravelApiClient from "../plugins/axios";
+
+const setLogin = async ({
+    logState,
+    email,
+    password,
+    password_confirmation,
+}: {
+    logState: boolean;
+    email: string;
+    password: string;
+    password_confirmation: string;
+}) => {
+    await LaravelApiClient.post("/auth/spa/login", {
+        email,
+        password,
+        password_confirmation,
+    });
+
+    if (logState) {
+        const { data } = await LaravelApiClient.get("/user");
+        console.log("get User data, successful login", data);
+    }
+};
+
+export default setLogin;
+```
+
+logout Requests with the LaravelApiClient calls the backend route that calls the AuthController with its according method.
+
+logState is a boolean helper that can log that the user is not authenticated.
+
+```ts
+import LaravelApiClient from "../plugins/axios";
+
+const setLogout = async (logState: boolean) => {
+    await LaravelApiClient.post("/auth/spa/logout");
+
+    if (logState)
+        await LaravelApiClient.get("/me") // for this route authentication is needed
+            .then((res) => {
+                console.log("User is logged in:", res.data);
+            })
+            .catch((error) => {
+                if (error.response.status === 401) {
+                    console.log("User is not logged in");
+                }
+            });
+};
+
+export default setLogout;
 ```
 
 # Social Auth Services
