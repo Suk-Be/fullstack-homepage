@@ -1,4 +1,6 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { IconButton, InputAdornment } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,18 +11,20 @@ import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
+import { useState } from 'react';
+import setLogin from '../../utilitites/setLogin';
 import { Card, SignInContainer } from '../ContainerElements';
 import { FacebookIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp } from '../TextElements';
 import ForgotPassword from './components/ForgotPassword';
 
 export default function SignIn() {
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [open, setOpen] = React.useState(false);
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [open, setOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -30,15 +34,26 @@ export default function SignIn() {
         setOpen(false);
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleTogglePassword = () => {
+        setShowPassword((prev) => !prev);
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         if (emailError || passwordError) {
             event.preventDefault();
             return;
         }
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+
+        event.preventDefault();
+        const dataFD = new FormData(event.currentTarget);
+
+        const logState = true;
+
+        await setLogin({
+            logState,
+            email: (dataFD.get('email') as string) ?? '',
+            password: (dataFD.get('password') as string) ?? '',
+            password_confirmation: (dataFD.get('password') as string) ?? '',
         });
     };
 
@@ -110,7 +125,7 @@ export default function SignIn() {
                                 helperText={passwordErrorMessage}
                                 name="password"
                                 placeholder="••••••"
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
                                 autoFocus
@@ -118,6 +133,19 @@ export default function SignIn() {
                                 fullWidth
                                 variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={handleTogglePassword}
+                                                edge="end"
+                                                aria-label="Toggle password visibility"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </FormControl>
                         <FormControlLabel

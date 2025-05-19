@@ -1,4 +1,6 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import { IconButton, InputAdornment } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,6 +12,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { FormEvent, useState } from 'react';
+import registerUser from '../../utilitites/registerUser';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
@@ -23,6 +26,11 @@ export default function SignUp() {
     const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleTogglePassword = () => {
+        setShowPassword((prev) => !prev);
+    };
 
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
@@ -43,9 +51,9 @@ export default function SignUp() {
             setEmailErrorMessage('');
         }
 
-        if (!password.value || password.value.length < 6) {
+        if (!password.value || password.value.length < 8) {
             setPasswordError(true);
-            setPasswordErrorMessage('Das Passwort benötigt minimum 6 Zeichen.');
+            setPasswordErrorMessage('Das Passwort benötigt minimum 8 Zeichen.');
             isValid = false;
         } else {
             setPasswordError(false);
@@ -83,18 +91,22 @@ export default function SignUp() {
         return isValid;
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         if (nameError || emailError || passwordError) {
             event.preventDefault();
             return;
         }
-        const data = new FormData(event.currentTarget);
-        console.log({
-            name: data.get('name'),
-            lastName: data.get('lastName'),
-            email: data.get('email'),
-            password: data.get('password'),
-            passwordConfirmation: data.get('passwordConfirmation'),
+        event.preventDefault();
+        const dataFD = new FormData(event.currentTarget);
+
+        const logState = true;
+
+        await registerUser({
+            logState,
+            name: (dataFD.get('name') as string) ?? '',
+            email: (dataFD.get('email') as string) ?? '',
+            password: (dataFD.get('password') as string) ?? '',
+            password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
         });
     };
 
@@ -144,19 +156,33 @@ export default function SignUp() {
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="password">Passwort</FormLabel>
+                            <FormLabel htmlFor="password">Password</FormLabel>
                             <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                placeholder="••••••"
-                                type="password"
-                                id="password"
-                                autoComplete="new-password"
-                                variant="outlined"
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
+                                name="password"
+                                placeholder="••••••"
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                autoComplete="current-password"
+                                autoFocus
+                                required
+                                fullWidth
+                                variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={handleTogglePassword}
+                                                edge="end"
+                                                aria-label="Toggle password visibility"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -168,7 +194,7 @@ export default function SignUp() {
                                 fullWidth
                                 name="passwordConfirmation"
                                 placeholder="••••••"
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 id="passwordConfirmation"
                                 autoComplete="new-password"
                                 variant="outlined"

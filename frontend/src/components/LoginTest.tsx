@@ -4,8 +4,6 @@ import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import useLogin from '../hooks/useLogin';
-// import useRegister from '../hooks/useRegister';
 
 const globalStyle = {
     marginBottom: '0.5rem',
@@ -33,9 +31,6 @@ const RatingAndLoginTest = () => {
     const [comment, setCommentValue] = useState('');
 
     const isDisabled = ratingValue === null || comment === '';
-
-    useLogin();
-    // useRegister();
 
     return (
         <>

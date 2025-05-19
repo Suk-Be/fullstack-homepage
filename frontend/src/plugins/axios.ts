@@ -1,23 +1,54 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const LaravelAxiosClient = axios.create({
+const LaravelApiClient = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',
     },
+    withCredentials: true,
 });
 
-LaravelAxiosClient.defaults.withCredentials = true; // allow sending cookies
+LaravelApiClient.interceptors.request.use(
+    async (config) => {
+        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
+            (config.method ?? '').toLowerCase(),
+        );
+        if (needsCsrf) {
+            await LaravelApiClient.get('/csrf-cookie').then();
+            config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
 
-LaravelAxiosClient.interceptors.request.use(async (config) => {
-    if ((config.method as string).toLowerCase() !== 'get') {
-        await LaravelAxiosClient.get('/csrf-cookie').then();
-        config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
-    }
+LaravelApiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            const status = error.response.status;
 
-    return config;
-});
+            if (status === 401) {
+                console.warn('Nicht autorisiert – ggf. ausgeloggt');
+            }
 
-export default LaravelAxiosClient;
+            if (status === 419) {
+                console.warn('CSRF-Token abgelaufen');
+            }
+
+            if (status === 422) {
+                console.warn('Validierungsfehler:', error.response.data.errors);
+            }
+        }
+
+        return Promise.reject(error);
+    },
+);
+
+export default LaravelApiClient;

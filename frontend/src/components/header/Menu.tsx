@@ -4,6 +4,7 @@ import Link from '@mui/material/Link';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
+import setLogout from '../../utilitites/setLogout';
 import { Claim, Logo } from '../TextElements';
 
 interface BasicMenuProps {
@@ -19,16 +20,15 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        const logState = true;
+        await setLogout(logState);
+
         if (changeLoginStatus) {
             changeLoginStatus();
         }
         setAnchorEl(null);
     };
-
-    // const isUrlPlayground = window.location.href.indexOf('playground') !== -1 ? true : false;
-
-    // console.log('isUrlPlayground', isUrlPlayground);
 
     const LinkedLogo = () => {
         return (
