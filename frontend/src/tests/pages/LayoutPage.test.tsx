@@ -7,28 +7,22 @@ describe('LayoutPage', () => {
     const renderUtil = (path: string) => {
         navigateTo(path);
 
-        const links = screen.getAllByRole('link');
-        const logoLink = links[0];
+        const logoLink = screen.getByTestId('link-home-page');
+        const impressumLink = screen.getByTestId('link-impressum-page');
+        const avatarLink = screen.getByTestId('button-main-menu');
 
-        const claim = screen.getAllByText(/web developer/i);
-        const logoClaim = claim[1];
-
-        const linkHomePage = screen.getAllByRole('link');
-        const linkHP = linkHomePage[0];
-
-        const buttons = screen.getAllByRole('button');
-        const mainMenu = buttons[0];
+        const logoInHeader = logoLink.querySelector('h5');
+        const claimInHeader = logoLink.querySelector('p');
 
         const user = userEvent.setup();
 
         return {
             logoLink,
-            logoClaim,
-
-            linkHP,
+            avatarLink,
+            impressumLink,
+            logoInHeader,
+            claimInHeader,
             user,
-            buttons,
-            mainMenu,
         };
     };
 
@@ -41,25 +35,30 @@ describe('LayoutPage', () => {
             page: 'PlaygroundPage',
             link: '/playground',
         },
-    ])('should render a header with Logo Link and Main Menu on $page', ({ link }) => {
-        const { mainMenu } = renderUtil(link);
-        const claim = screen.getByText(/web developer/i);
-        const logoClaim = claim;
+    ])(
+        'should render a header with home page link, impressum page link and main menu button on $page',
+        ({ link }) => {
+            const { logoLink, avatarLink, impressumLink } = renderUtil(link);
 
-        const links = screen.getAllByRole('link');
-        const logoLink = links[0];
+            expect(logoLink).toBeInTheDocument();
+            expect(avatarLink).toBeInTheDocument();
+            expect(impressumLink).toBeInTheDocument();
+        },
+    );
 
-        expect(logoClaim).toBeInTheDocument();
-        expect(logoLink).toBeInTheDocument();
-        expect(mainMenu).toBeInTheDocument();
-    });
-
-    it("should render a header with Logo Link and Main Menu on 'HomePage'", () => {
-        const { logoLink, logoClaim, mainMenu } = renderUtil('/');
-
-        expect(logoClaim).toBeInTheDocument();
-        expect(logoLink).toBeInTheDocument();
-        expect(mainMenu).toBeInTheDocument();
+    it.each([
+        {
+            page: 'ImpressumPage',
+            link: '/impressum',
+        },
+        {
+            page: 'PlaygroundPage',
+            link: '/playground',
+        },
+    ])('should render a header with Logo and Claim on $page', ({ link }) => {
+        const { logoInHeader, claimInHeader } = renderUtil(link);
+        expect(logoInHeader!).toHaveTextContent(/suk-be jang/i);
+        expect(claimInHeader!).toHaveTextContent(/web developer/i);
     });
 
     it.each([
@@ -75,17 +74,16 @@ describe('LayoutPage', () => {
             page: 'PlaygroundPage',
             link: '/playground',
         },
-    ])('should render a Submenu with links on $page', async ({ link }) => {
-        const { user, mainMenu } = renderUtil(link);
-
-        expect(mainMenu).toBeInTheDocument();
-
-        await user.click(mainMenu);
-
-        const menuItemPlaygroundPage = screen.getByRole('link', {
-            name: /PlaygroundPage/i,
-        });
-
-        expect(menuItemPlaygroundPage).toBeInTheDocument();
-    });
+    ])(
+        'should render a Submenu when clicked on main menu with links on $page',
+        async ({ link }) => {
+            const { user, avatarLink } = renderUtil(link);
+            expect(avatarLink).toBeInTheDocument();
+            await user.click(avatarLink);
+            const menuItemPlaygroundPage = screen.getByRole('link', {
+                name: /PlaygroundPage/i,
+            });
+            expect(menuItemPlaygroundPage).toBeInTheDocument();
+        },
+    );
 });

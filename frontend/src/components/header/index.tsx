@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useScroll from '../../hooks/useScroll';
+import { testId } from '../../utilitites/testId';
 import BasicMenu from './Menu';
 
 const MenuNav = () => {
@@ -13,7 +14,7 @@ const MenuNav = () => {
 
     const Header = () => {
         return (
-            <header>
+            <header {...testId('header-main-menu')}>
                 <nav className="trigger-menu-wrapper">
                     <BasicMenu changeLoginStatus={changeLoginStatus} />
                 </nav>

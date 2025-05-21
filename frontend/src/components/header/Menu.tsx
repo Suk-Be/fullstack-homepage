@@ -1,10 +1,8 @@
-import { Avatar, Grid } from '@mui/material';
-import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
 import setLogout from '../../utilitites/setLogout';
+import { testId } from '../../utilitites/testId';
+import RouterLinkWrapper from '../RouterLink';
 import { Claim, Logo } from '../TextElements';
 
 interface BasicMenuProps {
@@ -32,7 +30,8 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
 
     const LinkedLogo = () => {
         return (
-            <Link
+            <MuiLink
+                component={RouterLinkWrapper}
                 href="/"
                 sx={{
                     textAlign: 'center',
@@ -42,6 +41,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                     justifyContent: 'center',
                     textDecoration: 'none',
                 }}
+                {...testId('link-home-page')}
             >
                 <Logo
                     fontSize="1rem"
@@ -54,7 +54,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                 <Claim fontSize="0.8rem" marginBottom="0rem" color="rgba(33,29,29, 1)">
                     (Web Developer)
                 </Claim>
-            </Link>
+            </MuiLink>
         );
     };
 
@@ -90,6 +90,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleClick}
+                        {...testId('button-main-menu')}
                     >
                         <Avatar alt="Hulk AI" src="https://sokdesign.de/images/avatar.jpg" />
                     </Button>
@@ -98,16 +99,22 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
-                        MenuListProps={{
-                            'aria-labelledby': 'basic-button',
+                        slotProps={{
+                            list: {
+                                'aria-labelledby': 'basic-button',
+                            },
                         }}
                         sx={{ maxWidth: 'calc(100% - 4rem)' }}
                     >
                         <MenuItem onClick={handleClose}>
-                            <Link href="/playground">PlaygroundPage</Link>
+                            <MuiLink component={RouterLinkWrapper} href="/playground">
+                                PlaygroundPage
+                            </MuiLink>
                         </MenuItem>
                         <MenuItem onClick={handleLogout}>
-                            <Link href="/">Logout</Link>
+                            <MuiLink component={RouterLinkWrapper} href="/">
+                                Logout
+                            </MuiLink>
                         </MenuItem>
                     </Menu>
                 </Grid>

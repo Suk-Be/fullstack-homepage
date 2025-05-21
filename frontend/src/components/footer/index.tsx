@@ -1,6 +1,7 @@
 import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { testId } from '../../utilitites/testId';
+import RouterLinkWrapper from '../RouterLink';
 
 const Footer = () => {
     const [value, setValue] = useState(0);
@@ -13,6 +14,7 @@ const Footer = () => {
                 left: 0,
                 right: 0,
             }}
+            {...testId('footer')}
         >
             <Box
                 component="nav"
@@ -44,10 +46,11 @@ const Footer = () => {
                     }}
                 >
                     <BottomNavigationAction
-                        component={Link}
-                        to="/impressum"
+                        component={RouterLinkWrapper}
+                        href="/impressum"
                         label="Impressum"
                         style={{ color: 'rgba(33,29,29, 0.5)' }}
+                        {...testId('link-impressum-page')}
                     />
                 </BottomNavigation>
             </Box>

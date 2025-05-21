@@ -3,6 +3,16 @@ import { describe, expect, it } from 'vitest';
 import { navigateTo } from '../../utils';
 
 describe('BasicMenu', () => {
+    const renderUtils = (path: string) => {
+        navigateTo(path);
+
+        const impressumLink = screen.getByTestId('link-impressum-page');
+
+        return {
+            impressumLink,
+        };
+    };
+
     it.each([
         {
             page: 'HomePage',
@@ -16,12 +26,8 @@ describe('BasicMenu', () => {
             page: 'PlaygroundPage',
             link: '/playground',
         },
-    ])('should render a footer on $page with a link to impressum page', async ({ link }) => {
-        navigateTo(link);
-
-        const impressumLink = await screen.findByRole('link', {
-            name: /impressum/i,
-        });
+    ])('should render a footer on $page with a link to impressum page', ({ link }) => {
+        const { impressumLink } = renderUtils(link);
 
         expect(impressumLink).toBeInTheDocument();
     });
