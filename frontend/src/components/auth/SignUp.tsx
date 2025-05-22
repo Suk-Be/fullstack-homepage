@@ -1,18 +1,21 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { IconButton, InputAdornment } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    Link,
+    TextField,
+    Typography,
+} from '@mui/material';
 import { FormEvent, useState } from 'react';
-import registerUser from '../../utilitites/registerUser';
+import registerUser from '../../utils/registerUser';
+import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
@@ -115,8 +118,8 @@ export default function SignUp() {
             <SignUpContainer direction="column" justifyContent="space-between">
                 <Card variant="outlined">
                     <HowToRegIcon sx={{ color: (theme) => theme.palette.primary.main }} />
-                    <HeadlineSignInUp>Registrierung</HeadlineSignInUp>
-                    <ParagraphHP marginTop="1rem">
+                    <HeadlineSignInUp {...testId('title-sign-up')}>Registrierung</HeadlineSignInUp>
+                    <ParagraphHP marginTop="1rem" {...testId('description-sign-up')}>
                         Bitte registrieren Sie sich, um sich hier hinterlegte Prototypen Projekte
                         anschauen zu können. Bei Bedarf können Sie das angelegte Konto im Nutzer
                         Menü löschen oder verwalten.
@@ -127,7 +130,9 @@ export default function SignUp() {
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="name">Vor- und Nachname</FormLabel>
+                            <FormLabel htmlFor="name" {...testId('form-label-name')}>
+                                Vor- und Nachname
+                            </FormLabel>
                             <TextField
                                 autoComplete="name"
                                 name="name"
@@ -138,10 +143,13 @@ export default function SignUp() {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
+                                {...testId('form-input-name')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormLabel htmlFor="email" {...testId('form-label-email')}>
+                                Email
+                            </FormLabel>
                             <TextField
                                 required
                                 fullWidth
@@ -153,10 +161,13 @@ export default function SignUp() {
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
+                                {...testId('form-input-email')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password" {...testId('form-label-password')}>
+                                Password
+                            </FormLabel>
                             <TextField
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
@@ -170,23 +181,33 @@ export default function SignUp() {
                                 fullWidth
                                 variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={handleTogglePassword}
-                                                edge="end"
-                                                aria-label="Toggle password visibility"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={handleTogglePassword}
+                                                    edge="end"
+                                                    aria-label="Toggle password visibility"
+                                                >
+                                                    {showPassword ? (
+                                                        <VisibilityOff />
+                                                    ) : (
+                                                        <Visibility />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
+                                {...testId('form-input-password')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="passwordConfirmation">
+                            <FormLabel
+                                htmlFor="passwordConfirmation"
+                                {...testId('form-label-password-confirmation')}
+                            >
                                 Passwort Bestätigung
                             </FormLabel>
                             <TextField
@@ -201,17 +222,20 @@ export default function SignUp() {
                                 error={passwordConfirmationError}
                                 helperText={passwordConfirmationErrorMessage}
                                 color={passwordConfirmationError ? 'error' : 'primary'}
+                                {...testId('form-input-password-confirmation')}
                             />
                         </FormControl>
                         <FormControlLabel
                             control={<Checkbox value="allowExtraEmails" color="primary" />}
                             label="Ich habe die Bedingungen gelesen nund stimme zu"
+                            {...testId('form-label-condition')}
                         />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             onClick={validateInputs}
+                            {...testId('form-button-register')}
                         >
                             registrieren
                         </Button>
@@ -225,6 +249,7 @@ export default function SignUp() {
                             variant="outlined"
                             onClick={() => alert('Sign up with Github')}
                             startIcon={<GithubIcon />}
+                            {...testId('form-button-register-with-github')}
                         >
                             registrieren mit Github
                         </Button>
@@ -233,6 +258,7 @@ export default function SignUp() {
                             variant="outlined"
                             onClick={() => alert('Sign up with Google')}
                             startIcon={<GoogleIcon />}
+                            {...testId('form-button-register-with-google')}
                         >
                             registrieren mit Google
                         </Button>
@@ -241,6 +267,7 @@ export default function SignUp() {
                             variant="outlined"
                             onClick={() => alert('Sign up with Facebook')}
                             startIcon={<FacebookIcon />}
+                            {...testId('form-button-register-with-facebook')}
                         >
                             registrieren mit Facebook
                         </Button>
@@ -251,6 +278,7 @@ export default function SignUp() {
                                 href="/material-ui/getting-started/templates/sign-in/"
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
+                                {...testId('button-switch-to-login')}
                             >
                                 Log in
                             </Link>

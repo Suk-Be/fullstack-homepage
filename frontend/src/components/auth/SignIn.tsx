@@ -12,7 +12,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import setLogin from '../../utilitites/setLogin';
+import setLogin from '../../utils/setLogin';
 import { Card, SignInContainer } from '../ContainerElements';
 import { FacebookIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp } from '../TextElements';
