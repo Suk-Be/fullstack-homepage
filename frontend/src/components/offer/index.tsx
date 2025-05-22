@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
-import { testId } from '../../utilitites/testId';
+import { testId } from '../../utils/testId';
 import { Section } from '../ContainerElements';
 import { HeadlineHP, ParagraphHP, SubTitle } from '../TextElements';
 import NumberedList from './List';

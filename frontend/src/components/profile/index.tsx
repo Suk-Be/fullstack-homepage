@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
-import { testId } from '../../utilitites/testId';
+import { testId } from '../../utils/testId';
 import { Section, SectionRelative } from '../ContainerElements';
 import { Claim, Logo, ParagraphHP } from '../TextElements';
 import ProfilePic from './ProfilePicture';

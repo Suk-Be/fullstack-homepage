@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
+import ToggleSignIn from '../components/auth';
 import OfferHP from '../components/offer';
 import ProfileHP from '../components/profile';
-import ToggleSignIn from '../components/sign-in';
 import { HPProps } from '../data/HomePage';
 
 const HomePage = () => {

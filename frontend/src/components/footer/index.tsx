@@ -1,6 +1,6 @@
 import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
 import { useState } from 'react';
-import { testId } from '../../utilitites/testId';
+import { testId } from '../../utils/testId';
 import RouterLinkWrapper from '../RouterLink';
 
 const Footer = () => {

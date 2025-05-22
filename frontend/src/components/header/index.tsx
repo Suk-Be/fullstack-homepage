@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useScroll from '../../hooks/useScroll';
-import { testId } from '../../utilitites/testId';
+import { testId } from '../../utils/testId';
 import BasicMenu from './Menu';
 
 const MenuNav = () => {
