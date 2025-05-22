@@ -9,6 +9,7 @@ interface LogoHPProps extends PropsWithChildren {
     marginTop?: string;
     fontSize?: string;
     lineHeight?: string;
+    sx?: SxProps<Theme>;
 }
 const Logo = ({
     component = 'h1',
@@ -17,6 +18,8 @@ const Logo = ({
     lineHeight = '1',
     color = 'rgba(56,255,148, 1)',
     marginTop = '0',
+    sx,
+    ...rest
 }: LogoHPProps) => {
     return (
         <Typography
@@ -34,7 +37,9 @@ const Logo = ({
                 fontStyle: 'normal',
                 lineHeight: lineHeight,
                 marginTop: marginTop,
+                ...sx,
             }}
+            {...rest}
         >
             Suk-Be Jang
         </Typography>
@@ -45,6 +50,7 @@ interface ClaimProps extends PropsWithChildren {
     fontSize?: '0.8rem' | '1.3rem' | '2.5rem';
     color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
     marginBottom?: string;
+    sx?: SxProps<Theme>;
 }
 
 const Claim = ({
@@ -52,6 +58,8 @@ const Claim = ({
     color = 'rgba(56,255,148, 1)',
     marginBottom = '1rem',
     children,
+    sx,
+    ...rest
 }: ClaimProps) => {
     return (
         <Typography
@@ -65,7 +73,9 @@ const Claim = ({
                 },
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
+                ...sx,
             }}
+            {...rest}
         >
             {children}
         </Typography>
@@ -76,13 +86,16 @@ interface SubTitleProps extends PropsWithChildren {
     fontSize?: '0.8rem' | '1.3rem' | '2.5rem' | string;
     color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
     marginBottom?: string;
+    sx?: SxProps<Theme>;
 }
 
 const SubTitle = ({
     fontSize = '1.3rem',
     color = 'rgba(33,29,29, 0.5)',
     marginBottom = '1rem',
+    sx,
     children,
+    ...rest
 }: SubTitleProps) => {
     return (
         <Typography
@@ -92,7 +105,9 @@ const SubTitle = ({
                 fontSize: fontSize,
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
+                ...sx,
             }}
+            {...rest}
         >
             {children}
         </Typography>
@@ -107,6 +122,7 @@ interface HeadlineHPPProps extends PropsWithChildren {
     color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(53,102,64, 1)';
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    sx?: SxProps<Theme>;
 }
 
 const HeadlineHP = ({
@@ -118,6 +134,8 @@ const HeadlineHP = ({
     fontWeight = 600,
     color,
     textAlign = 'center',
+    sx,
+    ...rest
 }: HeadlineHPPProps) => {
     return (
         <Typography
@@ -130,19 +148,30 @@ const HeadlineHP = ({
                 color: color,
                 marginBottom: marginBottom,
                 textAlign: textAlign,
+                ...sx,
             }}
+            {...rest}
         >
             {children}
         </Typography>
     );
 };
 
+import { SxProps, Theme } from '@mui/material';
+
 interface ParagraphHPProps extends PropsWithChildren {
     marginTop?: string;
     marginBottom?: string;
+    sx?: SxProps<Theme>;
 }
 
-const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: ParagraphHPProps) => {
+const ParagraphHP = ({
+    children,
+    marginTop = '0px',
+    marginBottom = '1rem',
+    sx,
+    ...rest
+}: ParagraphHPProps) => {
     return (
         <Typography
             component="p"
@@ -150,14 +179,20 @@ const ParagraphHP = ({ children, marginTop = '0px', marginBottom = '1rem' }: Par
                 fontStyle: 'normal',
                 marginTop: marginTop,
                 marginBottom: marginBottom,
+                ...sx,
             }}
+            {...rest}
         >
             {children}
         </Typography>
     );
 };
 
-const HeadlineSignInUp = ({ children }: PropsWithChildren) => {
+interface HeadlineSignInUpProps extends PropsWithChildren {
+    sx?: SxProps<Theme>;
+}
+
+const HeadlineSignInUp = ({ children, sx, ...rest }: HeadlineSignInUpProps) => {
     return (
         <Typography
             component="h1"
@@ -167,7 +202,9 @@ const HeadlineSignInUp = ({ children }: PropsWithChildren) => {
                 fontSize: 'clamp(1.3rem, 10vw, 2rem)',
                 fontFamily: 'Eczar, serif',
                 color: (theme) => theme.palette.primary.main,
+                ...sx,
             }}
+            {...rest}
         >
             {children}
         </Typography>

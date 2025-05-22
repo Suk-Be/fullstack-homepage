@@ -14,7 +14,7 @@ export default defineConfig({
         },
     },
     optimizeDeps: {
-        include: ['@mui/material', '@mui/system', 'react', 'react-dom'],
+        include: ['@mui/system', 'react', 'react-dom'],
         exclude: [
             '@mui/icons-material', // this is likely causing the "too many files" issue
             '@mui/material',

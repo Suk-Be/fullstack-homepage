@@ -4,10 +4,10 @@ import * as React from 'react';
 import dataDisplayCustomizations from './customizations/dataDisplay';
 import feedbackCustomizations from './customizations/feedback';
 import inputsCustomizations from './customizations/inputs';
-import routerLinkCustomizations from './customizations/linkRouter';
 import navigationCustomizations from './customizations/navigation';
 import surfacesCustomizations from './customizations/surfaces';
 import { colorSchemes, shadows, shape } from './themePrimitives';
+import routerLinkCustomizations from './customizations/linkRouter';
 
 interface AppThemeProps {
     children: React.ReactNode;

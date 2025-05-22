@@ -5,62 +5,79 @@ import { HPProps } from '../../data/HomePage';
 import { navigateTo } from '../utils';
 
 describe('HomePage', () => {
-    const renderUtil = () => {
-        navigateTo('/');
-
-        const heading = screen.getAllByRole('heading', {
-            name: /Suk-Be Jang/i,
-        });
-        const logo = heading[1];
-        const claim = screen.getAllByText(/web developer/i);
-        const logoClaim = claim[1];
-
-        const linkHomePage = screen.getAllByRole('link');
-        const linkHP = linkHomePage[0];
-
-        const buttons = screen.getAllByRole('button');
-        const mainMenu = buttons[0];
-
+    const renderUtil = (path: string) => {
         const user = userEvent.setup();
+        navigateTo(path); // HomePage
 
-        const headline = screen.getByText(HPProps.data[0].attributes.title);
+        const header = screen.getByTestId('header-main-menu');
+        const footer = screen.getByTestId('footer');
+
+        const profile = HPProps.data.filter((item) => item.type === 'profile')[0];
+        const offer = HPProps.data.filter((item) => item.type === 'offer');
+        const teaser = HPProps.data.filter((item) => item.type === 'teaser')[0];
 
         return {
-            logo,
-            logoClaim,
+            footer,
+            header,
+            profile,
+            offer,
+            teaser,
             user,
-            linkHP,
-            headline,
-            buttons,
-            mainMenu,
         };
     };
-    it('should render the Logo', async () => {
-        const { logo, logoClaim } = renderUtil();
 
-        expect(logo).toBeInTheDocument();
-        expect(logoClaim).toBeInTheDocument();
+    it('should render header and footer', async () => {
+        const { header, footer } = renderUtil('/');
+        expect(header).toBeInTheDocument();
+        expect(footer).toBeInTheDocument();
     });
-    it('should render Home Page Link', async () => {
-        const { linkHP } = renderUtil();
 
-        expect(linkHP).toBeInTheDocument();
+    it('should render a profile section', async () => {
+        const { profile } = renderUtil('/');
+
+        const profilePic = screen.getByAltText(/suk-be jang/i);
+        const subtitle = screen.getByRole('heading', { name: profile.attributes.title });
+        const profileText = screen.getByText(/Als Frontend Entwickler sehe ich mich/i);
+
+        expect(profilePic).toBeInTheDocument();
+        expect(subtitle).toBeInTheDocument();
+        expect(profileText).toBeInTheDocument();
     });
-    it('should render Main Menu and a link from it', async () => {
-        const { user, mainMenu } = renderUtil();
 
-        await user.click(mainMenu);
+    it('should render a teaser section', async () => {
+        const { teaser } = renderUtil('/');
 
-        const menuItemPlaygroundPage = screen.getByRole('link', {
-            name: /PlaygroundPage/i,
+        const title = screen.getByRole('heading', { name: teaser.attributes.title });
+        const subtitle = screen.getByText('Konzeption und Weiterentwicklung');
+        const teaserList = teaser.attributes.list;
+        const teaserAmount = teaserList?.length;
+
+        expect(title).toBeInTheDocument();
+        expect(subtitle).toBeInTheDocument();
+        expect(teaserAmount).toBe(4);
+
+        teaserList?.forEach((listItem) => {
+            expect(screen.getByText(listItem.number)).toBeInTheDocument();
+            expect(screen.getByText(listItem.text)).toBeInTheDocument();
         });
-
-        expect(menuItemPlaygroundPage).toBeInTheDocument();
     });
 
-    it('should render headline', async () => {
-        const { headline } = renderUtil();
+    it('should render an offer frontend entwicklung section', async () => {
+        const { offer } = renderUtil('/');
 
-        expect(headline).toBeInTheDocument();
+        const headline1 = screen.getByTestId('offer-headline-01');
+        const paragraph1 = screen.getByTestId('offer-content-01');
+        const headline2 = screen.getByTestId('offer-headline-02');
+        const paragraph2 = screen.getByTestId('offer-content-02');
+
+        expect(headline1).toHaveTextContent(offer[0].attributes.title);
+        expect(paragraph1).toHaveTextContent(
+            'Moderne JavaScript basierte Single Page Applications, klassische Server Side Rendered Applications, Hybride Page Applications haben allesamt ihre Daseinsberechtigung.',
+        );
+
+        expect(headline2).toHaveTextContent(offer[1].attributes.title);
+        expect(paragraph2).toHaveTextContent(
+            'Als Web Design Ansatz verfolge ich die „form follows function“ Prinzipien der Architektur und industrieller Produkte.',
+        );
     });
 });

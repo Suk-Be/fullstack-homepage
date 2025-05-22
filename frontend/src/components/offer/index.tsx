@@ -1,5 +1,6 @@
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
+import { testId } from '../../utilitites/testId';
 import { Section } from '../ContainerElements';
 import { HeadlineHP, ParagraphHP, SubTitle } from '../TextElements';
 import NumberedList from './List';
@@ -56,11 +57,19 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 background="rgba(255,255,255, 1)"
                 color="rgba(33,29,29, 1)"
                 padding="0rem 2rem 2rem 4rem"
+                data-testid="offer-content-01"
             >
-                <HeadlineHP variant="h4" component="h4" marginBottom="1rem" textAlign="left">
+                <HeadlineHP
+                    variant="h4"
+                    component="h4"
+                    marginBottom="1rem"
+                    textAlign="left"
+                    {...testId('offer-headline-01')}
+                >
                     {offer[0].attributes.title}
                 </HeadlineHP>
-                <ParagraphHP>{parse(sanitizedData0)}</ParagraphHP>
+
+                <ParagraphHP {...testId('offer-content-01')}>{parse(sanitizedData0)}</ParagraphHP>
             </Section>
 
             <Section
@@ -75,11 +84,12 @@ const OfferHP = ({ offer, teaser }: Props) => {
                     component="h5"
                     marginBottom="1rem"
                     color="rgba(53,102,64, 1)"
+                    {...testId('offer-headline-02')}
                 >
                     {/* @ts-ignore*/}
                     {offer[1].attributes.title!}
                 </HeadlineHP>
-                <ParagraphHP>{parse(sanitizedData1)}</ParagraphHP>
+                <ParagraphHP {...testId('offer-content-02')}>{parse(sanitizedData1)}</ParagraphHP>
             </Section>
         </>
     );
