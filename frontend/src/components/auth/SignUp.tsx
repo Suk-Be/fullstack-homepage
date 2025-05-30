@@ -6,6 +6,7 @@ import {
     Divider,
     FormControl,
     FormControlLabel,
+    FormHelperText,
     FormLabel,
     IconButton,
     InputAdornment,
@@ -14,6 +15,8 @@ import {
     Typography,
 } from '@mui/material';
 import { FormEvent, useState } from 'react';
+import useToggle from '../../hooks/useToggle';
+import useValidateInputs from '../../hooks/useValidation';
 import registerUser from '../../utils/registerUser';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
@@ -21,81 +24,25 @@ import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/Custo
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
 
 export default function SignUp() {
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-    const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
-    const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
-    const [nameError, setNameError] = useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, toggleShowPassword] = useToggle();
 
-    const handleTogglePassword = () => {
-        setShowPassword((prev) => !prev);
-    };
+    const [checked, setChecked] = useState(false);
 
-    const validateInputs = () => {
-        const email = document.getElementById('email') as HTMLInputElement;
-        const password = document.getElementById('password') as HTMLInputElement;
-        const passwordConfirmation = document.getElementById(
-            'passwordConfirmation',
-        ) as HTMLInputElement;
-        const name = document.getElementById('name') as HTMLInputElement;
-
-        let isValid = true;
-
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-            setEmailError(true);
-            setEmailErrorMessage('Bitte geben Sie eine nutzbare Email Adresse an.');
-            isValid = false;
-        } else {
-            setEmailError(false);
-            setEmailErrorMessage('');
-        }
-
-        if (!password.value || password.value.length < 8) {
-            setPasswordError(true);
-            setPasswordErrorMessage('Das Passwort benötigt minimum 8 Zeichen.');
-            isValid = false;
-        } else {
-            setPasswordError(false);
-            setPasswordErrorMessage('');
-        }
-
-        if (!passwordConfirmation.value || passwordConfirmation.value != password.value) {
-            setPasswordConfirmationError(true);
-            setPasswordConfirmationErrorMessage(
-                'Die Passwort Wiederholung stimmt nicht mit dem vergebenen Passwort überein.',
-            );
-            isValid = false;
-        } else {
-            setPasswordConfirmationError(false);
-            setPasswordConfirmationErrorMessage('');
-        }
-
-        if (!name.value || name.value.length < 1) {
-            setNameError(true);
-            setNameErrorMessage('Bitte geben Sie Ihren Name an.');
-            isValid = false;
-        } else {
-            setNameError(false);
-            setNameErrorMessage('');
-        }
-
-        console.log('form', {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-            passwordConfirmation: passwordConfirmation.value,
-            isValid: isValid,
-        });
-
-        return isValid;
-    };
+    const {
+        emailError,
+        emailErrorMessage,
+        passwordError,
+        passwordErrorMessage,
+        passwordConfirmationError,
+        passwordConfirmationErrorMessage,
+        nameError,
+        nameErrorMessage,
+        checkedErrorMessage,
+        validateInputs,
+    } = useValidateInputs(checked);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        if (nameError || emailError || passwordError) {
+        if (nameError || emailError || passwordError || checked === false) {
             event.preventDefault();
             return;
         }
@@ -110,6 +57,8 @@ export default function SignUp() {
             email: (dataFD.get('email') as string) ?? '',
             password: (dataFD.get('password') as string) ?? '',
             password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
+            // todo
+            // terms and condition
         });
     };
 
@@ -130,9 +79,7 @@ export default function SignUp() {
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="name" {...testId('form-label-name')}>
-                                Vor- und Nachname
-                            </FormLabel>
+                            <FormLabel htmlFor="name">User Name</FormLabel>
                             <TextField
                                 autoComplete="name"
                                 name="name"
@@ -143,13 +90,10 @@ export default function SignUp() {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
-                                {...testId('form-input-name')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="email" {...testId('form-label-email')}>
-                                Email
-                            </FormLabel>
+                            <FormLabel htmlFor="email">Email</FormLabel>
                             <TextField
                                 required
                                 fullWidth
@@ -161,13 +105,10 @@ export default function SignUp() {
                                 error={emailError}
                                 helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
-                                {...testId('form-input-email')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="password" {...testId('form-label-password')}>
-                                Password
-                            </FormLabel>
+                            <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
                                 error={passwordError}
                                 helperText={passwordErrorMessage}
@@ -186,7 +127,7 @@ export default function SignUp() {
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    onClick={handleTogglePassword}
+                                                    onClick={toggleShowPassword}
                                                     edge="end"
                                                     aria-label="Toggle password visibility"
                                                 >
@@ -200,14 +141,10 @@ export default function SignUp() {
                                         ),
                                     },
                                 }}
-                                {...testId('form-input-password')}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel
-                                htmlFor="passwordConfirmation"
-                                {...testId('form-label-password-confirmation')}
-                            >
+                            <FormLabel htmlFor="passwordConfirmation">
                                 Passwort Bestätigung
                             </FormLabel>
                             <TextField
@@ -226,10 +163,29 @@ export default function SignUp() {
                             />
                         </FormControl>
                         <FormControlLabel
-                            control={<Checkbox value="allowExtraEmails" color="primary" />}
+                            control={
+                                <Checkbox
+                                    value="allowExtraEmails"
+                                    color="primary"
+                                    checked={checked}
+                                    onChange={(e) => setChecked(e.target.checked)}
+                                />
+                            }
                             label="Ich habe die Bedingungen gelesen nund stimme zu"
                             {...testId('form-label-condition')}
                         />
+                        {checkedErrorMessage && (
+                            <FormHelperText
+                                sx={{
+                                    color: (theme) => theme.palette.error.main,
+                                    marginTop: '-1rem',
+                                    marginLeft: '1rem',
+                                }}
+                            >
+                                {checkedErrorMessage}
+                            </FormHelperText>
+                        )}
+
                         <Button
                             type="submit"
                             fullWidth
@@ -272,7 +228,10 @@ export default function SignUp() {
                             registrieren mit Facebook
                         </Button>
 
-                        <Typography sx={{ textAlign: 'center' }}>
+                        <Typography
+                            sx={{ textAlign: 'center' }}
+                            {...testId('info-switch-to-login')}
+                        >
                             Verfügen Sie über ein Konto?{' '}
                             <Link
                                 href="/material-ui/getting-started/templates/sign-in/"
