@@ -54,7 +54,7 @@
         "globals": "^16.0.0",
         "html-react-parser": "^5.2.4",
         "jsdom": "^26.1.0",
-        "msw": "^2.7.6",
+        "msw": "^2.8.6",
         "typescript": "~5.7.2",
         "typescript-eslint": "^8.26.1",
         "vite": "^6.3.0",

@@ -1,20 +1,42 @@
+import { http, HttpResponse } from 'msw';
 import { db } from './db';
 
 export const handlers = [
-    // rest Generates REST API request handlers (get, post, delete).
-    /* e.g. 
-  http.get('/products', () => {
-		return HttpResponse.json(productsData);
-	}),
-	http.get('/products/:id', ({ params }) => {
-		const id = params.id as string;
-		const product = productsData.find((product) => product.id === parseInt(id));
+    http.get('/api/csrf-cookie', () =>
+        HttpResponse.json(null, {
+            status: 204,
+            headers: {
+                'Set-Cookie': 'XSRF-TOKEN=mocked-csrf-token; Path=/; HttpOnly',
+            },
+        }),
+    ),
 
-		if (!product) return new HttpResponse(null, { status: 404 });
+    http.post(
+        'http://localhost:8000/api/auth/spa/register',
+        async ({ request }: { request: Request }) => {
+            const token = request.headers.get('x-xsrf-token');
 
-		return HttpResponse.json(product);
-	})
-  */
-    ...db.product.toHandlers('rest'),
-    ...db.category.toHandlers('rest'),
+            if (token !== 'mocked-csrf-token') {
+                return HttpResponse.json({ message: 'CSRF token mismatch' }, { status: 419 });
+            }
+
+            const body = await request.json();
+            const existingUser = db.user.findFirst({
+                where: { email: { equals: body.email } },
+            });
+
+            if (existingUser) {
+                return HttpResponse.json({ message: 'User already exists' }, { status: 422 });
+            }
+
+            const newUser = db.user.create({
+                id: crypto.randomUUID(),
+                name: body.name,
+                email: body.email,
+                password: body.password,
+            });
+
+            return HttpResponse.json({ user: newUser }, { status: 201 });
+        },
+    ),
 ];

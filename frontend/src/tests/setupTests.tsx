@@ -8,6 +8,7 @@ beforeAll(() => {
         return {
             Visibility: () => <svg data-testid="VisibilityIcon" />,
             VisibilityOff: () => <svg data-testid="VisibilityOffIcon" />,
+            HowToReg: () => <svg data-testid="HowToRegIcon" />,
         };
     });
 
@@ -32,9 +33,7 @@ beforeAll(() => {
         },
     });
 
-    server.listen({
-        onUnhandledRequest: 'bypass',
-    });
+    beforeAll(() => server.listen());
 });
 
 afterEach(() => {
