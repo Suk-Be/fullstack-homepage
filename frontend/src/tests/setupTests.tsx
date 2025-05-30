@@ -33,13 +33,14 @@ beforeAll(() => {
         },
     });
 
-    beforeAll(() => server.listen());
+    server.listen();
 });
 
 afterEach(() => {
     server.resetHandlers();
     cleanup();
 });
+
 afterAll(() => server.close());
 
 // Mock the ResizeObserver
