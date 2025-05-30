@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { db } from './db';
 
 export const handlers = [
-    http.get('/api/csrf-cookie', () =>
+    http.get('/csrf-cookie', () =>
         HttpResponse.json(null, {
             status: 204,
             headers: {
@@ -11,32 +11,29 @@ export const handlers = [
         }),
     ),
 
-    http.post(
-        'http://localhost:8000/api/auth/spa/register',
-        async ({ request }: { request: Request }) => {
-            const token = request.headers.get('x-xsrf-token');
+    http.post('/auth/spa/register', async ({ request }: { request: Request }) => {
+        const token = request.headers.get('x-xsrf-token');
 
-            if (token !== 'mocked-csrf-token') {
-                return HttpResponse.json({ message: 'CSRF token mismatch' }, { status: 419 });
-            }
+        if (token !== 'mocked-csrf-token') {
+            return HttpResponse.json({ message: 'CSRF token mismatch' }, { status: 419 });
+        }
 
-            const body = await request.json();
-            const existingUser = db.user.findFirst({
-                where: { email: { equals: body.email } },
-            });
+        const body = await request.json();
+        const existingUser = db.user.findFirst({
+            where: { email: { equals: body.email } },
+        });
 
-            if (existingUser) {
-                return HttpResponse.json({ message: 'User already exists' }, { status: 422 });
-            }
+        if (existingUser) {
+            return HttpResponse.json({ message: 'User already exists' }, { status: 422 });
+        }
 
-            const newUser = db.user.create({
-                id: crypto.randomUUID(),
-                name: body.name,
-                email: body.email,
-                password: body.password,
-            });
+        const newUser = db.user.create({
+            id: crypto.randomUUID(),
+            name: body.name,
+            email: body.email,
+            password: body.password,
+        });
 
-            return HttpResponse.json({ user: newUser }, { status: 201 });
-        },
-    ),
+        return HttpResponse.json({ user: newUser }, { status: 201 });
+    }),
 ];
