@@ -1,14 +1,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const isTestEnv = import.meta.env.MODE === 'test';
-
-const baseUrl = isTestEnv
-    ? 'http://localhost' // dummy but valid
-    : import.meta.env.VITE_BACKEND_URL;
-
 const LaravelApiClient = axios.create({
-    baseURL: baseUrl,
+    baseURL: import.meta.env.VITE_BACKEND_URL,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',
@@ -18,15 +12,12 @@ const LaravelApiClient = axios.create({
 
 LaravelApiClient.interceptors.request.use(
     async (config) => {
-        if (!isTestEnv) {
-            const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
-                (config.method ?? '').toLowerCase(),
-            );
-
-            if (needsCsrf) {
-                await LaravelApiClient.get('/csrf-cookie').then();
-                config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
-            }
+        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
+            (config.method ?? '').toLowerCase(),
+        );
+        if (needsCsrf) {
+            await LaravelApiClient.get('/csrf-cookie').then();
+            config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
         }
         return config;
     },

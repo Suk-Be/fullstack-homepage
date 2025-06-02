@@ -5,6 +5,7 @@ const ErrorMessages = {
         password: 'Das Passwort benötigt mindestens 8 Zeichen.',
         password_confirmation: 'Die Bestätigung des Passwortes passt nicht.',
         terms: 'Bitte stimmen Sie den Bedinungen zu.',
+        responseEmail: 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.',
     },
 };
 

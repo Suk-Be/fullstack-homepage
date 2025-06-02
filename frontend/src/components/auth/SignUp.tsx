@@ -41,18 +41,19 @@ export default function SignUp() {
         validateInputs,
     } = useValidateInputs(checked);
 
+    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         if (nameError || emailError || passwordError || checked === false) {
-            event.preventDefault();
             return;
         }
-        event.preventDefault();
-        const dataFD = new FormData(event.currentTarget);
+        const form = event.currentTarget;
+        const dataFD = new FormData(form);
 
-        const logState = true;
-
-        await registerUser({
-            logState,
+        // toggle logs in browser with logState: true/false
+        const result = await registerUser({
+            logState: false,
             name: (dataFD.get('name') as string) ?? '',
             email: (dataFD.get('email') as string) ?? '',
             password: (dataFD.get('password') as string) ?? '',
@@ -60,6 +61,16 @@ export default function SignUp() {
             // todo
             // terms and condition
         });
+
+        if (result && !result.success) {
+            setErrors(result.errors || {});
+            // console.log('User not registered successfully:', result);
+        } else if (result && result.success) {
+            // console.log('User registered successfully:', result);
+            setErrors({});
+            form.reset();
+            setChecked(false);
+        }
     };
 
     return (
@@ -77,6 +88,7 @@ export default function SignUp() {
                         component="form"
                         onSubmit={handleSubmit}
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                        {...testId('form')}
                     >
                         <FormControl>
                             <FormLabel htmlFor="name">User Name</FormLabel>
@@ -102,8 +114,18 @@ export default function SignUp() {
                                 name="email"
                                 autoComplete="email"
                                 variant="outlined"
-                                error={emailError}
-                                helperText={emailErrorMessage}
+                                error={emailError || !!errors.email}
+                                helperText={
+                                    emailErrorMessage ? (
+                                        <span data-testid="email-input-error">
+                                            {emailErrorMessage}
+                                        </span>
+                                    ) : errors.email ? (
+                                        <span data-testid="email-exists-error">
+                                            {errors.email[0]}
+                                        </span>
+                                    ) : null
+                                }
                                 color={passwordError ? 'error' : 'primary'}
                             />
                         </FormControl>
