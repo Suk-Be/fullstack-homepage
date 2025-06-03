@@ -53,7 +53,7 @@ export default function SignUp() {
 
         // toggle logs in browser with logState: true/false
         const result = await registerUser({
-            logState: false,
+            islogRegisteredUser: true,
             name: (dataFD.get('name') as string) ?? '',
             email: (dataFD.get('email') as string) ?? '',
             password: (dataFD.get('password') as string) ?? '',
@@ -62,11 +62,9 @@ export default function SignUp() {
             // terms and condition
         });
 
-        if (result && !result.success) {
-            setErrors(result.errors || {});
-            // console.log('User not registered successfully:', result);
+        if (result.success === false) {
+            setErrors({ email: [result.message] });
         } else if (result && result.success) {
-            // console.log('User registered successfully:', result);
             setErrors({});
             form.reset();
             setChecked(false);
