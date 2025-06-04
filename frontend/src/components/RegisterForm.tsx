@@ -47,7 +47,7 @@ export function RegisterForm() {
                 }),
             });
 
-            if (res.status === 409) {
+            if (res.status === 422) {
                 const data = await res.json();
                 setError(data.message || 'User already exists');
                 return;
