@@ -47,7 +47,7 @@ export default function SignIn() {
         event.preventDefault();
         const dataFD = new FormData(event.currentTarget);
 
-        const logState = true;
+        const logState = false;
 
         await setLogin({
             logState,
