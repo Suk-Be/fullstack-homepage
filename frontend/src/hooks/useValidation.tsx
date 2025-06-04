@@ -65,14 +65,6 @@ export default function useValidateInputs(checked: boolean) {
             setCheckedErrorMessage('');
         }
 
-        // console.log('form inputs', {
-        //     name: name.value,
-        //     email: email.value,
-        //     password: password.value,
-        //     passwordConfirmation: passwordConfirmation.value,
-        //     isValid: isValid,
-        // });
-
         return isValid;
     };
 
