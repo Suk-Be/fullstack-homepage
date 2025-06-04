@@ -1,7 +1,17 @@
 import { registerHeaders } from './requestHeaders';
 
-const logUserAfterRegistration = async (islogRegisteredUser: boolean, csrfToken: string) => {
-    if (islogRegisteredUser) {
+/*
+ * This function logs the user data and is used right after submitting user data on the register api.
+ * It presumes that the xsrf cookie is already set.
+ * If the request is successful, it logs the user data to the console.
+ * If there is an error, it logs the error details to the console.
+ *
+ * @param {boolean} islogRegisteredUser - Indicates if the user is registered and should be logged in.
+ * @param {string} csrfToken - The CSRF token for secure requests.
+ */
+
+const logUserAfterRegistration = async (islog: boolean, csrfToken: string) => {
+    if (islog) {
         try {
             const response = await fetch('http://localhost:8000/api/user', {
                 method: 'GET',

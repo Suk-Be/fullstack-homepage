@@ -25,8 +25,11 @@ import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
 
 export default function SignUp() {
     const [showPassword, toggleShowPassword] = useToggle();
-
     const [checked, setChecked] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
     const {
         emailError,
@@ -45,29 +48,37 @@ export default function SignUp() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (nameError || emailError || passwordError || checked === false) {
+        setErrors({});
+
+        // Run validation here
+        const isValid = validateInputs();
+        // do not submit if validation fails
+        if (!isValid || checked === false) {
             return;
         }
+
         const form = event.currentTarget;
         const dataFD = new FormData(form);
 
-        // toggle logs in browser with logState: true/false
+        // islog : true logs the registered user data right after registration
         const result = await registerUser({
-            islogRegisteredUser: true,
+            islog: false,
             name: (dataFD.get('name') as string) ?? '',
             email: (dataFD.get('email') as string) ?? '',
             password: (dataFD.get('password') as string) ?? '',
             password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
             // todo
-            // terms and condition
+            // confirmation of terms and condition
         });
 
-        if (result.success === false) {
-            setErrors({ email: [result.message] });
-        } else if (result && result.success) {
-            setErrors({});
-            form.reset();
+        if (result.success) {
+            setName('');
+            setEmail('');
+            setPassword('');
+            setPasswordConfirmation('');
             setChecked(false);
+        } else {
+            setErrors({ email: [result.message] });
         }
     };
 
@@ -100,6 +111,8 @@ export default function SignUp() {
                                 error={nameError}
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                             />
                         </FormControl>
                         <FormControl>
@@ -125,6 +138,8 @@ export default function SignUp() {
                                     ) : null
                                 }
                                 color={passwordError ? 'error' : 'primary'}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </FormControl>
                         <FormControl>
@@ -161,6 +176,8 @@ export default function SignUp() {
                                         ),
                                     },
                                 }}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </FormControl>
                         <FormControl>
@@ -179,6 +196,8 @@ export default function SignUp() {
                                 error={passwordConfirmationError}
                                 helperText={passwordConfirmationErrorMessage}
                                 color={passwordConfirmationError ? 'error' : 'primary'}
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
                                 {...testId('form-input-password-confirmation')}
                             />
                         </FormControl>
