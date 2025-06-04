@@ -738,3 +738,85 @@ describe('RegisterForm', () => {
 Keep in mind that backend validation responses for validation can lead to issues with axios.
 
 The same unit test with native fetch and responses but not with axios error resp
+
+## Next issue to fix for testing
+
+The unit test did not clear the form after successful submission of the form data.
+Supposedly jsdom did not realize what to do
+
+```tsx did not work in unit test using vitest and rtl
+const form = event.currentTarget;
+form.reset();
+```
+
+Refactor for js controlled form values.
+
+```tsx refactor state based value
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const [passwordConfirmation, setPasswordConfirmation] = useState('');
+
+<TextField
+    //... same code
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+/>
+//...
+<TextField
+    //... same code
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+/>
+<TextField
+    //... same code
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+/>
+//...
+<TextField
+    //... same code
+    value={passwordConfirmation}
+    onChange={(e) => setPasswordConfirmation(e.target.value)}
+/>
+```
+
+Refactor blocked validation flow
+
+```tsx
+const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrors({});
+
+    // Run validation here
+    const isValid = validateInputs();
+    // do not submit if validation fails
+    if (!isValid || checked === false) {
+        return;
+    }
+
+    const form = event.currentTarget;
+    const dataFD = new FormData(form);
+
+    // islog : true logs the registered user data right after registration
+    const result = await registerUser({
+        islog: false,
+        name: (dataFD.get('name') as string) ?? '',
+        email: (dataFD.get('email') as string) ?? '',
+        password: (dataFD.get('password') as string) ?? '',
+        password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
+        // todo
+        // confirmation of terms and condition
+    });
+
+    if (result.success) {
+        setName('');
+        setEmail('');
+        setPassword('');
+        setPasswordConfirmation('');
+        setChecked(false);
+    } else {
+        setErrors({ email: [result.message] });
+    }
+};
+```

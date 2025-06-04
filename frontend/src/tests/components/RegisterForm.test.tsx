@@ -41,6 +41,8 @@ describe('RegisterForm', () => {
 
         await user.click(registerButton);
 
+        // screen.debug();
+
         const error = await screen.findByText(/Die E-Mail Adresse ist bereits vergeben/i);
         expect(error).toBeInTheDocument();
     }, 10_000);
