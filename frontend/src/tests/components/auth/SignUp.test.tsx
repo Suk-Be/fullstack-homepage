@@ -210,7 +210,7 @@ describe('SignUp', () => {
         expect(errorEmailInput).not.toBeInTheDocument();
         expect(errorPasswordInput).not.toBeInTheDocument();
         expect(errorPasswordConfirmationInput).not.toBeInTheDocument();
-    }, 20000);
+    });
 
     it('should render a hint if the user already exists', async () => {
         const {
@@ -262,7 +262,7 @@ describe('SignUp', () => {
         await waitFor(() => {
             expect(screen.queryByTestId('email-exists-error')).not.toBeInTheDocument();
         });
-    }, 20000);
+    });
 
     it('should register a new user successfully and clear the form', async () => {
         const {

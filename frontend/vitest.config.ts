@@ -17,6 +17,7 @@ export default defineConfig({
                 singleThread: true, // Forces single-threaded test runner (no parallelism)
             },
         },
+        testTimeout: 10000, // Set all tests to timeout after 10 seconds
     },
     optimizeDeps: {
         include: ['@mui/system', 'react', 'react-dom'],
