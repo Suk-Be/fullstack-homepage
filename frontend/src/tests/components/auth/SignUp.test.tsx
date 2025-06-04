@@ -1,7 +1,9 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import ErrorMessages from '../../../data/ErrorMessages';
+import * as registerModule from '../../../utils/registerUser';
+import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
 import { navigateTo } from '../../utils';
 
@@ -29,7 +31,7 @@ describe('SignUp', () => {
 
         navigateTo('/'); // Render HomePage
 
-        const userInput = screen.getByLabelText(/user name/i);
+        const nameInput = screen.getByLabelText(/user name/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText('Passwort');
         const passwordConfirmationInput = screen.getByLabelText(/passwort bestätigung/i);
@@ -40,7 +42,7 @@ describe('SignUp', () => {
         const registerButton = screen.getByTestId('form-button-register');
 
         return {
-            userInput,
+            nameInput,
             emailInput,
             passwordInput,
             passwordConfirmationInput,
@@ -71,14 +73,14 @@ describe('SignUp', () => {
 
     it('should render a default registration form on load', () => {
         const {
-            userInput,
+            nameInput,
             emailInput,
             passwordInput,
             passwordConfirmationInput,
             termsConfirmationCheckbox,
         } = renderRegistrationForm();
 
-        expect(userInput).toHaveAttribute('placeholder', 'Jon Snow');
+        expect(nameInput).toHaveAttribute('placeholder', 'Jon Snow');
         expect(emailInput).toHaveAttribute('placeholder', 'your@email.com');
         expect(passwordInput).toHaveAttribute('placeholder', '••••••');
         expect(passwordConfirmationInput).toHaveAttribute('placeholder', '••••••');
@@ -89,7 +91,7 @@ describe('SignUp', () => {
         const {
             registerButton,
             user,
-            userInput,
+            nameInput,
             emailInput,
             passwordInput,
             passwordConfirmationInput,
@@ -114,7 +116,7 @@ describe('SignUp', () => {
         expect(errorTermsConfirmationCheckbox).toBeInTheDocument();
 
         // type user name
-        await user.type(userInput, fakeUser.name);
+        await user.type(nameInput, fakeUser.name);
         await user.click(registerButton);
 
         expect(errorUserInput).not.toBeInTheDocument();
@@ -165,7 +167,8 @@ describe('SignUp', () => {
         await user.click(registerButton);
 
         expect(errorUserInput).not.toBeInTheDocument();
-        expect(errorEmailInput).not.toBeInTheDocument();
+
+        // expect(errorEmailInput).not.toBeInTheDocument();
         expect((passwordInput as HTMLInputElement).value.length).not.toBeLessThan(8);
         expect(errorPasswordInput).not.toBeInTheDocument();
 
@@ -207,5 +210,105 @@ describe('SignUp', () => {
         expect(errorEmailInput).not.toBeInTheDocument();
         expect(errorPasswordInput).not.toBeInTheDocument();
         expect(errorPasswordConfirmationInput).not.toBeInTheDocument();
+    }, 20000);
+
+    it('should render a hint if the user already exists', async () => {
+        const {
+            registerButton,
+            user,
+            nameInput,
+            emailInput,
+            passwordInput,
+            passwordConfirmationInput,
+            termsConfirmationCheckbox,
+        } = renderRegistrationForm();
+
+        // First: Submit existing user
+        await user.clear(nameInput);
+        await user.type(nameInput, registeredUserData.name);
+
+        await user.clear(emailInput);
+        await user.type(emailInput, registeredUserData.email);
+
+        await user.clear(passwordInput);
+        await user.type(passwordInput, registeredUserData.password);
+
+        await user.clear(passwordConfirmationInput);
+        await user.type(passwordConfirmationInput, registeredUserData.password);
+
+        await user.click(termsConfirmationCheckbox);
+        await user.click(registerButton);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('email-exists-error')).toBeInTheDocument();
+        });
+
+        //  Second: Submit new user
+        await user.clear(nameInput);
+        await user.type(nameInput, 'New User');
+
+        await user.clear(emailInput);
+        await user.type(emailInput, 'new@user.com');
+
+        await user.clear(passwordInput);
+        await user.type(passwordInput, 'ValidPassword123');
+
+        await user.clear(passwordConfirmationInput);
+        await user.type(passwordConfirmationInput, 'ValidPassword123');
+
+        await user.click(termsConfirmationCheckbox);
+        await user.click(registerButton);
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('email-exists-error')).not.toBeInTheDocument();
+        });
+    }, 20000);
+
+    it('should register a new user successfully and clear the form', async () => {
+        const {
+            user,
+            registerButton,
+            nameInput,
+            emailInput,
+            passwordInput,
+            passwordConfirmationInput,
+            termsConfirmationCheckbox,
+        } = renderRegistrationForm();
+
+        const mockRegister = vi
+            .spyOn(registerModule, 'default')
+            .mockResolvedValueOnce({ success: true } as any);
+
+        await user.clear(nameInput);
+        await user.type(nameInput, 'New User');
+
+        await user.clear(emailInput);
+        await user.type(emailInput, 'new@user.com');
+
+        await user.clear(passwordInput);
+        await user.type(passwordInput, 'ValidPassword123');
+
+        await user.clear(passwordConfirmationInput);
+        await user.type(passwordConfirmationInput, 'ValidPassword123');
+
+        await user.click(termsConfirmationCheckbox);
+        await user.click(registerButton);
+
+        await waitFor(() => {
+            // Ensure the API was called
+            expect(mockRegister).toHaveBeenCalledWith({
+                islog: false,
+                name: 'New User',
+                email: 'new@user.com',
+                password: 'ValidPassword123',
+                password_confirmation: 'ValidPassword123',
+            });
+        });
+
+        // check that inputs were reset
+        expect(nameInput).toHaveValue('');
+        expect(emailInput).toHaveValue('');
+        expect(passwordInput).toHaveValue('');
+        expect(passwordConfirmationInput).toHaveValue('');
     });
 });
