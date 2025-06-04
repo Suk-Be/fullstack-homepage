@@ -1,39 +1,63 @@
 import { http, HttpResponse } from 'msw';
-import { db } from './db';
+import { registeredUserData } from './data';
 
 export const handlers = [
-    http.get('/csrf-cookie', () =>
-        HttpResponse.json(null, {
-            status: 204,
-            headers: {
-                'Set-Cookie': 'XSRF-TOKEN=mocked-csrf-token; Path=/; HttpOnly',
+    // 1. CSRF cookie request
+    http.get('http://localhost:8000/api/csrf-cookie', () => {
+        // Simulate the cookie directly (js-cookie reads from document.cookie)
+        document.cookie = 'XSRF-TOKEN=mocked-csrf-token; Path=/';
+
+        return HttpResponse.json(
+            { message: 'CSRF cookie set' },
+            {
+                status: 204,
             },
-        }),
-    ),
+        );
+    }),
 
-    http.post('/auth/spa/register', async ({ request }: { request: Request }) => {
-        const token = request.headers.get('x-xsrf-token');
+    // 2. Registration request
+    http.post('http://localhost:8000/api/auth/spa/register', async ({ request }) => {
+        const body = (await request.json()) as {
+            email: string;
+            name: string;
+            password: string;
+            password_confirmation: string;
+        };
 
-        if (token !== 'mocked-csrf-token') {
-            return HttpResponse.json({ message: 'CSRF token mismatch' }, { status: 419 });
+        // Mock response of already registered user email
+        if (body.email === registeredUserData.email) {
+            return HttpResponse.json(
+                { message: 'Die E-Mail Adresse ist bereits vergeben.' },
+                { status: 422 },
+            );
+        }
+        // Mock 419 CSRF Token Expired
+        if (body.email === 'csrfexpired@example.com') {
+            return HttpResponse.json({ message: 'CSRF-Token abgelaufen' }, { status: 419 });
         }
 
-        const body = await request.json();
-        const existingUser = db.user.findFirst({
-            where: { email: { equals: body.email } },
-        });
+        // Simulate successful registration response
+        const { name, email } = body as { name: string; email: string };
+        return HttpResponse.json({ id: 1, name, email }, { status: 201 });
+    }),
 
-        if (existingUser) {
-            return HttpResponse.json({ message: 'User already exists' }, { status: 422 });
+    // Mock GET /api/user after successful registration
+    http.get('http://localhost:8000/api/user', ({ request }) => {
+        const csrfHeader = request.headers.get('X-XSRF-TOKEN');
+
+        // Simulate CSRF token check (optional)
+        if (csrfHeader !== 'mocked-csrf-token') {
+            return HttpResponse.json({ message: 'Invalid CSRF token' }, { status: 419 });
         }
 
-        const newUser = db.user.create({
-            id: crypto.randomUUID(),
-            name: body.name,
-            email: body.email,
-            password: body.password,
-        });
-
-        return HttpResponse.json({ user: newUser }, { status: 201 });
+        // Return mock user data
+        return HttpResponse.json(
+            {
+                id: registeredUserData.id,
+                name: registeredUserData.name,
+                email: registeredUserData.email,
+            },
+            { status: 200 },
+        );
     }),
 ];
