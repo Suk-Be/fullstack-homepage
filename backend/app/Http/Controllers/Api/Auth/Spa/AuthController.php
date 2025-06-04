@@ -9,16 +9,22 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): Response
+    public function register(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed', // <-- erwartet password_confirmation
-        ]);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed', // <-- erwartet password_confirmation
+            ],
+            [
+                'email.unique' => 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.',
+            ]
+        );
 
         $user = User::create([
             'name' => $request->name,
@@ -29,7 +35,7 @@ class AuthController extends Controller
         // Logs in in the user after registration
         Auth::login($user);
 
-        return response('User registered successfully and logged in after that');
+        return response()->json(['user' => $user]);
     }
     public function login(Request $request): Response
     { {
