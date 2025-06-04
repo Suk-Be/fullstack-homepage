@@ -411,3 +411,330 @@ const HeadlineHP = ({
     );
 };
 ```
+
+## axios and msw
+
+@registering new users with react, laravel 12, sanctum spa.
+
+axios and msw handle response errors differently. This led to an issue when testing state updates dependant on api response.
+
+In the implementation the email validation the email gets validated on the right form before submitting the form and if the email exists after the backend answered with the aai response.
+
+axios api handles response status in range 400 < 500 as errors which you can catch in an try catch block.
+
+This convenience led to breaking the test with msw handlers passing an error: invalid url. This error description makes no sense! Soo it was hard to debug.
+
+The native response.status 422 marking that the user exists in db with an error message. It is wrapped in a error object as new HttpResponse object.
+
+Then again the native the native response object provides the different status as numbers in one response object. Not in new HttpResponse objects that led to the strange message.
+
+Following Frontend Code works fine but automated testing will fail with msw api mocks.
+
+```tsx
+// axios.ts
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const LaravelApiClient = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
+    },
+    withCredentials: true,
+});
+
+LaravelApiClient.interceptors.request.use(
+    async (config) => {
+        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
+            (config.method ?? '').toLowerCase(),
+        );
+        if (needsCsrf) {
+            await LaravelApiClient.get('/csrf-cookie').then();
+            config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
+
+LaravelApiClient.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401) {
+                console.warn('Nicht autorisiert – ggf. ausgeloggt');
+            }
+
+            if (status === 419) {
+                console.warn('CSRF-Token abgelaufen');
+            }
+
+            if (status === 422) {
+                console.warn('Validierungsfehler:', error.response.data.errors);
+            }
+        }
+
+        return Promise.reject(error);
+    },
+);
+
+export default LaravelApiClient;
+
+// components/RegisterForm.tsx
+import React, { useState } from 'react';
+import LaravelApiClient from '../plugins/axios';
+
+export function RegisterForm() {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setSuccess(false);
+
+        try {
+            // CSRF cookie request
+            await LaravelApiClient.get('/csrf-cookie');
+
+            // Registration request
+            await LaravelApiClient.post('/auth/spa/register', {
+                name: form.name,
+                email: form.email,
+                password: form.password,
+                password_confirmation: form.password_confirmation,
+            });
+
+            setSuccess(true);
+        } catch (err: any) {
+            if (err.response?.status === 409) {
+                setError(err.response.data.message || 'User already exists');
+                return;
+            }
+
+            if (err.response?.status === 419) {
+                setError('CSRF token mismatch');
+                return;
+            }
+
+            setError(err.message || 'Something went wrong');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} data-testid="form">
+            <div>
+                <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+            </div>
+            <div>
+                <input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                />
+            </div>
+            <div>
+                <input
+                    name="password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Password"
+                />
+            </div>
+            <div>
+                <input
+                    name="password_confirmation"
+                    type="password"
+                    value={form.password_confirmation}
+                    onChange={handleChange}
+                    placeholder="Confirm Password"
+                />
+            </div>
+
+            <button type="submit">Register</button>
+
+            {error && <p role="alert">{error}</p>}
+            {success && <p>User successfully registered!</p>}
+        </form>
+    );
+}
+```
+
+With the native fetch implementation and the test runs green.
+
+Following Frontend Code works fine for component and automated testing.
+
+```tsx refactor the axios code to native fetch
+// components/RegisterForm.tsx
+import React, { useState } from 'react';
+
+export function RegisterForm() {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [form, setForm] = useState({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setSuccess(false);
+
+        try {
+            // Step 1: Get CSRF cookie
+            await fetch('http://localhost:8000/api/csrf-cookie', {
+                credentials: 'include',
+            });
+
+            // Step 2: Send register request
+            const res = await fetch('http://localhost:8000/api/auth/spa/register', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': 'mocked-csrf-token', // Must match mock
+                },
+                body: JSON.stringify({
+                    name: form.name,
+                    email: form.email,
+                    password: form.password,
+                    password_confirmation: form.password_confirmation,
+                }),
+            });
+
+            if (res.status === 409) {
+                const data = await res.json();
+                setError(data.message || 'User already exists');
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error('Registration failed');
+            }
+
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} data-testid="form">
+            <div>
+                <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+            </div>
+            <div>
+                <input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                />
+            </div>
+            <div>
+                <input
+                    name="password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Password"
+                />
+            </div>
+            <div>
+                <input
+                    name="password_confirmation"
+                    type="password"
+                    value={form.password_confirmation}
+                    onChange={handleChange}
+                    placeholder="Confirm Password"
+                />
+            </div>
+
+            <button type="submit">Register</button>
+
+            {error && <p role="alert">{error}</p>}
+            {success && <p>User successfully registered!</p>}
+        </form>
+    );
+}
+
+// RegisterForm.test.tsx
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
+import { RegisterForm } from '../../components/RegisterForm';
+import { db } from '../mocks/db';
+
+const registeredUserData = {
+    id: '1',
+    name: 'John Doe',
+    email: 'existing@example.com',
+    password: 'password123',
+};
+
+const seedRegisteredUser = db.user.create(registeredUserData);
+
+describe('RegisterForm', () => {
+    it('should render a hint if the user already exists', async () => {
+        // 🔁 Seed user
+        seedRegisteredUser;
+        const user = userEvent.setup();
+        render(<RegisterForm />);
+        const nameInput = screen.getByPlaceholderText(/name/i);
+        const emailInput = screen.getByPlaceholderText(/email/i);
+        const passwordInput = screen.getByPlaceholderText('Password');
+        const passwordConfirmationInput = screen.getByPlaceholderText('Confirm Password');
+        const registerButton = screen.getByRole('button', { name: /register/i });
+
+        await user.clear(nameInput);
+        await user.type(nameInput, registeredUserData.name);
+
+        await user.clear(emailInput);
+        // await user.type(emailInput, registeredUserData.email);
+        await user.type(emailInput, registeredUserData.email); // Use a different email to avoid conflict
+
+        await user.clear(passwordInput);
+        await user.type(passwordInput, registeredUserData.password);
+
+        await user.clear(passwordConfirmationInput);
+        await user.type(passwordConfirmationInput, registeredUserData.password);
+
+        await user.click(registerButton);
+
+        const error = await screen.findByText(/Die E-Mail Adresse ist bereits vergeben/i);
+        expect(error).toBeInTheDocument();
+    }, 10_000);
+});
+```
+
+Keep in mind that backend validation responses for validation can lead to issues with axios.
+
+The same unit test with native fetch and responses but not with axios error resp
