@@ -23,6 +23,7 @@ import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
+import RegisterButtonSocialite from './RegisterButtonSocialite';
 
 export default function SignUp() {
     const [showPassword, toggleShowPassword] = useToggle();
@@ -83,7 +84,7 @@ export default function SignUp() {
         }
     };
 
-    const handleGithubSignIn = () => {
+    const handleGithubSignUp = () => {
         window.location.href = `${apiBaseUrl}/auth/github`;
     };
 
@@ -244,15 +245,12 @@ export default function SignUp() {
                         <Typography sx={{ color: 'text.secondary' }}>or</Typography>
                     </Divider>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={handleGithubSignIn}
+                        <RegisterButtonSocialite
                             startIcon={<GithubIcon />}
-                            {...testId('form-button-register-with-github')}
-                        >
-                            registrieren mit Github
-                        </Button>
+                            text="registrieren mit Github"
+                            testIdIdentifier="form-button-register-with-github"
+                            clickHandler={handleGithubSignUp}
+                        />
                         <Button
                             fullWidth
                             variant="outlined"
