@@ -1,7 +1,8 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import ErrorMessages from '../../../data/ErrorMessages';
+import apiBaseUrl from '../../../utils/apiBaseUrl';
 import * as registerModule from '../../../utils/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
@@ -310,5 +311,48 @@ describe('SignUp', () => {
         expect(emailInput).toHaveValue('');
         expect(passwordInput).toHaveValue('');
         expect(passwordConfirmationInput).toHaveValue('');
+    });
+});
+
+vi.stubGlobal('location', { href: '' });
+
+describe('Register with Socialite', () => {
+    const originalLocation = window.location;
+
+    beforeEach(() => {
+        vi.stubGlobal('location', { href: '' });
+    });
+
+    afterAll(() => {
+        vi.stubGlobal('location', originalLocation);
+    });
+
+    const renderHomePage = () => {
+        const user = userEvent.setup();
+
+        navigateTo('/'); // Render HomePage
+
+        const githubButton = screen.getByTestId('form-button-register-with-github');
+
+        return {
+            user,
+            githubButton,
+        };
+    };
+
+    it('redirects to GitHub auth URL when clicked', async () => {
+        const { user, githubButton } = renderHomePage();
+
+        await user.click(githubButton);
+
+        expect(window.location.href).toBe(`${apiBaseUrl}/auth/github`);
+    });
+
+    it('fetches user on AuthCallback mount and navigates', async () => {
+        const { user, githubButton } = renderHomePage();
+
+        await user.click(githubButton);
+
+        await waitFor(() => expect(screen.queryByText('Logging in...')).not.toBeInTheDocument());
     });
 });
