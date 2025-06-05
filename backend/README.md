@@ -462,7 +462,7 @@ import Cookies from 'js-cookie';
 
 const LaravelAxiosClient = axios.create({
  // baseURL: http://localhost:8000/api
- baseURL: import.meta.env.VITE_BACKEND_URL,
+ baseURL: import.meta.env.VITE_API_BASE_URL,
  headers: {
   'X-Requested-With': 'XMLHttpRequest',
   Accept: 'application/json',
@@ -637,7 +637,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const LaravelApiClient = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         "X-Requested-With": "XMLHttpRequest",
         Accept: "application/json",
@@ -804,6 +804,168 @@ The configuration of this project provides that are needed to connec with the so
 -   client-id
 -   client-key
 -   redirect-url
+
+### create oauth app in github
+
+github provides a oauth service that can be configured or newly created on github page whe logged in.
+<https://github.com/settings/developers>
+
+To create a new one click the 'New OAuth app' Button and follow the instructions.
+
+-   Application name
+-   Homepage URL
+-   Authorization callback URL
+
+For Single Page Apps with web api oauth you should not 'Enable Device Flow'. This would be of use if you have users that you can manage to be authorized with a CLI Tool or GitCredentialManager. Which we do not use or need.
+
+-   application name makes OAuth app distinctable on OAuth app. I used 'laravel, sanctum spa, socialite and mui'
+-   Homepage URL. <https://www.sokdesign.de/>
+-   Authorization callback URL <http://localhost:8000/api/auth/github/callback>
+
+When passing the three values a new project gets created.
+A Client ID, a client secret will be provided. You should note them immediately because the secret will not be accessible an the second visit of the passage.
+
+### backend
+
+install socialite plugin for github oauth process
+
+```bash
+composer require laravel/socialite
+```
+
+create config for github Client Id and Client Secret. Be aware that the given GITHUB_REDIRECT_URI contains
+
+-   the oauth request: <http://localhost:8000/api/auth/github>
+-   and the oauth callback: <http://localhost:8000/api/auth/github/callback>
+
+```sh .env
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_REDIRECT_URI=http://localhost:8000/api/auth/github/callback
+```
+
+```php service.php
+'github' => [
+    'client_id' => env('GITHUB_CLIENT_ID'),
+    'client_secret' => env('GITHUB_CLIENT_SECRET'),
+    'redirect' => env('GITHUB_REDIRECT_URI'),
+],
+```
+
+create routes to redirect to github and github callback for processed login
+
+```php
+# routes api.php
+# oauth request: localhost:8000/api/auth/github
+Route::get('/auth/github', [SocialiteController::class, 'redirectToGithub']);
+# oauth callback: localhost:8000/api/auth/github/callback
+Route::get('/auth/github/callback', [SocialiteController::class, 'handleGithubCallback']);
+```
+
+create controller with methods to redirect to github login and handle callback to login or create a user
+
+```php
+<?php
+
+namespace App\Http\Controllers\Api\Auth\Spa;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Http\RedirectResponse;
+
+
+class SocialiteController extends Controller
+{
+    public function redirectToGithub(): RedirectResponse
+    {
+        return Socialite::driver('github')->stateless()->redirect();
+    }
+
+    public function handleGithubCallback()
+    {
+        $githubUser = Socialite::driver('github')->stateless()->user();
+
+        $user = User::firstOrCreate(
+            ['email' => $githubUser->getEmail()],
+            [
+                'name' => $githubUser->getName() ?? $githubUser->getNickname(),
+                'password' => bcrypt(uniqid()), // placeholder
+            ]
+        );
+
+        Auth::login($user); // session-based login
+        return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/auth/callback?logged_in=true');
+    }
+}
+```
+
+### frontend
+
+create button for github oauth request: <http://localhost:8000/api/auth/github>
+
+```tsx SignUp.tsx
+const handleGithubSignIn = () => {
+    window.location.href = `${apiBaseUrl}/auth/github`;
+};
+
+<Button
+    fullWidth
+    variant="outlined"
+    onClick={handleGithubSignIn}
+    startIcon={<GithubIcon />}
+    {...testId("form-button-register-with-github")}
+>
+    registrieren mit Github
+</Button>;
+```
+
+create a route for github callback: <http://localhost:8000/api/auth/github/callback>
+When this route is called <AuthCallback /> component is rendered.
+
+```tsx routes.tsx
+const routes: RouteObject[] = [
+    {
+        path: "/",
+        element: <App />,
+        //
+    },
+    {
+        path: "/auth/callback",
+        element: <AuthCallback />,
+    },
+];
+```
+
+create a component that is used on that route (useEffect to check if user is regstered with github credentials, it logs the user or the error)
+
+```tsx
+// AuthCallback.tsx
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import LaravelApiClient from "../../plugins/axios";
+
+const AuthCallback = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        LaravelApiClient.get("/me")
+            .then((res) => {
+                console.log("Logged in user:", res.data);
+                navigate("/");
+            })
+            .catch((err) => {
+                console.log("Not logged in:", err);
+                navigate("/");
+            });
+    }, []);
+
+    return <p>Logging in...</p>;
+};
+
+export default AuthCallback;
+```
 
 ## install sociallite and connect to google cloud oauth service
 
