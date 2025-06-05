@@ -17,6 +17,7 @@ import {
 import { FormEvent, useState } from 'react';
 import useToggle from '../../hooks/useToggle';
 import useValidateInputs from '../../hooks/useValidation';
+import apiBaseUrl from '../../utils/apiBaseUrl';
 import registerUser from '../../utils/registerUser';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
@@ -80,6 +81,10 @@ export default function SignUp() {
         } else {
             setErrors({ email: [result.message] });
         }
+    };
+
+    const handleGithubSignIn = () => {
+        window.location.href = `${apiBaseUrl}/auth/github`;
     };
 
     return (
@@ -242,7 +247,7 @@ export default function SignUp() {
                         <Button
                             fullWidth
                             variant="outlined"
-                            onClick={() => alert('Sign up with Github')}
+                            onClick={handleGithubSignIn}
                             startIcon={<GithubIcon />}
                             {...testId('form-button-register-with-github')}
                         >
