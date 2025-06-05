@@ -5,6 +5,7 @@ axios produces a new HttpResponse object for the native response object with sta
 Which led to a invalid url error in vitest.
 */
 import React, { useState } from 'react';
+import apiBaseUrl from '../utils/apiBaseUrl';
 
 export function RegisterForm() {
     const [error, setError] = useState('');
@@ -27,12 +28,12 @@ export function RegisterForm() {
 
         try {
             // Step 1: Get CSRF cookie
-            await fetch('http://localhost:8000/api/csrf-cookie', {
+            await fetch(`${apiBaseUrl}/csrf-cookie`, {
                 credentials: 'include',
             });
 
             // Step 2: Send register request
-            const res = await fetch('http://localhost:8000/api/auth/spa/register', {
+            const res = await fetch(`${apiBaseUrl}/auth/spa/register`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

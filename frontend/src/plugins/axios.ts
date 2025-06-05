@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const LaravelApiClient = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',

@@ -1,3 +1,4 @@
+import apiBaseUrl from '../apiBaseUrl';
 import { registerHeaders } from './requestHeaders';
 
 /*
@@ -13,7 +14,7 @@ import { registerHeaders } from './requestHeaders';
 const logUserAfterRegistration = async (islog: boolean, csrfToken: string) => {
     if (islog) {
         try {
-            const response = await fetch('http://localhost:8000/api/user', {
+            const response = await fetch(`${apiBaseUrl}/me`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: registerHeaders(csrfToken),

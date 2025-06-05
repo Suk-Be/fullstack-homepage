@@ -1,55 +1,9 @@
-// import LaravelApiClient from '../plugins/axios';
-
-// // const isTestEnv = import.meta.env.MODE === 'test';
-
-// const registerUser = async ({
-//     logState,
-//     name,
-//     email,
-//     password,
-//     password_confirmation,
-// }: {
-//     logState: boolean;
-//     name: string;
-//     email: string;
-//     password: string;
-//     password_confirmation: string;
-// }) => {
-//     try {
-//         await LaravelApiClient.post('/auth/spa/register', {
-//             name,
-//             email,
-//             password,
-//             password_confirmation,
-//         }).then((res) => {
-//             console.log('registered User hook, todo make user global available', res.data);
-//         });
-
-//         if (logState) {
-//             // after await post, now get user data
-//             const { data } = await LaravelApiClient.get('/user');
-//             console.log('get User data, successful login', data);
-//         }
-//         return { success: true };
-//     } catch (error: any) {
-//         if (error.response && error.response.data && error.response.data.errors) {
-//             return {
-//                 success: false,
-//                 errors: error.response.data.errors, // Laravel style
-//             };
-//         }
-
-//         console.error('Status:', error.response?.status);
-//         console.error('Data:', error.response?.data);
-
-//         return { success: false, message: error };
-//     }
-// };
-
 // export default registerUser;
 import Cookies from 'js-cookie';
+import apiBaseUrl from '../apiBaseUrl';
 import logUserAfterRegistration from './logUserAfterRegistration';
 import headers, { registerHeaders } from './requestHeaders';
+
 const registerUser = async ({
     islog,
     name,
@@ -67,7 +21,7 @@ const registerUser = async ({
 
     try {
         // Step 1: Get CSRF cookie
-        await fetch('http://localhost:8000/api/csrf-cookie', {
+        await fetch(`${apiBaseUrl}/csrf-cookie`, {
             headers: headers,
             credentials: 'include',
         }).then(() => {
@@ -79,7 +33,7 @@ const registerUser = async ({
 
         // Step 2: Send register request
         if (csrfToken) {
-            const response = await fetch('http://localhost:8000/api/auth/spa/register', {
+            const response = await fetch(`${apiBaseUrl}/auth/spa/register`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: registerHeaders(csrfToken),

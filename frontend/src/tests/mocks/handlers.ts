@@ -1,9 +1,10 @@
 import { http, HttpResponse } from 'msw';
+import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
 
 export const handlers = [
     // 1. CSRF cookie request
-    http.get('http://localhost:8000/api/csrf-cookie', () => {
+    http.get(`${apiBaseUrl}/csrf-cookie`, () => {
         // Simulate the cookie directly (js-cookie reads from document.cookie)
         document.cookie = 'XSRF-TOKEN=mocked-csrf-token; Path=/';
 
@@ -16,7 +17,7 @@ export const handlers = [
     }),
 
     // 2. Registration request
-    http.post('http://localhost:8000/api/auth/spa/register', async ({ request }) => {
+    http.post(`${apiBaseUrl}/auth/spa/register`, async ({ request }) => {
         const body = (await request.json()) as {
             email: string;
             name: string;
@@ -42,7 +43,7 @@ export const handlers = [
     }),
 
     // Mock GET /api/user after successful registration
-    http.get('http://localhost:8000/api/user', ({ request }) => {
+    http.get(`${apiBaseUrl}/me`, ({ request }) => {
         const csrfHeader = request.headers.get('X-XSRF-TOKEN');
 
         // Simulate CSRF token check (optional)
