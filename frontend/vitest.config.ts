@@ -5,7 +5,7 @@ export default defineConfig({
         environment: 'jsdom',
         environmentOptions: {
             jsdom: {
-                url: 'http://localhost:8000', // ✅ This is required!
+                url: process.env.VITE_BASE_URL, // ✅ This is required!
             },
         },
         globals: true,
