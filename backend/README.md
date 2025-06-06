@@ -805,6 +805,29 @@ The configuration of this project provides that are needed to connec with the so
 -   client-key
 -   redirect-url
 
+## Github registration with laravel socialite, spa and react
+
+To register with github oauth a user have to visit a url that you can declare while making an oauth app in github.
+The user will be redirected to an web interface to login with github. If log in is successful the declared url (callback url) is called by github.
+The backend receives via this callback url the user data and saves it as user data.
+Also the frontend listens to the callback url to see if the user is registered.
+
+-   create oauth app in github
+    -   create a new project
+        -   create a authorization callback url <http://localhost:8000/api/auth/github/callback>
+        -   create credentials for safe backend communication: Client Id and Client Secret
+-   backend
+
+    -   install socialite plugin for github oauth process
+    -   create config for github Client Id and Client Secret
+    -   create routes to redirect to github and github callback for processed login
+    -   create controller with methods to redirect to github login and handle github callback to login or create a user and to redirect to an url accessible by frontend
+
+-   frontend
+    -   create button for github oauth request: <http://localhost:8000/api/auth/github>
+    -   create a route for github callback: <http://localhost:8000/api/auth/github/callback>
+    -   create a component that is used on that route. In a try / catch block: It checks if the user is logged in and redirects, otherwise it logs the error and redirects.
+
 ### create oauth app in github
 
 github provides a oauth service that can be configured or newly created on github page whe logged in.
@@ -862,7 +885,13 @@ Route::get('/auth/github', [SocialiteController::class, 'redirectToGithub']);
 Route::get('/auth/github/callback', [SocialiteController::class, 'handleGithubCallback']);
 ```
 
-create controller with methods to redirect to github login and handle callback to login or create a user
+create controller with methods
+
+-   to redirect to github login
+-   and handle github callback
+    -   to login
+    -   or create a user
+    -   and to redirect to an url accessible by frontend ('<http://localhost:5173/auth/callback?logged_in=true>')
 
 ```php
 <?php
@@ -921,8 +950,9 @@ const handleGithubSignIn = () => {
 </Button>;
 ```
 
-create a route for github callback: <http://localhost:8000/api/auth/github/callback>
-When this route is called <AuthCallback /> component is rendered.
+create the route created by backend ('<http://localhost:5173/auth/callback>')
+
+It is not the auth/github/callback route.
 
 ```tsx routes.tsx
 const routes: RouteObject[] = [
@@ -938,7 +968,8 @@ const routes: RouteObject[] = [
 ];
 ```
 
-create a component that is used on that route (useEffect to check if user is regstered with github credentials, it logs the user or the error)
+create a component that is used on that route.
+In a try / catch block: It checks if the user is logged in and redirects, otherwise it logs the error and redirects.
 
 ```tsx
 // AuthCallback.tsx
