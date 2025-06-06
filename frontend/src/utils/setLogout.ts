@@ -11,6 +11,8 @@ const setLogout = async (logState: boolean) => {
             .catch((error) => {
                 if (error.response.status === 401) {
                     console.log('User is not logged in');
+                } else {
+                    console.error('Unexpected error checking login status:', error);
                 }
             });
 };
