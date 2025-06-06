@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
@@ -27,9 +26,9 @@ class AuthController extends Controller
         );
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password'])
         ]);
 
         // Logs in in the user after registration
@@ -37,30 +36,38 @@ class AuthController extends Controller
 
         return response()->json(['user' => $user]);
     }
-    public function login(Request $request): Response
-    { {
-            $credentials = $request->validate([
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-            ]);
+    public function login(Request $request): JsonResponse
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate(); // REGENERATE SESSION ID
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate(); // REGENERATE SESSION ID
 
-                return response('User logged successfully', 200);
-            }
-
-            throw ValidationException::withMessages([
-                'email' => __('The provided credentials do not match our records.'),
+            return response()->json([
+                'message' => 'User logged in successfully',
+                'user' => Auth::user(),
             ]);
         }
+
+        throw ValidationException::withMessages([
+            'email' => __('The provided credentials do not match our records.'),
+        ]);
+
     }
 
-    public function logout(Request $request): Response
+    public function logout(Request $request): JsonResponse
     {
         Auth::logout(); // For session-based authentication
 
-        return response('Successfully logged out!');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'Successfully logged out!'
+        ]);
     }
 
     public function me(Request $request)
