@@ -18,7 +18,7 @@ const setLogin = async ({
     });
 
     if (logState) {
-        const { data } = await LaravelApiClient.get('/user');
+        const { data } = await LaravelApiClient.get('/me');
         console.log('get User data, successful login', data);
     }
 };
