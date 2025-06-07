@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -16,8 +17,12 @@ class SocialiteController extends Controller
         return Socialite::driver('github')->stateless()->redirect();
     }
 
-    public function handleGithubCallback()
+    public function handleGithubCallback(Request $request)
     {
+        if ($request->has('error')) {
+            return redirect('/')->with('error', 'You did not authorize the app.');
+        }
+
         $githubUser = Socialite::driver('github')->stateless()->user();
 
         $user = User::firstOrCreate(
