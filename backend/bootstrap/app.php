@@ -3,7 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-// use App\Exceptions\AlreadyAuthenticatedException;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use App\Http\Middleware\EnsureEmailIsVerified;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,26 +14,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Apply Sanctum's cookie support for API requests
         $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            EnsureFrontendRequestsAreStateful::class,
         ]);
 
+        // Enables session + CSRF for API requests
         $middleware->statefulApi();
 
-        // $middleware->redirectUsersTo(function (Request $request) {
-        //     if ($request->expectsJson()) {
-        //         throw new AlreadyAuthenticatedException();
-        //     }
-    
-        //     return '/';
-        // });
-    
+        // Define route middleware aliases
         $middleware->alias([
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'verified' => EnsureEmailIsVerified::class,
         ]);
-
-        //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
-    })->create();
+        // Customize global exception handling here (if needed)
+        // Example: $exceptions->renderable(AlreadyAuthenticatedException::class, fn() => ...);
+    })
+    ->create();
