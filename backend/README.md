@@ -1227,3 +1227,196 @@ class GoogleController extends Controller
 }
 
 ```
+
+# Best Practices for Testing Laravel Sanctum SPA with Pest
+
+1. Structure Your Tests Clearly
+   Use tests/Feature for SPA routes (e.g., login, register, api/me)
+
+Use tests/Unit for business logic or service classes
+
+Follow a file naming convention like Auth/LoginTest.php, Auth/RegisterTest.php
+
+---
+
+2. Use Laravel’s Built-in Test Helpers
+   Laravel’s Sanctum::actingAs() is perfect for simulating an authenticated user:
+
+```php
+
+use Laravel\Sanctum\Sanctum;
+use App\Models\User;
+
+test('authenticated user can access /api/me', function () {
+    $user = User::factory()->create();
+
+    Sanctum::actingAs($user);
+
+    $response = $this->getJson('/api/me');
+
+    $response->assertOk()
+             ->assertJson(['email' => $user->email]);
+});
+```
+
+---
+
+3. Test Authentication Endpoints Thoroughly
+   ✅ Successful login, logout, register
+
+❌ Invalid credentials
+
+❌ Missing CSRF token
+
+🕓 Expired session/token
+
+Example for login:
+
+```php
+test('user can log in with correct credentials', function () {
+    $user = User::factory()->create([
+        'password' => bcrypt('password123'),
+    ]);
+
+    $response = $this->postJson('/api/auth/spa/login', [
+        'email' => $user->email,
+        'password' => 'password123',
+    ]);
+
+    $response->assertOk();
+});
+```
+
+---
+
+4. Handle CSRF Cookies in SPA
+   Sanctum uses GET /sanctum/csrf-cookie to initialize CSRF protection. When testing, you can skip it, since Laravel disables CSRF protection in tests by default.
+
+But if you want full realism:
+
+```php
+$this->get('/sanctum/csrf-cookie'); // optional
+```
+
+---
+
+5. Use Factories to Create Users and Models
+   Use User::factory() rather than seeding manually. Write short and expressive tests:
+
+```php
+$user = User::factory()->create();
+```
+
+---
+
+6. Test Protected Routes
+   Ensure unauthorized users are blocked:
+
+```php
+test('guest cannot access protected route', function () {
+    $response = $this->getJson('/api/me');
+
+    $response->assertUnauthorized();
+});
+```
+
+---
+
+7. Database Reset
+   Use RefreshDatabase to start fresh:
+
+```php
+uses(RefreshDatabase::class);
+```
+
+This makes every test isolated and clean.
+
+---
+
+8. Group Your Tests Logically
+   Use describe() and it() to improve clarity:
+
+```php
+describe('Authentication', function () {
+    test('can register a user', function () {
+        // ...
+    });
+
+    test('cannot register with missing fields', function () {
+        // ...
+    });
+});
+```
+
+✅ Suggested Tests to Cover for Sanctum SPA
+
+| Functionality      | Test Description                                      |
+| ------------------ | ----------------------------------------------------- |
+| **Login**          | Success, wrong password, invalid email                |
+| **Register**       | Success, duplicate email, validation errors           |
+| **Logout**         | Logs out and cannot access protected routes afterward |
+| **/api/me**        | Returns correct user data when authenticated          |
+| **CSRF cookie**    | `/sanctum/csrf-cookie` sets cookie correctly          |
+| **Access control** | Guest cannot access `/api/user` or `/api/me`          |
+
+---
+
+Optional Pest Plugin
+If you want to further organize or prettify your tests:
+
+```bash
+composer require pestphp/pest-plugin-laravel
+```
+
+## What Is a Feature Test?
+
+Feature tests test how your application behaves as a whole — usually HTTP requests, route controllers, middleware, policies, etc.
+
+✨ You’re testing a feature if:
+It touches the framework (routes, DB, auth).
+
+It sends an actual HTTP request (e.g. $this->post('/api/login')).
+
+It might span multiple layers (e.g. controller + model + response).
+
+🧪 Examples of Feature Tests
+
+| **File**                              | **Responsibility**                                                   |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| `tests/Feature/Auth/LoginTest.php`    | Test `/api/login` route: correct credentials log in, wrong ones fail |
+| `tests/Feature/User/ProfileTest.php`  | Test `GET /api/me` returns authenticated user's data                 |
+| `tests/Feature/Auth/RegisterTest.php` | Ensure a new user is created and authenticated after registration    |
+| `tests/Feature/Auth/LogoutTest.php`   | Ensure `/api/logout` revokes token or session                        |
+
+💡 Think of Feature tests as black-box tests — send input, assert output.
+
+## What Is a Unit Test?
+
+Unit tests focus on isolated logic, often in service classes, helpers, or pure PHP methods — they should not touch the database or Laravel internals if possible.
+
+✨ You’re testing a unit if:
+It doesn't hit a route or controller.
+
+You’re testing one class or method in isolation.
+
+You're mocking dependencies (e.g. an API client or repository).
+
+🧪 Examples of Unit Tests
+
+| **File**                                               | **Responsibility**                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------ |
+| `tests/Unit/Services/UserServiceTest.php`              | Test a method like `UserService::createUserFromGitHubData()` |
+| `tests/Unit/Utils/StringHelperTest.php`                | Test a function like `slugify("My Post") => "my-post"`       |
+| `tests/Unit/Notifications/NewUserNotificationTest.php` | Test the notification formatting                             |
+| `tests/Unit/Rules/ValidReferralCodeTest.php`           | Test a custom validation rule logic                          |
+
+💡 Think of Unit tests as microscope-level tests — test one component, mock the rest.
+
+## 🔍 Quick Rules of Thumb
+
+| Ask Yourself...                                         | If yes, it’s likely a... |
+| ------------------------------------------------------- | ------------------------ |
+| Does it go through a Laravel route/controller?          | Feature Test             |
+| Does it hit the database or authentication?             | Feature Test             |
+| Does it only test one class’s logic with no HTTP calls? | Unit Test                |
+| Does it rely on mocks or fakes for dependencies?        | Unit Test                |
