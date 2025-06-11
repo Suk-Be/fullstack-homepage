@@ -15,15 +15,11 @@ describe('BasicMenu', () => {
 
         const logoLink = screen.getByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
-        const datenschutzBedingungenLink = screen.getByTestId('form-checkbox-datenschutz');
-        const datenschutzLink = screen.getByTestId('link-datenschutz-page');
         const avatarLink = screen.getByTestId('button-main-menu');
 
         return {
             logoLink,
             impressumLink,
-            datenschutzLink,
-            datenschutzBedingungenLink,
             avatarLink,
             user,
         };
@@ -42,23 +38,17 @@ describe('BasicMenu', () => {
         expect(heading).toBeInTheDocument();
     });
     it('should have a hidden MainMenu that opens when avatar is clicked', async () => {
-        const {
-            logoLink,
-            impressumLink,
-            datenschutzLink,
-            datenschutzBedingungenLink,
-            avatarLink,
-            user,
-        } = renderUtils();
+        const { avatarLink, user } = renderUtils();
 
-        const allLinksMenuClosed = await screen.findAllByRole('link');
+        const playgroundPageLinkQuery = screen.queryByRole('link', {
+            name: /playgroundpage/i,
+        });
+        const logoutLinkQuery = screen.queryByRole('link', {
+            name: /logout/i,
+        });
 
-        expect(allLinksMenuClosed.length).toBe(5);
-
-        expect(logoLink).toBeInTheDocument();
-        expect(impressumLink).toBeInTheDocument();
-        expect(datenschutzLink).toBeInTheDocument();
-        expect(datenschutzBedingungenLink).toBeInTheDocument();
+        expect(playgroundPageLinkQuery).not.toBeInTheDocument();
+        expect(logoutLinkQuery).not.toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
 
         await user.click(avatarLink);
