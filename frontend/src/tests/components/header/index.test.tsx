@@ -1,10 +1,13 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { HPProps } from '../../../data/HomePage';
 import { navigateTo } from '../../utils';
 
 describe('BasicMenu', () => {
+    beforeEach(() => {
+        localStorage.setItem('cookiesAccepted', 'true');
+    });
     const renderUtils = () => {
         const user = userEvent.setup();
 
@@ -12,11 +15,15 @@ describe('BasicMenu', () => {
 
         const logoLink = screen.getByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
+        const datenschutzBedingungenLink = screen.getByTestId('form-checkbox-datenschutz');
+        const datenschutzLink = screen.getByTestId('link-datenschutz-page');
         const avatarLink = screen.getByTestId('button-main-menu');
 
         return {
             logoLink,
             impressumLink,
+            datenschutzLink,
+            datenschutzBedingungenLink,
             avatarLink,
             user,
         };
@@ -35,13 +42,23 @@ describe('BasicMenu', () => {
         expect(heading).toBeInTheDocument();
     });
     it('should have a hidden MainMenu that opens when avatar is clicked', async () => {
-        const { logoLink, impressumLink, avatarLink, user } = renderUtils();
+        const {
+            logoLink,
+            impressumLink,
+            datenschutzLink,
+            datenschutzBedingungenLink,
+            avatarLink,
+            user,
+        } = renderUtils();
 
         const allLinksMenuClosed = await screen.findAllByRole('link');
 
-        expect(allLinksMenuClosed.length).toBe(3);
+        expect(allLinksMenuClosed.length).toBe(5);
+
         expect(logoLink).toBeInTheDocument();
         expect(impressumLink).toBeInTheDocument();
+        expect(datenschutzLink).toBeInTheDocument();
+        expect(datenschutzBedingungenLink).toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
 
         await user.click(avatarLink);
