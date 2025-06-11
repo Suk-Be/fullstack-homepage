@@ -998,236 +998,6 @@ const AuthCallback = () => {
 export default AuthCallback;
 ```
 
-## install sociallite and connect to google cloud oauth service
-
-```
-composer require laravel/socialite
-```
-
-In the config/services.php you need to pass client-id, client-key and redirect-url from the google OAUTH service
-
-```php services.php
-return [
-    ....
-
-    'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'), // client-id
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // client-key
-        'redirect' => env('GOOGLE_REDIRECT'), // redirect-url
-    ],
-]
-```
-
-The env file with the data
-
-```bash .env
-GOOGLE_CLIENT_ID=XXXXXsvqcn3d.apps.googleusercontent.com # client-id
-GOOGLE_CLIENT_SECRET=XXXXXT6tR1rWpR-Jxy3jkdzs  # client-key
-GOOGLE_REDIRECT=http://localhost:8000/auth/google/callback # redirect-url
-```
-
-## Add google_id Column to migration and user table
-
-In this step, first, we have to create a migration to add the google_id in your user table.
-
-```bash
-php artisan make:migration add_google_id_column
-
-```
-
-Migration:
-replace '$table->string(')->nullable();'
-with '$table->string('google_id')->nullable();'
-in the migration table
-
-```php
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->string('google_id')->nullable();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
-
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
-    }
-};
-```
-
-Add the google ID to the to the user model.
-
-```php
-<?php
-
-namespace App\Models;
-
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable implements MustVerifyEmail
-{
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'google_id'
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-}
-```
-
-## Create Routes and Controller
-
-Add the authentication route to auth.php
-
-```php routes/auth.php
-
-<?php
-
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-...
-use App\Http\Controllers\Auth\GoogleController;
-use Illuminate\Support\Facades\Route;
-
-...
-
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-```
-
-Create the needed GoogleController and its methods: redirectToGoogle, handleGoogleCallback
-
-```php app/Http/Controllers/Auth/GoogleController.php
-<?php
-
-namespace App\Http\Controllers\Auth;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
-use Laravel\Socialite\Facades\Socialite;
-use Exception;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-
-class GoogleController extends Controller
-{
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function redirectToGoogle(): RedirectResponse
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function handleGoogleCallback()
-    {
-        try {
-
-            $user = Socialite::driver('google')->user();
-            $finduser = User::where('google_id', $user->id)->first();
-
-            if ($finduser) {
-
-                Auth::login($finduser);
-                return redirect()->intended('home');
-
-            } else {
-                $newUser = User::updateOrCreate(['email' => $user->email], [
-                    'name' => $user->name,
-                    'google_id' => $user->id,
-                    'password' => encrypt('123456dummy')
-                ]);
-
-                Auth::login($newUser);
-
-                return redirect()->intended('home');
-            }
-
-        } catch (Exception $e) {
-            dd($e->getMessage());
-        }
-    }
-}
-
-```
-
 # Best Practices for Testing Laravel Sanctum SPA with Pest
 
 1. Structure Your Tests Clearly
@@ -1420,3 +1190,290 @@ You're mocking dependencies (e.g. an API client or repository).
 | Does it hit the database or authentication?             | Feature Test             |
 | Does it only test one class’s logic with no HTTP calls? | Unit Test                |
 | Does it rely on mocks or fakes for dependencies?        | Unit Test                |
+
+# Use sociallite and connect to google cloud oauth service
+
+Since github registration with github oauth registration worked, this code will be used fora ll google and github registration.
+
+1. create an oauth service in google cloud
+2. grab client_id, client_secret and redirect from oauth service for configuration
+    - service.php
+    - env files
+3. Backend refactor existing code
+    - SocialiteController to BaseSocialiteController
+    - GithubController and GoogleController extending BaseSocialiteController
+    - api.php extending routes and use new Controllers
+4. Frontend
+    - Refactor ClickHandler to a reuseable Clickhandler
+
+### Create an oauth service in google cloud
+
+As registered Google user visit google cloud dashboard: <https://console.cloud.google.com/welcome>
+
+Then visit "Api und Dienste" anschließend "Anmeldedaten" all in the main menu. In the category "Anmeldedaten" click the button "+ Anmeldedaten erstellen", chose "O-Auth-Client-Id" to create the data for your app development.
+
+-   name of the application: pick the same as github oauth for consistency (laravel sanctum spa, socialite and mui)
+-   grab client_id (Client ID)
+-   grab client_secret (Client-Schlüssel)
+-   redirect for Webserver (Autorisierte Weiterleitungs-URIs): pick the same url pattern like github oauth for consistency (<http://localhost:8000/api/auth/google/callback>)
+
+### grab client_id, client_secret and redirect from oauth service for configuration
+
+In config/services.php you need to pass client-id, client-key and redirect-url from the google OAUTH service
+
+```php services.php
+return [
+    ....
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'), // client-id
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // client-key
+        'redirect' => env('GOOGLE_REDIRECT'), // redirect-url
+    ],
+]
+```
+
+The env file with the data
+
+```bash .env
+GOOGLE_CLIENT_ID=XXXXXsvqcn3d.apps.googleusercontent.com # client-id
+GOOGLE_CLIENT_SECRET=XXXXXT6tR1rWpR-Jxy3jkdzs  # client-key
+GOOGLE_REDIRECT=http://localhost:8000/auth/google/callback # redirect-url
+```
+
+### Backend refactor existing code
+
+Rewrite the SocialiteController to BaseSocialiteController. That can be extended by Github- and GoogleController
+
+```php
+// app/Http/Controllers/Auth/BaseSocialiteController.php
+<?php
+
+namespace App\Http\Controllers\Api\Auth\Spa;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Http\RedirectResponse;
+
+abstract class BaseSocialiteController extends Controller
+{
+    abstract protected function provider(): string;
+
+    protected function redirectUrl(): string
+    {
+        return Socialite::driver($this->provider())->stateless()->redirect()->getTargetUrl();
+    }
+
+    protected function getUserFromProvider()
+    {
+        return Socialite::driver($this->provider())->stateless()->user();
+    }
+
+    public function redirect(): RedirectResponse
+    {
+        return redirect($this->redirectUrl());
+    }
+
+    public function callback(Request $request)
+    {
+        if ($request->has('error')) {
+            return redirect('/')->with('error', 'You did not authorize the app.');
+        }
+
+        $providerUser = $this->getUserFromProvider();
+
+        $user = User::firstOrCreate(
+            ['email' => $providerUser->getEmail()],
+            [
+                'name' => $providerUser->getName() ?? $providerUser->getNickname(),
+                'password' => bcrypt(uniqid()), // Placeholder password
+            ]
+        );
+
+        Auth::login($user);
+        return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/auth/callback?logged_in=true');
+    }
+}
+
+// app/Http/Controllers/Auth/GithubController.php
+<?php
+
+namespace App\Http\Controllers\Api\Auth\Spa;
+
+class GithubController extends BaseSocialiteController
+{
+    protected function provider(): string
+    {
+        return 'github';
+    }
+}
+
+// app/Http/Controllers/Auth/GithubController.php
+class FacebookController extends BaseSocialiteController
+{
+    protected function provider(): string
+    {
+        return 'facebook';
+    }
+}
+
+// routes/api.php
+Route::get('/auth/github', [GithubController::class, 'redirect']);
+Route::get('/auth/github/callback', [GithubController::class, 'callback']);
+
+Route::get('/auth/google', [GoogleController::class, 'redirect']);
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+```
+
+Now the routes concerning extended BaseSocialiteController all call the same methods redirect and callback.
+
+### Frontend
+
+The Frontend just needs to hit the route provided by the webserver (backend) for redirects.
+That would be <http://localhost:8000/api/auth/github> or <http://localhost:8000/api/auth/github> tha would be then redirect to the auth services.
+
+```tsx
+const handleSignUp = (provider: string) => {
+    window.location.href = `${apiBaseUrl}/auth/${provider}`;
+};
+```
+
+To make the mui Button interface easier to read we refacor the component
+
+```tsx
+// not refactored
+<Button
+    fullWidth
+    variant="outlined"
+    startIcon={<FacebookIcon />}
+    {...testId("form-button-register-with-facebook")}
+    onClick={() => alert("Sign up with Facebook")}
+>
+    registrieren mit Facebook
+</Button>
+
+// refactored
+<RegisterButtonSocialite
+    startIcon={<GithubIcon />}
+    text="registrieren mit Github"
+    testIdIdentifier="form-button-register-with-github"
+    clickHandler={() => handleSignUp('github')}
+/>
+<RegisterButtonSocialite
+    startIcon={<GoogleIcon />}
+    text="registrieren mit Google"
+    clickHandler={() => handleSignUp('google')}
+    testIdIdentifier="form-button-register-with-google"
+/>
+
+// RegisterButtonSocialite.tsx
+const RegisterButtonSocialite: FC<RegisterButtonSocialiteProps> = ({
+    startIcon,
+    text,
+    testIdIdentifier,
+    clickHandler,
+}) => {
+    return (
+        <Button
+            fullWidth
+            variant="outlined"
+            onClick={clickHandler}
+            startIcon={startIcon}
+            {...testId(testIdIdentifier)}
+        >
+            {text}
+        </Button>
+    );
+};
+```
+
+### Debugging Tipps
+
+Since Socialite needs three parameters but the oauth services offer a variety of more parameters it is helpful to check them across oauth services to have the same pattern
+
+redirects
+<http://localhost:8000/api/auth/github>
+<http://localhost:8000/api/auth/google>
+
+callbacks
+<http://localhost:8000/api/auth/github/callback>
+<http://localhost:8000/api/auth/google/callback>
+
+#### env name: github oauth name
+
+The namings of the parameters change often but value is not. Make sure to check the parameters are set right.
+
+```sh example_env
+GITHUB_CLIENT_ID: client id
+GITHUB_CLIENT_SECRET: client secret
+GITHUB_REDIRECT_URI: Authorization callback URL
+
+GOOGLE_CLIENT_ID: Client-ID
+GOOGLE_CLIENT_SECRET: Clientschlüssel
+GOOGLE_REDIRECT: Autorisierte Weiterleitungs-URIs
+```
+
+```php services.php
+
+'github' => [
+    'client_id' => env('GITHUB_CLIENT_ID'),
+    'client_secret' => env('GITHUB_CLIENT_SECRET'),
+    'redirect' => env('GITHUB_REDIRECT_URI'),
+],
+
+'google' => [
+    'client_id' => env('GOOGLE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    'redirect' => env('GOOGLE_REDIRECT_URI'),
+],
+```
+
+```php
+// routes/api.php
+Route::get('/auth/github', [GithubController::class, 'redirect']);
+Route::get('/auth/github/callback', [GithubController::class, 'callback']);
+
+// BaseSocialiteController.php
+public function callback(Request $request)
+{
+    if ($request->has('error')) {
+        return redirect('/')->with('error', 'You did not authorize the app.');
+    }
+
+    $providerUser = $this->getUserFromProvider();
+
+    $user = User::firstOrCreate(
+        ['email' => $providerUser->getEmail()],
+        [
+            'name' => $providerUser->getName() ?? $providerUser->getNickname(),
+            'password' => bcrypt(uniqid()), // Placeholder password
+        ]
+    );
+
+    Auth::login($user);
+    return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/auth/callback?logged_in=true');
+}
+```
+
+```tsx
+const handleSignUp = (provider: string) => {
+    window.location.href = `${apiBaseUrl}/auth/${provider}`;
+};
+
+// ... calling the redirects not the callback routes. The callback routes are executed by the oauth services
+  <RegisterButtonSocialite
+    startIcon={<GithubIcon />}
+    text="registrieren mit Github"
+    testIdIdentifier="form-button-register-with-github"
+    clickHandler={() => handleSignUp('github')}
+/>
+<RegisterButtonSocialite
+    startIcon={<GoogleIcon />}
+    text="registrieren mit Google"
+    clickHandler={() => handleSignUp('google')}
+    testIdIdentifier="form-button-register-with-google"
+/>
+```

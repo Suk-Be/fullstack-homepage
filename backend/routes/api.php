@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Spa\AuthController;
-use App\Http\Controllers\Api\Auth\Spa\SocialiteController;
+use App\Http\Controllers\Api\Auth\Spa\GithubController;
+use App\Http\Controllers\Api\Auth\Spa\GoogleController;
 use Illuminate\Support\Facades\Route;
 
 // Sanctum-protected route: user info
@@ -15,5 +16,11 @@ Route::prefix('auth/spa')->middleware('web')->group(function () {
 });
 
 // Socialite OAuth routes (stateless, no session needed)
-Route::get('/auth/github', [SocialiteController::class, 'redirectToGithub']);
-Route::get('/auth/github/callback', [SocialiteController::class, 'handleGithubCallback']);
+Route::get('/auth/github', [GithubController::class, 'redirect']);
+Route::get('/auth/github/callback', [GithubController::class, 'callback']);
+
+Route::get('/auth/google', [GoogleController::class, 'redirect']);
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+
+// Route::get('/auth/facebook', [FacebookController::class, 'redirect']);
+// Route::get('/auth/facebook/callback', [FacebookController::class, 'callback']);
