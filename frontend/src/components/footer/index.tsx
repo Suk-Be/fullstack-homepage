@@ -7,15 +7,7 @@ const Footer = () => {
     const [value, setValue] = useState(0);
 
     return (
-        <footer
-            style={{
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
-                right: 0,
-            }}
-            {...testId('footer')}
-        >
+        <footer {...testId('footer')}>
             <Box
                 component="nav"
                 sx={{

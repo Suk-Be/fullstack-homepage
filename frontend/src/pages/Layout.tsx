@@ -13,12 +13,14 @@ const Layout = () => {
 
             <ResponsiveContainer>
                 <MenuNav />
-                <main className="main-wrapper">
-                    <Outlet />
-                    <Toaster />
-                </main>
+                <div className="main-wrapper">
+                    <main>
+                        <Outlet />
+                        <Toaster />
+                    </main>
+                    <Footer />
+                </div>
             </ResponsiveContainer>
-            <Footer />
         </>
     );
 };
