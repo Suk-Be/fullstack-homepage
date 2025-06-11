@@ -18,7 +18,7 @@ import { FacebookIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp } from '../TextElements';
 import ForgotPassword from './components/ForgotPassword';
 
-export default function SignIn() {
+export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordError, setPasswordError] = useState(false);
@@ -83,6 +83,8 @@ export default function SignIn() {
 
         return isValid;
     };
+
+    console.log('toggleSignIn', onToggleAuth);
 
     return (
         <>
@@ -192,7 +194,11 @@ export default function SignIn() {
                         <Typography sx={{ textAlign: 'center' }}>
                             Don&apos;t have an account?{' '}
                             <Link
-                                href="/material-ui/getting-started/templates/sign-in/"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    onToggleAuth();
+                                }}
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
                             >

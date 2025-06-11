@@ -8,11 +8,7 @@ const ToggleSignIn = () => {
     const toggle = () => setShowLogin(!showLogin);
 
     return (
-        <div>
-            <button onClick={toggle}>Switch to {showLogin ? 'Register' : 'Login'}</button>
-
-            {showLogin ? <SignIn /> : <SignUp />}
-        </div>
+        <div>{showLogin ? <SignIn onToggleAuth={toggle} /> : <SignUp onToggleAuth={toggle} />}</div>
     );
 };
 

@@ -25,7 +25,7 @@ import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
 import RegisterButtonSocialite from './RegisterButtonSocialite';
 
-export default function SignUp() {
+export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [showPassword, toggleShowPassword] = useToggle();
     const [checked, setChecked] = useState(false);
     const [name, setName] = useState('');
@@ -87,6 +87,8 @@ export default function SignUp() {
     const handleSignUp = (provider: string) => {
         window.location.href = `${apiBaseUrl}/auth/${provider}`;
     };
+
+    console.log('toggleSignUp', onToggleAuth);
 
     return (
         <>
@@ -264,7 +266,11 @@ export default function SignUp() {
                         >
                             Verfügen Sie über ein Konto?{' '}
                             <Link
-                                href="/material-ui/getting-started/templates/sign-in/"
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    onToggleAuth();
+                                }}
                                 variant="body2"
                                 sx={{ alignSelf: 'center' }}
                                 {...testId('button-switch-to-login')}

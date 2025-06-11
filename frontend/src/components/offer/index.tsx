@@ -77,7 +77,6 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 background="rgba(255,255,255, 1)"
                 color="rgba(33,29,29, 1)"
                 padding="0rem 2rem 2rem 4rem"
-                marginBottom="2rem"
             >
                 <HeadlineHP
                     variant="h5"
