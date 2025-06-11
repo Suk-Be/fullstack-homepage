@@ -20,6 +20,13 @@ it('redirects to GitHub for authentication', function () {
     $response->assertRedirectContains('github.com/login/oauth');
 });
 
+it('redirects to Google cloud for authentication', function () {
+    $response = $this->get('/api/auth/google');
+    $response->assertRedirect();
+    $response->assertRedirectContains('accounts.google.com/o/oauth2');
+});
+
+
 it('logs in existing user after OAuth callback', function () {
     $mockSocialiteUser = Mockery::mock(SocialiteUserContract::class);
     $mockSocialiteUser->shouldReceive('getEmail')->andReturn('mockuser@example.com');

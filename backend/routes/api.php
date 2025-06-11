@@ -21,6 +21,3 @@ Route::get('/auth/github/callback', [GithubController::class, 'callback']);
 
 Route::get('/auth/google', [GoogleController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
-
-// Route::get('/auth/facebook', [FacebookController::class, 'redirect']);
-// Route::get('/auth/facebook/callback', [FacebookController::class, 'callback']);

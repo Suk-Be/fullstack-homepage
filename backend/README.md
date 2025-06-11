@@ -1311,12 +1311,12 @@ class GithubController extends BaseSocialiteController
     }
 }
 
-// app/Http/Controllers/Auth/GithubController.php
-class FacebookController extends BaseSocialiteController
+// app/Http/Controllers/Auth/GoogleController.php
+class GoogleController extends BaseSocialiteController
 {
     protected function provider(): string
     {
-        return 'facebook';
+        return 'google';
     }
 }
 
@@ -1348,8 +1348,8 @@ To make the mui Button interface easier to read we refacor the component
 <Button
     fullWidth
     variant="outlined"
-    startIcon={<FacebookIcon />}
-    {...testId("form-button-register-with-facebook")}
+    startIcon={<GithubIcon />}
+    {...testId("form-button-register-with-github")}
     onClick={() => alert("Sign up with Facebook")}
 >
     registrieren mit Facebook
