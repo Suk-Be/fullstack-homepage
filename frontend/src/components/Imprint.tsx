@@ -18,43 +18,28 @@ export default function Imprint() {
                 <ParagraphHP marginTop="3rem">Angaben gemäß § 5 DDG</ParagraphHP>
 
                 <ParagraphHP>
-                    Max Muster - Musterberuf
+                    Suk-Be Jang - Privatperson
                     <br />
-                    c/o Beispielbüro
+                    Compesstr. 2
                     <br />
-                    Musterweg
-                    <br />
-                    12345 Musterstadt
+                    50769 Köln
                     <br />
                 </ParagraphHP>
 
                 <ParagraphHP>
                     <em>Vertreten durch:</em>
                     <br />
-                    Max Muster
+                    Suk-Be Jang
                 </ParagraphHP>
 
                 <ParagraphHP>
                     <em>Kontakt:</em>
                     <br />
-                    Telefon: 01234-789456
-                    <br />
-                    Fax: 1234-56789
-                    <br />
-                    E-Mail: max@muster.de
+                    Telefon: 0221-8609059 E-Mail: volldoll(ätt)sokdesign.de
                     <br />
                 </ParagraphHP>
 
                 <ParagraphHP>
-                    <em>Umsatzsteuer-ID:</em>
-                    <br />
-                    Umsatzsteuer-Identifikationsnummer gemäß §27a Umsatzsteuergesetz: Musterustid.
-                </ParagraphHP>
-
-                <ParagraphHP>
-                    <em>Haftungsausschluss:</em>
-                    <br />
-                    <br />
                     <em>Haftung für Inhalte</em>
                     <br />
                     Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die
@@ -99,54 +84,6 @@ export default function Imprint() {
                     Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden
                     Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte
                     umgehend entfernen.
-                </ParagraphHP>
-
-                <ParagraphHP>
-                    <em>Google Analytics</em>
-                    <br />
-                    Diese Website benutzt Google Analytics, einen Webanalysedienst der Google Inc.
-                    (''Google''). Google Analytics verwendet sog. ''Cookies'', Textdateien, die auf
-                    Ihrem Computer gespeichert werden und die eine Analyse der Benutzung der Website
-                    durch Sie ermöglicht. Die durch den Cookie erzeugten Informationen über Ihre
-                    Benutzung dieser Website (einschließlich Ihrer IP-Adresse) wird an einen Server
-                    von Google in den USA übertragen und dort gespeichert. Google wird diese
-                    Informationen benutzen, um Ihre Nutzung der Website auszuwerten, um Reports über
-                    die Websiteaktivitäten für die Websitebetreiber zusammenzustellen und um weitere
-                    mit der Websitenutzung und der Internetnutzung verbundene Dienstleistungen zu
-                    erbringen. Auch wird Google diese Informationen gegebenenfalls an Dritte
-                    übertragen, sofern dies gesetzlich vorgeschrieben oder soweit Dritte diese Daten
-                    im Auftrag von Google verarbeiten. Google wird in keinem Fall Ihre IP-Adresse
-                    mit anderen Daten der Google in Verbindung bringen. Sie können die Installation
-                    der Cookies durch eine entsprechende Einstellung Ihrer Browser Software
-                    verhindern; wir weisen Sie jedoch darauf hin, dass Sie in diesem Fall
-                    gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen
-                    können. Durch die Nutzung dieser Website erklären Sie sich mit der Bearbeitung
-                    der über Sie erhobenen Daten durch Google in der zuvor beschriebenen Art und
-                    Weise und zu dem zuvor benannten Zweck einverstanden.
-                </ParagraphHP>
-
-                <ParagraphHP>
-                    Impressum von{' '}
-                    <a href="https://websitewissen.com" rel="dofollow">
-                        WebsiteWissen.com
-                    </a>
-                    , dem Ratgeber für{' '}
-                    <a href="https://websitewissen.com/wordpress-website-erstellen" rel="dofollow">
-                        WordPress-Websites
-                    </a>
-                    ,{' '}
-                    <a href="https://websitewissen.com/wordpress-hosting-vergleich" rel="dofollow">
-                        WordPress-Hosting
-                    </a>{' '}
-                    und{' '}
-                    <a href="https://websitewissen.com/website-kosten" rel="dofollow">
-                        Website-Kosten
-                    </a>{' '}
-                    nach einem Muster von{' '}
-                    <a href="https://www.kanzlei-hasselbach.de/" rel="dofollow">
-                        Kanzlei Hasselbach Rechtsanwälte
-                    </a>
-                    .
                 </ParagraphHP>
             </Section>
         </>
