@@ -1,15 +1,21 @@
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { navigateTo } from '../../utils';
 
 describe('BasicMenu', () => {
     const renderUtils = (path: string) => {
-        navigateTo(path);
+        const user = userEvent.setup();
+
+        navigateTo(path); // Render HomePage
 
         const impressumLink = screen.getByTestId('link-impressum-page');
+        const datenschutzLink = screen.getByTestId('link-datenschutz-page');
 
         return {
+            user,
             impressumLink,
+            datenschutzLink,
         };
     };
 
@@ -23,12 +29,20 @@ describe('BasicMenu', () => {
             link: '/impressum',
         },
         {
+            page: 'DatenschutzPage',
+            link: '/datenschutz',
+        },
+        {
             page: 'PlaygroundPage',
             link: '/playground',
         },
-    ])('should render a footer on $page with a link to impressum page', ({ link }) => {
-        const { impressumLink } = renderUtils(link);
+    ])(
+        'should render a footer on $page with a link to impressum and datenschutz page',
+        ({ link }) => {
+            const { impressumLink, datenschutzLink } = renderUtils(link);
 
-        expect(impressumLink).toBeInTheDocument();
-    });
+            expect(impressumLink).toBeInTheDocument();
+            expect(datenschutzLink).toBeInTheDocument();
+        },
+    );
 });

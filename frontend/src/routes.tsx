@@ -1,6 +1,7 @@
 import { RouteObject } from 'react-router';
 import App from './App';
 import AuthCallback from './components/auth/AuthCallback';
+import DatenschutzPage from './pages/DatenschutzPage';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
@@ -15,6 +16,7 @@ const routes: RouteObject[] = [
             { index: true, element: <HomePage /> },
             { path: 'playground', element: <PlaygroundPage /> },
             { path: 'impressum', element: <ImprintPage /> },
+            { path: 'datenschutz', element: <DatenschutzPage /> },
         ],
     },
     {

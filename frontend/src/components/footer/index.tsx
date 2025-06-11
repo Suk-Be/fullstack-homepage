@@ -44,6 +44,13 @@ const Footer = () => {
                         style={{ color: 'rgba(33,29,29, 0.5)' }}
                         {...testId('link-impressum-page')}
                     />
+                    <BottomNavigationAction
+                        component={RouterLinkWrapper}
+                        href="/datenschutz"
+                        label="Datenschutz"
+                        style={{ color: 'rgba(33,29,29, 0.5)' }}
+                        {...testId('link-datenschutz-page')}
+                    />
                 </BottomNavigation>
             </Box>
         </footer>
