@@ -84,8 +84,6 @@ export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
         return isValid;
     };
 
-    console.log('toggleSignIn', onToggleAuth);
-
     return (
         <>
             <SignInContainer direction="column" justifyContent="space-between">

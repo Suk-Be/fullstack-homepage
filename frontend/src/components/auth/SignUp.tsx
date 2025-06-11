@@ -88,8 +88,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         window.location.href = `${apiBaseUrl}/auth/${provider}`;
     };
 
-    console.log('toggleSignUp', onToggleAuth);
-
     return (
         <>
             <SignUpContainer direction="column" justifyContent="space-between">
