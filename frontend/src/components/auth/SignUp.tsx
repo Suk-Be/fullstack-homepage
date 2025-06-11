@@ -21,7 +21,7 @@ import apiBaseUrl from '../../utils/apiBaseUrl';
 import registerUser from '../../utils/registerUser';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
-import { FacebookIcon, GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
+import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
 import RegisterButtonSocialite from './RegisterButtonSocialite';
 
@@ -84,8 +84,8 @@ export default function SignUp() {
         }
     };
 
-    const handleGithubSignUp = () => {
-        window.location.href = `${apiBaseUrl}/auth/github`;
+    const handleSignUp = (provider: string) => {
+        window.location.href = `${apiBaseUrl}/auth/${provider}`;
     };
 
     return (
@@ -249,26 +249,14 @@ export default function SignUp() {
                             startIcon={<GithubIcon />}
                             text="registrieren mit Github"
                             testIdIdentifier="form-button-register-with-github"
-                            clickHandler={handleGithubSignUp}
+                            clickHandler={() => handleSignUp('github')}
                         />
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={() => alert('Sign up with Google')}
+                        <RegisterButtonSocialite
                             startIcon={<GoogleIcon />}
-                            {...testId('form-button-register-with-google')}
-                        >
-                            registrieren mit Google
-                        </Button>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={() => alert('Sign up with Facebook')}
-                            startIcon={<FacebookIcon />}
-                            {...testId('form-button-register-with-facebook')}
-                        >
-                            registrieren mit Facebook
-                        </Button>
+                            text="registrieren mit Google"
+                            clickHandler={() => handleSignUp('google')}
+                            testIdIdentifier="form-button-register-with-google"
+                        />
 
                         <Typography
                             sx={{ textAlign: 'center' }}
