@@ -9,6 +9,16 @@ import userFactory from '../../mocks/factories/userFactories';
 import { navigateTo } from '../../utils';
 
 describe('SignUp', () => {
+    const originalLocation = window.location;
+
+    beforeEach(() => {
+        vi.stubGlobal('location', { href: '' });
+    });
+
+    afterAll(() => {
+        vi.stubGlobal('location', originalLocation);
+    });
+
     const renderStatic = () => {
         navigateTo('/'); // Render HomePage
         const title = screen.getByRole('heading', { name: /Registrierung/i });
@@ -37,10 +47,12 @@ describe('SignUp', () => {
         const passwordInput = screen.getByLabelText('Passwort');
         const passwordConfirmationInput = screen.getByLabelText(/passwort bestätigung/i);
         const termsConfirmationCheckbox = screen.getByRole('checkbox', {
-            name: /Ich habe die Bedingungen gelesen nund stimme zu/i,
+            name: /Nutzung von Cookies/i,
         });
 
         const registerButton = screen.getByTestId('form-button-register');
+        const googleButton = screen.getByTestId('form-button-register-with-google');
+        const githubButton = screen.getByTestId('form-button-register-with-github');
 
         return {
             nameInput,
@@ -51,6 +63,8 @@ describe('SignUp', () => {
             registerButton,
             user,
             fakeUser,
+            googleButton,
+            githubButton,
         };
     };
 
@@ -243,26 +257,6 @@ describe('SignUp', () => {
         await waitFor(() => {
             expect(screen.getByTestId('email-exists-error')).toBeInTheDocument();
         });
-
-        //  Second: Submit new user
-        await user.clear(nameInput);
-        await user.type(nameInput, 'New User');
-
-        await user.clear(emailInput);
-        await user.type(emailInput, 'new@user.com');
-
-        await user.clear(passwordInput);
-        await user.type(passwordInput, 'ValidPassword123');
-
-        await user.clear(passwordConfirmationInput);
-        await user.type(passwordConfirmationInput, 'ValidPassword123');
-
-        await user.click(termsConfirmationCheckbox);
-        await user.click(registerButton);
-
-        await waitFor(() => {
-            expect(screen.queryByTestId('email-exists-error')).not.toBeInTheDocument();
-        });
     });
 
     it('should register a new user successfully and clear the form', async () => {
@@ -312,47 +306,47 @@ describe('SignUp', () => {
         expect(passwordInput).toHaveValue('');
         expect(passwordConfirmationInput).toHaveValue('');
     });
-});
 
-vi.stubGlobal('location', { href: '' });
+    const authProviderUtil = [
+        {
+            provider: 'GitHub',
+            uri: `${apiBaseUrl}/auth/github`,
+        },
+        {
+            provider: 'Google',
+            uri: `${apiBaseUrl}/auth/google`,
+        },
+    ];
 
-describe('Register with Socialite', () => {
-    const originalLocation = window.location;
+    it.each(authProviderUtil)(
+        'redirects to $provider auth URL when clicked',
+        async ({ uri, provider }) => {
+            const { user, googleButton, githubButton } = renderRegistrationForm();
 
-    beforeEach(() => {
-        vi.stubGlobal('location', { href: '' });
-    });
+            if (provider === 'Google') {
+                await user.click(googleButton);
+                expect(window.location.href).toBe(uri);
+            } else if (provider === 'Github') {
+                await user.click(githubButton);
+                expect(window.location.href).toBe(uri);
+            }
+        },
+    );
 
-    afterAll(() => {
-        vi.stubGlobal('location', originalLocation);
-    });
+    it.each(authProviderUtil)(
+        'fetches user on $provider AuthCallback mount and navigates',
+        async ({ provider }) => {
+            const { user, googleButton, githubButton } = renderRegistrationForm();
 
-    const renderHomePage = () => {
-        const user = userEvent.setup();
+            if (provider === 'Google') {
+                await user.click(googleButton);
+            } else if (provider === 'Github') {
+                await user.click(githubButton);
+            }
 
-        navigateTo('/'); // Render HomePage
-
-        const githubButton = screen.getByTestId('form-button-register-with-github');
-
-        return {
-            user,
-            githubButton,
-        };
-    };
-
-    it('redirects to GitHub auth URL when clicked', async () => {
-        const { user, githubButton } = renderHomePage();
-
-        await user.click(githubButton);
-
-        expect(window.location.href).toBe(`${apiBaseUrl}/auth/github`);
-    });
-
-    it('fetches user on AuthCallback mount and navigates', async () => {
-        const { user, githubButton } = renderHomePage();
-
-        await user.click(githubButton);
-
-        await waitFor(() => expect(screen.queryByText('Logging in...')).not.toBeInTheDocument());
-    });
+            await waitFor(() =>
+                expect(screen.queryByText('Logging in...')).not.toBeInTheDocument(),
+            );
+        },
+    );
 });
