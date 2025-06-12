@@ -47,13 +47,13 @@ class AuthController extends Controller
             $request->session()->regenerate(); // REGENERATE SESSION ID
 
             return response()->json([
-                'message' => 'User logged in successfully',
+                'message' => 'Sie haben sich erfolgreich angemeldet.',
                 'user' => Auth::user(),
             ]);
         }
 
         throw ValidationException::withMessages([
-            'email' => __('The provided credentials do not match our records.'),
+            'email' => 'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
         ]);
 
     }
@@ -66,7 +66,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json([
-            'message' => 'Successfully logged out!'
+            'message' => 'Sie haben sich erfolgreich abgemeldet.'
         ]);
     }
 
