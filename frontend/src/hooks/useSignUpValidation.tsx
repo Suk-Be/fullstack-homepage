@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ErrorMessages from '../data/ErrorMessages';
 
-export default function useValidateInputs(checked: boolean) {
+export default function useValidateInputs() {
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordError, setPasswordError] = useState(false);
@@ -10,7 +10,6 @@ export default function useValidateInputs(checked: boolean) {
     const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState('');
-    const [checkedErrorMessage, setCheckedErrorMessage] = useState('');
 
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
@@ -58,13 +57,6 @@ export default function useValidateInputs(checked: boolean) {
             setNameErrorMessage('');
         }
 
-        if (!checked) {
-            setCheckedErrorMessage(ErrorMessages.SignUp.terms);
-            isValid = false;
-        } else {
-            setCheckedErrorMessage('');
-        }
-
         return isValid;
     };
 
@@ -77,7 +69,6 @@ export default function useValidateInputs(checked: boolean) {
         passwordConfirmationErrorMessage,
         nameError,
         nameErrorMessage,
-        checkedErrorMessage,
         validateInputs,
     };
 }

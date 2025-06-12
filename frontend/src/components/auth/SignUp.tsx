@@ -2,32 +2,28 @@ import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-
 import {
     Box,
     Button,
-    Checkbox,
     Divider,
     FormControl,
-    FormControlLabel,
-    FormHelperText,
     FormLabel,
     IconButton,
     InputAdornment,
-    Link,
     TextField,
     Typography,
 } from '@mui/material';
 import { FormEvent, useState } from 'react';
+import useSignUpValidateInputs from '../../hooks/useSignUpValidation';
 import useToggle from '../../hooks/useToggle';
-import useValidateInputs from '../../hooks/useValidation';
-import apiBaseUrl from '../../utils/apiBaseUrl';
 import registerUser from '../../utils/auth/SignUp';
+import { handleSignInUp as handleSignUp } from '../../utils/clickHandler';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
-import { HeadlineSignInUp, ParagraphHP } from '../TextElements';
+import { ParagraphHP } from '../TextElements';
+import AuthHeaderLayout from './AuthHeaderLayout';
 import RegisterButtonSocialite from './RegisterButtonSocialite';
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [showPassword, toggleShowPassword] = useToggle();
-    const [checked, setChecked] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -42,9 +38,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         passwordConfirmationErrorMessage,
         nameError,
         nameErrorMessage,
-        checkedErrorMessage,
         validateInputs,
-    } = useValidateInputs(checked);
+    } = useSignUpValidateInputs();
 
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
 
@@ -55,7 +50,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         // Run validation here
         const isValid = validateInputs();
         // do not submit if validation fails
-        if (!isValid || checked === false) {
+        if (!isValid) {
             return;
         }
 
@@ -69,8 +64,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             email: (dataFD.get('email') as string) ?? '',
             password: (dataFD.get('password') as string) ?? '',
             password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
-            // todo
-            // confirmation of terms and condition
         });
 
         if (result.success) {
@@ -78,14 +71,9 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             setEmail('');
             setPassword('');
             setPasswordConfirmation('');
-            setChecked(false);
         } else {
             setErrors({ email: [result.message] });
         }
-    };
-
-    const handleSignUp = (provider: string) => {
-        window.location.href = `${apiBaseUrl}/auth/${provider}`;
     };
 
     return (
@@ -93,12 +81,23 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             <SignUpContainer direction="column" justifyContent="space-between">
                 <Card variant="outlined">
                     <HowToRegIcon sx={{ color: (theme) => theme.palette.primary.main }} />
-                    <HeadlineSignInUp {...testId('title-sign-up')}>Registrierung</HeadlineSignInUp>
+                    <AuthHeaderLayout
+                        title="Registrieren"
+                        onToggleAuth={onToggleAuth}
+                        textBeforeLink="Verfügen Sie über ein Konto?"
+                        linkLabel="Anmelden"
+                        testIds={{
+                            title: 'title-sign-up',
+                            link: 'button-switch-to-sign-in',
+                        }}
+                    />
+
                     <ParagraphHP marginTop="1rem" {...testId('description-sign-up')}>
                         Bitte registrieren Sie sich, um sich hier hinterlegte Prototypen Projekte
                         anschauen zu können. Bei Bedarf können Sie das angelegte Konto im Nutzer
                         Menü löschen oder verwalten.
                     </ParagraphHP>
+
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
@@ -207,43 +206,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 {...testId('form-input-password-confirmation')}
                             />
                         </FormControl>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    value="allowExtraEmails"
-                                    color="primary"
-                                    checked={checked}
-                                    onChange={(e) => setChecked(e.target.checked)}
-                                />
-                            }
-                            label={
-                                <span>
-                                    Ich stimme der{' '}
-                                    <a
-                                        href="/datenschutz"
-                                        style={{ color: '#1976d2' }}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        {...testId('form-checkbox-datenschutz')}
-                                    >
-                                        Nutzung von Cookies
-                                    </a>{' '}
-                                    zu, um mein Nutzererlebnis zu verbessern.
-                                </span>
-                            }
-                            {...testId('form-label-condition')}
-                        />
-                        {checkedErrorMessage && (
-                            <FormHelperText
-                                sx={{
-                                    color: (theme) => theme.palette.error.main,
-                                    marginTop: '-1rem',
-                                    marginLeft: '1rem',
-                                }}
-                            >
-                                {checkedErrorMessage}
-                            </FormHelperText>
-                        )}
 
                         <Button
                             type="submit"
@@ -272,24 +234,23 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             testIdIdentifier="form-button-register-with-google"
                         />
 
-                        <Typography
+                        <ParagraphHP
+                            marginTop="1rem"
+                            marginBottom="0.5rem"
                             sx={{ textAlign: 'center' }}
-                            {...testId('info-switch-to-login')}
                         >
-                            Verfügen Sie über ein Konto?{' '}
-                            <Link
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onToggleAuth();
-                                }}
-                                variant="body2"
-                                sx={{ alignSelf: 'center' }}
-                                {...testId('button-switch-to-login')}
+                            Es werden{' '}
+                            <a
+                                href="/datenschutz"
+                                style={{ color: '#1976d2' }}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                {...testId('form-checkbox-datenschutz')}
                             >
-                                Log in
-                            </Link>
-                        </Typography>
+                                Cookies
+                            </a>{' '}
+                            eingesetzt, um Ihr Nutzererlebnis zu verbessern.
+                        </ParagraphHP>
                     </Box>
                 </Card>
             </SignUpContainer>
