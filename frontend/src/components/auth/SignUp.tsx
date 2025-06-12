@@ -216,7 +216,21 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                     onChange={(e) => setChecked(e.target.checked)}
                                 />
                             }
-                            label="Ich habe die Bedingungen gelesen nund stimme zu"
+                            label={
+                                <span>
+                                    Ich stimme der{' '}
+                                    <a
+                                        href="/datenschutz"
+                                        style={{ color: '#1976d2' }}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        {...testId('form-checkbox-datenschutz')}
+                                    >
+                                        Nutzung von Cookies
+                                    </a>{' '}
+                                    zu, um mein Nutzererlebnis zu verbessern.
+                                </span>
+                            }
                             {...testId('form-label-condition')}
                         />
                         {checkedErrorMessage && (
