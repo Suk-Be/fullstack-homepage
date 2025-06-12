@@ -18,7 +18,7 @@ import { FormEvent, useState } from 'react';
 import useToggle from '../../hooks/useToggle';
 import useValidateInputs from '../../hooks/useValidation';
 import apiBaseUrl from '../../utils/apiBaseUrl';
-import registerUser from '../../utils/registerUser';
+import registerUser from '../../utils/auth/SignUp';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';

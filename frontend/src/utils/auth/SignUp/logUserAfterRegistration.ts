@@ -1,4 +1,4 @@
-import apiBaseUrl from '../apiBaseUrl';
+import apiBaseUrl from '../../apiBaseUrl';
 import { registerHeaders } from './requestHeaders';
 
 /*

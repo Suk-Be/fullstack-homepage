@@ -1,6 +1,6 @@
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
-import setLogout from '../../utils/setLogout';
+import setLogout from '../../utils/auth/setLogout';
 import { testId } from '../../utils/testId';
 import RouterLinkWrapper from '../RouterLink';
 import { Claim, Logo } from '../TextElements';

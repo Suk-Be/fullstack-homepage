@@ -1,6 +1,6 @@
 // export default registerUser;
 import Cookies from 'js-cookie';
-import apiBaseUrl from '../apiBaseUrl';
+import apiBaseUrl from '../../apiBaseUrl';
 import logUserAfterRegistration from './logUserAfterRegistration';
 import headers, { registerHeaders } from './requestHeaders';
 

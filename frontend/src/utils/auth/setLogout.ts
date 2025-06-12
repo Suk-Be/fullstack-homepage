@@ -1,4 +1,4 @@
-import LaravelApiClient from '../plugins/axios';
+import LaravelApiClient from '../../plugins/axios';
 
 const setLogout = async (logState: boolean) => {
     await LaravelApiClient.post('/auth/spa/logout');
