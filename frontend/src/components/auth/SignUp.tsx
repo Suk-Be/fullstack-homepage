@@ -105,7 +105,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                         {...testId('form')}
                     >
                         <FormControl>
-                            <FormLabel htmlFor="name">User Name</FormLabel>
+                            <FormLabel htmlFor="name">Benutzername</FormLabel>
                             <TextField
                                 autoComplete="name"
                                 name="name"

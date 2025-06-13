@@ -40,7 +40,7 @@ describe('SignUp', () => {
 
         navigateTo('/'); // Render HomePage
 
-        const nameInput = screen.getByLabelText(/user name/i);
+        const nameInput = screen.getByLabelText(/benutzername/i);
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText('Passwort');
         const passwordConfirmationInput = screen.getByLabelText(/passwort bestätigung/i);
