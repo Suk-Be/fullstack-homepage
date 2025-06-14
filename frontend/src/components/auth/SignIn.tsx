@@ -10,86 +10,140 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
+import { validateSignInInputs } from '../../hooks/useSignInValidation';
 import setLogin from '../../utils/auth/setLogin';
+import setResponseErrorMessage from '../../utils/auth/setResponseErrorMessage';
+import { handleSignInUp as handleSignIn } from '../../utils/clickHandler';
+import { testId } from '../../utils/testId';
 import { Card, SignInContainer } from '../ContainerElements';
-import { FacebookIcon, GoogleIcon } from '../shared-components/CustomIcons';
-import { HeadlineSignInUp } from '../TextElements';
+import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
+import AuthHeaderLayout from './AuthHeaderLayout';
 import ForgotPassword from './components/ForgotPassword';
+import RegisterButtonSocialite from './RegisterButtonSocialite';
 
-export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
+const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
+    // inputs
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    // input validation
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    // api response errors
+    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+    // disable submit button
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Passwort vergessen
     const [open, setOpen] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleClickOpen = () => {
+    const handleClickOpen = useCallback(() => {
         setOpen(true);
-    };
-
-    const handleClose = () => {
+    }, []);
+    const handleClose = useCallback(() => {
         setOpen(false);
-    };
-
-    const handleTogglePassword = () => {
+    }, []);
+    // Passwort anzeigen
+    const [showPassword, setShowPassword] = useState(false);
+    const handleTogglePassword = useCallback(() => {
         setShowPassword((prev) => !prev);
-    };
+    }, []);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        if (emailError || passwordError) {
-            event.preventDefault();
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setIsSubmitting(true);
+        // reset backend validation
+        setErrors({});
+
+        // Frontend validation
+        const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
+            validateSignInInputs(email, password);
+
+        setEmailError(emailError);
+        setEmailErrorMessage(emailErrorMessage);
+        setPasswordError(passwordError);
+        setPasswordErrorMessage(passwordErrorMessage);
+
+        if (!isValid) {
+            setIsSubmitting(false);
             return;
         }
 
-        event.preventDefault();
-        const dataFD = new FormData(event.currentTarget);
+        // start backend communication
+        const result = await setLogin({
+            shouldFetchUser: true,
+            email,
+            password,
+        });
 
-        const logState = false;
+        if (result.success) {
+            setEmail('');
+            setPassword('');
+            setEmailError(false);
+            setPasswordError(false);
+            setErrors({});
+        } else {
+            // response validation
+            const fieldErrors = result.errors || {};
+            setErrors(fieldErrors);
+            setEmailErrorMessage(
+                setResponseErrorMessage(
+                    fieldErrors,
+                    'email',
+                    'Ein unbekannter Fehler bei der E-Mail.',
+                ),
+            );
+            setPasswordError(true);
+            setPasswordErrorMessage(
+                setResponseErrorMessage(
+                    fieldErrors,
+                    'password',
+                    'Das Passwort ist falsch oder diese E-Mail ist nicht registriert.',
+                ),
+            );
+        }
 
-        await setLogin({
-            logState,
-            email: (dataFD.get('email') as string) ?? '',
-            password: (dataFD.get('password') as string) ?? '',
-            password_confirmation: (dataFD.get('password') as string) ?? '',
+        setIsSubmitting(false);
+    };
+
+    // input onChange
+    const clearEmailErrorHandler = () => {
+        setEmailError(false);
+        setEmailErrorMessage('');
+        setErrors((prev) => {
+            const { email, ...rest } = prev;
+            return rest;
         });
     };
 
-    const validateInputs = () => {
-        const email = document.getElementById('email') as HTMLInputElement;
-        const password = document.getElementById('password') as HTMLInputElement;
-
-        let isValid = true;
-
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-            setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address.');
-            isValid = false;
-        } else {
-            setEmailError(false);
-            setEmailErrorMessage('');
-        }
-
-        if (!password.value || password.value.length < 6) {
-            setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
-            isValid = false;
-        } else {
-            setPasswordError(false);
-            setPasswordErrorMessage('');
-        }
-
-        return isValid;
+    const clearPasswordErrorHandler = () => {
+        setPasswordError(false);
+        setPasswordErrorMessage('');
+        setErrors((prev) => {
+            const { password, ...rest } = prev;
+            return rest;
+        });
     };
 
     return (
         <>
-            <SignInContainer direction="column" justifyContent="space-between">
+            <SignInContainer
+                direction="column"
+                justifyContent="space-between"
+                {...testId('sign-in-container')}
+            >
                 <Card variant="outlined">
                     <LockOpenIcon sx={{ color: (theme) => theme.palette.primary.main }} />
-                    <HeadlineSignInUp>Sign in</HeadlineSignInUp>
+                    <AuthHeaderLayout
+                        title="Anmelden"
+                        onToggleAuth={onToggleAuth}
+                        textBeforeLink="Haben Sie noch kein Nutzer Konto?"
+                        linkLabel="Registrieren"
+                        testIds={{
+                            title: 'title-sign-in',
+                            link: 'button-switch-to-sign-up',
+                        }}
+                    />
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
@@ -104,7 +158,7 @@ export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
                         <FormControl>
                             <FormLabel htmlFor="email">Email</FormLabel>
                             <TextField
-                                error={emailError}
+                                error={emailError || !!errors.email}
                                 helperText={emailErrorMessage}
                                 id="email"
                                 type="email"
@@ -116,19 +170,23 @@ export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 fullWidth
                                 variant="outlined"
                                 color={emailError ? 'error' : 'primary'}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    clearEmailErrorHandler();
+                                }}
+                                value={email}
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
-                                error={passwordError}
+                                error={passwordError || !!errors.password}
                                 helperText={passwordErrorMessage}
                                 name="password"
                                 placeholder="••••••"
                                 type={showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
-                                autoFocus
                                 required
                                 fullWidth
                                 variant="outlined"
@@ -146,21 +204,33 @@ export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
                                         </InputAdornment>
                                     ),
                                 }}
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    clearPasswordErrorHandler();
+                                }}
                             />
                         </FormControl>
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
+                            label="Login für dieses Gerät merken"
                         />
                         <ForgotPassword open={open} handleClose={handleClose} />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
-                            onClick={validateInputs}
+                            disabled={isSubmitting}
+                            sx={{
+                                '&.Mui-disabled': {
+                                    color: 'common.white',
+                                },
+                            }}
+                            {...testId('form-button-login')}
                         >
-                            Sign in
+                            {isSubmitting ? 'Wird gesendet...' : 'Anmelden'}
                         </Button>
+
                         <Link
                             component="button"
                             type="button"
@@ -168,44 +238,28 @@ export default function SignIn({ onToggleAuth }: { onToggleAuth: () => void }) {
                             variant="body2"
                             sx={{ alignSelf: 'center' }}
                         >
-                            Forgot your password?
+                            Benötigen Sie ein neues Passwort?
                         </Link>
                     </Box>
-                    <Divider>or</Divider>
+                    <Divider>oder</Divider>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={() => alert('Sign in with Google')}
+                        <RegisterButtonSocialite
+                            startIcon={<GithubIcon />}
+                            text="Anmelden mit Github"
+                            testIdIdentifier="form-button-login-with-github"
+                            clickHandler={() => handleSignIn('github')}
+                        />
+                        <RegisterButtonSocialite
                             startIcon={<GoogleIcon />}
-                        >
-                            Sign in with Google
-                        </Button>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={() => alert('Sign in with Facebook')}
-                            startIcon={<FacebookIcon />}
-                        >
-                            Sign in with Facebook
-                        </Button>
-                        <Typography sx={{ textAlign: 'center' }}>
-                            Don&apos;t have an account?{' '}
-                            <Link
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onToggleAuth();
-                                }}
-                                variant="body2"
-                                sx={{ alignSelf: 'center' }}
-                            >
-                                Sign up
-                            </Link>
-                        </Typography>
+                            text="Anmelden mit Google"
+                            testIdIdentifier="form-button-login-with-google"
+                            clickHandler={() => handleSignIn('google')}
+                        />
                     </Box>
                 </Card>
             </SignInContainer>
         </>
     );
-}
+};
+
+export default SignIn;
