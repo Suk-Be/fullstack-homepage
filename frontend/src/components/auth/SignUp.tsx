@@ -133,11 +133,11 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 error={emailError || !!errors.email}
                                 helperText={
                                     emailErrorMessage ? (
-                                        <span data-testid="email-input-error">
+                                        <span {...testId('email-input-error')}>
                                             {emailErrorMessage}
                                         </span>
                                     ) : errors.email ? (
-                                        <span data-testid="email-exists-error">
+                                        <span {...testId('email-exists-error')}>
                                             {errors.email[0]}
                                         </span>
                                     ) : null
