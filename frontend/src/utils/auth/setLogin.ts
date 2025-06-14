@@ -1,25 +1,48 @@
 import LaravelApiClient from '../../plugins/axios';
+import translateHttpError from './translateHttpError';
 
 const setLogin = async ({
-    logState,
+    shouldFetchUser,
     email,
     password,
-    password_confirmation,
 }: {
-    logState: boolean;
+    shouldFetchUser: boolean;
     email: string;
     password: string;
-    password_confirmation: string;
 }) => {
-    await LaravelApiClient.post('/auth/spa/login', {
-        email,
-        password,
-        password_confirmation,
-    });
+    try {
+        // Step 1 & 2: CSRF token is automatically handled by the interceptor
+        await LaravelApiClient.post('/auth/spa/login', {
+            email,
+            password,
+        });
 
-    if (logState) {
-        const { data } = await LaravelApiClient.get('/me');
-        console.log('get User data, successful login', data);
+        // Step 3: Optionally log the user in
+        if (shouldFetchUser) {
+            const { data: user } = await LaravelApiClient.get('/me');
+            console.log('get User data, successful login', user);
+            return { success: true, user };
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        const response = error.response;
+
+        if (response?.status === 422) {
+            return {
+                success: false,
+                message: response.data.message || 'Validierungsfehler',
+                errors: response.data.errors || {},
+            };
+        }
+
+        return {
+            success: false,
+            message: translateHttpError(error),
+            errors: {
+                email: ['Diese E-Mail ist nicht registriert oder das Passwort ist falsch.'],
+            },
+        };
     }
 };
 
