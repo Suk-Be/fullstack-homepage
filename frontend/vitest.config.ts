@@ -20,10 +20,9 @@ export default defineConfig({
         testTimeout: 10000, // Set all tests to timeout after 10 seconds
     },
     optimizeDeps: {
-        include: ['@mui/system', 'react', 'react-dom'],
+        include: ['@mui/material'],
         exclude: [
             '@mui/icons-material', // this is likely causing the "too many files" issue
-            '@mui/material',
         ],
     },
 });
