@@ -1,8 +1,12 @@
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { delay, http, HttpResponse } from 'msw';
+import React from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import routes from '../routes';
-import { default as ThemeProvider } from '../themes/AppTheme';
+import AppThemeProvider from '../themes/AppTheme';
 import { server } from './mocks/server';
 
 const simluateDelay = (endpoint: string) =>
@@ -31,10 +35,52 @@ const simulateError = (endpoint: string) =>
 const navigateTo = (entryPath: string) => {
     const router = createMemoryRouter(routes, { initialEntries: [entryPath] });
     return render(
-        <ThemeProvider>
+        <AppThemeProvider>
             <RouterProvider router={router} />
-        </ThemeProvider>,
+        </AppThemeProvider>,
     );
 };
 
-export { navigateTo, simluateDelay, simulateError };
+/**
+ * Renders a React component wrapped with necessary providers for testing.
+ *
+ * This includes:
+ * - `MemoryRouter` for simulating routing with React Router
+ * - `ThemeProvider` and `CssBaseline` from MUI for consistent styling
+ *
+ * It also sets the browser's history to the specified route so that
+ * components relying on routing behave as expected.
+ *
+ * @param {React.ReactElement} ui - The React component to render.
+ * @param {Object} [options] - Optional render options.
+ * @param {string} [options.route='/'] - Initial route for MemoryRouter and history.
+ *
+ * @returns {ReturnType<typeof import('@testing-library/react').render>} - The result of RTL's render function, including query utilities.
+ *
+ * @example
+ * renderWithProviders(<MyComponent />);
+ *
+ * @example
+ * renderWithProviders(<MyComponent />, { route: '/dashboard' });
+ */
+
+const theme = createTheme(); // or your custom theme
+
+type RenderOptions = {
+    route?: string;
+};
+
+const renderWithProviders = (ui: React.ReactElement, { route = '/' }: RenderOptions = {}) => {
+    window.history.pushState({}, 'Test page', route);
+
+    return render(
+        <MemoryRouter initialEntries={[route]}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                {ui}
+            </ThemeProvider>
+        </MemoryRouter>,
+    );
+};
+
+export { navigateTo, renderWithProviders, simluateDelay, simulateError };

@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
+import { db } from './db';
 
 export const handlers = [
     // 1. CSRF cookie request
@@ -17,8 +18,8 @@ export const handlers = [
     }),
 
     // 2. Registration request
-    http.post(`${apiBaseUrl}/auth/spa/register`, async ({ request }) => {
-        const body = (await request.json()) as {
+    http.post(`${apiBaseUrl}/auth/spa/register`, async (ctx) => {
+        const body = (await ctx.request.json()) as {
             email: string;
             name: string;
             password: string;
@@ -60,5 +61,30 @@ export const handlers = [
             },
             { status: 200 },
         );
+    }),
+
+    // 3. Login request
+    http.post(`${apiBaseUrl}/auth/spa/login`, async (ctx) => {
+        const { email, password } = (await ctx.request.json()) as {
+            email: string;
+            password: string;
+        };
+
+        const user = db.user.findFirst({
+            where: {
+                email: {
+                    equals: email,
+                },
+                password: {
+                    equals: password,
+                },
+            },
+        });
+
+        if (!user) {
+            return HttpResponse.json({ message: 'Invalid credentials' }, { status: 422 });
+        }
+
+        return HttpResponse.json({ token: 'fake-token', user, status: 200 });
     }),
 ];
