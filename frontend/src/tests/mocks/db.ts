@@ -9,3 +9,5 @@ export const db = factory({
         password_confirmation: String,
     },
 });
+
+export type User = typeof db.user.create extends (...args: any) => infer R ? R : never

@@ -10,41 +10,41 @@ const LaravelApiClient = axios.create({
     withCredentials: true,
 });
 
+// Request interceptor: fetch CSRF token if needed
 LaravelApiClient.interceptors.request.use(
     async (config) => {
-        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
-            (config.method ?? '').toLowerCase(),
-        );
+        const method = config.method?.toLowerCase() ?? '';
+        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(method);
+
         if (needsCsrf) {
-            await LaravelApiClient.get('/csrf-cookie').then();
-            config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+            await LaravelApiClient.get('/csrf-cookie');
+            const csrfToken = Cookies.get('XSRF-TOKEN');
+            if (csrfToken) {
+                config.headers['X-XSRF-TOKEN'] = csrfToken;
+            }
         }
+
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    },
+    (error) => Promise.reject(error),
 );
 
+// Response interceptor: handle Laravel errors globally
 LaravelApiClient.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
-        if (error.response) {
-            const status = error.response.status;
+        const status = error.response?.status;
 
-            if (status === 401) {
-                console.warn('Nicht autorisiert – ggf. ausgeloggt');
-            }
+        if (status === 401) {
+            console.warn('Nicht autorisiert – ggf. ausgeloggt');
+        }
 
-            if (status === 419) {
-                console.warn('CSRF-Token abgelaufen');
-            }
+        if (status === 419) {
+            console.warn('CSRF-Token abgelaufen');
+        }
 
-            if (status === 422) {
-                console.warn('Validierungsfehler:', error.response.data.errors);
-            }
+        if (status === 422) {
+            console.warn('Validierungsfehler', error.response.data.errors);
         }
 
         return Promise.reject(error);

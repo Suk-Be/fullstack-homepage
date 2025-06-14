@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ErrorMessages from '../data/ErrorMessages';
 
-export default function useValidateInputs() {
+export default function useSignUpValidateInputs() {
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [passwordError, setPasswordError] = useState(false);
