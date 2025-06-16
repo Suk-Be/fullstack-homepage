@@ -64,6 +64,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         setPasswordError(passwordError);
         setPasswordErrorMessage(passwordErrorMessage);
 
+        // do not submit if validation fails
         if (!isValid) {
             setIsSubmitting(false);
             return;
@@ -71,7 +72,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
         // start backend communication
         const result = await setLogin({
-            shouldFetchUser: true,
+            shouldFetchUser: false,
             email,
             password,
         });
@@ -191,18 +192,24 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 fullWidth
                                 variant="outlined"
                                 color={passwordError ? 'error' : 'primary'}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={handleTogglePassword}
-                                                edge="end"
-                                                aria-label="Toggle password visibility"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={handleTogglePassword}
+                                                    edge="end"
+                                                    aria-label="Toggle password visibility"
+                                                >
+                                                    {showPassword ? (
+                                                        <VisibilityOff />
+                                                    ) : (
+                                                        <Visibility />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                                 value={password}
                                 onChange={(e) => {

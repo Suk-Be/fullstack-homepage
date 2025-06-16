@@ -7,12 +7,12 @@ import { registerHeaders } from '../requestHeaders';
  * If the request is successful, it logs the user data to the console.
  * If there is an error, it logs the error details to the console.
  *
- * @param {boolean} islogRegisteredUser - Indicates if the user is registered and should be logged in.
+ * @param {boolean} shouldFetchUser - Indicates if the user is registered and should be logged in.
  * @param {string} csrfToken - The CSRF token for secure requests.
  */
 
-const logUserAfterRegistration = async (islog: boolean, csrfToken: string) => {
-    if (islog) {
+const logUserAfterRegistration = async (shouldFetchUser: boolean, csrfToken: string) => {
+    if (shouldFetchUser) {
         try {
             const response = await fetch(`${apiBaseUrl}/me`, {
                 method: 'GET',

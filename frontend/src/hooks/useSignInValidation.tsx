@@ -9,11 +9,11 @@ export interface ValidationResult {
 }
 
 /**
- * Validates email and password input fields for the SignIn form.
+ * Validates input fields for the SignIn form.
  */
 export function validateSignInInputs(email: string, password: string): ValidationResult {
+    // init
     let isValid = true;
-
     const result: ValidationResult = {
         isValid: true,
         emailError: false,
@@ -22,6 +22,7 @@ export function validateSignInInputs(email: string, password: string): Validatio
         passwordErrorMessage: '',
     };
 
+    // validate
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
         result.emailError = true;
         result.emailErrorMessage = ErrorMessages.SignUp.email;
@@ -34,6 +35,7 @@ export function validateSignInInputs(email: string, password: string): Validatio
         isValid = false;
     }
 
+    // return validation result
     result.isValid = isValid;
     return result;
 }
