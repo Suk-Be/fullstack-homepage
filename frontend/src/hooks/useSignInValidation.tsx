@@ -29,7 +29,7 @@ export function validateSignInInputs(email: string, password: string): Validatio
         isValid = false;
     }
 
-    if (!password || password.length < 6) {
+    if (!password || password.length < 8) {
         result.passwordError = true;
         result.passwordErrorMessage = ErrorMessages.SignUp.password;
         isValid = false;
