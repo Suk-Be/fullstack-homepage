@@ -1,6 +1,6 @@
 import { Grid, Link, Typography } from '@mui/material';
-import { testId } from '../../utils/testId';
-import { HeadlineSignInUp } from '../TextElements';
+import { testId } from '../../../utils/testId';
+import { HeadlineSignInUp } from '../../TextElements';
 
 type AuthHeaderLayoutProps = {
     title: string;

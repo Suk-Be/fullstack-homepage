@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import { FC } from 'react';
-import { testId } from '../../utils/testId';
+import { testId } from '../../../utils/testId';
 
 interface RegisterButtonSocialiteProps {
     startIcon: React.ReactNode;
