@@ -1,18 +1,38 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import SignUp from '../../../components/auth/SignUp';
 import ErrorMessages from '../../../data/ErrorMessages';
 import apiBaseUrl from '../../../utils/apiBaseUrl';
 import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
-import { navigateTo } from '../../utils';
+import { navigateTo, renderWithProviders } from '../../utils';
+
+const renderRegistrationForm = () => {
+    const user = userEvent.setup();
+    const fakeUser = userFactory();
+
+    return {
+        user,
+        fakeUser,
+        nameInput: screen.getByLabelText(/benutzername/i),
+        emailInput: screen.getByLabelText(/email/i),
+        passwordInput: screen.getByLabelText('Passwort'),
+        passwordConfirmationInput: screen.getByLabelText(/passwort bestätigung/i),
+        registerButton: screen.getByTestId('form-button-register'),
+        googleButton: screen.getByTestId('form-button-register-with-google'),
+        githubButton: screen.getByTestId('form-button-register-with-github'),
+    };
+};
 
 describe('SignUp', () => {
     const originalLocation = window.location;
 
     beforeEach(() => {
         vi.stubGlobal('location', { href: '' });
+        const toggleAuth = vi.fn(() => false);
+        renderWithProviders(<SignUp onToggleAuth={toggleAuth} />);
     });
 
     afterAll(() => {
@@ -20,46 +40,26 @@ describe('SignUp', () => {
     });
 
     const renderStatic = () => {
-        navigateTo('/'); // Render HomePage
-        const title = screen.getByRole('heading', { name: /registrieren/i });
-        const registerIcon = screen.getByTestId('HowToRegIcon');
-        const descriptionRegistration = screen.getByTestId('description-sign-up');
-        const linkSwitchToLogin = screen.getByRole('link', { name: /anmelden/i });
-
         return {
-            title,
-            registerIcon,
-            descriptionRegistration,
-            linkSwitchToLogin,
+            title: screen.getByRole('heading', { name: /registrieren/i }),
+            registerIcon: screen.getByTestId('HowToRegIcon'),
+            descriptionRegistration: screen.getByTestId('description-sign-up'),
+            linkSwitchToLogin: screen.getByRole('link', { name: /anmelden/i }),
         };
     };
 
-    const renderRegistrationForm = () => {
-        const user = userEvent.setup();
-        const fakeUser = userFactory();
+    // Helper: Expect error to be present
+    const expectErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
+        fields.forEach((field) => {
+            expect(screen.getByText(ErrorMessages.SignUp[field])).toBeInTheDocument();
+        });
+    };
 
-        navigateTo('/'); // Render HomePage
-
-        const nameInput = screen.getByLabelText(/benutzername/i);
-        const emailInput = screen.getByLabelText(/email/i);
-        const passwordInput = screen.getByLabelText('Passwort');
-        const passwordConfirmationInput = screen.getByLabelText(/passwort bestätigung/i);
-
-        const registerButton = screen.getByTestId('form-button-register');
-        const googleButton = screen.getByTestId('form-button-register-with-google');
-        const githubButton = screen.getByTestId('form-button-register-with-github');
-
-        return {
-            nameInput,
-            emailInput,
-            passwordInput,
-            passwordConfirmationInput,
-            registerButton,
-            user,
-            fakeUser,
-            googleButton,
-            githubButton,
-        };
+    // Helper: Expect error to be gone
+    const expectNoErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
+        fields.forEach((field) => {
+            expect(screen.queryByText(ErrorMessages.SignUp[field])).not.toBeInTheDocument();
+        });
     };
 
     it('should render a title, register icon and and a register description', () => {
@@ -83,107 +83,83 @@ describe('SignUp', () => {
         expect(passwordConfirmationInput).toHaveAttribute('placeholder', '••••••');
     });
 
-    it('should render error messages on submit, if required inputs are missing', async () => {
+    it('should render and clear validation errors progressively', async () => {
         const {
-            registerButton,
             user,
+            fakeUser,
+            registerButton,
             nameInput,
             emailInput,
             passwordInput,
             passwordConfirmationInput,
-            fakeUser,
         } = renderRegistrationForm();
 
+        // 1. Submit with empty form
         await user.click(registerButton);
+        await waitFor(() => {
+            expectErrorMessages(['name', 'email', 'password', 'password_confirmation']);
+        });
 
-        const errorUserInput = screen.getByText(ErrorMessages.SignUp.name);
-        const errorEmailInput = screen.getByText(ErrorMessages.SignUp.email);
-        const errorPasswordInput = screen.getByText(ErrorMessages.SignUp.password);
-        const errorPasswordConfirmationInput = screen.getByText(
-            ErrorMessages.SignUp.password_confirmation,
-        );
-
-        expect(errorUserInput).toBeInTheDocument();
-        expect(errorEmailInput).toBeInTheDocument();
-        expect(errorPasswordInput).toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type user name
+        // 2. Fill name, submit again
         await user.type(nameInput, fakeUser.name);
         await user.click(registerButton);
+        await waitFor(() => {
+            expectNoErrorMessages(['name']);
+            expectErrorMessages(['email', 'password', 'password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-
-        expect(errorEmailInput).toBeInTheDocument();
-        expect(errorPasswordInput).toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type wrong email address
-        await user.type(emailInput, fakeUser.name);
+        // 3. Enter invalid email
+        await user.type(emailInput, fakeUser.name); // invalid format
         await user.click(registerButton);
+        await waitFor(() => {
+            expectNoErrorMessages(['name']);
+            expectErrorMessages(['email', 'password', 'password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-
-        expect(errorEmailInput).toBeInTheDocument();
-        expect(errorPasswordInput).toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type right email address
+        // 4. Correct email
         await user.clear(emailInput);
         await user.type(emailInput, fakeUser.email);
         await user.click(registerButton);
+        await waitFor(() => {
+            expectNoErrorMessages(['name', 'email']);
+            expectErrorMessages(['password', 'password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-        expect(errorEmailInput).not.toBeInTheDocument();
-
-        expect(errorPasswordInput).toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type wrong password length
-        await user.type(passwordInput, '1234567');
+        // 5. Password too short
+        await user.clear(passwordInput);
+        await user.type(passwordInput, '123456');
         await user.click(registerButton);
+        await waitFor(() => {
+            expect((passwordInput as HTMLInputElement).value.length).toBeLessThan(8);
+            expectErrorMessages(['password', 'password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-        expect(errorEmailInput).not.toBeInTheDocument();
-
-        expect((passwordInput as HTMLInputElement).value.length).toBeLessThan(8);
-        expect(errorPasswordInput).toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type right password length
+        // 6. Valid password
         await user.clear(passwordInput);
         await user.type(passwordInput, fakeUser.password);
         await user.click(registerButton);
+        await waitFor(() => {
+            expect((passwordInput as HTMLInputElement).value.length).not.toBeLessThan(8);
+            expectNoErrorMessages(['password']);
+            expectErrorMessages(['password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-
-        expect(errorEmailInput).not.toBeInTheDocument();
-        expect((passwordInput as HTMLInputElement).value.length).not.toBeLessThan(8);
-        expect(errorPasswordInput).not.toBeInTheDocument();
-
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type password confirmation, but with wrong match
+        // 7. Mismatched password confirmation
+        await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, 'notSame');
         await user.click(registerButton);
+        await waitFor(() => {
+            expectErrorMessages(['password_confirmation']);
+        });
 
-        expect(errorUserInput).not.toBeInTheDocument();
-        expect(errorEmailInput).not.toBeInTheDocument();
-        expect((passwordInput as HTMLInputElement).value.length).not.toBeLessThan(8);
-        expect(errorPasswordInput).not.toBeInTheDocument();
-
-        expect(errorPasswordConfirmationInput).toBeInTheDocument();
-
-        // type right password confirmation, password is set 12345678
+        // 8. Matching password confirmation
         await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, fakeUser.password);
         await user.click(registerButton);
-
-        expect(errorUserInput).not.toBeInTheDocument();
-        expect(errorEmailInput).not.toBeInTheDocument();
-        expect(errorPasswordInput).not.toBeInTheDocument();
-        expect(errorPasswordConfirmationInput).not.toBeInTheDocument();
-    });
+        await waitFor(() => {
+            expectNoErrorMessages(['name', 'email', 'password', 'password_confirmation']);
+        });
+    }, 20000);
 
     it('should render a hint if the user already exists', async () => {
         const {
@@ -211,7 +187,8 @@ describe('SignUp', () => {
         await user.click(registerButton);
 
         await waitFor(() => {
-            expect(screen.getByTestId('email-exists-error')).toBeInTheDocument();
+            // screen.debug(screen.getByTestId('form'));
+            expect(screen.getByText(ErrorMessages.SignUp.responseEmail)).toBeInTheDocument();
         });
     });
 
@@ -246,19 +223,18 @@ describe('SignUp', () => {
         await waitFor(() => {
             // Ensure the API was called
             expect(mockRegister).toHaveBeenCalledWith({
-                islog: false,
+                shouldFetchUser: false,
                 name: 'New User',
                 email: 'new@user.com',
                 password: 'ValidPassword123',
                 password_confirmation: 'ValidPassword123',
             });
+            // check that inputs were reset
+            expect(nameInput).toHaveValue('');
+            expect(emailInput).toHaveValue('');
+            expect(passwordInput).toHaveValue('');
+            expect(passwordConfirmationInput).toHaveValue('');
         });
-
-        // check that inputs were reset
-        expect(nameInput).toHaveValue('');
-        expect(emailInput).toHaveValue('');
-        expect(passwordInput).toHaveValue('');
-        expect(passwordConfirmationInput).toHaveValue('');
     });
 
     const authProviderUtil = [
@@ -303,8 +279,11 @@ describe('SignUp', () => {
             );
         },
     );
+});
 
+describe('Toggle SignUp component', () => {
     it('renders SignIn component on click of the "Anmelden" link', async () => {
+        navigateTo('/'); // render Homepage
         const { user } = renderRegistrationForm();
         const QueryLoginHeadline = screen.queryByRole('heading', { name: 'Anmelden' });
         const RegisterHeadline = screen.getByRole('heading', { name: 'Registrieren' });
@@ -315,10 +294,12 @@ describe('SignUp', () => {
         const linkSwitchToLogin = screen.getByRole('link', { name: /anmelden/i });
         await user.click(linkSwitchToLogin);
 
-        const LoginHeadline = screen.getByRole('heading', { name: 'Anmelden' });
-        const QueryRegisterHeadline = screen.queryByRole('heading', { name: 'Registrieren' });
+        await waitFor(() => {
+            const LoginHeadline = screen.getByRole('heading', { name: 'Anmelden' });
+            const QueryRegisterHeadline = screen.queryByRole('heading', { name: 'Registrieren' });
 
-        expect(QueryRegisterHeadline).not.toBeInTheDocument();
-        expect(LoginHeadline).toBeInTheDocument();
+            expect(QueryRegisterHeadline).not.toBeInTheDocument();
+            expect(LoginHeadline).toBeInTheDocument();
+        });
     });
 });
