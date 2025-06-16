@@ -60,7 +60,7 @@ it('logs in an existing user', function () {
     ]);
 
     $response->assertOk();
-    $response->assertJson(['message' => 'User logged in successfully']);
+    $response->assertJson(['message' => 'Sie haben sich erfolgreich angemeldet.']);
 
     expect(auth()->check())->toBeTrue();
 });
@@ -98,7 +98,7 @@ it('logs out an authenticated user', function () {
     $response = post('/api/auth/spa/logout');
 
     $response->assertOk();
-    $response->assertJson(['message' => 'Successfully logged out!']);
+    $response->assertJson(['message' => 'Sie haben sich erfolgreich abgemeldet.']);
 
     expect(auth()->check())->toBeFalse();
 });
