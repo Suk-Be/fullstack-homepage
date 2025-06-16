@@ -13,14 +13,14 @@ import {
 import { FormEvent, useState } from 'react';
 import useSignUpValidateInputs from '../../hooks/useSignUpValidation';
 import useToggle from '../../hooks/useToggle';
-import registerUser from '../../utils/auth/SignUp';
+import registerUser from '../../utils/auth/SignUp/registerUser';
 import { handleSignInUp as handleSignUp } from '../../utils/clickHandler';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
 import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
 import { ParagraphHP } from '../TextElements';
-import AuthHeaderLayout from './AuthHeaderLayout';
-import RegisterButtonSocialite from './RegisterButtonSocialite';
+import AuthHeaderLayout from './components/AuthHeaderLayout';
+import RegisterButtonSocialite from './components/RegisterButtonSocialite';
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [showPassword, toggleShowPassword] = useToggle();

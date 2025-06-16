@@ -1,8 +1,8 @@
 // export default registerUser;
 import Cookies from 'js-cookie';
 import apiBaseUrl from '../../apiBaseUrl';
+import headers, { registerHeaders } from '../requestHeaders';
 import logUserAfterRegistration from './logUserAfterRegistration';
-import headers, { registerHeaders } from './requestHeaders';
 
 const registerUser = async ({
     islog,

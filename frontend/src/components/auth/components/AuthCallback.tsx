@@ -1,7 +1,7 @@
 // AuthCallback.tsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LaravelApiClient from '../../plugins/axios';
+import LaravelApiClient from '../../../plugins/axios';
 
 const AuthCallback = () => {
     const navigate = useNavigate();

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import ErrorMessages from '../../../data/ErrorMessages';
 import apiBaseUrl from '../../../utils/apiBaseUrl';
-import * as registerModule from '../../../utils/auth/SignUp';
+import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
 import { navigateTo } from '../../utils';

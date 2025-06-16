@@ -12,15 +12,15 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useCallback, useState } from 'react';
 import { validateSignInInputs } from '../../hooks/useSignInValidation';
-import setLogin from '../../utils/auth/setLogin';
+import setLogin from '../../utils/auth/SignIn/setLogin';
 import setResponseErrorMessage from '../../utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '../../utils/clickHandler';
 import { testId } from '../../utils/testId';
 import { Card, SignInContainer } from '../ContainerElements';
 import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
-import AuthHeaderLayout from './AuthHeaderLayout';
+import AuthHeaderLayout from './components/AuthHeaderLayout';
 import ForgotPassword from './components/ForgotPassword';
-import RegisterButtonSocialite from './RegisterButtonSocialite';
+import RegisterButtonSocialite from './components/RegisterButtonSocialite';
 
 const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     // inputs

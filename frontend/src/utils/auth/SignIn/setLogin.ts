@@ -1,5 +1,5 @@
-import LaravelApiClient from '../../plugins/axios';
-import translateHttpError from './translateHttpError';
+import LaravelApiClient from '../../../plugins/axios';
+import translateHttpError from '../translateHttpError';
 
 const setLogin = async ({
     shouldFetchUser,

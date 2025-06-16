@@ -1,6 +1,6 @@
 import { RouteObject } from 'react-router';
 import App from './App';
-import AuthCallback from './components/auth/AuthCallback';
+import AuthCallback from './components/auth/components/AuthCallback';
 import DatenschutzPage from './pages/DatenschutzPage';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';

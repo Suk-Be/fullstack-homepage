@@ -1,5 +1,5 @@
 import apiBaseUrl from '../../apiBaseUrl';
-import { registerHeaders } from './requestHeaders';
+import { registerHeaders } from '../requestHeaders';
 
 /*
  * This function logs the user data and is used right after submitting user data on the register api.
