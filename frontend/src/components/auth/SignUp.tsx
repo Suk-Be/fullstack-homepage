@@ -10,9 +10,10 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
+import ErrorMessages from '../../data/ErrorMessages';
 import useSignUpValidateInputs from '../../hooks/useSignUpValidation';
-import useToggle from '../../hooks/useToggle';
+import setResponseErrorMessage from '../../utils/auth/setResponseErrorMessage';
 import registerUser from '../../utils/auth/SignUp/registerUser';
 import { handleSignInUp as handleSignUp } from '../../utils/clickHandler';
 import { testId } from '../../utils/testId';
@@ -23,47 +24,73 @@ import AuthHeaderLayout from './components/AuthHeaderLayout';
 import RegisterButtonSocialite from './components/RegisterButtonSocialite';
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
-    const [showPassword, toggleShowPassword] = useToggle();
+    // Inputs
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-    const {
-        emailError,
-        emailErrorMessage,
-        passwordError,
-        passwordErrorMessage,
-        passwordConfirmationError,
-        passwordConfirmationErrorMessage,
-        nameError,
-        nameErrorMessage,
-        validateInputs,
-    } = useSignUpValidateInputs();
+    // input validation
+    const [emailError, setEmailError] = useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = useState('');
+    const [passwordError, setPasswordError] = useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
+    const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
+    const [nameError, setNameError] = useState(false);
+    const [nameErrorMessage, setNameErrorMessage] = useState('');
 
+    // api response errors
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+    // disable submit button
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Passwort anzeigen
+    const [showPassword, setShowPassword] = useState(false);
+    const handleTogglePassword = useCallback(() => {
+        setShowPassword((prev) => !prev);
+    }, []);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setIsSubmitting(true);
+        // reset backend validation
         setErrors({});
 
-        // Run validation here
-        const isValid = validateInputs();
+        // FrontendValidation
+        const {
+            isValid,
+            emailError,
+            emailErrorMessage,
+            passwordError,
+            passwordErrorMessage,
+            passwordConfirmationError,
+            passwordConfirmationErrorMessage,
+            nameError,
+            nameErrorMessage,
+        } = useSignUpValidateInputs(name, email, password, passwordConfirmation);
+
+        setEmailError(emailError);
+        setEmailErrorMessage(emailErrorMessage);
+        setPasswordError(passwordError);
+        setPasswordErrorMessage(passwordErrorMessage);
+        setNameError(nameError);
+        setNameErrorMessage(nameErrorMessage);
+        setPasswordConfirmationError(passwordConfirmationError);
+        setPasswordConfirmationErrorMessage(passwordConfirmationErrorMessage);
+
         // do not submit if validation fails
         if (!isValid) {
+            setIsSubmitting(false);
             return;
         }
 
-        const form = event.currentTarget;
-        const dataFD = new FormData(form);
-
-        // islog : true logs the registered user data right after registration
+        // shouldFetchUser : true logs the registered user data right after registration
         const result = await registerUser({
-            islog: false,
-            name: (dataFD.get('name') as string) ?? '',
-            email: (dataFD.get('email') as string) ?? '',
-            password: (dataFD.get('password') as string) ?? '',
-            password_confirmation: (dataFD.get('passwordConfirmation') as string) ?? '',
+            shouldFetchUser: false,
+            name,
+            email,
+            password,
+            password_confirmation: passwordConfirmation,
         });
 
         if (result.success) {
@@ -72,8 +99,52 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             setPassword('');
             setPasswordConfirmation('');
         } else {
-            setErrors({ email: [result.message] });
+            // response validation
+            const fieldErrors = !result.success && 'errors' in result ? result.errors : {};
+            setErrors(fieldErrors);
+            setEmailErrorMessage(
+                setResponseErrorMessage(fieldErrors, 'email', ErrorMessages.SignUp.responseEmail),
+            );
         }
+
+        setIsSubmitting(false);
+    };
+
+    // input onChange
+    const clearNameErrorHandler = () => {
+        setNameError(false);
+        setNameErrorMessage('');
+        setErrors((prev) => {
+            const { name, ...rest } = prev;
+            return rest;
+        });
+    };
+
+    const clearEmailErrorHandler = () => {
+        setEmailError(false);
+        setEmailErrorMessage('');
+        setErrors((prev) => {
+            const { email, ...rest } = prev;
+            return rest;
+        });
+    };
+
+    const clearPasswordErrorHandler = () => {
+        setPasswordError(false);
+        setPasswordErrorMessage('');
+        setErrors((prev) => {
+            const { password, ...rest } = prev;
+            return rest;
+        });
+    };
+
+    const clearPasswordConfirmationErrorHandler = () => {
+        setPasswordConfirmationError(false);
+        setPasswordConfirmationErrorMessage('');
+        setErrors((prev) => {
+            const { passwordConfirmation, ...rest } = prev;
+            return rest;
+        });
     };
 
     return (
@@ -101,6 +172,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                     <Box
                         component="form"
                         onSubmit={handleSubmit}
+                        noValidate
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                         {...testId('form')}
                     >
@@ -117,7 +189,10 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 helperText={nameErrorMessage}
                                 color={nameError ? 'error' : 'primary'}
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={(e) => {
+                                    setName(e.target.value);
+                                    clearNameErrorHandler();
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -131,20 +206,13 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 autoComplete="email"
                                 variant="outlined"
                                 error={emailError || !!errors.email}
-                                helperText={
-                                    emailErrorMessage ? (
-                                        <span {...testId('email-input-error')}>
-                                            {emailErrorMessage}
-                                        </span>
-                                    ) : errors.email ? (
-                                        <span {...testId('email-exists-error')}>
-                                            {errors.email[0]}
-                                        </span>
-                                    ) : null
-                                }
+                                helperText={emailErrorMessage}
                                 color={passwordError ? 'error' : 'primary'}
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    clearEmailErrorHandler();
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -167,7 +235,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    onClick={toggleShowPassword}
+                                                    onClick={handleTogglePassword}
                                                     edge="end"
                                                     aria-label="Toggle password visibility"
                                                 >
@@ -182,7 +250,10 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                     },
                                 }}
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    clearPasswordErrorHandler();
+                                }}
                             />
                         </FormControl>
                         <FormControl>
@@ -202,7 +273,10 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 helperText={passwordConfirmationErrorMessage}
                                 color={passwordConfirmationError ? 'error' : 'primary'}
                                 value={passwordConfirmation}
-                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                onChange={(e) => {
+                                    setPasswordConfirmation(e.target.value);
+                                    clearPasswordConfirmationErrorHandler();
+                                }}
                                 {...testId('form-input-password-confirmation')}
                             />
                         </FormControl>
@@ -211,10 +285,10 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            onClick={validateInputs}
+                            disabled={isSubmitting}
                             {...testId('form-button-register')}
                         >
-                            registrieren
+                            {isSubmitting ? 'Wird gesendet...' : 'Registrieren'}
                         </Button>
                     </Box>
                     <Divider>

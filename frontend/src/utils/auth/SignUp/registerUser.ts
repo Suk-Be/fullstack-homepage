@@ -2,77 +2,93 @@
 import Cookies from 'js-cookie';
 import apiBaseUrl from '../../apiBaseUrl';
 import headers, { registerHeaders } from '../requestHeaders';
+import translateHttpError from '../translateHttpError';
 import logUserAfterRegistration from './logUserAfterRegistration';
 
-const registerUser = async ({
-    islog,
-    name,
-    email,
-    password,
-    password_confirmation,
-}: {
-    islog: boolean;
+interface RegisterUserParams {
+    shouldFetchUser: boolean;
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
-}) => {
-    let csrfToken: string | undefined;
+}
 
+const getCsrfToken = async (): Promise<string> => {
+    await fetch(`${apiBaseUrl}/csrf-cookie`, {
+        headers,
+        credentials: 'include',
+    });
+
+    const token = Cookies.get('XSRF-TOKEN');
+    if (!token) throw new Error('CSRF token not found');
+
+    return token;
+};
+
+const handleErrorResponse = async (response: Response) => {
+    const errorData = await response.json();
+    const { status } = response;
+
+    const defaultMessages: Record<number, string> = {
+        422: 'User already exists',
+        401: 'Nicht autorisiert – ggf. ausgeloggt',
+        419: 'CSRF-Token abgelaufen',
+    };
+
+    return {
+        success: false,
+        message: errorData.message || defaultMessages[status] || 'Ein Fehler ist aufgetreten',
+        errors: errorData.errors || {},
+    };
+};
+
+const registerUser = async ({
+    shouldFetchUser,
+    name,
+    email,
+    password,
+    password_confirmation,
+}: RegisterUserParams) => {
     try {
-        // Step 1: Get CSRF cookie
-        await fetch(`${apiBaseUrl}/csrf-cookie`, {
-            headers: headers,
+        const csrfToken = await getCsrfToken();
+
+        const response = await fetch(`${apiBaseUrl}/auth/spa/register`, {
+            method: 'POST',
             credentials: 'include',
-        }).then(() => {
-            csrfToken = Cookies.get('XSRF-TOKEN');
-            if (!csrfToken) {
-                throw new Error('CSRF token not found');
-            }
+            headers: registerHeaders(csrfToken),
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                password_confirmation,
+            }),
         });
 
-        // Step 2: Send register request
-        if (csrfToken) {
-            const response = await fetch(`${apiBaseUrl}/auth/spa/register`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: registerHeaders(csrfToken),
-                body: JSON.stringify({
-                    name: name,
-                    email: email,
-                    password: password,
-                    password_confirmation: password_confirmation,
-                }),
-            });
+        if (!response.ok) return await handleErrorResponse(response);
 
-            // Step 3: Return validation based on response status
-            if (response.status === 422) {
-                const errorData = await response.json();
-                return { success: false, message: errorData.message || 'User already exists' };
-            }
-            if (response.status === 401) {
-                const errorData = await response.json();
-                return {
-                    success: false,
-                    message: errorData.message || 'Nicht autorisiert – ggf. ausgeloggt',
-                };
-            }
-            if (response.status === 419) {
-                const errorData = await response.json();
-                return { success: false, message: errorData.message || 'CSRF-Token abgelaufen' };
-            }
-
-            // Step 4: if isLog is set to true: the registered user data is fetched from backend
-            await logUserAfterRegistration(islog, csrfToken);
+        if (shouldFetchUser) {
+            await logUserAfterRegistration(true, csrfToken);
         }
-        // If everything is successful, return success which makes possible errors on email validation for already existing emails disappear
+
         return { success: true };
     } catch (error: any) {
-        console.log('Status:', error);
+        const response = error.response;
 
-        console.log('Status:', error);
+        if (response?.status === 422) {
+            return {
+                success: false,
+                message: response.data.message || 'Validierungsfehler',
+                errors: response.data.errors || {},
+            };
+        }
 
-        return { success: false, message: error };
+        return {
+            success: false,
+            message: translateHttpError(error),
+            errors: {
+                email: ['Diese E-Mail ist nicht registriert oder das Passwort ist falsch.'],
+            },
+        };
     }
 };
 

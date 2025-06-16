@@ -1,74 +1,67 @@
-import { useState } from 'react';
 import ErrorMessages from '../data/ErrorMessages';
 
-export default function useSignUpValidateInputs() {
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-    const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
-    const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
-    const [nameError, setNameError] = useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = useState('');
+export interface ValidationResult {
+    isValid: boolean;
+    emailError: boolean;
+    emailErrorMessage: string;
+    passwordError: boolean;
+    passwordErrorMessage: string;
+    passwordConfirmationError: boolean;
+    passwordConfirmationErrorMessage: string;
+    nameError: boolean;
+    nameErrorMessage: string;
+}
 
-    const validateInputs = () => {
-        const email = document.getElementById('email') as HTMLInputElement;
-        const password = document.getElementById('password') as HTMLInputElement;
-        const passwordConfirmation = document.getElementById(
-            'passwordConfirmation',
-        ) as HTMLInputElement;
-        const name = document.getElementById('name') as HTMLInputElement;
+/**
+ * Validates input fields for the SignUp form.
+ */
 
-        let isValid = true;
-
-        if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-            setEmailError(true);
-            setEmailErrorMessage(ErrorMessages.SignUp.email);
-            isValid = false;
-        } else {
-            setEmailError(false);
-            setEmailErrorMessage('');
-        }
-
-        if (!password.value || password.value.length < 8) {
-            setPasswordError(true);
-            setPasswordErrorMessage(ErrorMessages.SignUp.password);
-            isValid = false;
-        } else {
-            setPasswordError(false);
-            setPasswordErrorMessage('');
-        }
-
-        if (!passwordConfirmation.value || passwordConfirmation.value !== password.value) {
-            setPasswordConfirmationError(true);
-            setPasswordConfirmationErrorMessage(ErrorMessages.SignUp.password_confirmation);
-            isValid = false;
-        } else {
-            setPasswordConfirmationError(false);
-            setPasswordConfirmationErrorMessage('');
-        }
-
-        if (!name.value || name.value.length < 1) {
-            setNameError(true);
-            setNameErrorMessage(ErrorMessages.SignUp.name);
-            isValid = false;
-        } else {
-            setNameError(false);
-            setNameErrorMessage('');
-        }
-
-        return isValid;
+export default function useSignUpValidateInputs(
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+) {
+    // init
+    let isValid = true;
+    const result: ValidationResult = {
+        isValid: true,
+        nameError: false,
+        nameErrorMessage: '',
+        emailError: false,
+        emailErrorMessage: '',
+        passwordError: false,
+        passwordErrorMessage: '',
+        passwordConfirmationError: false,
+        passwordConfirmationErrorMessage: '',
     };
 
-    return {
-        emailError,
-        emailErrorMessage,
-        passwordError,
-        passwordErrorMessage,
-        passwordConfirmationError,
-        passwordConfirmationErrorMessage,
-        nameError,
-        nameErrorMessage,
-        validateInputs,
-    };
+    // validate
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        result.emailError = true;
+        result.emailErrorMessage = ErrorMessages.SignUp.email;
+        isValid = false;
+    }
+
+    if (!password || password.length < 8) {
+        result.passwordError = true;
+        result.passwordErrorMessage = ErrorMessages.SignUp.password;
+        isValid = false;
+    }
+
+    if (!passwordConfirmation || passwordConfirmation !== password) {
+        result.passwordConfirmationError = true;
+        result.passwordConfirmationErrorMessage = ErrorMessages.SignUp.password_confirmation;
+        isValid = false;
+    }
+
+    if (!name || name.length < 1) {
+        result.nameError = true;
+        result.nameErrorMessage = ErrorMessages.SignUp.name;
+        isValid = false;
+    }
+
+    // return validation result
+    result.isValid = isValid;
+    return result;
 }
