@@ -48,20 +48,6 @@ describe('SignUp', () => {
         };
     };
 
-    // Helper: Expect error to be present
-    const expectErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
-        fields.forEach((field) => {
-            expect(screen.getByText(ErrorMessages.SignUp[field])).toBeInTheDocument();
-        });
-    };
-
-    // Helper: Expect error to be gone
-    const expectNoErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
-        fields.forEach((field) => {
-            expect(screen.queryByText(ErrorMessages.SignUp[field])).not.toBeInTheDocument();
-        });
-    };
-
     it('should render a title, register icon and and a register description', () => {
         const { title, registerIcon, descriptionRegistration, linkSwitchToLogin } = renderStatic();
 
@@ -84,6 +70,20 @@ describe('SignUp', () => {
     });
 
     it('should render and clear validation errors progressively', async () => {
+        // Helper: Expect error to be present
+        const expectErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
+            fields.forEach((field) => {
+                expect(screen.getByText(ErrorMessages.SignUp[field])).toBeInTheDocument();
+            });
+        };
+
+        // Helper: Expect error to be gone
+        const expectNoErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
+            fields.forEach((field) => {
+                expect(screen.queryByText(ErrorMessages.SignUp[field])).not.toBeInTheDocument();
+            });
+        };
+
         const {
             user,
             fakeUser,

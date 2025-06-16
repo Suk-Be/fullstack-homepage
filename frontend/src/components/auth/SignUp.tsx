@@ -1,14 +1,14 @@
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useState } from 'react';
 import ErrorMessages from '../../data/ErrorMessages';
@@ -40,7 +40,9 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [nameError, setNameError] = useState(false);
     const [nameErrorMessage, setNameErrorMessage] = useState('');
 
-    // api response errors
+    // error content set by backend with register method and its jsonResponse method
+    // 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.'
+    // This data is used by registerUser.ts try catch block to return an object with the signature errors state object
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,6 +59,17 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         setErrors({});
 
         // FrontendValidation
+        // FYI: to execute own form validation instead of the browser validation
+        /**
+         * The Box compenent=form needs noValidate param
+         * <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                {...testId('form')}
+            >
+         */
         const {
             isValid,
             emailError,
@@ -110,7 +123,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         setIsSubmitting(false);
     };
 
-    // input onChange
+    // clear input values onchange
     const clearNameErrorHandler = () => {
         setNameError(false);
         setNameErrorMessage('');
