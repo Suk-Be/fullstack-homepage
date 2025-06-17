@@ -1,5 +1,8 @@
 import { http, HttpResponse } from 'msw';
 import ErrorMessages from '../../data/ErrorMessages';
+import { LoginSchema } from '../../schemas/loginSchema';
+import { RegisterSchema } from '../../schemas/registerSchema';
+import { UserSchema } from '../../schemas/userSchema';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
 import { db } from './db';
@@ -26,6 +29,18 @@ export const handlers = [
             password: string;
             password_confirmation: string;
         };
+
+        const parseResult = RegisterSchema.safeParse(body);
+
+        if (!parseResult.success) {
+            return HttpResponse.json(
+                {
+                    message: 'Invalid data',
+                    errors: parseResult.error.flatten(), // helpful for frontend forms
+                },
+                { status: 422 },
+            );
+        }
 
         // Mock response of already registered user email
         if (body.email === registeredUserData.email) {
@@ -56,22 +71,32 @@ export const handlers = [
         }
 
         // Return mock user data
-        return HttpResponse.json(
-            {
-                id: registeredUserData.id,
-                name: registeredUserData.name,
-                email: registeredUserData.email,
-            },
-            { status: 200 },
-        );
+        const mockUser = UserSchema.parse({
+            id: registeredUserData.id,
+            name: registeredUserData.name,
+            email: registeredUserData.email,
+            email_verified_at: null,
+        });
+
+        const result = UserSchema.safeParse(mockUser);
+
+        if (!result.success) {
+            return HttpResponse.json({ message: 'Invalid mock user format' }, { status: 500 });
+        }
+
+        return HttpResponse.json(mockUser, { status: 200 });
     }),
 
     // 3. Login request
     http.post(`${apiBaseUrl}/auth/spa/login`, async (ctx) => {
-        const { email, password } = (await ctx.request.json()) as {
-            email: string;
-            password: string;
-        };
+        const body = await ctx.request.json();
+        const parseResult = LoginSchema.safeParse(body);
+
+        if (!parseResult.success) {
+            return HttpResponse.json({ message: 'Invalid data' }, { status: 422 });
+        }
+
+        const { email, password } = parseResult.data;
 
         const user = db.user.findFirst({
             where: {
