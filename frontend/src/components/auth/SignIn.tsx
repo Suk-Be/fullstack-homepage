@@ -22,17 +22,48 @@ import AuthHeaderLayout from './components/AuthHeaderLayout';
 import ForgotPassword from './components/ForgotPassword';
 import RegisterButtonSocialite from './components/RegisterButtonSocialite';
 
+type FieldError = {
+    hasError: boolean;
+    message: string;
+};
+
+type ErrorState = {
+    email: FieldError;
+    password: FieldError;
+};
+
 const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     // inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // input validation
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-    // api response errors
+    /**
+     * Tracks the client-side (frontend) validation errors for each form field.
+     *
+     * Each field in `fieldErrors` contains:
+     * - `hasError`: A boolean indicating if a validation error is present.
+     * - `message`: A descriptive error message to show to the user.
+     *
+     * Used for immediate feedback before any API call is made.
+     */
+    const [fieldErrors, setFieldErrors] = useState<ErrorState>({
+        email: { hasError: false, message: '' },
+        password: { hasError: false, message: '' },
+    });
+
+    /**
+     * Stores server-side (backend) validation errors returned from the API.
+     *
+     * The object maps field names to arrays of error messages received from the backend.
+     * This is useful for displaying detailed validation errors from the server response.
+     *
+     * Example:
+     * {
+     *   email: ["This email is already taken."],
+     *   password: ["Password must be at least 8 characters."]
+     * }
+     */
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
     // Passwort vergessen
@@ -49,6 +80,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         setShowPassword((prev) => !prev);
     }, []);
 
+    // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -59,18 +91,18 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
             validateSignInInputs(email, password);
 
-        setEmailError(emailError);
-        setEmailErrorMessage(emailErrorMessage);
-        setPasswordError(passwordError);
-        setPasswordErrorMessage(passwordErrorMessage);
+        setFieldErrors({
+            email: { hasError: emailError, message: emailErrorMessage },
+            password: { hasError: passwordError, message: passwordErrorMessage },
+        });
 
-        // do not submit if validation fails
+        // do not submit if frontend validation fails
         if (!isValid) {
             setIsSubmitting(false);
             return;
         }
 
-        // start backend communication
+        // submit and backend validation
         const result = await setLogin({
             shouldFetchUser: false,
             email,
@@ -80,48 +112,56 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         if (result.success) {
             setEmail('');
             setPassword('');
-            setEmailError(false);
-            setPasswordError(false);
+            setFieldErrors({
+                email: { hasError: false, message: '' },
+                password: { hasError: false, message: '' },
+            });
             setErrors({});
         } else {
             // response validation
             const fieldErrors = result.errors || {};
             setErrors(fieldErrors);
-            setEmailErrorMessage(
-                setResponseErrorMessage(
-                    fieldErrors,
-                    'email',
-                    'Ein unbekannter Fehler bei der E-Mail.',
-                ),
-            );
-            setPasswordError(true);
-            setPasswordErrorMessage(
-                setResponseErrorMessage(
-                    fieldErrors,
-                    'password',
-                    'Das Passwort ist falsch oder diese E-Mail ist nicht registriert.',
-                ),
-            );
+            setFieldErrors({
+                email: {
+                    hasError: !!fieldErrors.email,
+                    message: setResponseErrorMessage(
+                        fieldErrors,
+                        'email',
+                        'Ein unbekannter Fehler bei der E-Mail.',
+                    ),
+                },
+                password: {
+                    hasError: true,
+                    message: setResponseErrorMessage(
+                        fieldErrors,
+                        'password',
+                        'Das Passwort ist falsch oder diese E-Mail ist nicht registriert.',
+                    ),
+                },
+            });
         }
 
         setIsSubmitting(false);
     };
 
-    // input onChange
-    const clearEmailErrorHandler = () => {
-        setEmailError(false);
-        setEmailErrorMessage('');
+    /**
+     * Clears the error state for a specific form field.
+     *
+     * This function resets both the frontend validation error (`fieldErrors`)
+     * and backend error messages (`errors`) associated with the specified field.
+     *
+     * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
+     *
+     * @example
+     * clearFieldError('email');
+     */
+    const clearFieldError = (field: keyof ErrorState) => {
+        setFieldErrors((prev) => ({
+            ...prev,
+            [field]: { hasError: false, message: '' },
+        }));
         setErrors((prev) => {
-            const { email, ...rest } = prev;
-            return rest;
-        });
-    };
-
-    const clearPasswordErrorHandler = () => {
-        setPasswordError(false);
-        setPasswordErrorMessage('');
-        setErrors((prev) => {
-            const { password, ...rest } = prev;
+            const { [field]: _ignored, ...rest } = prev;
             return rest;
         });
     };
@@ -156,11 +196,11 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             gap: 2,
                         }}
                     >
-                        <FormControl>
+                        <FormControl {...testId('email-input-login')}>
                             <FormLabel htmlFor="email">Email</FormLabel>
                             <TextField
-                                error={emailError || !!errors.email}
-                                helperText={emailErrorMessage}
+                                error={fieldErrors.email.hasError || !!errors.email}
+                                helperText={fieldErrors.email.message}
                                 id="email"
                                 type="email"
                                 name="email"
@@ -170,10 +210,10 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 required
                                 fullWidth
                                 variant="outlined"
-                                color={emailError ? 'error' : 'primary'}
+                                color={fieldErrors.email.hasError ? 'error' : 'primary'}
                                 onChange={(e) => {
                                     setEmail(e.target.value);
-                                    clearEmailErrorHandler();
+                                    clearFieldError('email');
                                 }}
                                 value={email}
                             />
@@ -181,8 +221,8 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                         <FormControl>
                             <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
-                                error={passwordError || !!errors.password}
-                                helperText={passwordErrorMessage}
+                                error={fieldErrors.password.hasError || !!errors.password}
+                                helperText={fieldErrors.password.message}
                                 name="password"
                                 placeholder="••••••"
                                 type={showPassword ? 'text' : 'password'}
@@ -191,7 +231,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 required
                                 fullWidth
                                 variant="outlined"
-                                color={passwordError ? 'error' : 'primary'}
+                                color={fieldErrors.password.hasError ? 'error' : 'primary'}
                                 slotProps={{
                                     input: {
                                         endAdornment: (
@@ -214,7 +254,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
-                                    clearPasswordErrorHandler();
+                                    clearFieldError('password');
                                 }}
                             />
                         </FormControl>

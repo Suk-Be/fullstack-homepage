@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import ErrorMessages from '../../data/ErrorMessages';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
 import { db } from './db';
@@ -29,7 +30,9 @@ export const handlers = [
         // Mock response of already registered user email
         if (body.email === registeredUserData.email) {
             return HttpResponse.json(
-                { message: 'Die E-Mail Adresse ist bereits vergeben.' },
+                {
+                    message: ErrorMessages.SignUp.responseEmail,
+                },
                 { status: 422 },
             );
         }

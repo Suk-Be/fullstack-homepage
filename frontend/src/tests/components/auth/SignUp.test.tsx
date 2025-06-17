@@ -178,7 +178,6 @@ describe('SignUp', () => {
         await user.click(registerButton);
 
         await waitFor(() => {
-            // screen.debug(screen.getByTestId('form'));
             expect(screen.getByText(ErrorMessages.SignUp.responseEmail)).toBeInTheDocument();
         });
     });

@@ -1,19 +1,18 @@
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useState } from 'react';
 import ErrorMessages from '../../data/ErrorMessages';
 import useSignUpValidateInputs from '../../hooks/useSignUpValidation';
-import setResponseErrorMessage from '../../utils/auth/setResponseErrorMessage';
 import registerUser from '../../utils/auth/SignUp/registerUser';
 import { handleSignInUp as handleSignUp } from '../../utils/clickHandler';
 import { testId } from '../../utils/testId';
@@ -23,6 +22,18 @@ import { ParagraphHP } from '../TextElements';
 import AuthHeaderLayout from './components/AuthHeaderLayout';
 import RegisterButtonSocialite from './components/RegisterButtonSocialite';
 
+type FieldError = {
+    hasError: boolean;
+    message: string;
+};
+
+type ErrorState = {
+    name: FieldError;
+    email: FieldError;
+    password: FieldError;
+    passwordConfirmation: FieldError;
+};
+
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     // Inputs
     const [name, setName] = useState('');
@@ -30,20 +41,36 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-    // input validation
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-    const [passwordConfirmationError, setPasswordConfirmationError] = useState(false);
-    const [passwordConfirmationErrorMessage, setPasswordConfirmationErrorMessage] = useState('');
-    const [nameError, setNameError] = useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = useState('');
+    /**
+     * Tracks the client-side (frontend) validation errors for each form field.
+     *
+     * Each field in `fieldErrors` contains:
+     * - `hasError`: A boolean indicating if a validation error is present.
+     * - `message`: A descriptive error message to show to the user.
+     *
+     * Used for immediate feedback before any API call is made.
+     */
+    const [fieldErrors, setFieldErrors] = useState<ErrorState>({
+        name: { hasError: false, message: '' },
+        email: { hasError: false, message: '' },
+        password: { hasError: false, message: '' },
+        passwordConfirmation: { hasError: false, message: '' },
+    });
 
-    // error content set by backend with register method and its jsonResponse method
-    // 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.'
-    // This data is used by registerUser.ts try catch block to return an object with the signature errors state object
+    /**
+     * Stores server-side (backend) validation errors returned from the API.
+     *
+     * The object maps field names to arrays of error messages received from the backend.
+     * This is useful for displaying detailed validation errors from the server response.
+     *
+     * Example:
+     * {
+     *   email: ["This email is already taken."],
+     *   password: ["Password must be at least 8 characters."]
+     * }
+     */
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
     // Passwort anzeigen
@@ -52,6 +79,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         setShowPassword((prev) => !prev);
     }, []);
 
+    // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -60,16 +88,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // FrontendValidation
         // FYI: to execute own form validation instead of the browser validation
-        /**
-         * The Box compenent=form needs noValidate param
-         * <Box
-                component="form"
-                onSubmit={handleSubmit}
-                noValidate
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-                {...testId('form')}
-            >
-         */
         const {
             isValid,
             emailError,
@@ -82,14 +100,15 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             nameErrorMessage,
         } = useSignUpValidateInputs(name, email, password, passwordConfirmation);
 
-        setEmailError(emailError);
-        setEmailErrorMessage(emailErrorMessage);
-        setPasswordError(passwordError);
-        setPasswordErrorMessage(passwordErrorMessage);
-        setNameError(nameError);
-        setNameErrorMessage(nameErrorMessage);
-        setPasswordConfirmationError(passwordConfirmationError);
-        setPasswordConfirmationErrorMessage(passwordConfirmationErrorMessage);
+        setFieldErrors({
+            name: { hasError: nameError, message: nameErrorMessage },
+            email: { hasError: emailError, message: emailErrorMessage },
+            password: { hasError: passwordError, message: passwordErrorMessage },
+            passwordConfirmation: {
+                hasError: passwordConfirmationError,
+                message: passwordConfirmationErrorMessage,
+            },
+        });
 
         // do not submit if validation fails
         if (!isValid) {
@@ -111,51 +130,46 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             setEmail('');
             setPassword('');
             setPasswordConfirmation('');
-        } else {
-            // response validation
-            const fieldErrors = !result.success && 'errors' in result ? result.errors : {};
-            setErrors(fieldErrors);
-            setEmailErrorMessage(
-                setResponseErrorMessage(fieldErrors, 'email', ErrorMessages.SignUp.responseEmail),
-            );
+            setFieldErrors({
+                name: { hasError: false, message: '' },
+                email: { hasError: false, message: '' },
+                password: { hasError: false, message: '' },
+                passwordConfirmation: { hasError: false, message: '' },
+            });
+        } else if ('errors' in result) {
+            const emailErrors = result.message;
+            if (emailErrors?.length) {
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    email: {
+                        hasError: true,
+                        message: emailErrors || ErrorMessages.SignUp.responseEmail,
+                    },
+                }));
+            }
         }
 
         setIsSubmitting(false);
     };
 
-    // clear input values onchange
-    const clearNameErrorHandler = () => {
-        setNameError(false);
-        setNameErrorMessage('');
+    /**
+     * Clears the error state for a specific form field.
+     *
+     * This function resets both the frontend validation error (`fieldErrors`)
+     * and backend error messages (`errors`) associated with the specified field.
+     *
+     * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
+     *
+     * @example
+     * clearFieldError('email');
+     */
+    const clearFieldError = (field: keyof ErrorState) => {
+        setFieldErrors((prev) => ({
+            ...prev,
+            [field]: { hasError: false, message: '' },
+        }));
         setErrors((prev) => {
-            const { name, ...rest } = prev;
-            return rest;
-        });
-    };
-
-    const clearEmailErrorHandler = () => {
-        setEmailError(false);
-        setEmailErrorMessage('');
-        setErrors((prev) => {
-            const { email, ...rest } = prev;
-            return rest;
-        });
-    };
-
-    const clearPasswordErrorHandler = () => {
-        setPasswordError(false);
-        setPasswordErrorMessage('');
-        setErrors((prev) => {
-            const { password, ...rest } = prev;
-            return rest;
-        });
-    };
-
-    const clearPasswordConfirmationErrorHandler = () => {
-        setPasswordConfirmationError(false);
-        setPasswordConfirmationErrorMessage('');
-        setErrors((prev) => {
-            const { passwordConfirmation, ...rest } = prev;
+            const { [field]: _ignored, ...rest } = prev;
             return rest;
         });
     };
@@ -198,13 +212,13 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 fullWidth
                                 id="name"
                                 placeholder="Jon Snow"
-                                error={nameError}
-                                helperText={nameErrorMessage}
-                                color={nameError ? 'error' : 'primary'}
+                                error={fieldErrors.name.hasError}
+                                helperText={fieldErrors.name.message}
+                                color={fieldErrors.name.hasError ? 'error' : 'primary'}
                                 value={name}
                                 onChange={(e) => {
                                     setName(e.target.value);
-                                    clearNameErrorHandler();
+                                    clearFieldError('name');
                                 }}
                             />
                         </FormControl>
@@ -218,21 +232,21 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 name="email"
                                 autoComplete="email"
                                 variant="outlined"
-                                error={emailError || !!errors.email}
-                                helperText={emailErrorMessage}
-                                color={passwordError ? 'error' : 'primary'}
+                                error={fieldErrors.email.hasError || !!errors.email}
+                                helperText={fieldErrors.email.message}
+                                color={fieldErrors.email.hasError ? 'error' : 'primary'}
                                 value={email}
                                 onChange={(e) => {
                                     setEmail(e.target.value);
-                                    clearEmailErrorHandler();
+                                    clearFieldError('email');
                                 }}
                             />
                         </FormControl>
                         <FormControl>
                             <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
-                                error={passwordError}
-                                helperText={passwordErrorMessage}
+                                error={fieldErrors.password.hasError}
+                                helperText={fieldErrors.password.message}
                                 name="password"
                                 placeholder="••••••"
                                 type={showPassword ? 'text' : 'password'}
@@ -242,7 +256,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 required
                                 fullWidth
                                 variant="outlined"
-                                color={passwordError ? 'error' : 'primary'}
+                                color={fieldErrors.password.hasError ? 'error' : 'primary'}
                                 slotProps={{
                                     input: {
                                         endAdornment: (
@@ -265,7 +279,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
-                                    clearPasswordErrorHandler();
+                                    clearFieldError('password');
                                 }}
                             />
                         </FormControl>
@@ -282,13 +296,15 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 id="passwordConfirmation"
                                 autoComplete="new-password"
                                 variant="outlined"
-                                error={passwordConfirmationError}
-                                helperText={passwordConfirmationErrorMessage}
-                                color={passwordConfirmationError ? 'error' : 'primary'}
+                                error={fieldErrors.passwordConfirmation.hasError}
+                                helperText={fieldErrors.passwordConfirmation.message}
+                                color={
+                                    fieldErrors.passwordConfirmation.hasError ? 'error' : 'primary'
+                                }
                                 value={passwordConfirmation}
                                 onChange={(e) => {
                                     setPasswordConfirmation(e.target.value);
-                                    clearPasswordConfirmationErrorHandler();
+                                    clearFieldError('passwordConfirmation');
                                 }}
                                 {...testId('form-input-password-confirmation')}
                             />
