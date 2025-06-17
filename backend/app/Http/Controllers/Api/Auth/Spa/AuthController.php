@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\Auth\Spa;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +36,7 @@ class AuthController extends Controller
         // Logs in in the user after registration
         Auth::login($user);
 
-        return response()->json(['user' => $user]);
+        return response()->json(new UserResource($user));
     }
     public function login(Request $request): JsonResponse
     {
@@ -48,7 +50,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Sie haben sich erfolgreich angemeldet.',
-                'user' => Auth::user(),
+                'user' => new UserResource(Auth::user())
             ]);
         }
 
@@ -72,6 +74,6 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        return response()->json(new UserResource($request->user()));
     }
 }
