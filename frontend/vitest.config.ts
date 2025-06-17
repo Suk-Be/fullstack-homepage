@@ -10,6 +10,7 @@ export default defineConfig({
         },
         globals: true,
         setupFiles: './src/tests/setupTests.tsx',
+        css: false,
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
         exclude: ['node_modules', 'dist', '.git'],
         poolOptions: {
