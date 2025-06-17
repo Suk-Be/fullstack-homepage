@@ -3,12 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
-import ErrorMessages from '../../../data/ErrorMessages';
 import apiBaseUrl from '../../../utils/apiBaseUrl';
+import * as setLoginModule from '../../../utils/auth/SignIn/setLogin';
 import { registeredUserData } from '../../mocks/data';
-import { db } from '../../mocks/db';
 import { server } from '../../mocks/server';
-import { authProviderUrls, renderWithProviders } from '../../utils';
+import {
+    authProviderUrls,
+    expectErrorMessages,
+    expectNoErrorMessages,
+    renderWithProviders,
+} from '../../utils';
 
 describe('SignIn component', () => {
     const renderUtils = () => {
@@ -34,29 +38,27 @@ describe('SignIn component', () => {
     it('should log in successfully with valid credentials', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();
 
-        db.user.create({
-            id: registeredUserData.id,
-            email: registeredUserData.email,
-            password: registeredUserData.password,
-        });
+        const mockLogin = vi
+            .spyOn(setLoginModule, 'default')
+            .mockResolvedValueOnce({ success: true } as any);
 
         await userEvent.type(emailInput, registeredUserData.email);
         await userEvent.type(passwordInput, registeredUserData.password);
         await userEvent.click(submitButton);
 
-        // mock click event
-        const response = await fetch(`${apiBaseUrl}/auth/spa/login`, {
-            method: 'POST',
-            body: JSON.stringify({
+        await waitFor(() => {
+            // Ensure the API was called
+            expect(mockLogin).toHaveBeenCalledWith({
+                shouldFetchUser: false,
                 email: registeredUserData.email,
                 password: registeredUserData.password,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            });
+            // no validation errors
+            expectNoErrorMessages('SignIn', ['email', 'password', 'responseEmail']);
+            // check that inputs were reset
+            expect(emailInput).toHaveValue('');
+            expect(passwordInput).toHaveValue('');
         });
-
-        expect(response.status).toBe(200);
     });
 
     it('shows field error if login fails with 422', async () => {
@@ -82,12 +84,10 @@ describe('SignIn component', () => {
         await userEvent.type(passwordInput, 'wrongpassword');
         await userEvent.click(submitButton);
 
-        expect(
-            await screen.findByText(
-                /Diese E-Mail ist nicht registriert oder das Passwort ist falsch./i,
-            ),
-        ).toBeInTheDocument();
-        expect(submitButton).not.toBeDisabled();
+        await waitFor(() => {
+            expectErrorMessages('SignIn', ['responseEmail']);
+            expect(submitButton).not.toBeDisabled();
+        });
     });
 
     it('shows validation error on empty inputs (frontend)', async () => {
@@ -95,8 +95,9 @@ describe('SignIn component', () => {
 
         await userEvent.click(submitButton);
 
-        expect(await screen.findByText(ErrorMessages.SignIn.email)).toBeInTheDocument();
-        expect(await screen.findByText(ErrorMessages.SignIn.email)).toBeInTheDocument();
+        await waitFor(() => {
+            expectErrorMessages('SignIn', ['email', 'password']);
+        });
     });
 
     it.each(authProviderUrls)(

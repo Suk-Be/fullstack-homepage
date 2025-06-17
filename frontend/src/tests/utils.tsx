@@ -1,14 +1,16 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { delay, http, HttpResponse } from 'msw';
 import React from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { MemoryRouter } from 'react-router-dom';
+import { expect } from 'vitest';
+import ErrorMessages from '../data/ErrorMessages';
 import routes from '../routes';
 import AppThemeProvider from '../themes/AppTheme';
-import { server } from './mocks/server';
 import apiBaseUrl from '../utils/apiBaseUrl';
+import { server } from './mocks/server';
 
 const simluateDelay = (endpoint: string) =>
     server.use(
@@ -95,4 +97,54 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' }: RenderOpti
     );
 };
 
-export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
+/**
+ * Asserts that specific error messages for a given form type (SignUp or SignIn)
+ * are rendered in the document.
+ *
+ * @template T - Either 'SignUp' or 'SignIn'
+ * @param {T} formType - The form section to check error messages for (e.g., 'SignUp')
+ * @param {Array<keyof typeof ErrorMessages[T]>} fields - The fields whose error messages should be present
+ *
+ * @example
+ * expectErrorMessages('SignUp', ['email', 'password']);
+ */
+const expectErrorMessages = <T extends 'SignUp' | 'SignIn'>(
+    formType: T,
+    fields: Array<keyof (typeof ErrorMessages)[T]>,
+) => {
+    fields.forEach((field) => {
+        expect(screen.getByText(ErrorMessages[formType][field] as string)).toBeInTheDocument();
+    });
+};
+
+/**
+ * Asserts that specific error messages for a given form type (SignUp or SignIn)
+ * are **not** rendered in the document.
+ *
+ * @template T - Either 'SignUp' or 'SignIn'
+ * @param {T} formType - The form section to check error messages for (e.g., 'SignUp')
+ * @param {Array<keyof typeof ErrorMessages[T]>} fields - The fields whose error messages should not be present
+ *
+ * @example
+ * expectNoErrorMessages('SignIn', ['email', 'password']);
+ */
+const expectNoErrorMessages = <T extends 'SignUp' | 'SignIn'>(
+    formType: T,
+    fields: Array<keyof (typeof ErrorMessages)[T]>,
+) => {
+    fields.forEach((field) => {
+        expect(
+            screen.queryByText(ErrorMessages[formType][field] as string),
+        ).not.toBeInTheDocument();
+    });
+};
+
+export {
+    authProviderUrls,
+    expectErrorMessages,
+    expectNoErrorMessages,
+    navigateTo,
+    renderWithProviders,
+    simluateDelay,
+    simulateError,
+};

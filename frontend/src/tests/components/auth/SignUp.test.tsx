@@ -6,7 +6,13 @@ import ErrorMessages from '../../../data/ErrorMessages';
 import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
-import { authProviderUrls, navigateTo, renderWithProviders } from '../../utils';
+import {
+    authProviderUrls,
+    expectErrorMessages,
+    expectNoErrorMessages,
+    navigateTo,
+    renderWithProviders,
+} from '../../utils';
 
 const renderRegistrationForm = () => {
     const user = userEvent.setup();
@@ -69,20 +75,6 @@ describe('SignUp', () => {
     });
 
     it('should render and clear validation errors progressively', async () => {
-        // Helper: Expect error to be present
-        const expectErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
-            fields.forEach((field) => {
-                expect(screen.getByText(ErrorMessages.SignUp[field])).toBeInTheDocument();
-            });
-        };
-
-        // Helper: Expect error to be gone
-        const expectNoErrorMessages = (fields: Array<keyof (typeof ErrorMessages)['SignUp']>) => {
-            fields.forEach((field) => {
-                expect(screen.queryByText(ErrorMessages.SignUp[field])).not.toBeInTheDocument();
-            });
-        };
-
         const {
             user,
             fakeUser,
@@ -96,23 +88,23 @@ describe('SignUp', () => {
         // 1. Submit with empty form
         await user.click(registerButton);
         await waitFor(() => {
-            expectErrorMessages(['name', 'email', 'password', 'password_confirmation']);
+            expectErrorMessages('SignUp', ['name', 'email', 'password', 'password_confirmation']);
         });
 
         // 2. Fill name, submit again
         await user.type(nameInput, fakeUser.name);
         await user.click(registerButton);
         await waitFor(() => {
-            expectNoErrorMessages(['name']);
-            expectErrorMessages(['email', 'password', 'password_confirmation']);
+            expectNoErrorMessages('SignUp', ['name']);
+            expectErrorMessages('SignUp', ['email', 'password', 'password_confirmation']);
         });
 
         // 3. Enter invalid email
         await user.type(emailInput, fakeUser.name); // invalid format
         await user.click(registerButton);
         await waitFor(() => {
-            expectNoErrorMessages(['name']);
-            expectErrorMessages(['email', 'password', 'password_confirmation']);
+            expectNoErrorMessages('SignUp', ['name']);
+            expectErrorMessages('SignUp', ['email', 'password', 'password_confirmation']);
         });
 
         // 4. Correct email
@@ -120,8 +112,8 @@ describe('SignUp', () => {
         await user.type(emailInput, fakeUser.email);
         await user.click(registerButton);
         await waitFor(() => {
-            expectNoErrorMessages(['name', 'email']);
-            expectErrorMessages(['password', 'password_confirmation']);
+            expectNoErrorMessages('SignUp', ['name', 'email']);
+            expectErrorMessages('SignUp', ['password', 'password_confirmation']);
         });
 
         // 5. Password too short
@@ -130,7 +122,7 @@ describe('SignUp', () => {
         await user.click(registerButton);
         await waitFor(() => {
             expect((passwordInput as HTMLInputElement).value.length).toBeLessThan(8);
-            expectErrorMessages(['password', 'password_confirmation']);
+            expectErrorMessages('SignUp', ['password', 'password_confirmation']);
         });
 
         // 6. Valid password
@@ -139,8 +131,8 @@ describe('SignUp', () => {
         await user.click(registerButton);
         await waitFor(() => {
             expect((passwordInput as HTMLInputElement).value.length).not.toBeLessThan(8);
-            expectNoErrorMessages(['password']);
-            expectErrorMessages(['password_confirmation']);
+            expectNoErrorMessages('SignUp', ['password']);
+            expectErrorMessages('SignUp', ['password_confirmation']);
         });
 
         // 7. Mismatched password confirmation
@@ -148,7 +140,7 @@ describe('SignUp', () => {
         await user.type(passwordConfirmationInput, 'notSame');
         await user.click(registerButton);
         await waitFor(() => {
-            expectErrorMessages(['password_confirmation']);
+            expectErrorMessages('SignUp', ['password_confirmation']);
         });
 
         // 8. Matching password confirmation
@@ -156,7 +148,7 @@ describe('SignUp', () => {
         await user.type(passwordConfirmationInput, fakeUser.password);
         await user.click(registerButton);
         await waitFor(() => {
-            expectNoErrorMessages(['name', 'email', 'password', 'password_confirmation']);
+            expectNoErrorMessages('SignUp', ['name', 'email', 'password', 'password_confirmation']);
         });
     }, 20000);
 
