@@ -1,5 +1,5 @@
-import { screen } from '@testing-library/react';
-import { default as userEvent } from '@testing-library/user-event';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
@@ -8,20 +8,26 @@ import apiBaseUrl from '../../../utils/apiBaseUrl';
 import { registeredUserData } from '../../mocks/data';
 import { db } from '../../mocks/db';
 import { server } from '../../mocks/server';
-import { renderWithProviders } from '../../utils';
+import { authProviderUrls, renderWithProviders } from '../../utils';
 
 describe('SignIn component', () => {
     const renderUtils = () => {
+        const user = userEvent.setup();
         const toggleAuth = vi.fn(() => true);
         renderWithProviders(<SignIn onToggleAuth={toggleAuth} />);
 
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/passwort/i);
         const submitButton = screen.getByTestId('form-button-login');
+        const googleButton = screen.getByTestId('form-button-login-with-google');
+        const githubButton = screen.getByTestId('form-button-login-with-github');
         return {
+            user,
             emailInput,
             passwordInput,
             submitButton,
+            googleButton,
+            githubButton,
         };
     };
 
@@ -62,7 +68,9 @@ describe('SignIn component', () => {
                     {
                         message: 'Validation failed',
                         errors: {
-                            email: ['Ungültige E-Mail oder Passwort.'],
+                            email: [
+                                'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
+                            ],
                         },
                     },
                     { status: 422 },
@@ -90,4 +98,36 @@ describe('SignIn component', () => {
         expect(await screen.findByText(ErrorMessages.SignIn.email)).toBeInTheDocument();
         expect(await screen.findByText(ErrorMessages.SignIn.email)).toBeInTheDocument();
     });
+
+    it.each(authProviderUrls)(
+        'redirects to $provider auth URL when clicked',
+        async ({ uri, provider }) => {
+            const { user, googleButton, githubButton } = renderUtils();
+
+            if (provider === 'Google') {
+                await user.click(googleButton);
+                expect(window.location.href).toBe(uri);
+            } else if (provider === 'Github') {
+                await user.click(githubButton);
+                expect(window.location.href).toBe(uri);
+            }
+        },
+    );
+
+    it.each(authProviderUrls)(
+        'fetches user on $provider AuthCallback mount and navigates',
+        async ({ provider }) => {
+            const { user, googleButton, githubButton } = renderUtils();
+
+            if (provider === 'Google') {
+                await user.click(googleButton);
+            } else if (provider === 'Github') {
+                await user.click(githubButton);
+            }
+
+            await waitFor(() =>
+                expect(screen.queryByText('Logging in...')).not.toBeInTheDocument(),
+            );
+        },
+    );
 });

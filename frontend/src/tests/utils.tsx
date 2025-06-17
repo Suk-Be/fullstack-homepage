@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router-dom';
 import routes from '../routes';
 import AppThemeProvider from '../themes/AppTheme';
 import { server } from './mocks/server';
+import apiBaseUrl from '../utils/apiBaseUrl';
 
 const simluateDelay = (endpoint: string) =>
     server.use(
@@ -23,6 +24,17 @@ const simulateError = (endpoint: string) =>
             return HttpResponse.error();
         }),
     );
+
+const authProviderUrls = [
+    {
+        provider: 'GitHub',
+        uri: `${apiBaseUrl}/auth/github`,
+    },
+    {
+        provider: 'Google',
+        uri: `${apiBaseUrl}/auth/google`,
+    },
+];
 
 /**
  * TestUtility
@@ -83,4 +95,4 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' }: RenderOpti
     );
 };
 
-export { navigateTo, renderWithProviders, simluateDelay, simulateError };
+export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };

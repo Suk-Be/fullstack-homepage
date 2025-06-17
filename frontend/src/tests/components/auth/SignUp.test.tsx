@@ -3,11 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import SignUp from '../../../components/auth/SignUp';
 import ErrorMessages from '../../../data/ErrorMessages';
-import apiBaseUrl from '../../../utils/apiBaseUrl';
 import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
-import { navigateTo, renderWithProviders } from '../../utils';
+import { authProviderUrls, navigateTo, renderWithProviders } from '../../utils';
 
 const renderRegistrationForm = () => {
     const user = userEvent.setup();
@@ -237,18 +236,7 @@ describe('SignUp', () => {
         });
     });
 
-    const authProviderUtil = [
-        {
-            provider: 'GitHub',
-            uri: `${apiBaseUrl}/auth/github`,
-        },
-        {
-            provider: 'Google',
-            uri: `${apiBaseUrl}/auth/google`,
-        },
-    ];
-
-    it.each(authProviderUtil)(
+    it.each(authProviderUrls)(
         'redirects to $provider auth URL when clicked',
         async ({ uri, provider }) => {
             const { user, googleButton, githubButton } = renderRegistrationForm();
@@ -263,7 +251,7 @@ describe('SignUp', () => {
         },
     );
 
-    it.each(authProviderUtil)(
+    it.each(authProviderUrls)(
         'fetches user on $provider AuthCallback mount and navigates',
         async ({ provider }) => {
             const { user, googleButton, githubButton } = renderRegistrationForm();
