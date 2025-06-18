@@ -12,6 +12,13 @@ const ErrorMessages = {
             'Die Bestätigung des Passwortes stimmt nicht mit dem Passwort überein.',
         responseEmail: 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.',
     },
+    ResetPassword: {
+        email: 'Bitte geben Sie eine gültige Email Adresse an.',
+        password: 'Das Passwort benötigt mindestens 8 Zeichen.',
+        password_confirmation:
+            'Die Bestätigung des Passwortes stimmt nicht mit dem Passwort überein.',
+        responseEmail: 'Diese E-Mail ist nicht registriert.',
+    },
 };
 
 export default ErrorMessages;
