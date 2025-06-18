@@ -50,15 +50,8 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
             return call_user_func(static::$toMailCallback, $notifiable, $this->token);
         }
 
-        // DIESE ZEILE ist nicht mehr nötig, da wir unsere eigene Frontend-URL verwenden
-        // $url = url(route('password.reset', [
-        //     'token' => $this->token,
-        //     'email' => $notifiable->getEmailForPasswordReset(),
-        // ], false));
-
         // Wenn Sie eine SPA haben, MÜSSEN Sie hier Ihre Frontend-URL angeben:
-        // Beispiel: IhreFrontendDomain.com/reset-password?token=...
-        $frontendUrl = config('app.frontend_url') . '/reset-password?token=' . $this->token . '&email=' . $notifiable->getEmailForPasswordReset();
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $this->token . '&email=' . $notifiable->getEmailForPasswordReset();
 
 
         return (new MailMessage)

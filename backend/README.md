@@ -1197,14 +1197,14 @@ Since github registration with github oauth registration worked, this code will 
 
 1. create an oauth service in google cloud
 2. grab client_id, client_secret and redirect from oauth service for configuration
-    - service.php
-    - env files
+    -   service.php
+    -   env files
 3. Backend refactor existing code
-    - SocialiteController to BaseSocialiteController
-    - GithubController and GoogleController extending BaseSocialiteController
-    - api.php extending routes and use new Controllers
+    -   SocialiteController to BaseSocialiteController
+    -   GithubController and GoogleController extending BaseSocialiteController
+    -   api.php extending routes and use new Controllers
 4. Frontend
-    - Refactor ClickHandler to a reuseable Clickhandler
+    -   Refactor ClickHandler to a reuseable Clickhandler
 
 ### Create an oauth service in google cloud
 
@@ -1477,3 +1477,616 @@ const handleSignUp = (provider: string) => {
     testIdIdentifier="form-button-register-with-google"
 />
 ```
+
+# Resetting Password for existing users
+
+Steps:
+
+-   laravel implementation for spa notification
+-   frontend implementation
+-   mailpit: testing emails, artisan queue
+
+## laravel implementation for spa notification
+
+Das typische Flow für das Zurücksetzen des Passworts sieht wie folgt aus:
+
+1. Anfrage senden: Der Benutzer gibt seine E-Mail-Adresse ein, um einen Link zum Zurücksetzen des Passworts anzufordern.
+2. E-Mail senden: Das System sendet eine E-Mail mit einem eindeutigen Token an die angegebene Adresse.
+3. Passwort zurücksetzen: Der Benutzer klickt auf den Link in der E-Mail, der ihn zu einer Seite mit einem Formular führt, in dem er ein neues Passwort eingeben kann. Dieses Formular muss das E-Mail-Feld, das Token-Feld (aus der URL) und die neuen Passwortfelder enthalten.
+
+-   Erweiterung der Routen Endpunkte für
+    -   Forgot Password: Annahme der User E-Mail
+    -   Password Reset: Vergabe des neuen Passwortes
+-   Der Email Versand Wird von einem NotificationController übernommen, der vom User Model aufgerufen wird wenn das Passwort sich ändert.
+    -   ResetPasswordNotification.php
+    -   User.php
+-   In Laravel 12 wird breeze ausgeliefert mit Controllern die für Routen notwendig sind. Diese hatte ich gelöscht dich diese werden benötigt, so habe ich diese händisch wieder eingefügt.
+    -   PasswordResetLinkController
+    -   NewPasswordController
+
+### Erweiterung der Routen Endpunkte
+
+Wichtige Hinweise zu den Routen:
+
+-   middleware('web'): Da Sanctum SPAs auf Sessions basieren, ist es wichtig, dass diese Routen die web-Middleware-Gruppe verwenden, um auf Session-Informationen (wie den CSRF-Token für Formulare) zugreifen zu können.
+-   password.email und password.store: Dies sind die Standard-Namen, die Laravel für diese Routen verwendet. Es ist gut, sie beizubehalten, da Laravel interne Helfer für sie verwendet.
+
+```php api.php
+Route::prefix('auth/spa')->middleware('web')->group(function () {
+    // ...
+
+    // NEUE ROUTEN FÜR PASSWORT-RESET
+    // Anfrage für einen Passwort-Reset-Link
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']) // <-- HIER KORRIGIERT!
+        ->name('password.email');
+
+    // Passwort zurücksetzen
+    Route::post('/reset-password', [NewPasswordController::class, 'store']) // <-- HIER KORRIGIERT!
+        ->name('password.update'); // Der Name 'password.store' ist auch falsch, Laravel erwartet 'password.update'
+});
+```
+
+### Der Email Versand Wird von einem NotificationController übernommen
+
+Laravel verwendet die Illuminate\Auth\Notifications\ResetPassword Benachrichtigung. Sie können diese anpassen, um Ihre eigene Vorlage oder Logik zu verwenden.
+
+Erstellen Sie eine eigene Benachrichtigung:
+
+```bash
+php artisan make:notification ResetPasswordNotification
+```
+
+Die Email Notification kann nun mit diesem Controller angepasst werden.
+
+-   Wir vergeben den Url Endpunkt
+-   Und die Email Benachrichtigungsinhalte
+
+```php
+// ResetPasswordNotification.php
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Lang; // Für Übersetzungen
+
+class ResetPasswordNotification extends Notification implements ShouldQueue
+{
+    use Queueable;
+
+    public $token;
+    public static $createUrlCallback;
+    public static $toMailCallback;
+
+    /**
+     * Create a new notification instance.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function __construct($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function via($notifiable)
+    {
+        return ['mail'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        if (static::$toMailCallback) {
+            return call_user_func(static::$toMailCallback, $notifiable, $this->token);
+        }
+
+        // DIESE ZEILE ist nicht mehr nötig, da wir unsere eigene Frontend-URL verwenden und nicht mit blade template arbeiten
+        // $url = url(route('password.reset', [
+        //     'token' => $this->token,
+        //     'email' => $notifiable->getEmailForPasswordReset(),
+        // ], false));
+
+        // Wenn Sie eine SPA haben, MÜSSEN Sie hier Ihre Frontend-URL angeben:
+        // Beispiel: IhreFrontendDomain.com/reset-password?token=...
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $this->token . '&email=' . $notifiable->getEmailForPasswordReset();
+
+
+        return (new MailMessage)
+            ->subject(Lang::get('Passwort zurücksetzen Benachrichtigung'))
+            ->line(Lang::get('Sie erhalten diese E-Mail, weil wir eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten haben.'))
+            ->action(Lang::get('Passwort zurücksetzen'), $frontendUrl) // Verwenden Sie Ihre Frontend-URL hier!
+            ->line(Lang::get('Dieser Passwort-Reset-Link läuft in :count Minuten ab.', ['count' => config('auth.passwords.' . config('auth.defaults.passwords') . '.expire')]))
+            ->line(Lang::get('Wenn Sie kein Zurücksetzen des Passworts angefordert haben, ist keine weitere Aktion erforderlich.'));
+    }
+
+    /**
+     * Set a callback that should be used to create the reset password URL.
+     *
+     * @param  \Closure  $callback
+     * @return void
+     */
+    public static function createUrlUsing($callback)
+    {
+        static::$createUrlCallback = $callback;
+    }
+}
+
+```
+
+Im User Modell geben wir an dass die Benachrichtigung verwendet wird.
+
+```php
+<?php
+
+namespace App\Models;
+
+use App\Notifications\ResetPasswordNotification;
+// ...
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    // ... bestehender Code ...
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+}
+
+```
+
+### Händisch beigefügte Dateien. PasswordResetLinkController, NewPasswordController
+
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
+
+class PasswordResetLinkController extends Controller
+{
+    /**
+     * Handle an incoming password reset link request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status != Password::RESET_LINK_SENT) {
+            throw ValidationException::withMessages([
+                'email' => [__($status)],
+            ]);
+        }
+
+        return response()->json(['status' => __($status)]);
+    }
+}
+
+
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
+
+class NewPasswordController extends Controller
+{
+    /**
+     * Handle an incoming new password request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->string('password')),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status != Password::PASSWORD_RESET) {
+            throw ValidationException::withMessages([
+                'email' => [__($status)],
+            ]);
+        }
+
+        return response()->json(['status' => __($status)]);
+    }
+}
+
+```
+
+## frontend implementation
+
+Es werden zwei formulare benötigt:
+
+-   Passwort vergessen mit dem /forgot-password link
+-   Passwort resetten mit dem /reset-password link
+
+Passwort vergessen, simlpe Darstellung
+
+```tsx
+// ForgorPassword.tsx
+export default function ForgotPassword({ open, handleClose }: ForgotPasswordProps) {
+    // ...
+    const handleSubmit = () => {
+        // ...
+        const result = await (email) => {
+            try {
+                const response = await LaravelApiClient.post('/auth/spa/forgot-password', { email });
+                return {
+                    success: true,
+                    message: response.data.message || 'Passwort-Reset-Link wurde gesendet!',
+                };
+            } catch (error: any) {
+                console.error('Request password reset link API error:', error.response);
+
+                if (error.response?.status === 422) {
+                    return {
+                        success: false,
+                        message: error.response.data.message || 'Validierungsfehler.',
+                        errors: error.response.data.errors || {},
+                    };
+                }
+                // Behandeln Sie 404 (E-Mail nicht gefunden) oder andere generische Fehler
+                return {
+                    success: false,
+                    message: translateHttpError(error) || 'Fehler beim Senden des Passwort-Reset-Links.',
+                    errors: { email: ['Ein Problem ist aufgetreten. Bitte versuchen Sie es erneut.'] },
+                };
+            }
+        };
+    }
+
+    // ...
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            slotProps={{
+                paper: {
+                    component: 'form', // This is now your ONLY form
+                    onSubmit: handleSubmit,
+                    sx: { backgroundImage: 'none' },
+                },
+            }}
+        >
+            <DialogTitle>Passwort zurücksetzen</DialogTitle>
+
+            {...}
+
+                <FormControl fullWidth margin="dense" error={fieldErrors.email.hasError}>
+                    <OutlinedInput
+                        autoFocus
+                        required
+                        id="email"
+                        name="email"
+                        placeholder="Email address"
+                        type="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                        aria-describedby="forgot-password-email-helper-text"
+                    />
+                    {fieldErrors.email.message && (
+                        <FormHelperText id="forgot-password-email-helper-text">
+                            {fieldErrors.email.message}
+                        </FormHelperText>
+                    )}
+                </FormControl>
+                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
+        </Dialog>
+    );
+}
+```
+
+Passwort resetten, simple Darstellung
+
+```tsx
+// ...
+const ResetPasswordPage = () => {
+    // Extrahiere Token und E-Mail aus der URL bei Komponenten-Mount
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const urlToken = queryParams.get('token');
+        const urlEmail = queryParams.get('email');
+
+        if (urlToken) {
+            setToken(urlToken);
+        } else {
+            setGeneralErrorMessage('Ungültiger oder fehlender Passwort-Reset-Token.');
+        }
+        if (urlEmail) {
+            setEmail(urlEmail);
+        }
+    }, [location.search]);
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        try {
+            const response = await LaravelApiClient.post('/auth/spa/reset-password', {
+                email,
+                password,
+                password_confirmation, 
+                token,
+            });
+            return {
+                success: true,
+                message: response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
+            };
+        } catch (error: any) {
+            console.error('Reset password API error:', error.response);
+
+            if (error.response?.status === 422) {
+                return {
+                    success: false,
+                    message: error.response.data.message || 'Validierungsfehler.',
+                    errors: error.response.data.errors || {},
+                };
+            }
+            return {
+                success: false,
+                message: translateHttpError(error) || 'Fehler beim Zurücksetzen des Passworts.',
+                errors: {
+                    general: ['Ein unerwarteter Fehler ist aufgetreten.'],
+                },
+            };
+        }
+    };
+
+    // ... other code
+
+    if (generalErrorMessage && !token) {
+        // Zeigt Fehler an, wenn Token fehlt, bevor das Formular überhaupt gerendert wird
+        return (
+            <SignInContainer>
+                <Card>
+                    <Typography color="error">{generalErrorMessage}</Typography>
+                    <Button onClick={() => navigate('/')}>Zurück zum Login</Button>
+                </Card>
+            </SignInContainer>
+        );
+    }
+
+    // ...
+
+    return (
+        <Card variant="outlined">
+            <LockOpenIcon sx={{ color: (theme) => theme.palette.primary.main }} />
+            <Typography component="h1" variant="h5">
+                Passwort zurücksetzen
+            </Typography>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    gap: 2,
+                }}
+            >
+                <FormControl>
+                    <FormLabel htmlFor="email-reset">E-Mail-Adresse</FormLabel>
+                    <TextField
+                        id="email-reset"
+                        type="email"
+                        name="email"
+                        placeholder="Ihre@email.com"
+                        fullWidth
+                        required
+                        disabled // E-Mail-Feld sollte von der URL vorab ausgefüllt und nicht bearbeitbar sein
+                        value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            clearFieldError('email');
+                        }}
+                        error={fieldErrors.email.hasError}
+                        helperText={fieldErrors.email.message}
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="password-reset">Neues Passwort</FormLabel>
+                    <TextField
+                        id="password-reset"
+                        name="password"
+                        placeholder="••••••"
+                        type={showPassword ? 'text' : 'password'}
+                        fullWidth
+                        required
+                        value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }}
+                        error={fieldErrors.password.hasError}
+                        helperText={fieldErrors.password.message}
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="password-confirmation-reset">
+                        Passwort bestätigen
+                    </FormLabel>
+                    <TextField
+                        id="password-confirmation-reset"
+                        name="password_confirmation"
+                        placeholder="••••••"
+                        type={showPasswordConfirmation ? 'text' : 'password'}
+                        fullWidth
+                        required
+                        value={passwordConfirmation}
+                        onChange={(e) => {
+                            setPasswordConfirmation(e.target.value);
+                            clearFieldError('password_confirmation');
+                        }}
+                        error={fieldErrors.password_confirmation.hasError}
+                        helperText={fieldErrors.password_confirmation.message}
+                    />
+                </FormControl>
+
+                {generalErrorMessage && (
+                    <Typography color="error" sx={{ mt: 2 }}>
+                        {generalErrorMessage}
+                    </Typography>
+                )}
+                {successMessage && (
+                    <Typography color="success.main" sx={{ mt: 2 }}>
+                        {successMessage}
+                    </Typography>
+                )}
+
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    disabled={isSubmitting}
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                    {isSubmitting ? 'Wird zurückgesetzt...' : 'Passwort zurücksetzen'}
+                </Button>
+            </Box>
+        </Card>
+    );
+};
+
+export default ResetPasswordPage;
+
+```
+
+## mailpit: testing emails, artisan queue
+
+Mailpit ist eine hervorragende Wahl für die lokale E-Mail-Entwicklung. Es ist viel einfacher einzurichten als ein vollständiger SMTP-Server und fängt alle ausgehenden E-Mails ab, sodass du sie in einer benutzerfreundlichen Weboberfläche überprüfen kannst.
+
+Da du Laravel Sail nicht nutzt, zeige ich dir die einfachste Methode, Mailpit als eigenständige Anwendung zu installieren und zu starten.
+
+### Mailpit installieren
+
+1. Mailpit installieren und starten
+Mailpit ist eine einzelne Binärdatei, was die Installation super einfach macht. Du musst sie nur herunterladen und ausführen.
+
+Schritt 1: Mailpit herunterladen
+Gehe zur offiziellen GitHub-Seite von Mailpit, um die neueste Version herunterzuladen, die für dein Betriebssystem geeignet ist:
+
+Mailpit GitHub Releases-Seite: <https://github.com/axllent/mailpit/releases>
+
+Schritt 2: Mailpit starten (windows 10)
+Verschiebe Mailpit in die Nähe deines Entwicklungsordeners und starte Mailpit über die console.
+
+Anschließend erhälst du die Info dass Mailpit auf bestimmte ports lauscht.
+
+SMTP: 127.0.0.1:1025
+Web UI: 127.0.0.1:8025
+
+```bash
+# F:\WebDevelopment\laravel\spa\mailpit
+mailpit.exe
+
+time="2025/06/18 08:27:17" level=info msg="[smtpd] starting on [::]:1025 (no encryption)"
+time="2025/06/18 08:27:17" level=info msg="[http] starting on [::]:8025"
+time="2025/06/18 08:27:17" level=info msg="[http] accessible via http://localhost:8025/"
+```
+
+Auf localhost:8025 kann man sich den Mailpit eamil Client angucken.
+
+### Laravel konfigurieren, mailpit auf die Queue hören lassen
+
+Öffne deine .env-Datei im Root-Verzeichnis deines Laravel-Projekts und passe die Mail-Einstellungen wie folgt an:
+
+```sh
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com" # Absenderadresse, kann hier generisch sein
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Anschließend musst du evtl. den Cache leeren. Und die queue starten auf der die Emails abgearbeitet werden. Ohne laufende Queue werden keine Mails über die Frontend verschickt.
+
+Sei dir sicher dass mailpit in der Konsole einem tab läuft.
+
+```bash
+php artisan optimize:clear
+php artisan queue:work
+```
+
+Man kann die Notification Implementation direkt mit ticker testen. So kann man auch check ob der Email versand ohne Frontend funktioniert.
+
+```php
+class ResetPasswordNotification extends Notification implements ShouldQueue // <--- HIER
+{
+    use Queueable; // <--- UND HIER
+    // ...
+```
+
+Man kann den Email Versand mit Mai:raw() method testen.
+
+```bash
+php artisan tinker
+
+use Illuminate\Support\Facades\Mail;
+Mail::raw('This is a direct test email from Tinker.', function ($message) {
+    $message->to('tinker_test@example.com')->subject('Direct Mailpit Test');
+});
+
+Illuminate\Mail\SentMessage
+```
+
+Man erhält in der Mailpit app (in Localohost:8025 ) das definierte Subject.
+In der Console erhält man 'Illuminate\Mail\SentMessage' oder eventuell einen Fehler auf den man reagieren kann.

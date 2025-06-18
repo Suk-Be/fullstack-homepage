@@ -17,14 +17,10 @@ Route::prefix('auth/spa')->middleware('web')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // NEUE ROUTEN FÜR PASSWORT-RESET
-    // Anfrage für einen Passwort-Reset-Link
-    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']) // <-- HIER KORRIGIERT!
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
-
-    // Passwort zurücksetzen
-    Route::post('/reset-password', [NewPasswordController::class, 'store']) // <-- HIER KORRIGIERT!
-        ->name('password.update'); // Der Name 'password.store' ist auch falsch, Laravel erwartet 'password.update'
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])
+        ->name('password.update');
 });
 
 // Socialite OAuth routes (stateless, no session needed)
