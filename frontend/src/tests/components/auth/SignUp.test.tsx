@@ -7,12 +7,11 @@ import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
 import {
-    authProviderUrls,
     expectErrorMessages,
     expectNoErrorMessages,
-    navigateTo,
-    renderWithProviders,
-} from '../../utils';
+    switchToComponentHelper,
+} from '../../utils/testHelperFunctions';
+import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
 const renderRegistrationForm = () => {
     const user = userEvent.setup();
@@ -260,12 +259,9 @@ describe('SignUp', () => {
     );
 });
 
-describe('Toggle SignUp component', () => {
+describe('Toggle SignUp component', async () => {
     it('renders SignIn component on click of the "Anmelden" link', async () => {
-        navigateTo('/'); // render Homepage
-        const linkSwitchToRegister = screen.getByRole('link', { name: /registrieren/i });
-        const userA = userEvent.setup();
-        await userA.click(linkSwitchToRegister);
+        await switchToComponentHelper({ linkName: /registrieren/i });
 
         const { user } = renderRegistrationForm();
         const QueryLoginHeadline = screen.queryByRole('heading', { name: 'Anmelden' });

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { navigateTo } from '../utils';
+import { navigateTo } from '../utils/testRenderUtils';
 
 describe('LayoutPage', () => {
     beforeEach(() => {

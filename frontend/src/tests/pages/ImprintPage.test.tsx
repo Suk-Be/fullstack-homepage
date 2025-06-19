@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { navigateTo } from '../utils';
+import { navigateTo } from '../utils/testRenderUtils';
 
 describe('ImprintPage', () => {
     it('should render the imprint contents', async () => {

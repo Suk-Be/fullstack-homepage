@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
-import { db } from './mocks/db';
-import { server } from './mocks/server';
+import { db } from '../mocks/db';
+import { server } from '../mocks/server';
 
 beforeAll(() => {
     vi.mock('@mui/icons-material', async () => {

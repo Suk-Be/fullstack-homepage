@@ -8,12 +8,11 @@ import * as setLoginModule from '../../../utils/auth/SignIn/setLogin';
 import { registeredUserData } from '../../mocks/data';
 import { server } from '../../mocks/server';
 import {
-    authProviderUrls,
     expectErrorMessages,
     expectNoErrorMessages,
-    navigateTo,
-    renderWithProviders,
-} from '../../utils';
+    switchToComponentHelper,
+} from '../../utils/testHelperFunctions';
+import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('SignIn component', () => {
     const renderUtils = () => {
@@ -104,11 +103,8 @@ describe('SignIn component', () => {
         });
     });
 
-    it('switches to register component when "Registrieren" buttoin is clicked', async () => {
-        navigateTo('/'); // render Homepage
-        const linkSwitchToRegister = screen.getByRole('link', { name: /registrieren/i });
-        const user = userEvent.setup();
-        await user.click(linkSwitchToRegister);
+    it('switches to register component when "Registrieren" button is clicked', async () => {
+        await switchToComponentHelper({ linkName: /registrieren/i });
 
         await waitFor(() => {
             expect(screen.getByRole('heading', { name: /registrieren/i })).toBeInTheDocument();

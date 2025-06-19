@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { navigateTo } from '../../utils';
+import { navigateTo } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
     const renderUtils = (path: string) => {
