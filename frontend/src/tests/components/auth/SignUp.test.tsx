@@ -67,8 +67,8 @@ describe('SignUp', () => {
         const { nameInput, emailInput, passwordInput, passwordConfirmationInput } =
             renderRegistrationForm();
 
-        expect(nameInput).toHaveAttribute('placeholder', 'Jon Snow');
-        expect(emailInput).toHaveAttribute('placeholder', 'your@email.com');
+        expect(nameInput).toHaveAttribute('placeholder', 'Max Mustermann');
+        expect(emailInput).toHaveAttribute('placeholder', 'max@mustermann.com');
         expect(passwordInput).toHaveAttribute('placeholder', '••••••');
         expect(passwordConfirmationInput).toHaveAttribute('placeholder', '••••••');
     });

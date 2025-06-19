@@ -38,6 +38,13 @@ describe('SignIn component', () => {
         };
     };
 
+    it('should render a default login form on load', () => {
+        const { emailInput, passwordInput } = renderUtils();
+
+        expect(emailInput).toHaveAttribute('placeholder', 'ihreEmail@mustermann.com');
+        expect(passwordInput).toHaveAttribute('placeholder', '••••••');
+    });
+
     it('should log in successfully with valid credentials', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();
 
