@@ -1,7 +1,7 @@
 import LaravelApiClient from '../../../plugins/axios';
-import translateHttpError from '../translateHttpError';
+import translateHttpError from '../../../utils/auth/translateHttpError';
 
-const setLogin = async ({
+const requestLogin = async ({
     shouldFetchUser,
     email,
     password,
@@ -46,4 +46,4 @@ const setLogin = async ({
     }
 };
 
-export default setLogin;
+export default requestLogin;

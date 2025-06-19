@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import SignIn from './SignIn';
-import SignUp from './SignUp';
+import SignIn from './SignIn/index';
+import SignUp from './SignUp/index';
 
 const ToggleSignIn = () => {
     const [showLogin, setShowLogin] = useState(true);

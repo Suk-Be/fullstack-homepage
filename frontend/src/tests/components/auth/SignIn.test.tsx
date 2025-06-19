@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
+import * as setLoginModule from '../../../components/auth/SignIn/requestLogin';
 import apiBaseUrl from '../../../utils/apiBaseUrl';
-import * as setLoginModule from '../../../utils/auth/SignIn/setLogin';
 import { registeredUserData } from '../../mocks/data';
 import { server } from '../../mocks/server';
 import {

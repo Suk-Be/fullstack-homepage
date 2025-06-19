@@ -11,16 +11,16 @@ import {
     Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useState } from 'react';
-import ErrorMessages from '../../data/ErrorMessages';
-import useSignUpValidateInputs from '../../hooks/useSignUpValidation';
-import registerUser from '../../utils/auth/SignUp/registerUser';
-import { handleSignInUp as handleSignUp } from '../../utils/clickHandler';
-import { testId } from '../../utils/testId';
-import { Card, SignInContainer as SignUpContainer } from '../ContainerElements';
-import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
-import { ParagraphHP } from '../TextElements';
-import AuthHeaderLayout from './components/AuthHeaderLayout';
-import RegisterButtonSocialite from './components/RegisterButtonSocialite';
+import ErrorMessages from '../../../data/ErrorMessages';
+import useSignUpValidateInputs from '../../../hooks/useSignUpValidation';
+import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
+import { testId } from '../../../utils/testId';
+import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
+import { GithubIcon, GoogleIcon } from '../../shared-components/CustomIcons';
+import { ParagraphHP } from '../../TextElements';
+import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
+import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
+import requestRegister from './requestRegister';
 
 type FieldError = {
     hasError: boolean;
@@ -117,7 +117,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         }
 
         // shouldFetchUser : true logs the registered user data right after registration
-        const result = await registerUser({
+        const result = await requestRegister({
             shouldFetchUser: false,
             name,
             email,
@@ -211,7 +211,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 required
                                 fullWidth
                                 id="name"
-                                placeholder="Jon Snow"
+                                placeholder="Max Mustermann"
                                 error={fieldErrors.name.hasError}
                                 helperText={fieldErrors.name.message}
                                 color={fieldErrors.name.hasError ? 'error' : 'primary'}
@@ -228,7 +228,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 required
                                 fullWidth
                                 id="email"
-                                placeholder="your@email.com"
+                                placeholder="max@mustermann.com"
                                 name="email"
                                 autoComplete="email"
                                 variant="outlined"

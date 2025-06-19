@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import SignUp from '../../../components/auth/SignUp';
+import SignUp from '../../../components/auth/SignUp/index';
+import * as registerModule from '../../../components/auth/SignUp/requestRegister';
 import ErrorMessages from '../../../data/ErrorMessages';
-import * as registerModule from '../../../utils/auth/SignUp/registerUser';
 import { registeredUserData } from '../../mocks/data';
 import userFactory from '../../mocks/factories/userFactories';
 import {

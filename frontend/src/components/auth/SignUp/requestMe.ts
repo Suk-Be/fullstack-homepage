@@ -1,5 +1,5 @@
-import apiBaseUrl from '../../apiBaseUrl';
-import { registerHeaders } from '../requestHeaders';
+import apiBaseUrl from '../../../utils/apiBaseUrl';
+import { registerHeaders } from '../../../utils/auth/requestHeaders';
 
 /*
  * This function logs the user data and is used right after submitting user data on the register api.
@@ -11,7 +11,7 @@ import { registerHeaders } from '../requestHeaders';
  * @param {string} csrfToken - The CSRF token for secure requests.
  */
 
-const logUserAfterRegistration = async (shouldFetchUser: boolean, csrfToken: string) => {
+const requestMe = async (shouldFetchUser: boolean, csrfToken: string) => {
     if (shouldFetchUser) {
         try {
             const response = await fetch(`${apiBaseUrl}/me`, {
@@ -38,4 +38,4 @@ const logUserAfterRegistration = async (shouldFetchUser: boolean, csrfToken: str
     }
 };
 
-export default logUserAfterRegistration;
+export default requestMe;

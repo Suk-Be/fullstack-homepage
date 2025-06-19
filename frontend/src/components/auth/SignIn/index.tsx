@@ -11,16 +11,16 @@ import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useCallback, useState } from 'react';
-import { validateSignInInputs } from '../../hooks/useSignInValidation';
-import setLogin from '../../utils/auth/SignIn/setLogin';
-import setResponseErrorMessage from '../../utils/auth/setResponseErrorMessage';
-import { handleSignInUp as handleSignIn } from '../../utils/clickHandler';
-import { testId } from '../../utils/testId';
-import { Card, SignInContainer } from '../ContainerElements';
-import { GithubIcon, GoogleIcon } from '../shared-components/CustomIcons';
-import AuthHeaderLayout from './components/AuthHeaderLayout';
-import ForgotPassword from './components/ForgotPassword';
-import RegisterButtonSocialite from './components/RegisterButtonSocialite';
+import { validateSignInInputs } from '../../../hooks/useSignInValidation';
+import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
+import { handleSignInUp as handleSignIn } from '../../../utils/clickHandler';
+import { testId } from '../../../utils/testId';
+import { Card, SignInContainer } from '../../ContainerElements';
+import { GithubIcon, GoogleIcon } from '../../shared-components/CustomIcons';
+import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
+import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
+import ForgotPassword from './ForgotPassword';
+import requestLogin from './requestLogin';
 
 type FieldError = {
     hasError: boolean;
@@ -103,7 +103,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         }
 
         // submit and backend validation
-        const result = await setLogin({
+        const result = await requestLogin({
             shouldFetchUser: false,
             email,
             password,
@@ -204,7 +204,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 id="email"
                                 type="email"
                                 name="email"
-                                placeholder="your@email.com"
+                                placeholder="ihreEmail@mustermann.com"
                                 autoComplete="email"
                                 autoFocus
                                 required
@@ -262,7 +262,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             control={<Checkbox value="remember" color="primary" />}
                             label="Login für dieses Gerät merken"
                         />
-                        <ForgotPassword open={open} handleClose={handleClose} />
                         <Button
                             type="submit"
                             fullWidth
@@ -304,6 +303,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                         />
                     </Box>
                 </Card>
+                <ForgotPassword open={open} handleClose={handleClose} />
             </SignInContainer>
         </>
     );

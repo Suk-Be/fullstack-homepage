@@ -1,9 +1,9 @@
 // export default registerUser;
 import Cookies from 'js-cookie';
-import apiBaseUrl from '../../apiBaseUrl';
-import headers, { registerHeaders } from '../requestHeaders';
-import translateHttpError from '../translateHttpError';
-import logUserAfterRegistration from './logUserAfterRegistration';
+import apiBaseUrl from '../../../utils/apiBaseUrl';
+import headers, { registerHeaders } from '../../../utils/auth/requestHeaders';
+import translateHttpError from '../../../utils/auth/translateHttpError';
+import requestMe from './requestMe';
 
 interface RegisterUserParams {
     shouldFetchUser: boolean;
@@ -42,7 +42,7 @@ const handleErrorResponse = async (response: Response) => {
     };
 };
 
-const registerUser = async ({
+const requestRegister = async ({
     shouldFetchUser,
     name,
     email,
@@ -67,7 +67,7 @@ const registerUser = async ({
         if (!response.ok) return await handleErrorResponse(response);
 
         if (shouldFetchUser) {
-            await logUserAfterRegistration(true, csrfToken);
+            await requestMe(true, csrfToken);
         }
 
         return { success: true };
@@ -92,4 +92,4 @@ const registerUser = async ({
     }
 };
 
-export default registerUser;
+export default requestRegister;
