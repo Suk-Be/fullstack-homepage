@@ -1,5 +1,5 @@
 import LaravelApiClient from '../../../plugins/axios'; // Ihr Axios-Client
-import translateHttpError from '../translateHttpError'; // Ihre Fehlerübersetzungsfunktion
+import translateHttpError from '../../../utils/auth/translateHttpError'; // Ihre Fehlerübersetzungsfunktion
 
 interface RequestPasswordResetResult {
     success: boolean;
@@ -7,7 +7,7 @@ interface RequestPasswordResetResult {
     errors?: { [key: string]: string[] };
 }
 
-const requestPasswordResetLink = async (email: string): Promise<RequestPasswordResetResult> => {
+const requestForgotPassword = async (email: string): Promise<RequestPasswordResetResult> => {
     try {
         const response = await LaravelApiClient.post('/auth/spa/forgot-password', { email });
         return {
@@ -33,4 +33,4 @@ const requestPasswordResetLink = async (email: string): Promise<RequestPasswordR
     }
 };
 
-export default requestPasswordResetLink;
+export default requestForgotPassword;

@@ -20,6 +20,7 @@ interface SectionProps extends PropsWithChildren {
     paddingTop?: string;
     paddingTopMd?: string;
     marginBottom?: string;
+    height?: string
 }
 
 const Section = ({
@@ -31,6 +32,7 @@ const Section = ({
     paddingTop = '0',
     paddingTopMd = '0',
     marginBottom = '0',
+    height = 'auto'
 }: SectionProps) => {
     return (
         <Box
@@ -46,12 +48,29 @@ const Section = ({
                     md: paddingTopMd,
                 },
                 marginBottom: marginBottom,
+                height: height
             }}
         >
             {children}
         </Box>
     );
 };
+
+
+const SectionCenteredChild = ({children}: PropsWithChildren) => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+      }}
+    >
+      {children}
+    </Box>
+  )
+}
 
 interface SectionRelativeProps extends PropsWithChildren {
     paddingBottom?: string;
@@ -134,4 +153,5 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export default SimpleContainer;
-export { Card, ResponsiveContainer, Section, SectionRelative, SignInContainer };
+export { Card, ResponsiveContainer, Section, SectionCenteredChild, SectionRelative, SignInContainer };
+

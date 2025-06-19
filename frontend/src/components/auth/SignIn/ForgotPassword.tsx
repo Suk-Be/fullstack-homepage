@@ -9,8 +9,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { ZodError, ZodFormattedError } from 'zod';
 import { ForgotPasswordSchema } from '../../../schemas/forgotPasswordSchema';
-import requestPasswordResetLink from '../../../utils/auth/passwordReset/requestPasswordReset';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
+import requestForgotPassword from './requestForgorPassword';
 
 interface ForgotPasswordProps {
     open: boolean;
@@ -58,7 +58,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
             return;
         }
 
-        const result = await requestPasswordResetLink(email);
+        const result = await requestForgotPassword(email);
 
         if (result.success) {
             setSuccessMessage(
@@ -66,7 +66,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                     'Passwort-Reset-Link gesendet. Bitte überprüfen Sie Ihre E-Mails.',
             );
             setEmail(''); // Clear email field on success
-            setTimeout(() => handleClose(), 500); // close the dialog after a successful submission
+            setTimeout(() => handleClose(), 1000); // close the dialog after a successful submission
         } else {
             const backendRawErrors = result.errors || {};
             const emailErrorToDisplay = setResponseErrorMessage(
@@ -103,8 +103,8 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
 
             <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
                 <DialogContentText>
-                    Enter your account&apos;s email address, and we&apos;ll send you a link to reset
-                    your password.
+                    Haben Sie Ihr Passwort vergessen? Kein Problem - wir senden Ihnen einen Link zum
+                    Zurücksetzen.
                 </DialogContentText>
 
                 <FormControl fullWidth margin="dense" error={fieldErrors.email.hasError}>

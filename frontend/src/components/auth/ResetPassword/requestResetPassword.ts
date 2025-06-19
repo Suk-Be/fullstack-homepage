@@ -1,5 +1,5 @@
 import LaravelApiClient from '../../../plugins/axios';
-import translateHttpError from '../translateHttpError';
+import translateHttpError from '../../../utils/auth/translateHttpError';
 
 interface ResetPasswordResult {
     success: boolean;
