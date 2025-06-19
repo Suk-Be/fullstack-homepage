@@ -11,6 +11,7 @@ import {
     authProviderUrls,
     expectErrorMessages,
     expectNoErrorMessages,
+    navigateTo,
     renderWithProviders,
 } from '../../utils';
 
@@ -21,7 +22,9 @@ describe('SignIn component', () => {
         renderWithProviders(<SignIn onToggleAuth={toggleAuth} />);
 
         const emailInput = screen.getByLabelText(/email/i);
+
         const passwordInput = screen.getByLabelText(/passwort/i);
+        const signupButton = screen.getByTestId('button-switch-to-sign-up');
         const submitButton = screen.getByTestId('form-button-login');
         const googleButton = screen.getByTestId('form-button-login-with-google');
         const githubButton = screen.getByTestId('form-button-login-with-github');
@@ -29,6 +32,7 @@ describe('SignIn component', () => {
             user,
             emailInput,
             passwordInput,
+            signupButton,
             submitButton,
             googleButton,
             githubButton,
@@ -97,6 +101,17 @@ describe('SignIn component', () => {
 
         await waitFor(() => {
             expectErrorMessages('SignIn', ['email', 'password']);
+        });
+    });
+
+    it('switches to register component when "Registrieren" buttoin is clicked', async () => {
+        navigateTo('/'); // render Homepage
+        const linkSwitchToRegister = screen.getByRole('link', { name: /registrieren/i });
+        const user = userEvent.setup();
+        await user.click(linkSwitchToRegister);
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: /registrieren/i })).toBeInTheDocument();
         });
     });
 
