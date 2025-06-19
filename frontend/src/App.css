@@ -15,7 +15,6 @@
     z-index: 2;
     background: rgba(255, 255, 255, 0.75);
     transition: transform 0.4s;
-    width: 100vw;
 }
 
 footer {
