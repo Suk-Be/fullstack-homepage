@@ -25,11 +25,11 @@ const HomePage = () => {
     return (
         <>
             <Box sx={layoutStyle}>
-                <Box sx={{ width: { md: '33%' } }}>
+                <Box sx={{ width: { xs: '100%', md: '33%' } }}>
                     {/* @ts-ignore*/}
                     <ProfileHP profile={profile} />
                 </Box>
-                <Box sx={{ width: { md: '67%' } }}>
+                <Box sx={{ width: { xs: '100%', md: '67%' } }}>
                     {/* @ts-ignore*/}
                     <OfferHP offer={offer} teaser={teaser} />
                     <ToggleSignIn />
