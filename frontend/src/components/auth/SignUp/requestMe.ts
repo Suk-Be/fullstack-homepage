@@ -1,5 +1,6 @@
-import apiBaseUrl from '../../../utils/apiBaseUrl';
-import { registerHeaders } from '../../../utils/auth/requestHeaders';
+import LaravelApiClient from '../../../plugins/axios';
+import { User } from '../../../types/User';
+import { isAxiosError, translateHttpError } from '../../../utils/auth/translateHttpError';
 
 /*
  * This function logs the user data and is used right after submitting user data on the register api.
@@ -7,32 +8,49 @@ import { registerHeaders } from '../../../utils/auth/requestHeaders';
  * If the request is successful, it logs the user data to the console.
  * If there is an error, it logs the error details to the console.
  *
- * @param {boolean} shouldFetchUser - Indicates if the user is registered and should be logged in.
- * @param {string} csrfToken - The CSRF token for secure requests.
+ * @param {boolean} shouldFetchUser - true to fetch user data and logging them to console.
  */
 
-const requestMe = async (shouldFetchUser: boolean, csrfToken: string) => {
+const requestMe = async (shouldFetchUser = false) => {
     if (shouldFetchUser) {
         try {
-            const response = await fetch(`${apiBaseUrl}/me`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: registerHeaders(csrfToken),
-            });
+            const { data: user } = await LaravelApiClient.get<User>('/me');
+            console.log('Erfolgreich angemeldet mit: ', user);
+            return { success: true, user };
+        } catch (error: unknown) {
+            if (isAxiosError(error)) {
+                console.error(
+                    'Fehler beim Zugriff auf Benutzerdaten nach erfolgreicher Anmeldung:',
+                    error,
+                );
 
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-
-            const json = await response.json();
-            console.log('get User data, successful login', json);
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error('error', error);
-                console.error('errorMessage', error.message);
-                console.error('Status:', error.stack);
+                // @ts-ignore
+                if (error.response?.status === 401 || error.response?.status === 403) {
+                    return {
+                        success: false,
+                        message: 'Sitzung abgelaufen. Bitte melden Sie sich erneut an.',
+                        errors: {
+                            general: ['Sitzung abgelaufen. Bitte melden Sie sich erneut an.'],
+                        },
+                    };
+                } else {
+                    // For other /me errors, use the general translated message
+                    return {
+                        success: false,
+                        message: translateHttpError(error),
+                        errors: { general: [translateHttpError(error)] },
+                    };
+                }
             } else {
-                console.error(error);
+                console.error(
+                    'Ein unerwarteter, nicht-Axios Fehler beim Laden des Benutzerprofils:',
+                    error,
+                );
+                return {
+                    success: false,
+                    message: 'Ein unerwarteter Fehler ist aufgetreten.',
+                    errors: { general: ['Ein unerwarteter Fehler ist aufgetreten.'] },
+                };
             }
         }
     }

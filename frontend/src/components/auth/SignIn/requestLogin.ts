@@ -1,15 +1,11 @@
 import LaravelApiClient from '../../../plugins/axios';
+import { User } from '../../../types/User';
 import {
     ApiErrorData,
     isAxiosError,
     translateHttpError,
 } from '../../../utils/auth/translateHttpError';
-
-interface User {
-    id: number;
-    name: string;
-    email: string;
-}
+import requestMe from '../SignUp/requestMe';
 
 interface LoginResult {
     success: boolean;
@@ -34,49 +30,13 @@ const requestLogin = async ({
             password,
         });
 
-        // Getting user data right after login
-        if (shouldFetchUser) {
-            try {
-                const { data: user } = await LaravelApiClient.get<User>('/me');
-                console.log('Erfolgreich angemeldet mit: ', user);
-                return { success: true, user };
-            } catch (error: unknown) {
-                if (isAxiosError(error)) {
-                    console.error(
-                        'Fehler beim Zugriff auf Benutzerdaten nach erfolgreicher Anmeldung:',
-                        error,
-                    );
-
-                    // @ts-ignore
-                    if (error.response?.status === 401 || error.response?.status === 403) {
-                        return {
-                            success: false,
-                            message: 'Sitzung abgelaufen. Bitte melden Sie sich erneut an.',
-                            errors: {
-                                general: ['Sitzung abgelaufen. Bitte melden Sie sich erneut an.'],
-                            },
-                        };
-                    } else {
-                        // For other /me errors, use the general translated message
-                        return {
-                            success: false,
-                            message: translateHttpError(error),
-                            errors: { general: [translateHttpError(error)] },
-                        };
-                    }
-                } else {
-                    console.error(
-                        'Ein unerwarteter, nicht-Axios Fehler beim Laden des Benutzerprofils:',
-                        error,
-                    );
-                    return {
-                        success: false,
-                        message: 'Ein unerwarteter Fehler ist aufgetreten.',
-                        errors: { general: ['Ein unerwarteter Fehler ist aufgetreten.'] },
-                    };
-                }
-            }
-        }
+        /**
+         * Getting user data and logging user data to console
+         * will not not return anything unless called with true
+         *
+         * example: requestMe(true)
+         */
+        await requestMe(shouldFetchUser);
 
         return { success: true };
     } catch (error: unknown) {

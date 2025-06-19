@@ -104,7 +104,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
         // submit and backend validation
         const result = await requestLogin({
-            shouldFetchUser: false,
+            shouldFetchUser: true,
             email,
             password,
         });
