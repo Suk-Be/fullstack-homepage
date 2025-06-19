@@ -36,7 +36,7 @@ describe('SignUp', () => {
 
     beforeEach(() => {
         vi.stubGlobal('location', { href: '' });
-        const toggleAuth = vi.fn(() => false);
+        const toggleAuth = vi.fn(() => true);
         renderWithProviders(<SignUp onToggleAuth={toggleAuth} />);
     });
 
@@ -263,6 +263,10 @@ describe('SignUp', () => {
 describe('Toggle SignUp component', () => {
     it('renders SignIn component on click of the "Anmelden" link', async () => {
         navigateTo('/'); // render Homepage
+        const linkSwitchToRegister = screen.getByRole('link', { name: /registrieren/i });
+        const userA = userEvent.setup();
+        await userA.click(linkSwitchToRegister);
+
         const { user } = renderRegistrationForm();
         const QueryLoginHeadline = screen.queryByRole('heading', { name: 'Anmelden' });
         const RegisterHeadline = screen.getByRole('heading', { name: 'Registrieren' });
