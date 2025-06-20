@@ -1,4 +1,4 @@
-import ErrorMessages from '../data/ErrorMessages';
+import ErrorMessages from '../../../data/ErrorMessages';
 
 export interface ValidationResult {
     isValid: boolean;
@@ -16,7 +16,7 @@ export interface ValidationResult {
  * Validates input fields for the SignUp form.
  */
 
-export default function useSignUpValidateInputs(
+export default function validateInputs(
     name: string,
     email: string,
     password: string,

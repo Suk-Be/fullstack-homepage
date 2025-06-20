@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { FormEvent, useCallback, useState } from 'react';
 import ErrorMessages from '../../../data/ErrorMessages';
-import useSignUpValidateInputs from '../../../hooks/useSignUpValidation';
 import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
@@ -21,6 +20,7 @@ import { ParagraphHP } from '../../TextElements';
 import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import requestRegister from './requestRegister';
+import validateInputs from './validateSignUpInputs';
 
 type FieldError = {
     hasError: boolean;
@@ -98,7 +98,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             passwordConfirmationErrorMessage,
             nameError,
             nameErrorMessage,
-        } = useSignUpValidateInputs(name, email, password, passwordConfirmation);
+        } = validateInputs(name, email, password, passwordConfirmation);
 
         setFieldErrors({
             name: { hasError: nameError, message: nameErrorMessage },
@@ -118,7 +118,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // shouldFetchUser : true logs the registered user data right after registration
         const result = await requestRegister({
-            shouldFetchUser: false,
+            shouldFetchUser: true,
             name,
             email,
             password,

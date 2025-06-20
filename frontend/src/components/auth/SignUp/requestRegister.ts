@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 import apiBaseUrl from '../../../utils/apiBaseUrl';
 import headers, { registerHeaders } from '../../../utils/auth/requestHeaders';
-import translateHttpError from '../../../utils/auth/translateHttpError';
+import { translateHttpError } from '../../../utils/auth/translateHttpError';
 import requestMe from './requestMe';
 
 interface RegisterUserParams {
@@ -43,7 +43,7 @@ const handleErrorResponse = async (response: Response) => {
 };
 
 const requestRegister = async ({
-    shouldFetchUser,
+    shouldFetchUser = false,
     name,
     email,
     password,
@@ -66,9 +66,7 @@ const requestRegister = async ({
 
         if (!response.ok) return await handleErrorResponse(response);
 
-        if (shouldFetchUser) {
-            await requestMe(true, csrfToken);
-        }
+        await requestMe(shouldFetchUser);
 
         return { success: true };
     } catch (error: any) {
