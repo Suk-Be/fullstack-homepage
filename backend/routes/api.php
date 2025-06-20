@@ -4,9 +4,8 @@ use App\Http\Controllers\Api\Auth\Spa\AuthController;
 use App\Http\Controllers\Api\Auth\Spa\GithubController;
 use App\Http\Controllers\Api\Auth\Spa\GoogleController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\PasswordResetLinkController; // Importieren Sie den PasswordController
-use App\Http\Controllers\Auth\NewPasswordController;       // <-- Hinzufügen/Korrigieren
-use Illuminate\Auth\Notifications\ResetPassword; // Dies ist nur für das Customizing der E-Mail, nicht direkt für Routen
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 // Sanctum-protected route: user info
 Route::middleware(['auth:sanctum'])->get('/me', [AuthController::class, 'me']);
