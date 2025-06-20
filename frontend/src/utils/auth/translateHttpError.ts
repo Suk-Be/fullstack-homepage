@@ -30,7 +30,7 @@ export const translateHttpError = (error: unknown): string => {
         case 401:
             return message || 'Nicht autorisiert - ggf. ausgeloggt.';
         case 419:
-            return message || 'Sitzung abgelaufen oder CSRF-Token abgelaufen.';
+            return message || `CSRF-Token nicht gültig (Status: ${response.status}).`;
         case 422:
             return message || 'Validierungsfehler.';
         case 404:

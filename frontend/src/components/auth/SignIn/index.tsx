@@ -11,7 +11,6 @@ import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useCallback, useState } from 'react';
-import { validateSignInInputs } from '../../../hooks/useSignInValidation';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
@@ -21,6 +20,7 @@ import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import ForgotPassword from './ForgotPassword';
 import requestLogin from './requestLogin';
+import { validateSignInInputs } from './validateSignInInputs';
 
 type FieldError = {
     hasError: boolean;
@@ -36,27 +36,13 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     // inputs
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    /**
-     * Tracks the client-side (frontend) validation errors for each form field.
-     *
-     * Each field in `fieldErrors` contains:
-     * - `hasError`: A boolean indicating if a validation error is present.
-     * - `message`: A descriptive error message to show to the user.
-     *
-     * Used for immediate feedback before any API call is made.
-     */
+    // frontend input validation errors
     const [fieldErrors, setFieldErrors] = useState<ErrorState>({
         email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
     });
-
+    // frontend api response validation errors
     /**
-     * Stores server-side (backend) validation errors returned from the API.
-     *
-     * The object maps field names to arrays of error messages received from the backend.
-     * This is useful for displaying detailed validation errors from the server response.
-     *
-     * Example:
      * {
      *   email: ["This email is already taken."],
      *   password: ["Password must be at least 8 characters."]
@@ -102,13 +88,14 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             return;
         }
 
-        // submit and backend validation
+        // submit
         const result = await requestLogin({
             shouldFetchUser: true,
             email,
             password,
         });
 
+        // frontend validation on backend's validation response
         if (result.success) {
             setEmail('');
             setPassword('');
@@ -119,24 +106,29 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             setErrors({});
         } else {
             // response validation
-            const fieldErrors = result.errors || {};
-            setErrors(fieldErrors);
+            const backendRawErrors = result.errors || {};
+            const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
+
+            const emailBackendErrorMessage = setResponseErrorMessage(
+                backendRawErrors,
+                'email',
+                generalErrorMessage,
+            );
+
+            const passwordBackendErrorMessage = setResponseErrorMessage(
+                backendRawErrors,
+                'password',
+                generalErrorMessage,
+            );
+
             setFieldErrors({
                 email: {
-                    hasError: !!fieldErrors.email,
-                    message: setResponseErrorMessage(
-                        fieldErrors,
-                        'email',
-                        'Ein unbekannter Fehler bei der E-Mail.',
-                    ),
+                    hasError: !!emailBackendErrorMessage, // Set hasError based on whether a message exists
+                    message: emailBackendErrorMessage,
                 },
                 password: {
-                    hasError: true,
-                    message: setResponseErrorMessage(
-                        fieldErrors,
-                        'password',
-                        'Das Passwort ist falsch oder diese E-Mail ist nicht registriert.',
-                    ),
+                    hasError: !!passwordBackendErrorMessage, // Set hasError based on whether a message exists
+                    message: passwordBackendErrorMessage,
                 },
             });
         }
@@ -145,13 +137,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     };
 
     /**
-     * Clears the error state for a specific form field.
-     *
-     * This function resets both the frontend validation error (`fieldErrors`)
-     * and backend error messages (`errors`) associated with the specified field.
-     *
-     * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
-     *
+     * Clears the error state and rendered error for the given form field.
      * @example
      * clearFieldError('email');
      */
@@ -199,7 +185,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                         <FormControl {...testId('email-input-login')}>
                             <FormLabel htmlFor="email">Email</FormLabel>
                             <TextField
-                                error={fieldErrors.email.hasError || !!errors.email}
+                                error={fieldErrors.email.hasError}
                                 helperText={fieldErrors.email.message}
                                 id="email"
                                 type="email"
@@ -221,7 +207,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                         <FormControl>
                             <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
-                                error={fieldErrors.password.hasError || !!errors.password}
+                                error={fieldErrors.password.hasError}
                                 helperText={fieldErrors.password.message}
                                 name="password"
                                 placeholder="••••••"

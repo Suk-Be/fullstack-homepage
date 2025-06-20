@@ -1,5 +1,5 @@
 import LaravelApiClient from '../../../plugins/axios'; // Ihr Axios-Client
-import translateHttpError from '../../../utils/auth/translateHttpError'; // Ihre Fehlerübersetzungsfunktion
+import { translateHttpError } from '../../../utils/auth/translateHttpError';
 
 interface RequestPasswordResetResult {
     success: boolean;

@@ -1,4 +1,4 @@
-import ErrorMessages from '../data/ErrorMessages';
+import ErrorMessages from '../../../data/ErrorMessages';
 
 export interface ValidationResult {
     isValid: boolean;
@@ -22,7 +22,7 @@ export function validateSignInInputs(email: string, password: string): Validatio
         passwordErrorMessage: '',
     };
 
-    // validate
+    // validate input and response errors
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
         result.emailError = true;
         result.emailErrorMessage = ErrorMessages.SignUp.email;
