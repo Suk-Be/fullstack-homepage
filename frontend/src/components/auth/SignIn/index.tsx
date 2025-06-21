@@ -90,7 +90,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
         // submit
         const result = await requestLogin({
-            shouldFetchUser: true,
+            shouldFetchUser: false,
             email,
             password,
         });
@@ -181,6 +181,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             width: '100%',
                             gap: 2,
                         }}
+                        {...testId('form')}
                     >
                         <FormControl {...testId('email-input-login')}>
                             <FormLabel htmlFor="email">Email</FormLabel>

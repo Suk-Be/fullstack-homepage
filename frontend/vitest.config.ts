@@ -9,7 +9,7 @@ export default defineConfig({
             },
         },
         globals: true,
-        setupFiles: './src/tests/setupTests.tsx',
+        setupFiles: './src/tests/utils/setupTests.tsx',
         css: false,
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
         exclude: ['node_modules', 'dist', '.git'],

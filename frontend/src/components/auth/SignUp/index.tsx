@@ -118,7 +118,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // shouldFetchUser : true logs the registered user data right after registration
         const result = await requestRegister({
-            shouldFetchUser: true,
+            shouldFetchUser: false,
             name,
             email,
             password,

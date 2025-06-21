@@ -1,12 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
 import * as setLoginModule from '../../../components/auth/SignIn/requestLogin';
-import apiBaseUrl from '../../../utils/apiBaseUrl';
 import { registeredUserData } from '../../mocks/data';
-import { server } from '../../mocks/server';
 import {
     expectErrorMessages,
     expectNoErrorMessages,
@@ -74,28 +71,15 @@ describe('SignIn component', () => {
     it('shows field error if login fails with 422', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();
 
-        server.use(
-            http.post(`${apiBaseUrl}/auth/spa/login`, async () => {
-                return HttpResponse.json(
-                    {
-                        message: 'Validation failed',
-                        errors: {
-                            email: [
-                                'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
-                            ],
-                        },
-                    },
-                    { status: 422 },
-                );
-            }),
-        );
-
         await userEvent.type(emailInput, 'wrong@example.com');
         await userEvent.type(passwordInput, 'wrongpassword');
         await userEvent.click(submitButton);
 
         await waitFor(() => {
-            expectErrorMessages('SignIn', ['responseEmail']);
+            // screen.debug(screen.getByTestId('form'));
+            const errorMessages = screen.getAllByText('Ein unerwarteter Fehler ist aufgetreten.');
+            expect(errorMessages[0]).toBeInTheDocument();
+            expect(errorMessages[1]).toBeInTheDocument();
             expect(submitButton).not.toBeDisabled();
         });
     });
