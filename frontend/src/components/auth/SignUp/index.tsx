@@ -208,6 +208,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             <TextField
                                 autoComplete="name"
                                 name="name"
+                                autoFocus
                                 required
                                 fullWidth
                                 id="name"
@@ -252,7 +253,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 type={showPassword ? 'text' : 'password'}
                                 id="password"
                                 autoComplete="current-password"
-                                autoFocus
                                 required
                                 fullWidth
                                 variant="outlined"
