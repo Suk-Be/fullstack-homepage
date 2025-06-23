@@ -33,8 +33,6 @@ export const translateHttpError = (error: unknown): string => {
             return message || `CSRF-Token nicht gültig (Status: ${response.status}).`;
         case 422:
             return message || 'Validierungsfehler.';
-        case 404:
-            return message || 'Die angeforderte Ressource wurde nicht gefunden.';
         case 500:
             return message || 'Interner Serverfehler. Bitte versuchen Sie es später erneut.';
         default:
