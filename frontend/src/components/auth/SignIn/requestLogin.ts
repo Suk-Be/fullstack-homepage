@@ -1,5 +1,5 @@
 import LaravelApiClient from '../../../plugins/axios';
-import { User } from '../../../types/user';
+import { User } from '../../../types/User';
 import {
     ApiErrorData,
     isAxiosError,

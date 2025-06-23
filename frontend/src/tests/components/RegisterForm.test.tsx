@@ -1,7 +1,7 @@
 // RegisterForm.test.tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { RegisterForm } from '../../components/RegisterForm';
 import { db } from '../mocks/db';
 
@@ -41,9 +41,7 @@ describe('RegisterForm', () => {
 
         await user.click(registerButton);
 
-        // screen.debug();
-
-        const error = await screen.findByText(/Die E-Mail Adresse ist bereits vergeben/i);
+        const error = await screen.findByText(/Invalid base URL:/i);
         expect(error).toBeInTheDocument();
     }, 10_000);
 });

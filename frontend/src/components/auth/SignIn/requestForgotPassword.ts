@@ -15,16 +15,16 @@ const requestForgotPassword = async (email: string): Promise<RequestPasswordRese
             message: response.data.message || 'Passwort-Reset-Link wurde gesendet!',
         };
     } catch (error: any) {
-        console.error('Request password reset link API error:', error.response);
+        // console.error('Request password reset link API error:', error.response);
 
-        if (error.response?.status === 422) {
+        if (error.response?.status === 422 || error.response?.status === 404) {
             return {
                 success: false,
-                message: error.response.data.message || 'Validierungsfehler.',
+                message: translateHttpError(error) || 'Validierungsfehler.',
                 errors: error.response.data.errors || {},
             };
         }
-        // Behandeln Sie 404 (E-Mail nicht gefunden) oder andere generische Fehler
+
         return {
             success: false,
             message: translateHttpError(error) || 'Fehler beim Senden des Passwort-Reset-Links.',
