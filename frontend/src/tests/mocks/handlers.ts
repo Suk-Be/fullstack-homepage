@@ -137,7 +137,7 @@ export const handlers = [
         });
 
         if (!user) {
-            console.error('[MSW] No user found with email:', body.email);
+            // console.error('[MSW] No user found with email:', body.email);
             return HttpResponse.json(
                 {
                     success: false,

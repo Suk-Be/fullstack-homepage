@@ -1,4 +1,4 @@
-import { Box, FormControl } from '@mui/material';
+import { Box, FormControl, FormLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
 import useInputFocusOnModalOpen from '../../../hooks/useInputFocusOnModalOpen';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
+import { testId } from '../../../utils/testId';
 import requestForgotPassword from './requestForgotPassword';
 import { validateForgotPasswordInput } from './validateForgotInput';
 
@@ -64,7 +65,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
         const result = await requestForgotPassword(email);
 
         if (result.success) {
-            console.log('forgot password: ', result);
+            // console.log('forgot password: ', result);
             setEmail('');
             setSuccessMessage(
                 result.message ||
@@ -111,7 +112,12 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                 },
             }}
         >
-            <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                {...testId('form-forgot-password')}
+            >
                 <DialogTitle>Passwort zurücksetzen</DialogTitle>
 
                 <DialogContent
@@ -123,6 +129,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                     </DialogContentText>
 
                     <FormControl fullWidth margin="dense" error={fieldErrors.email.hasError}>
+                        <FormLabel htmlFor="email">Email</FormLabel>
                         <TextField
                             error={fieldErrors.email.hasError}
                             helperText={fieldErrors.email.message}
@@ -142,6 +149,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                             }}
                             value={email}
                             inputRef={emailRef}
+                            {...testId('email-forgot-password')}
                         />
                     </FormControl>
                     {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
@@ -151,7 +159,12 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Abbrechen
                     </Button>
-                    <Button type="submit" variant="contained" disabled={isSubmitting}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isSubmitting}
+                        {...testId('submit-forgot-password')}
+                    >
                         {isSubmitting ? 'Senden...' : 'Link senden'}
                     </Button>
                 </DialogActions>
