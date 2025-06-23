@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
+import useInputFocusOnModalOpen from '../../../hooks/useInputFocusOnModalOpen';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
 import requestForgotPassword from './requestForgotPassword';
 import { validateForgotPasswordInput } from './validateForgotInput';
@@ -39,7 +40,8 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    // This handleSubmit will now be called by the Dialog's form directly
+    const emailRef = useInputFocusOnModalOpen(open);
+
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -70,7 +72,6 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
             );
             setTimeout(() => handleClose(), 1000);
         } else {
-            // response validation
             const backendRawErrors = result.errors || {};
 
             const emailBackendErrorMessage = setResponseErrorMessage(
@@ -81,7 +82,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
 
             setFieldErrors({
                 email: {
-                    hasError: !!emailBackendErrorMessage, // Set hasError based on whether a message exists
+                    hasError: !!emailBackendErrorMessage,
                     message: emailBackendErrorMessage,
                 },
             });
@@ -130,9 +131,9 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                             name="email"
                             placeholder="ihreEmail@mustermann.com"
                             autoComplete="email"
-                            autoFocus
                             required
                             fullWidth
+                            autoFocus={open}
                             variant="outlined"
                             color={fieldErrors.email.hasError ? 'error' : 'primary'}
                             onChange={(e) => {
@@ -140,6 +141,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                                 clearFieldError('email');
                             }}
                             value={email}
+                            inputRef={emailRef}
                         />
                     </FormControl>
                     {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}

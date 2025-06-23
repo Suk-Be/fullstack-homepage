@@ -41,7 +41,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
     });
-    // frontend api response validation errors
+    // e.g. api response validation errors
     /**
      * {
      *   email: ["This email is already taken."],
@@ -270,6 +270,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             onClick={handleClickOpen}
                             variant="body2"
                             sx={{ alignSelf: 'center' }}
+                            {...testId('form-button-forgot-password')}
                         >
                             Benötigen Sie ein neues Passwort?
                         </Link>
