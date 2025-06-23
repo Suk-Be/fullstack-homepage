@@ -117,20 +117,34 @@ describe('SignIn component', () => {
         },
     );
 
-    it.each(authProviderUrls)(
-        'fetches user on $provider AuthCallback mount and navigates',
-        async ({ provider }) => {
-            const { user, googleButton, githubButton } = renderUtils();
+    it('opens a "ForgotPassword" modal on click', async () => {
+        const { user } = renderUtils();
 
-            if (provider === 'Google') {
-                await user.click(googleButton);
-            } else if (provider === 'Github') {
-                await user.click(githubButton);
-            }
+        const forgotPasswordButton = screen.getByTestId('mui-link');
 
-            await waitFor(() =>
-                expect(screen.queryByText('Logging in...')).not.toBeInTheDocument(),
-            );
-        },
-    );
+        await user.click(forgotPasswordButton);
+
+        const headline = screen.getByRole('heading', { name: 'Passwort zurücksetzen' });
+        expect(headline).toBeInTheDocument();
+    });
+
+    it('closes "ForgotPassword" modal on click "abbrechen"', async () => {
+        const { user } = renderUtils();
+
+        const forgotPasswordButton = screen.getByTestId('mui-link');
+
+        await user.click(forgotPasswordButton);
+
+        const headline = screen.getByRole('heading', { name: 'Passwort zurücksetzen' });
+        expect(headline).toBeInTheDocument();
+        const closingButton = screen.getByRole('button', { name: 'Abbrechen' });
+        expect(closingButton).toBeInTheDocument();
+
+        await user.click(closingButton);
+
+        await waitFor(() => {
+            const headline2 = screen.queryByRole('heading', { name: 'Passwort zurücksetzen' });
+            expect(headline2).not.toBeInTheDocument();
+        });
+    });
 });

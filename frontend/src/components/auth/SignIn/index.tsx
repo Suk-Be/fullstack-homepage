@@ -270,7 +270,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             onClick={handleClickOpen}
                             variant="body2"
                             sx={{ alignSelf: 'center' }}
-                            {...testId('form-button-forgot-password')}
+                            {...testId('mui-link')}
                         >
                             Benötigen Sie ein neues Passwort?
                         </Link>
