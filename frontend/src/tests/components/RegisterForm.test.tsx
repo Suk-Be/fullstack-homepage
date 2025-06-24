@@ -1,7 +1,6 @@
-// RegisterForm.test.tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it } from 'vitest';
+import { describe } from 'vitest';
 import { RegisterForm } from '../../components/RegisterForm';
 import { db } from '../mocks/db';
 
@@ -25,23 +24,17 @@ describe('RegisterForm', () => {
         const passwordInput = screen.getByPlaceholderText('Password');
         const passwordConfirmationInput = screen.getByPlaceholderText('Confirm Password');
         const registerButton = screen.getByRole('button', { name: /register/i });
-
         await user.clear(nameInput);
         await user.type(nameInput, registeredUserData.name);
-
         await user.clear(emailInput);
-        // await user.type(emailInput, registeredUserData.email);
-        await user.type(emailInput, registeredUserData.email); // Use a different email to avoid conflict
-
+        await user.type(emailInput, registeredUserData.email);
         await user.clear(passwordInput);
         await user.type(passwordInput, registeredUserData.password);
-
         await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, registeredUserData.password);
-
         await user.click(registerButton);
 
-        const error = await screen.findByText(/Invalid base URL:/i);
+        const error = await screen.findByText(/Registration failed. Please try again./i);
         expect(error).toBeInTheDocument();
-    }, 10_000);
+    });
 });

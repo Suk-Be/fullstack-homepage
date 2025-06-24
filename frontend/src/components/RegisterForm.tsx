@@ -1,73 +1,65 @@
-/*
-Simple example for prototyping msw handlers for validating registration form for existing email from backend.
-msw had issues with the response axios error handling, so we use fetch instead.
-axios produces a new HttpResponse object for the native response object with status 409.
-Which led to a invalid url error in vitest.
-*/
 import React, { useState } from 'react';
-import apiBaseUrl from '../utils/apiBaseUrl';
+import LaravelApiClient from '../plugins/axios';
+
+type RegisterFormData = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+};
+
+type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
 
 export function RegisterForm() {
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<RegisterFormData>({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
     });
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [generalError, setGeneralError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        setErrors((prev) => ({ ...prev, [name]: '' })); // Clear field error
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setErrors({});
+        setGeneralError('');
         setSuccess(false);
 
         try {
-            // Step 1: Get CSRF cookie
-            await fetch(`${apiBaseUrl}/csrf-cookie`, {
-                credentials: 'include',
-            });
+            await LaravelApiClient.post('/auth/spa/register', form);
+            setSuccess(true);
+        } catch (error: any) {
+            const status = error.response?.status;
 
-            // Step 2: Send register request
-            const res = await fetch(`${apiBaseUrl}/auth/spa/register`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': 'mocked-csrf-token', // Must match mock
-                },
-                body: JSON.stringify({
-                    name: form.name,
-                    email: form.email,
-                    password: form.password,
-                    password_confirmation: form.password_confirmation,
-                }),
-            });
+            if (status === 422 && error.response?.data?.errors) {
+                const fieldErrors: ValidationErrors = {};
+                const errorsFromBackend = error.response.data.errors;
 
-            if (res.status === 422) {
-                const data = await res.json();
-                setError(data.message || 'User already exists');
+                for (const key in errorsFromBackend) {
+                    fieldErrors[key as keyof RegisterFormData] = errorsFromBackend[key][0];
+                }
+
+                setErrors(fieldErrors);
                 return;
             }
 
-            if (!res.ok) {
-                throw new Error('Registration failed');
-            }
-
-            setSuccess(true);
-        } catch (err: any) {
-            setError(err.message || 'Something went wrong');
+            setGeneralError('Registration failed. Please try again.');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} data-testid="form">
+        <form onSubmit={handleSubmit} data-testid="form" noValidate>
             <div>
                 <input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+                {errors.name && <p role="alert">{errors.name}</p>}
             </div>
             <div>
                 <input
@@ -77,6 +69,7 @@ export function RegisterForm() {
                     onChange={handleChange}
                     placeholder="Email"
                 />
+                {errors.email && <p role="alert">{errors.email}</p>}
             </div>
             <div>
                 <input
@@ -86,6 +79,7 @@ export function RegisterForm() {
                     onChange={handleChange}
                     placeholder="Password"
                 />
+                {errors.password && <p role="alert">{errors.password}</p>}
             </div>
             <div>
                 <input
@@ -95,11 +89,12 @@ export function RegisterForm() {
                     onChange={handleChange}
                     placeholder="Confirm Password"
                 />
+                {errors.password_confirmation && <p role="alert">{errors.password_confirmation}</p>}
             </div>
 
             <button type="submit">Register</button>
 
-            {error && <p role="alert">{error}</p>}
+            {generalError && <p role="alert">{generalError}</p>}
             {success && <p>User successfully registered!</p>}
         </form>
     );

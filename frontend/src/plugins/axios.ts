@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import apiBaseUrl from '../utils/apiBaseUrl';
+import apiBaseUrl, { serverBaseUrl } from '../utils/apiBaseUrl';
 
 const LaravelApiClient = axios.create({
     baseURL: apiBaseUrl(),
@@ -11,18 +11,24 @@ const LaravelApiClient = axios.create({
     withCredentials: true,
 });
 
-// Request interceptor: fetch CSRF token if needed
+
+let csrfFetched = false;
+
 LaravelApiClient.interceptors.request.use(
     async (config) => {
         const method = config.method?.toLowerCase() ?? '';
         const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(method);
 
-        if (needsCsrf) {
-            await LaravelApiClient.get('/csrf-cookie');
-            const csrfToken = Cookies.get('XSRF-TOKEN');
-            if (csrfToken) {
-                config.headers['X-XSRF-TOKEN'] = csrfToken;
-            }
+        if (needsCsrf && !csrfFetched) {
+            await axios.get(`${serverBaseUrl()}/api/csrf-cookie`, {
+                withCredentials: true,
+            });
+            csrfFetched = true;
+        }
+
+        const csrfToken = Cookies.get('XSRF-TOKEN');
+        if (csrfToken) {
+            config.headers['X-XSRF-TOKEN'] = csrfToken;
         }
 
         return config;
@@ -44,8 +50,8 @@ LaravelApiClient.interceptors.response.use(
             console.warn('CSRF-Token abgelaufen');
         }
 
-        if (status === 422) {
-            console.warn('Validierungsfehler', error.response.data.errors);
+        if (status === 422 && error.response?.data?.errors) {
+            console.warn('Validation errors', error.response.data.errors);
         }
 
         return Promise.reject(error);
