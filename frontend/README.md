@@ -1013,3 +1013,315 @@ const AuthCallback = () => {
 
 export default AuthCallback;
 ```
+
+# Revisit SPA cookie authentication
+
+## Requests
+
+It occured that cookie registration was error prone. Testing with msw showed that there were issues with the url.
+
+env data can be read more robust.
+
+```tsx
+const apiBaseUrl = (): string => {
+    if (import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
+        return 'http://localhost:8000/api';
+    }
+
+    return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+};
+
+const serverBaseUrl = (): string => {
+    if (import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
+        return 'http://localhost:8000';
+    }
+
+    return import.meta.env.VITE_SERVER_BASE_URL || 'http://localhost:8000';
+};
+
+export default apiBaseUrl;
+export { serverBaseUrl };
+```
+
+The call to /csrf-cookies was done twice due to react running in strict mode.
+But it only had to be run once to set the xsrf cookie.
+But in late implemention there was a probability to make new cookie with every LaravelApiClient request.
+
+So we implemented the get cookie once when initializing the App.
+
+```tsx
+// App.tsx
+import initializeCookie from './plugins/fetchCsrfCookie';
+
+function App() {
+    // get cookie once
+    useEffect(() => {
+        initializeCookie();
+    }, []);
+
+    return (
+        <Providers>
+            <Layout />
+        </Providers>
+    );
+}
+
+export default App;
+
+// fetchCsrfCookie.ts
+// single purpose get cookie
+import { serverBaseUrl } from '../utils/apiBaseUrl';
+
+let csrfFetched = false;
+
+// Call initialize on app startup or before first protected request
+// it is called in App.tsx
+async function initializeCookie() {
+    if (csrfFetched) return; // skip if already fetched
+    csrfFetched = true;
+
+    try {
+        await axios.get(`${serverBaseUrl()}/api/csrf-cookie`, {
+            // next line sets the xsrf cookie
+            withCredentials: true,
+        });
+    } catch (err) {
+        console.error('Failed to fetch CSRF cookie', err);
+    }
+}
+
+export default initializeCookie;
+
+// axios.ts
+// cleaned without getting cookie
+// just using cookie withCredentials: true
+const LaravelApiClient = axios.create({
+    baseURL: apiBaseUrl(),
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
+    },
+    withCredentials: true,
+});
+
+LaravelApiClient.interceptors.request.use(
+    (config) => {
+        const xsrfToken = Cookies.get('XSRF-TOKEN');
+        if (xsrfToken) {
+            config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+        }
+        return config;
+    },
+    (error) => Promise.reject(error),
+);
+```
+
+Requests are now simpler
+
+```ts
+LaravelApiClient.post('/auth/spa/register', form);
+```
+
+Whole register request
+
+```ts
+const requestRegister = async ({
+    shouldFetchUser,
+    form,
+}: RegisterUserParams): Promise<RegisterResponse> => {
+    // laravel expects snake case and naming convention different than in the frontend
+    const { passwordConfirmation, ...rest } = form;
+    let success = false;
+
+    try {
+        await LaravelApiClient.post('/auth/spa/register', {
+            ...rest,
+            password_confirmation: passwordConfirmation,
+        });
+        success = true;
+        if (shouldFetchUser && success === true) await requestMe(shouldFetchUser);
+
+        return { success: true, message: 'Die Registrierung hat geklappt!' };
+    }
+    // catch (error: any) {
+    //     return setResponseValidationError(error);
+    // }
+};
+
+export default requestRegister;
+```
+
+## Responses
+
+The Responses were a bit chaoticly written, with fetch api and axios api in some overlapping concerns and duplication (just to make safe ;-).
+
+The response object has this structure on success. We do not render response success cases yet.
+
+```ts
+{
+  success: true,
+  message: 'Die Registrierung hat geklappt!'
+}
+```
+
+We render custom error response objects for form validation.
+The response object has this structure on status code that indicate errors.
+Laravel responses only an errors object if response status 422 (422 Unprocessable Content).
+
+```ts
+{
+  success: false,
+  message: message || defaultMessage,
+  errors,
+}: {
+  success: false,
+  message: string,
+  errors?: { [key: string]: string[] }
+}
+
+/**
+* Example errors:
+* {
+*   email: ["This email is already taken."],
+*   password: ["Password must be at least 8 characters."]
+* }
+*/
+```
+
+This error object is created and returned when an axios error is caught. setResponseValidationError(error)
+
+```tsx
+// requestRegister.ts
+const requestRegister = async ({
+    shouldFetchUser,
+    form,
+}: RegisterUserParams): Promise<RegisterResponse> => {
+    // laravel expects snake case and naming convention different than in the frontend
+    // const { passwordConfirmation, ...rest } = form;
+    // let success = false;
+
+    try {
+        // await LaravelApiClient.post('/auth/spa/register', {
+        //     ...rest,
+        //     password_confirmation: passwordConfirmation,
+        // });
+        // success = true;
+        // if (shouldFetchUser && success === true) await requestMe(shouldFetchUser);
+        // return { success: true, message: 'Die Registrierung hat geklappt!' };
+    } catch (error: any) {
+        return setResponseValidationError(error);
+    }
+};
+
+export default requestRegister;
+
+//setResponseValidationError.ts
+import { AxiosError } from 'axios';
+import { RegisterResponse } from '../../types/entities';
+
+export interface ApiErrorData {
+    message?: string;
+    errors?: { [key: string]: string[] };
+}
+
+export function isAxiosError(error: unknown): error is AxiosError {
+    return (error as AxiosError).isAxiosError === true;
+}
+
+export const setResponseValidationError = (error: unknown): RegisterResponse => {
+    if (!isAxiosError(error)) {
+        const message =
+            error instanceof Error
+                ? error.message || 'Ein unerwarteter Fehler ist aufgetreten.'
+                : 'Ein unbekannter Fehler ist aufgetreten.';
+
+        return { success: false, message };
+    }
+
+    const { response } = error;
+
+    if (!response) {
+        return { success: false, message: 'Netzwerkfehler oder Server nicht erreichbar.' };
+    }
+
+    const responseData = response.data as ApiErrorData;
+    const message = responseData.message ?? '';
+
+    const createResponseErrorValidationObject = (
+        message: string,
+        defaultMessage: string,
+        fieldErrors?: { [key: string]: string[] },
+    ): RegisterResponse => {
+        return {
+            success: false,
+            message: message || defaultMessage,
+            fieldErrors,
+        };
+    };
+
+    switch (response.status) {
+        case 401:
+            return createResponseErrorValidationObject(
+                message,
+                'Nicht autorisiert - ggf. ausgeloggt.',
+            );
+        case 419:
+            return createResponseErrorValidationObject(
+                message,
+                `CSRF-Token nicht gültig (Status: ${response.status}).`,
+            );
+        case 422:
+            return createResponseErrorValidationObject(
+                message,
+                'Validierungsfehler.',
+                responseData.errors,
+            );
+        case 500:
+            return createResponseErrorValidationObject(
+                message,
+                'Interner Serverfehler. Bitte versuchen Sie es später erneut.',
+            );
+        default:
+            return createResponseErrorValidationObject(
+                message,
+                `Ein Fehler ist aufgetreten (Status: ${response.status}).`,
+            );
+    }
+};
+```
+
+The frontend component consumes the response.error for validating input fields like email
+
+```tsx
+const result = await requestRegister({
+    shouldFetchUser: true,
+    form,
+});
+
+if (result.success) {
+    setForm({
+        name: '',
+        email: '',
+        password: '',
+        passwordConfirmation: '',
+    });
+    setFieldErrors({
+        name: { hasError: false, message: '' },
+        email: { hasError: false, message: '' },
+        password: { hasError: false, message: '' },
+        passwordConfirmation: { hasError: false, message: '' },
+    });
+} else {
+    const errors = result.fieldErrors || {};
+    Object.entries(errors).forEach(([field, messages]) => {
+        const key = field as FrontendField;
+        setFieldErrors((prev) => ({
+            ...prev,
+            [key]: {
+                hasError: true,
+                message: messages[0] ?? 'Ungültiger Wert',
+            },
+        }));
+    });
+}
+```
