@@ -1,92 +1,32 @@
-// export default registerUser;
-import Cookies from 'js-cookie';
-import apiBaseUrl from '../../../utils/apiBaseUrl';
-import headers, { registerHeaders } from '../../../utils/auth/requestHeaders';
-import { translateHttpError } from '../../../utils/auth/translateHttpError';
+import LaravelApiClient from '../../../plugins/axios';
+import { RegisterFormData, RegisterResponse } from '../../../types/entities';
+import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
 import requestMe from './requestMe';
 
 interface RegisterUserParams {
     shouldFetchUser: boolean;
-    name: string;
-    email: string;
-    password: string;
-    password_confirmation: string;
+    form: RegisterFormData;
 }
 
-const getCsrfToken = async (): Promise<string> => {
-    await fetch(`${apiBaseUrl}/csrf-cookie`, {
-        headers,
-        credentials: 'include',
-    });
-
-    const token = Cookies.get('XSRF-TOKEN');
-    if (!token) throw new Error('CSRF token not found');
-
-    return token;
-};
-
-const handleErrorResponse = async (response: Response) => {
-    const errorData = await response.json();
-    const { status } = response;
-
-    const defaultMessages: Record<number, string> = {
-        422: 'User already exists',
-        401: 'Nicht autorisiert – ggf. ausgeloggt',
-        419: 'CSRF-Token abgelaufen',
-    };
-
-    return {
-        success: false,
-        message: errorData.message || defaultMessages[status] || 'Ein Fehler ist aufgetreten',
-        errors: errorData.errors || {},
-    };
-};
-
 const requestRegister = async ({
-    shouldFetchUser = false,
-    name,
-    email,
-    password,
-    password_confirmation,
-}: RegisterUserParams) => {
+    shouldFetchUser,
+    form,
+}: RegisterUserParams): Promise<RegisterResponse> => {
+    // laravel expects snake case and naming convention different than in the frontend
+    const { passwordConfirmation, ...rest } = form;
+    let success = false;
+
     try {
-        const csrfToken = await getCsrfToken();
-
-        const response = await fetch(`${apiBaseUrl}/auth/spa/register`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: registerHeaders(csrfToken),
-            body: JSON.stringify({
-                name,
-                email,
-                password,
-                password_confirmation,
-            }),
+        await LaravelApiClient.post('/auth/spa/register', {
+            ...rest,
+            password_confirmation: passwordConfirmation,
         });
+        success = true;
+        if (shouldFetchUser && success === true) await requestMe(shouldFetchUser);
 
-        if (!response.ok) return await handleErrorResponse(response);
-
-        await requestMe(shouldFetchUser);
-
-        return { success: true };
+        return { success: true, message: 'Die Registrierung hat geklappt!' };
     } catch (error: any) {
-        const response = error.response;
-
-        if (response?.status === 422) {
-            return {
-                success: false,
-                message: response.data.message || 'Validierungsfehler',
-                errors: response.data.errors || {},
-            };
-        }
-
-        return {
-            success: false,
-            message: translateHttpError(error),
-            errors: {
-                email: ['Diese E-Mail ist nicht registriert oder das Passwort ist falsch.'],
-            },
-        };
+        return setResponseValidationError(error);
     }
 };
 

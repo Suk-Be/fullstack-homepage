@@ -10,8 +10,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { FormEvent, useCallback, useState } from 'react';
-import ErrorMessages from '../../../data/ErrorMessages';
+import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
@@ -22,43 +21,55 @@ import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialit
 import requestRegister from './requestRegister';
 import validateInputs from './validateSignUpInputs';
 
-type FieldError = {
+type ErrorState = {
     hasError: boolean;
     message: string;
 };
 
-type ErrorState = {
-    name: FieldError;
-    email: FieldError;
-    password: FieldError;
-    passwordConfirmation: FieldError;
+type FrontendErrorsState = {
+    name: ErrorState;
+    email: ErrorState;
+    password: ErrorState;
+    passwordConfirmation: ErrorState;
 };
 
-export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
-    // Inputs
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+type FrontendField = keyof FrontendErrorsState;
 
-    /**
-     * Tracks the client-side (frontend) validation errors for each form field.
-     *
-     * Each field in `fieldErrors` contains:
-     * - `hasError`: A boolean indicating if a validation error is present.
-     * - `message`: A descriptive error message to show to the user.
-     *
-     * Used for immediate feedback before any API call is made.
-     */
-    const [fieldErrors, setFieldErrors] = useState<ErrorState>({
-        name: { hasError: false, message: '' },
-        email: { hasError: false, message: '' },
-        password: { hasError: false, message: '' },
-        passwordConfirmation: { hasError: false, message: '' },
+type RegisterFormData = {
+    name: string;
+    email: string;
+    password: string;
+    passwordConfirmation: string;
+};
+
+type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
+
+export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
+    const [form, setForm] = useState<RegisterFormData>({
+        name: '',
+        email: '',
+        password: '',
+        passwordConfirmation: '',
     });
 
     /**
-     * Stores server-side (backend) validation errors returned from the API.
+     * Tracks the client-side (frontend) validation errors for each form field.
+     * - each key of the fieldErrors object has the same name as input name of the form
+     * - hasError is used on the mui TextField error api to render the helperText api
+     * - message is used on the mui TextField helperText api to contain the error message
+     *
+     * Used for immediate feedback before any API call is made.
+     */
+    const createErrorState = () => ({ hasError: false, message: '' });
+    const [fieldErrors, setFieldErrors] = useState<FrontendErrorsState>({
+        name: createErrorState(),
+        email: createErrorState(),
+        password: createErrorState(),
+        passwordConfirmation: createErrorState(),
+    });
+
+    /**
+     * Tracks server-side (backend) validation errors returned from the API.
      *
      * The object maps field names to arrays of error messages received from the backend.
      * This is useful for displaying detailed validation errors from the server response.
@@ -69,11 +80,9 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
      *   password: ["Password must be at least 8 characters."]
      * }
      */
-    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+    const [errors, setErrors] = useState<ValidationErrors>({});
 
-    // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // Passwort anzeigen
     const [showPassword, setShowPassword] = useState(false);
     const handleTogglePassword = useCallback(() => {
         setShowPassword((prev) => !prev);
@@ -83,11 +92,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
-        // reset backend validation
         setErrors({});
 
-        // FrontendValidation
-        // FYI: to execute own form validation instead of the browser validation
         const {
             isValid,
             emailError,
@@ -98,7 +104,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             passwordConfirmationErrorMessage,
             nameError,
             nameErrorMessage,
-        } = validateInputs(name, email, password, passwordConfirmation);
+        } = validateInputs(form.name, form.email, form.password, form.passwordConfirmation);
 
         setFieldErrors({
             name: { hasError: nameError, message: nameErrorMessage },
@@ -118,35 +124,35 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // shouldFetchUser : true logs the registered user data right after registration
         const result = await requestRegister({
-            shouldFetchUser: false,
-            name,
-            email,
-            password,
-            password_confirmation: passwordConfirmation,
+            shouldFetchUser: true,
+            form,
         });
 
         if (result.success) {
-            setName('');
-            setEmail('');
-            setPassword('');
-            setPasswordConfirmation('');
+            setForm({
+                name: '',
+                email: '',
+                password: '',
+                passwordConfirmation: '',
+            });
             setFieldErrors({
                 name: { hasError: false, message: '' },
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
                 passwordConfirmation: { hasError: false, message: '' },
             });
-        } else if ('errors' in result) {
-            const emailErrors = result.message;
-            if (emailErrors?.length) {
+        } else {
+            const errors = result.fieldErrors || {};
+            Object.entries(errors).forEach(([field, messages]) => {
+                const key = field as FrontendField;
                 setFieldErrors((prev) => ({
                     ...prev,
-                    email: {
+                    [key]: {
                         hasError: true,
-                        message: emailErrors || ErrorMessages.SignUp.responseEmail,
+                        message: messages[0] ?? 'Ungültiger Wert',
                     },
                 }));
-            }
+            });
         }
 
         setIsSubmitting(false);
@@ -154,16 +160,12 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
     /**
      * Clears the error state for a specific form field.
-     *
-     * This function resets both the frontend validation error (`fieldErrors`)
-     * and backend error messages (`errors`) associated with the specified field.
-     *
      * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
      *
      * @example
      * clearFieldError('email');
      */
-    const clearFieldError = (field: keyof ErrorState) => {
+    const clearFieldError = (field: FrontendField) => {
         setFieldErrors((prev) => ({
             ...prev,
             [field]: { hasError: false, message: '' },
@@ -172,6 +174,14 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             const { [field]: _ignored, ...rest } = prev;
             return rest;
         });
+    };
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (name in fieldErrors) {
+            clearFieldError(name as FrontendField);
+        }
     };
 
     return (
@@ -216,11 +226,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 error={fieldErrors.name.hasError}
                                 helperText={fieldErrors.name.message}
                                 color={fieldErrors.name.hasError ? 'error' : 'primary'}
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                    clearFieldError('name');
-                                }}
+                                value={form.name}
+                                onChange={handleChange}
                             />
                         </FormControl>
                         <FormControl>
@@ -236,11 +243,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 error={fieldErrors.email.hasError || !!errors.email}
                                 helperText={fieldErrors.email.message}
                                 color={fieldErrors.email.hasError ? 'error' : 'primary'}
-                                value={email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    clearFieldError('email');
-                                }}
+                                value={form.email}
+                                onChange={handleChange}
                             />
                         </FormControl>
                         <FormControl>
@@ -276,11 +280,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                         ),
                                     },
                                 }}
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    clearFieldError('password');
-                                }}
+                                value={form.password}
+                                onChange={handleChange}
                             />
                         </FormControl>
                         <FormControl>
@@ -301,11 +302,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 color={
                                     fieldErrors.passwordConfirmation.hasError ? 'error' : 'primary'
                                 }
-                                value={passwordConfirmation}
-                                onChange={(e) => {
-                                    setPasswordConfirmation(e.target.value);
-                                    clearFieldError('passwordConfirmation');
-                                }}
+                                value={form.passwordConfirmation}
+                                onChange={handleChange}
                                 {...testId('form-input-password-confirmation')}
                             />
                         </FormControl>
