@@ -30,7 +30,7 @@ type FrontendErrorsState = {
     name: ErrorState;
     email: ErrorState;
     password: ErrorState;
-    passwordConfirmation: ErrorState;
+    password_confirmation: ErrorState;
 };
 
 type FrontendField = keyof FrontendErrorsState;
@@ -39,17 +39,18 @@ type RegisterFormData = {
     name: string;
     email: string;
     password: string;
-    passwordConfirmation: string;
+    password_confirmation: string;
 };
 
 type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
-    const [form, setForm] = useState<RegisterFormData>({
+  // laravel expects snake case and naming convention: password_confirmation
+  const [form, setForm] = useState<RegisterFormData>({
         name: '',
         email: '',
         password: '',
-        passwordConfirmation: '',
+        password_confirmation: '',
     });
 
     /**
@@ -65,7 +66,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         name: createErrorState(),
         email: createErrorState(),
         password: createErrorState(),
-        passwordConfirmation: createErrorState(),
+        password_confirmation: createErrorState(),
     });
 
     /**
@@ -104,13 +105,13 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             passwordConfirmationErrorMessage,
             nameError,
             nameErrorMessage,
-        } = validateInputs(form.name, form.email, form.password, form.passwordConfirmation);
+        } = validateInputs(form.name, form.email, form.password, form.password_confirmation);
 
         setFieldErrors({
             name: { hasError: nameError, message: nameErrorMessage },
             email: { hasError: emailError, message: emailErrorMessage },
             password: { hasError: passwordError, message: passwordErrorMessage },
-            passwordConfirmation: {
+            password_confirmation: {
                 hasError: passwordConfirmationError,
                 message: passwordConfirmationErrorMessage,
             },
@@ -124,7 +125,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // shouldFetchUser : true logs the registered user data right after registration
         const result = await requestRegister({
-            shouldFetchUser: true,
+            shouldFetchUser: false,
             form,
         });
 
@@ -133,13 +134,13 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                 name: '',
                 email: '',
                 password: '',
-                passwordConfirmation: '',
+                password_confirmation: '',
             });
             setFieldErrors({
                 name: { hasError: false, message: '' },
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
-                passwordConfirmation: { hasError: false, message: '' },
+                password_confirmation: { hasError: false, message: '' },
             });
         } else {
             const errors = result.fieldErrors || {};
@@ -297,12 +298,12 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 id="passwordConfirmation"
                                 autoComplete="new-password"
                                 variant="outlined"
-                                error={fieldErrors.passwordConfirmation.hasError}
-                                helperText={fieldErrors.passwordConfirmation.message}
+                                error={fieldErrors.password_confirmation.hasError}
+                                helperText={fieldErrors.password_confirmation.message}
                                 color={
-                                    fieldErrors.passwordConfirmation.hasError ? 'error' : 'primary'
+                                    fieldErrors.password_confirmation.hasError ? 'error' : 'primary'
                                 }
-                                value={form.passwordConfirmation}
+                                value={form.password_confirmation}
                                 onChange={handleChange}
                                 {...testId('form-input-password-confirmation')}
                             />

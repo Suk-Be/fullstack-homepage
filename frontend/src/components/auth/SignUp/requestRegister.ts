@@ -12,15 +12,10 @@ const requestRegister = async ({
     shouldFetchUser,
     form,
 }: RegisterUserParams): Promise<RegisterResponse> => {
-    // laravel expects snake case and naming convention different than in the frontend
-    const { passwordConfirmation, ...rest } = form;
     let success = false;
 
     try {
-        await LaravelApiClient.post('/auth/spa/register', {
-            ...rest,
-            password_confirmation: passwordConfirmation,
-        });
+        await LaravelApiClient.post('/auth/spa/register', form);
         success = true;
         if (shouldFetchUser && success === true) await requestMe(shouldFetchUser);
 
