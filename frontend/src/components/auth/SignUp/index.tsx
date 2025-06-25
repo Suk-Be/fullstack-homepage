@@ -45,8 +45,8 @@ type RegisterFormData = {
 type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
-  // laravel expects snake case and naming convention: password_confirmation
-  const [form, setForm] = useState<RegisterFormData>({
+    // laravel expects snake case and naming convention: password_confirmation
+    const [form, setForm] = useState<RegisterFormData>({
         name: '',
         email: '',
         password: '',
@@ -292,7 +292,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             <TextField
                                 required
                                 fullWidth
-                                name="passwordConfirmation"
+                                name="password_confirmation"
                                 placeholder="••••••"
                                 type={showPassword ? 'text' : 'password'}
                                 id="passwordConfirmation"
