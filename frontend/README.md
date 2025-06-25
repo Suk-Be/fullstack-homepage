@@ -1325,3 +1325,29 @@ if (result.success) {
     });
 }
 ```
+
+## Cookies
+
+### /csrf-cookie endpoint (GET)
+
+This is just a setup step. Laravel returns two cookies in the response:
+
+XSRF-TOKEN: This is the CSRF token encoded in a cookie (not HTTP-only) — meant to be read by JavaScript and sent back in requests via the X-XSRF-TOKEN header.
+
+laravel_session: Your session ID (encrypted) — used by Laravel to track the current authenticated user/session.
+
+These are new tokens, and they’ll be stored in the browser.
+
+### Your next request (e.g. POST /register)
+
+When this request is sent:
+
+The browser automatically includes both cookies (thanks to withCredentials: true).
+
+If you're using Axios correctly, and Laravel's CSRF middleware is active, it will read XSRF-TOKEN from the cookie and expect it in the X-XSRF-TOKEN header.
+
+### Response Cookies
+
+Are different from the one stored as cookie in the browser. This is not issue if it is not used as request token that would be then compared to the token stored in the backend. This could be a mismatch.
+
+It all works like it is.

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import apiBaseUrl, { serverBaseUrl } from '../utils/apiBaseUrl';
+import apiBaseUrl from '../utils/apiBaseUrl';
 
 const LaravelApiClient = axios.create({
     baseURL: apiBaseUrl(),
@@ -11,30 +11,17 @@ const LaravelApiClient = axios.create({
     withCredentials: true,
 });
 
-
-let csrfFetched = false;
-
 LaravelApiClient.interceptors.request.use(
-    async (config) => {
-        const method = config.method?.toLowerCase() ?? '';
-        const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(method);
-
-        if (needsCsrf && !csrfFetched) {
-            await axios.get(`${serverBaseUrl()}/api/csrf-cookie`, {
-                withCredentials: true,
-            });
-            csrfFetched = true;
-        }
-
-        const csrfToken = Cookies.get('XSRF-TOKEN');
-        if (csrfToken) {
-            config.headers['X-XSRF-TOKEN'] = csrfToken;
-        }
-
-        return config;
-    },
-    (error) => Promise.reject(error),
+  (config) => {
+    const xsrfToken = Cookies.get('XSRF-TOKEN');
+    if (xsrfToken) {
+      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
 );
+
 
 // Response interceptor: handle Laravel errors globally
 LaravelApiClient.interceptors.response.use(
@@ -43,11 +30,11 @@ LaravelApiClient.interceptors.response.use(
         const status = error.response?.status;
 
         if (status === 401) {
-            console.warn('Nicht autorisiert – ggf. ausgeloggt');
+            console.warn('Access errors', error.response.data.message);
         }
 
         if (status === 419) {
-            console.warn('CSRF-Token abgelaufen');
+            console.warn('Token errors', error.response.data.message);
         }
 
         if (status === 422 && error.response?.data?.errors) {
