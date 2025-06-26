@@ -1,14 +1,14 @@
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
@@ -286,7 +286,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel htmlFor="passwordConfirmation">
+                            <FormLabel htmlFor="password_confirmation">
                                 Passwort Bestätigung
                             </FormLabel>
                             <TextField
@@ -295,7 +295,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 name="password_confirmation"
                                 placeholder="••••••"
                                 type={showPassword ? 'text' : 'password'}
-                                id="passwordConfirmation"
+                                id="password_confirmation"
                                 autoComplete="new-password"
                                 variant="outlined"
                                 error={fieldErrors.password_confirmation.hasError}
