@@ -16,7 +16,7 @@ export default ({ mode }: { mode: string }) => {
         },
         server: {
             proxy: {
-                '/api': process.env.VITE_BASE_URL || 'http://localhost:8000',
+                '/api': process.env.VITE_SERVER_BASE_URL || 'http://localhost:8000',
             },
         },
     });
