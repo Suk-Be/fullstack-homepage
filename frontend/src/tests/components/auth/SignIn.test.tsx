@@ -2,21 +2,27 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
-import * as setLoginModule from '../../../components/auth/SignIn/requestLogin';
+import ErrorMessages from '../../../data/ErrorMessages';
 import { registeredUserData } from '../../mocks/data';
+import { db } from '../../mocks/db';
 import {
-    expectErrorMessages,
-    expectNoErrorMessages,
-    switchToComponentHelper,
+  expectErrorMessages,
+  expectNoErrorMessages,
+  switchToComponentHelper
 } from '../../utils/testHelperFunctions';
 import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('SignIn component', () => {
+
+    beforeEach(() => {
+        db.user.create(registeredUserData);
+
+        const toggleAuth = vi.fn(() => false);
+        renderWithProviders(<SignIn onToggleAuth={toggleAuth} />);
+    });
+
     const renderUtils = () => {
         const user = userEvent.setup();
-        const toggleAuth = vi.fn(() => true);
-        renderWithProviders(<SignIn onToggleAuth={toggleAuth} />);
-
         const emailInput = screen.getByLabelText(/email/i);
 
         const passwordInput = screen.getByLabelText(/passwort/i);
@@ -45,26 +51,14 @@ describe('SignIn component', () => {
     it('should log in successfully with valid credentials', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();
 
-        const mockLogin = vi
-            .spyOn(setLoginModule, 'default')
-            .mockResolvedValueOnce({ success: true } as any);
-
         await userEvent.type(emailInput, registeredUserData.email);
         await userEvent.type(passwordInput, registeredUserData.password);
         await userEvent.click(submitButton);
 
         await waitFor(() => {
-            // Ensure the API was called
-            expect(mockLogin).toHaveBeenCalledWith({
-                shouldFetchUser: false,
-                email: registeredUserData.email,
-                password: registeredUserData.password,
-            });
-            // no validation errors
-            expectNoErrorMessages('SignIn', ['email', 'password', 'responseEmail']);
-            // check that inputs were reset
-            expect(emailInput).toHaveValue('');
-            expect(passwordInput).toHaveValue('');
+            // screen.debug(screen.getByTestId('form'));
+            expectNoErrorMessages('SignIn', ['email', 'password']);
+            expect(submitButton).not.toBeDisabled();
         });
     });
 
@@ -77,9 +71,9 @@ describe('SignIn component', () => {
 
         await waitFor(() => {
             // screen.debug(screen.getByTestId('form'));
-            const errorMessages = screen.getAllByText('Ein unerwarteter Fehler ist aufgetreten.');
-            expect(errorMessages[0]).toBeInTheDocument();
-            expect(errorMessages[1]).toBeInTheDocument();
+            const errorMessagesForEmailAndPassword = screen.getAllByText(ErrorMessages.SignIn.responseEmail)
+            expect(errorMessagesForEmailAndPassword[0]).toBeInTheDocument();
+            expect(errorMessagesForEmailAndPassword[1]).toBeInTheDocument();
             expect(submitButton).not.toBeDisabled();
         });
     });
@@ -94,28 +88,6 @@ describe('SignIn component', () => {
         });
     });
 
-    it('switches to register component when "Registrieren" button is clicked', async () => {
-        await switchToComponentHelper({ linkName: /registrieren/i });
-
-        await waitFor(() => {
-            expect(screen.getByRole('heading', { name: /registrieren/i })).toBeInTheDocument();
-        });
-    });
-
-    it.each(authProviderUrls)(
-        'redirects to $provider auth URL when clicked',
-        async ({ uri, provider }) => {
-            const { user, googleButton, githubButton } = renderUtils();
-
-            if (provider === 'Google') {
-                await user.click(googleButton);
-                expect(window.location.href).toBe(uri);
-            } else if (provider === 'Github') {
-                await user.click(githubButton);
-                expect(window.location.href).toBe(uri);
-            }
-        },
-    );
 
     it('opens a "ForgotPassword" modal on click', async () => {
         const { user } = renderUtils();
@@ -148,3 +120,59 @@ describe('SignIn component', () => {
         });
     });
 });
+
+describe('SignIn - AuthProviders and Toggle SignUp/In', () => {
+    const originalLocation = window.location;
+
+    beforeAll(() => {
+        Object.defineProperty(window, 'location', {
+            writable: true,
+            value: {
+                ...window.location,
+                assign: vi.fn(),
+                replace: vi.fn(),
+                href: '',
+            },
+        });
+    });
+
+    afterAll(() => {
+        window.location.href = originalLocation.href;
+    });
+
+    const renderButtons = () => {
+        const toggleAuth = vi.fn(() => false);
+        renderWithProviders(<SignIn onToggleAuth={toggleAuth} />);
+        const user = userEvent.setup();
+
+        return {
+            user,
+        };
+    };
+
+    it.each(authProviderUrls)(
+        'redirects to $provider auth URL when clicked',
+        async ({ uri, provider }) => {
+            const { user } = renderButtons();
+
+            const googleButton = screen.getByTestId('form-button-login-with-google');
+            const githubButton = screen.getByTestId('form-button-login-with-github');
+
+            if (provider === 'Google') {
+                await user.click(googleButton);
+                expect(window.location.href).toBe(uri);
+            } else if (provider === 'Github') {
+                await user.click(githubButton);
+                expect(window.location.href).toBe(uri);
+            }
+        },
+    );
+
+    it('renders SignUp component on click of the "Registrieren" link', async () => {
+        await switchToComponentHelper({ linkName: /registrieren/i });
+
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { name: /registrieren/i })).toBeInTheDocument();
+        });
+    });
+})

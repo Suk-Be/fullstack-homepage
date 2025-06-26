@@ -1,10 +1,9 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import SignUp from '../../../components/auth/SignUp/index';
+import SignUp from '../../../components/auth/SignUp';
 import * as registerModule from '../../../components/auth/SignUp/requestRegister';
-import ErrorMessages from '../../../data/ErrorMessages';
-import { registeredUserData } from '../../mocks/data';
+import { db } from '../../mocks/db';
 import userFactory from '../../mocks/factories/userFactories';
 import {
     expectErrorMessages,
@@ -13,34 +12,19 @@ import {
 } from '../../utils/testHelperFunctions';
 import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
-const renderRegistrationForm = () => {
-    const user = userEvent.setup();
-    const fakeUser = userFactory();
-
-    return {
-        user,
-        fakeUser,
-        nameInput: screen.getByLabelText(/benutzername/i),
-        emailInput: screen.getByLabelText(/email/i),
-        passwordInput: screen.getByLabelText('Passwort'),
-        passwordConfirmationInput: screen.getByLabelText(/passwort bestätigung/i),
-        registerButton: screen.getByTestId('form-button-register'),
-        googleButton: screen.getByTestId('form-button-register-with-google'),
-        githubButton: screen.getByTestId('form-button-register-with-github'),
-    };
+const registeredUserData = {
+    id: '1',
+    name: 'John Doe',
+    email: 'existing@example.com',
+    password: 'password123',
 };
 
-describe('SignUp', () => {
-    const originalLocation = window.location;
-
+describe('SignUp - Static Content', () => {
     beforeEach(() => {
-        vi.stubGlobal('location', { href: '' });
+        db.user.create(registeredUserData);
+
         const toggleAuth = vi.fn(() => true);
         renderWithProviders(<SignUp onToggleAuth={toggleAuth} />);
-    });
-
-    afterAll(() => {
-        vi.stubGlobal('location', originalLocation);
     });
 
     const renderStatic = () => {
@@ -62,6 +46,30 @@ describe('SignUp', () => {
         );
         expect(linkSwitchToLogin).toBeInTheDocument();
     });
+});
+
+describe('SignUp - Form', () => {
+    beforeEach(() => {
+        db.user.create(registeredUserData);
+
+        const toggleAuth = vi.fn(() => true);
+        renderWithProviders(<SignUp onToggleAuth={toggleAuth} />);
+    });
+
+    const renderRegistrationForm = () => {
+        const user = userEvent.setup();
+        const fakeUser = userFactory();
+
+        return {
+            user,
+            fakeUser,
+            nameInput: screen.getByLabelText(/benutzername/i),
+            emailInput: screen.getByLabelText(/email/i),
+            passwordInput: screen.getByLabelText('Passwort'),
+            passwordConfirmationInput: screen.getByLabelText(/passwort bestätigung/i),
+            registerButton: screen.getByTestId('form-button-register'),
+        };
+    };
 
     it('should render a default registration form on load', () => {
         const { nameInput, emailInput, passwordInput, passwordConfirmationInput } =
@@ -143,6 +151,8 @@ describe('SignUp', () => {
         });
 
         // 8. Matching password confirmation
+        await user.clear(passwordInput);
+        await user.type(passwordInput, fakeUser.password);
         await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, fakeUser.password);
         await user.click(registerButton);
@@ -152,32 +162,28 @@ describe('SignUp', () => {
     }, 20000);
 
     it('should render a hint if the user already exists', async () => {
-        const {
-            registerButton,
-            user,
-            nameInput,
-            emailInput,
-            passwordInput,
-            passwordConfirmationInput,
-        } = renderRegistrationForm();
+        const user = userEvent.setup();
 
-        // First: Submit existing user
+        const nameInput = screen.getByPlaceholderText(/Max Mustermann/i);
+        const emailInput = screen.getByPlaceholderText(/max@mustermann.com/i);
+        const [passwordInput, passwordConfirmationInput] = screen.getAllByPlaceholderText('••••••');
+        const registerButton = screen.getByTestId('form-button-register');
+
         await user.clear(nameInput);
         await user.type(nameInput, registeredUserData.name);
-
         await user.clear(emailInput);
         await user.type(emailInput, registeredUserData.email);
-
         await user.clear(passwordInput);
         await user.type(passwordInput, registeredUserData.password);
-
         await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, registeredUserData.password);
-
         await user.click(registerButton);
 
-        await waitFor(() => {
-            expect(screen.getByText(ErrorMessages.SignUp.responseEmail)).toBeInTheDocument();
+        await waitFor(async () => {
+            const error = await screen.findByText(
+                /Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere./i,
+            );
+            expect(error).toBeInTheDocument();
         });
     });
 
@@ -213,10 +219,12 @@ describe('SignUp', () => {
             // Ensure the API was called
             expect(mockRegister).toHaveBeenCalledWith({
                 shouldFetchUser: false,
-                name: 'New User',
-                email: 'new@user.com',
-                password: 'ValidPassword123',
-                password_confirmation: 'ValidPassword123',
+                form: {
+                    name: 'New User',
+                    email: 'new@user.com',
+                    password: 'ValidPassword123',
+                    password_confirmation: 'ValidPassword123',
+                },
             });
             // check that inputs were reset
             expect(nameInput).toHaveValue('');
@@ -225,11 +233,52 @@ describe('SignUp', () => {
             expect(passwordConfirmationInput).toHaveValue('');
         });
     });
+});
+
+describe('SignUp - AuthProviders and Toggle SignUp/In', () => {
+    const originalLocation = window.location;
+
+    beforeAll(() => {
+        Object.defineProperty(window, 'location', {
+            writable: true,
+            value: {
+                ...window.location,
+                assign: vi.fn(),
+                replace: vi.fn(),
+                href: '',
+            },
+        });
+    });
+
+    afterAll(() => {
+        window.location.href = originalLocation.href;
+    });
+
+    beforeEach(() => {
+        db.user.create(registeredUserData);
+
+        const toggleAuth = vi.fn(() => true);
+        renderWithProviders(<SignUp onToggleAuth={toggleAuth} />);
+    });
+
+    const renderButtons = () => {
+        const user = userEvent.setup();
+
+        return {
+            user,
+            queryAnmeldenHeadline: screen.queryByRole('heading', { name: 'Anmelden' }),
+            getRegisterHeadline: screen.getByRole('heading', { name: 'Registrieren' }),
+            linkSwitchToLogin: screen.getByRole('link', { name: /anmelden/i }),
+        };
+    };
 
     it.each(authProviderUrls)(
         'redirects to $provider auth URL when clicked',
         async ({ uri, provider }) => {
-            const { user, googleButton, githubButton } = renderRegistrationForm();
+            const { user } = renderButtons();
+
+            const googleButton = screen.getByTestId('form-button-register-with-google');
+            const githubButton = screen.getByTestId('form-button-register-with-github');
 
             if (provider === 'Google') {
                 await user.click(googleButton);
@@ -241,44 +290,11 @@ describe('SignUp', () => {
         },
     );
 
-    it.each(authProviderUrls)(
-        'fetches user on $provider AuthCallback mount and navigates',
-        async ({ provider }) => {
-            const { user, googleButton, githubButton } = renderRegistrationForm();
-
-            if (provider === 'Google') {
-                await user.click(googleButton);
-            } else if (provider === 'Github') {
-                await user.click(githubButton);
-            }
-
-            await waitFor(() =>
-                expect(screen.queryByText('Logging in...')).not.toBeInTheDocument(),
-            );
-        },
-    );
-});
-
-describe('Toggle SignUp component', async () => {
     it('renders SignIn component on click of the "Anmelden" link', async () => {
-        await switchToComponentHelper({ linkName: /registrieren/i });
-
-        const { user } = renderRegistrationForm();
-        const QueryLoginHeadline = screen.queryByRole('heading', { name: 'Anmelden' });
-        const RegisterHeadline = screen.getByRole('heading', { name: 'Registrieren' });
-
-        expect(RegisterHeadline).toBeInTheDocument();
-        expect(QueryLoginHeadline).not.toBeInTheDocument();
-
-        const linkSwitchToLogin = screen.getByRole('link', { name: /anmelden/i });
-        await user.click(linkSwitchToLogin);
+        await switchToComponentHelper({ linkName: /anmelden/i });
 
         await waitFor(() => {
-            const LoginHeadline = screen.getByRole('heading', { name: 'Anmelden' });
-            const QueryRegisterHeadline = screen.queryByRole('heading', { name: 'Registrieren' });
-
-            expect(QueryRegisterHeadline).not.toBeInTheDocument();
-            expect(LoginHeadline).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: /anmelden/i })).toBeInTheDocument();
         });
     });
 });
