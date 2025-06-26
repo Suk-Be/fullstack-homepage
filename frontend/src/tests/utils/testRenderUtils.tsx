@@ -28,11 +28,11 @@ const simulateError = (endpoint: string) =>
 const authProviderUrls = [
     {
         provider: 'GitHub',
-        uri: `${apiBaseUrl}/auth/github`,
+        uri: `${apiBaseUrl()}/auth/github`,
     },
     {
         provider: 'Google',
-        uri: `${apiBaseUrl}/auth/google`,
+        uri: `${apiBaseUrl()}/auth/google`,
     },
 ];
 
@@ -96,3 +96,4 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' }: RenderOpti
 };
 
 export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
+
