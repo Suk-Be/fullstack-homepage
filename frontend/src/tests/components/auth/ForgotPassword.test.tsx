@@ -29,7 +29,7 @@ describe('ForgotPassword', () => {
         };
     };
 
-    it('validate email input on', async () => {
+    it('validates an email to be in email format and existent in database', async () => {
         const { user, submitButton } = renderUtils();
         const emailInput = screen.getByRole('textbox', { name: /email/i });
 
@@ -44,10 +44,11 @@ describe('ForgotPassword', () => {
         await user.click(submitButton);
 
         await waitFor(() => {
-            const errorMessages = screen.getAllByText(
-                'Ein Problem ist aufgetreten. Bitte versuchen Sie es erneut.',
+            screen.debug();
+            const errorMessage = screen.getByText(
+                'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.',
             );
-            expect(errorMessages[0]).toBeInTheDocument();
+            expect(errorMessage).toBeInTheDocument();
             expect(submitButton).not.toBeDisabled();
         });
     });

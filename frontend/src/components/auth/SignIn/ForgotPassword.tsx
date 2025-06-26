@@ -74,11 +74,12 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
             setTimeout(() => handleClose(), 1000);
         } else {
             const backendRawErrors = result.errors || {};
+            const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
 
             const emailBackendErrorMessage = setResponseErrorMessage(
                 backendRawErrors,
                 'email',
-                'Ein unbekannter Fehler bei der E-Mail.',
+                generalErrorMessage,
             );
 
             setFieldErrors({
@@ -128,8 +129,10 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
                         zum Zurücksetzen.
                     </DialogContentText>
 
-                    <FormControl fullWidth margin="dense" error={fieldErrors.email.hasError}>
-                        <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormControl fullWidth margin="dense">
+                        <FormLabel htmlFor="email">
+                            Geben Sie bitte die verwendete Email Adresse an
+                        </FormLabel>
                         <TextField
                             error={fieldErrors.email.hasError}
                             helperText={fieldErrors.email.message}

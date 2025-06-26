@@ -130,13 +130,13 @@ export const handlers = [
         if (!user) {
             return HttpResponse.json(
                 {
-                  message: ErrorMessages.SignIn.responseEmail,
-                  errors: {
-                      email: [ErrorMessages.SignIn.responseEmail],
-                  },
+                    message: ErrorMessages.SignIn.responseEmail,
+                    errors: {
+                        email: [ErrorMessages.SignIn.responseEmail],
+                    },
                 },
                 { status: 422 },
-            )       
+            );
         }
 
         return HttpResponse.json({ token: 'fake-token', user, status: 200 });
@@ -165,7 +165,7 @@ export const handlers = [
             return HttpResponse.json(
                 {
                     success: false,
-                    message: 'Bitte geben Sie eine gültige Email Adresse an.',
+                    message: 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.',
                 },
                 { status: 422 },
             );
