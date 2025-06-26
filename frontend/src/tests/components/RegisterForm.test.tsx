@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe } from 'vitest';
 import { RegisterForm } from '../../components/RegisterForm';
+import ErrorMessages from '../../data/ErrorMessages';
 import { db } from '../mocks/db';
 
 const registeredUserData = {
@@ -34,7 +35,7 @@ describe('RegisterForm', () => {
         await user.type(passwordConfirmationInput, registeredUserData.password);
         await user.click(registerButton);
 
-        const error = await screen.findByText(/Registration failed. Please try again./i);
+        const error = await screen.findByText(ErrorMessages.SignUp.responseEmail);
         expect(error).toBeInTheDocument();
     });
 });
