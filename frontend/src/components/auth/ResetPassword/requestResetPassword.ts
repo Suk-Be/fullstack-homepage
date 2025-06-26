@@ -1,5 +1,7 @@
 import LaravelApiClient from '../../../plugins/axios';
-import { translateHttpError } from '../../../utils/auth/translateHttpError';
+// import { translateHttpError } from '../../../utils/auth/translateHttpError';
+import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
+import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
 
 interface ResetPasswordResult {
     success: boolean;
@@ -20,27 +22,29 @@ const resetPassword = async (
             password_confirmation, // Laravel erwartet dies
             token,
         });
-        return {
-            success: true,
-            message: response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
-        };
+        return setResponseValidationSuccess( response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!');
+        // return {
+        //     success: true,
+        //     message: response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
+        // };
     } catch (error: any) {
-        console.error('Reset password API error:', error.response);
+        // console.error('Reset password API error:', error.response);
 
-        if (error.response?.status === 422) {
-            return {
-                success: false,
-                message: error.response.data.message || 'Validierungsfehler.',
-                errors: error.response.data.errors || {},
-            };
-        }
-        return {
-            success: false,
-            message: translateHttpError(error) || 'Fehler beim Zurücksetzen des Passworts.',
-            errors: {
-                general: ['Ein unerwarteter Fehler ist aufgetreten.'],
-            },
-        };
+        // if (error.response?.status === 422) {
+        //     return {
+        //         success: false,
+        //         message: error.response.data.message || 'Validierungsfehler.',
+        //         errors: error.response.data.errors || {},
+        //     };
+        // }
+        // return {
+        //     success: false,
+        //     message: translateHttpError(error) || 'Fehler beim Zurücksetzen des Passworts.',
+        //     errors: {
+        //         general: ['Ein unerwarteter Fehler ist aufgetreten.'],
+        //     },
+        // };
+        return setResponseValidationError(error);
     }
 };
 

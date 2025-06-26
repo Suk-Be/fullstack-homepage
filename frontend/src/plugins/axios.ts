@@ -2,8 +2,10 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import apiBaseUrl from '../utils/apiBaseUrl';
 
+const api = apiBaseUrl();
+
 const LaravelApiClient = axios.create({
-    baseURL: apiBaseUrl(),
+    baseURL: api,
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',
@@ -12,16 +14,15 @@ const LaravelApiClient = axios.create({
 });
 
 LaravelApiClient.interceptors.request.use(
-  (config) => {
-    const xsrfToken = Cookies.get('XSRF-TOKEN');
-    if (xsrfToken) {
-      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
+    (config) => {
+        const xsrfToken = Cookies.get('XSRF-TOKEN');
+        if (xsrfToken) {
+            config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+        }
+        return config;
+    },
+    (error) => Promise.reject(error),
 );
-
 
 // Response interceptor: handle Laravel errors globally
 LaravelApiClient.interceptors.response.use(
