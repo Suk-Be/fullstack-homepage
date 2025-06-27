@@ -10,7 +10,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import usePasswordToggle from '../../../hooks/usePasswordToggle';
 import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
@@ -84,10 +85,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
     const [errors, setErrors] = useState<ValidationErrors>({});
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const handleTogglePassword = useCallback(() => {
-        setShowPassword((prev) => !prev);
-    }, []);
+
+    const { showPassword, handleTogglePassword } = usePasswordToggle();
 
     // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

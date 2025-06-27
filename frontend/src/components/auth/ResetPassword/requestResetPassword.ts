@@ -23,27 +23,7 @@ const resetPassword = async (
             token,
         });
         return setResponseValidationSuccess( response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!');
-        // return {
-        //     success: true,
-        //     message: response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
-        // };
     } catch (error: any) {
-        // console.error('Reset password API error:', error.response);
-
-        // if (error.response?.status === 422) {
-        //     return {
-        //         success: false,
-        //         message: error.response.data.message || 'Validierungsfehler.',
-        //         errors: error.response.data.errors || {},
-        //     };
-        // }
-        // return {
-        //     success: false,
-        //     message: translateHttpError(error) || 'Fehler beim Zurücksetzen des Passworts.',
-        //     errors: {
-        //         general: ['Ein unerwarteter Fehler ist aufgetreten.'],
-        //     },
-        // };
         return setResponseValidationError(error);
     }
 };

@@ -10,7 +10,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useState } from 'react';
+import useModalToggle from '../../../hooks/useModalToggle';
+import usePasswordToggle from '../../../hooks/usePasswordToggle';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
@@ -52,19 +54,11 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // Passwort vergessen
-    const [open, setOpen] = useState(false);
-    const handleClickOpen = useCallback(() => {
-        setOpen(true);
-    }, []);
-    const handleClose = useCallback(() => {
-        setOpen(false);
-    }, []);
-    // Passwort anzeigen
-    const [showPassword, setShowPassword] = useState(false);
-    const handleTogglePassword = useCallback(() => {
-        setShowPassword((prev) => !prev);
-    }, []);
+    
+    // forgot password
+    const { open, handleClose, handleClickOpen } = useModalToggle();
+
+    const { showPassword, handleTogglePassword } = usePasswordToggle();
 
     // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

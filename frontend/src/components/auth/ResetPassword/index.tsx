@@ -1,23 +1,25 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-    Box,
-    Button,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import { ZodError } from 'zod';
+import usePasswordToggle from '../../../hooks/usePasswordToggle';
 import {
-    ResetPasswordFormattedErrors,
-    ResetPasswordSchema,
+  ResetPasswordFormattedErrors,
+  ResetPasswordSchema,
 } from '../../../schemas/resetPasswordSchema';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
+import { testId } from '../../../utils/testId';
 import { Card, SectionCenteredChild, SignInContainer } from '../../ContainerElements';
 import resetPassword from './requestResetPassword';
 
@@ -35,8 +37,10 @@ type FormErrors = {
 const ResetPassword = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [token, setToken] = useState<string | null>(null);
 
@@ -45,14 +49,13 @@ const ResetPassword = () => {
         password: { hasError: false, message: '' },
         password_confirmation: { hasError: false, message: '' },
     });
+
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [generalErrorMessage, setGeneralErrorMessage] = useState<string | null>(null);
 
-    const [showPassword, setShowPassword] = useState(false);
-    const handleTogglePassword = useCallback(() => {
-        setShowPassword((prev) => !prev);
-    }, []);
+    const { showPassword, handleTogglePassword } = usePasswordToggle();
 
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
     const handleTogglePasswordConfirmation = useCallback(() => {
@@ -332,6 +335,7 @@ const ResetPassword = () => {
                                     variant="contained"
                                     disabled={isSubmitting}
                                     sx={{ mt: 3, mb: 2 }}
+                                    {...testId('submit-reset-password')}
                                 >
                                     {isSubmitting
                                         ? 'Wird zurückgesetzt...'
