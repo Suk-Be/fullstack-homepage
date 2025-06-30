@@ -1197,14 +1197,14 @@ Since github registration with github oauth registration worked, this code will 
 
 1. create an oauth service in google cloud
 2. grab client_id, client_secret and redirect from oauth service for configuration
-    -   service.php
-    -   env files
+    - service.php
+    - env files
 3. Backend refactor existing code
-    -   SocialiteController to BaseSocialiteController
-    -   GithubController and GoogleController extending BaseSocialiteController
-    -   api.php extending routes and use new Controllers
+    - SocialiteController to BaseSocialiteController
+    - GithubController and GoogleController extending BaseSocialiteController
+    - api.php extending routes and use new Controllers
 4. Frontend
-    -   Refactor ClickHandler to a reuseable Clickhandler
+    - Refactor ClickHandler to a reuseable Clickhandler
 
 ### Create an oauth service in google cloud
 
@@ -1843,13 +1843,15 @@ const ResetPasswordPage = () => {
     // Extrahiere Token und E-Mail aus der URL bei Komponenten-Mount
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const urlToken = queryParams.get('token');
-        const urlEmail = queryParams.get('email');
+        const urlToken = queryParams.get("token");
+        const urlEmail = queryParams.get("email");
 
         if (urlToken) {
             setToken(urlToken);
         } else {
-            setGeneralErrorMessage('Ungültiger oder fehlender Passwort-Reset-Token.');
+            setGeneralErrorMessage(
+                "Ungültiger oder fehlender Passwort-Reset-Token."
+            );
         }
         if (urlEmail) {
             setEmail(urlEmail);
@@ -1858,31 +1860,39 @@ const ResetPasswordPage = () => {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         try {
-            const response = await LaravelApiClient.post('/auth/spa/reset-password', {
-                email,
-                password,
-                password_confirmation, 
-                token,
-            });
+            const response = await LaravelApiClient.post(
+                "/auth/spa/reset-password",
+                {
+                    email,
+                    password,
+                    password_confirmation,
+                    token,
+                }
+            );
             return {
                 success: true,
-                message: response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
+                message:
+                    response.data.message ||
+                    "Passwort wurde erfolgreich zurückgesetzt!",
             };
         } catch (error: any) {
-            console.error('Reset password API error:', error.response);
+            console.error("Reset password API error:", error.response);
 
             if (error.response?.status === 422) {
                 return {
                     success: false,
-                    message: error.response.data.message || 'Validierungsfehler.',
+                    message:
+                        error.response.data.message || "Validierungsfehler.",
                     errors: error.response.data.errors || {},
                 };
             }
             return {
                 success: false,
-                message: translateHttpError(error) || 'Fehler beim Zurücksetzen des Passworts.',
+                message:
+                    translateHttpError(error) ||
+                    "Fehler beim Zurücksetzen des Passworts.",
                 errors: {
-                    general: ['Ein unerwarteter Fehler ist aufgetreten.'],
+                    general: ["Ein unerwarteter Fehler ist aufgetreten."],
                 },
             };
         }
@@ -1896,7 +1906,9 @@ const ResetPasswordPage = () => {
             <SignInContainer>
                 <Card>
                     <Typography color="error">{generalErrorMessage}</Typography>
-                    <Button onClick={() => navigate('/')}>Zurück zum Login</Button>
+                    <Button onClick={() => navigate("/")}>
+                        Zurück zum Login
+                    </Button>
                 </Card>
             </SignInContainer>
         );
@@ -1906,7 +1918,9 @@ const ResetPasswordPage = () => {
 
     return (
         <Card variant="outlined">
-            <LockOpenIcon sx={{ color: (theme) => theme.palette.primary.main }} />
+            <LockOpenIcon
+                sx={{ color: (theme) => theme.palette.primary.main }}
+            />
             <Typography component="h1" variant="h5">
                 Passwort zurücksetzen
             </Typography>
@@ -1915,9 +1929,9 @@ const ResetPasswordPage = () => {
                 onSubmit={handleSubmit}
                 noValidate
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
                     gap: 2,
                 }}
             >
@@ -1934,19 +1948,21 @@ const ResetPasswordPage = () => {
                         value={email}
                         onChange={(e) => {
                             setEmail(e.target.value);
-                            clearFieldError('email');
+                            clearFieldError("email");
                         }}
                         error={fieldErrors.email.hasError}
                         helperText={fieldErrors.email.message}
                     />
                 </FormControl>
                 <FormControl>
-                    <FormLabel htmlFor="password-reset">Neues Passwort</FormLabel>
+                    <FormLabel htmlFor="password-reset">
+                        Neues Passwort
+                    </FormLabel>
                     <TextField
                         id="password-reset"
                         name="password"
                         placeholder="••••••"
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         fullWidth
                         required
                         value={password}
@@ -1965,13 +1981,13 @@ const ResetPasswordPage = () => {
                         id="password-confirmation-reset"
                         name="password_confirmation"
                         placeholder="••••••"
-                        type={showPasswordConfirmation ? 'text' : 'password'}
+                        type={showPasswordConfirmation ? "text" : "password"}
                         fullWidth
                         required
                         value={passwordConfirmation}
                         onChange={(e) => {
                             setPasswordConfirmation(e.target.value);
-                            clearFieldError('password_confirmation');
+                            clearFieldError("password_confirmation");
                         }}
                         error={fieldErrors.password_confirmation.hasError}
                         helperText={fieldErrors.password_confirmation.message}
@@ -1996,7 +2012,9 @@ const ResetPasswordPage = () => {
                     disabled={isSubmitting}
                     sx={{ mt: 3, mb: 2 }}
                 >
-                    {isSubmitting ? 'Wird zurückgesetzt...' : 'Passwort zurücksetzen'}
+                    {isSubmitting
+                        ? "Wird zurückgesetzt..."
+                        : "Passwort zurücksetzen"}
                 </Button>
             </Box>
         </Card>
@@ -2004,7 +2022,6 @@ const ResetPasswordPage = () => {
 };
 
 export default ResetPasswordPage;
-
 ```
 
 ## mailpit: testing emails, artisan queue
@@ -2016,7 +2033,7 @@ Da du Laravel Sail nicht nutzt, zeige ich dir die einfachste Methode, Mailpit al
 ### Mailpit installieren
 
 1. Mailpit installieren und starten
-Mailpit ist eine einzelne Binärdatei, was die Installation super einfach macht. Du musst sie nur herunterladen und ausführen.
+   Mailpit ist eine einzelne Binärdatei, was die Installation super einfach macht. Du musst sie nur herunterladen und ausführen.
 
 Schritt 1: Mailpit herunterladen
 Gehe zur offiziellen GitHub-Seite von Mailpit, um die neueste Version herunterzuladen, die für dein Betriebssystem geeignet ist:
@@ -2090,3 +2107,55 @@ Illuminate\Mail\SentMessage
 
 Man erhält in der Mailpit app (in Localohost:8025 ) das definierte Subject.
 In der Console erhält man 'Illuminate\Mail\SentMessage' oder eventuell einen Fehler auf den man reagieren kann.
+
+## Windows 10 and mailpit
+
+Windows blocked the port 1025 i used that is why an error message occured and the server stopped running
+
+```bash
+mailpit.exe
+
+time="2025/06/30 16:56:22" level=info msg="[smtpd] starting on [::]:1025 (no encryption)"
+time="2025/06/30 16:56:22" level=info msg="[http] starting on [::]:8025"
+time="2025/06/30 16:56:22" level=info msg="[http] accessible via http://localhost:8025/"
+time="2025/06/30 16:56:22" level=fatal msg="listen tcp 0.0.0.0:1025: bind: Der Zugriff auf einen Socket war aufgrund der Zugriffsrechte des Sockets unzulässig."
+```
+
+Debugging shows that port 1025 is excluded (1024 - 1123) from tcp
+
+```bash
+PS C:\Users\Admin> netsh interface ipv4 show excludedportrange protocol=tcp
+
+Portausschlussbereiche für das Protokoll "tcp"
+
+Startport      Endport
+----------    --------
+      1024        1123
+      1191        1290
+      1921        2020
+      5357        5357
+     50000       50059     *
+     57297       57396
+     65090       65189
+     65190       65289
+     65290       65389
+
+* - Verwaltete Portausschlüsse.
+```
+
+### Running mailpit on an available port (for tcp)
+
+change the smtp port and it runs
+
+```bash
+mailpit.exe --smtp 127.0.0.1:2025
+time="2025/06/30 17:02:58" level=info msg="[smtpd] starting on 127.0.0.1:2025 (no encryption)"
+time="2025/06/30 17:02:58" level=info msg="[http] starting on [::]:8025"
+time="2025/06/30 17:02:59" level=info msg="[http] accessible via http://localhost:8025/"
+```
+
+adjust the mail port in env to be 2025
+
+```sh
+MAIL_PORT=2025
+```
