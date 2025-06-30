@@ -29,24 +29,28 @@ beforeAll(() => {
     server.listen({ onUnhandledRequest: 'bypass' }); // Keep 'bypass' for clarity
 
     // THIS IS THE KEY DEBUGGING LISTENER
-    server.events.on('request:start', ({ request }) => {
-        console.log('MSW Saw Request:');
-        console.log('  Method:', request.method);
-        console.log('  URL:', request.url);
-        console.log('  Headers:', Object.fromEntries(request.headers.entries()));
-        // For POST/PUT, also log the body if it's JSON
-        if (request.bodyUsed === false && request.method !== 'GET' && request.method !== 'HEAD') {
-            request
-                .clone()
-                .json()
-                .then((body) => {
-                    console.log('  Body:', body);
-                })
-                .catch(() => {
-                    console.log('  Body: (could not parse as JSON)');
-                });
-        }
-    });
+    // server.events.on('request:start', ({ request }) => {
+    //     console.log('MSW Saw Request:');
+    //     console.log('  Method:', request.method);
+    //     console.log('  URL:', request.url);
+    //     console.log('  Headers:', Object.fromEntries(request.headers.entries()));
+    //     // For POST/PUT, also log the body if it's JSON
+    //     if (request.bodyUsed === false && request.method !== 'GET' && request.method !== 'HEAD') {
+    //         request
+    //             .clone()
+    //             .json()
+    //             .then((body) => {
+    //                 console.log('  Body:', body);
+    //             })
+    //             .catch(() => {
+    //                 console.log('  Body: (could not parse as JSON)');
+    //             });
+    //     }
+    // });
+
+    // server.events.on('request:unhandled', ({ request }) => {
+    //   console.error(`❌ Unhandled request: ${request.method} ${request.url}`);
+    // });
 });
 
 afterEach(() => {
