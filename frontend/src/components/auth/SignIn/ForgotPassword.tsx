@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
+import SuccessMessages from '../../../data/SuccessMessages';
 import useInputFocusOnModalOpen from '../../../hooks/useInputFocusOnModalOpen';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
 import { testId } from '../../../utils/testId';
@@ -67,10 +68,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
         if (result.success) {
             // console.log('forgot password: ', result);
             setEmail('');
-            setSuccessMessage(
-                result.message ||
-                    'Passwort-Reset-Link gesendet. Bitte überprüfen Sie Ihre E-Mails.',
-            );
+            setSuccessMessage(result.message || SuccessMessages.ForgotPassword.requestSuccess);
             setTimeout(() => handleClose(), 1000);
         } else {
             const backendRawErrors = result.errors || {};

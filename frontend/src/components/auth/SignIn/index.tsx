@@ -1,15 +1,7 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { IconButton, InputAdornment } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
+import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, TextField } from '@mui/material';
 import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
 import useModalToggle from '../../../hooks/useModalToggle';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
@@ -68,7 +60,11 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         setErrors({});
 
         // Frontend validation
-        const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
+        const { 
+          isValid, 
+          emailError, emailErrorMessage, 
+          passwordError, passwordErrorMessage 
+        } =
             validateSignInInputs(email, password);
 
         setFieldErrors({
@@ -97,7 +93,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
             });
-            setErrors({});
         } else {
             // response validation
             const backendRawErrors = result.errors || {};
