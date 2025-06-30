@@ -4,7 +4,6 @@ import { setResponseValidationError } from '../../../utils/auth/setResponseValid
 import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
 
 const requestMe = async (shouldFetchUser = false) => {
-    console.log('requestMe: shouldFetchUser ', shouldFetchUser)
     if (shouldFetchUser) {
         try {
             const { data: user } = await LaravelApiClient.get<User>('/me');
