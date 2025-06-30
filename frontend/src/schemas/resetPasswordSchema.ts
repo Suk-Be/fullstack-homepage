@@ -9,6 +9,7 @@ export const ResetPasswordSchema = z
             .min(8, ErrorMessages.ResetPassword.password)
             .min(1, ErrorMessages.ResetPassword.password),
         password_confirmation: z.string().min(1, ErrorMessages.ResetPassword.password_confirmation),
+        token: z.string().min(6, ErrorMessages.ResetPassword.token),
     })
     .refine((data) => data.password === data.password_confirmation, {
         message: 'Passwörter stimmen nicht überein.',

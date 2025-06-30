@@ -13,6 +13,8 @@ import {
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import { ZodError } from 'zod';
+import ErrorMessages from '../../../data/ErrorMessages';
+import SuccessMessages from '../../../data/SuccessMessages';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
 import {
   ResetPasswordFormattedErrors,
@@ -29,7 +31,6 @@ type FieldError = {
 };
 
 type FormErrors = {
-    email: FieldError;
     password: FieldError;
     password_confirmation: FieldError;
 };
@@ -45,7 +46,6 @@ const ResetPassword = () => {
     const [token, setToken] = useState<string | null>(null);
 
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({
-        email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
         password_confirmation: { hasError: false, message: '' },
     });
@@ -71,7 +71,7 @@ const ResetPassword = () => {
         if (urlToken) {
             setToken(urlToken);
         } else {
-            setGeneralErrorMessage('Ungültiger oder fehlender Passwort-Reset-Token.');
+            setGeneralErrorMessage(ErrorMessages.ResetPassword.urlToken);
         }
         if (urlEmail) {
             setEmail(urlEmail);
@@ -82,7 +82,6 @@ const ResetPassword = () => {
         event.preventDefault();
         setIsSubmitting(true);
         setFieldErrors({
-            email: { hasError: false, message: '' },
             password: { hasError: false, message: '' },
             password_confirmation: { hasError: false, message: '' },
         });
@@ -90,7 +89,7 @@ const ResetPassword = () => {
         setGeneralErrorMessage(null);
 
         if (!token) {
-            setGeneralErrorMessage('Passwort-Reset-Token fehlt.');
+            setGeneralErrorMessage(ErrorMessages.ResetPassword.token);
             setIsSubmitting(false);
             return;
         }
@@ -100,15 +99,12 @@ const ResetPassword = () => {
                 email,
                 password,
                 password_confirmation: passwordConfirmation,
+                token
             });
         } catch (error) {
             if (error instanceof ZodError) {
                 const formatted: ResetPasswordFormattedErrors = error.format();
                 setFieldErrors({
-                    email: {
-                        hasError: Boolean(formatted.email?._errors?.[0]),
-                        message: formatted.email?._errors?.[0] || '',
-                    },
                     password: {
                         hasError: Boolean(formatted.password?._errors?.[0]),
                         message: formatted.password?._errors?.[0] || '',
@@ -126,9 +122,12 @@ const ResetPassword = () => {
         const result = await resetPassword(email, password, passwordConfirmation, token);
 
         if (result.success) {
-            setSuccessMessage(result.message || 'Passwort wurde erfolgreich zurückgesetzt!');
+            setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
             // Optional: Nach einer kurzen Verzögerung zur Anmeldeseite navigieren
-            setTimeout(() => navigate('/'), 3000);
+            if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
+              setTimeout(() => navigate('/'), 3000);
+            }
+            
         } else {
             const backendRawErrors = result.errors || {};
             // General error message for the whole form, or specific field errors
@@ -139,10 +138,6 @@ const ResetPassword = () => {
             }
 
             setFieldErrors({
-                email: {
-                    hasError: !!setResponseErrorMessage(backendRawErrors, 'email', ''),
-                    message: setResponseErrorMessage(backendRawErrors, 'email', ''),
-                },
                 password: {
                     hasError: !!setResponseErrorMessage(backendRawErrors, 'password', ''),
                     message: setResponseErrorMessage(backendRawErrors, 'password', ''),
@@ -233,12 +228,7 @@ const ResetPassword = () => {
                                         required
                                         disabled // E-Mail-Feld sollte von der URL vorab ausgefüllt und nicht bearbeitbar sein
                                         value={email}
-                                        onChange={(e) => {
-                                            setEmail(e.target.value);
-                                            clearFieldError('email');
-                                        }}
-                                        error={fieldErrors.email.hasError}
-                                        helperText={fieldErrors.email.message}
+                                        {...testId('email-disabled')}
                                     />
                                 </FormControl>
                                 <FormControl>
@@ -275,6 +265,7 @@ const ResetPassword = () => {
                                                 ),
                                             },
                                         }}
+                                        {...testId('password')}
                                     />
                                 </FormControl>
                                 <FormControl>
@@ -315,6 +306,7 @@ const ResetPassword = () => {
                                                 ),
                                             },
                                         }}
+                                        {...testId('confirmPassword')}
                                     />
                                 </FormControl>
 

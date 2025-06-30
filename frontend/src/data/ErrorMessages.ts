@@ -18,6 +18,8 @@ const ErrorMessages = {
         password_confirmation:
             'Die Bestätigung des Passwortes stimmt nicht mit dem Passwort überein.',
         responseEmail: 'Diese E-Mail ist nicht registriert.',
+        urlToken: 'Ungültiger oder fehlender Passwort-Reset-Token.',
+        token: 'Passwort-Reset-Token fehlt.'
     },
 };
 
