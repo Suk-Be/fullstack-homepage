@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import ErrorMessages from '../../data/ErrorMessages';
+import SuccessMessages from '../../data/SuccessMessages';
 import { ForgotPasswordSchema } from '../../schemas/forgotPasswordSchema';
 import { LoginSchema } from '../../schemas/loginSchema';
 import { RegisterSchema } from '../../schemas/registerSchema';
@@ -9,6 +10,13 @@ import { registeredUserData } from './data';
 import { db } from './db';
 
 const api = apiBaseUrl();
+
+interface ResetPasswordRequestBody {
+    password: string;
+    password_confirmation: string;
+    token: string;
+    email: string;
+}
 
 export const handlers = [
     // 1. CSRF cookie request
@@ -26,8 +34,6 @@ export const handlers = [
         );
     }),
 
-    // Registration request
-    // http.post(`${api}/auth/spa/register`, async (ctx) => {
     http.post(`${api}/auth/spa/register`, async (ctx) => {
         // console.log('>>>> DEBUGGING MSW: register call');
         const body = (await ctx.request.json()) as {
@@ -77,8 +83,6 @@ export const handlers = [
         return HttpResponse.json({ id: 1, name, email }, { status: 201 });
     }),
 
-    // me request
-    // http.get(`${api}/me`, ({ request }) => {
     http.get(`${api}/me`, ({ request }) => {
         const csrfHeader = request.headers.get('X-XSRF-TOKEN');
 
@@ -104,8 +108,6 @@ export const handlers = [
         return HttpResponse.json(mockUser, { status: 200 });
     }),
 
-    // login request
-    // http.post(`${api}/auth/spa/login`, async (ctx) => {
     http.post(`${api}/auth/spa/login`, async (ctx) => {
         const body = await ctx.request.json();
         const parseResult = LoginSchema.safeParse(body);
@@ -142,12 +144,11 @@ export const handlers = [
         return HttpResponse.json({ token: 'fake-token', user, status: 200 });
     }),
 
-    // forgot-password request
-    // http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {
     http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {
         const body = (await ctx.request.json()) as { email: string };
         const parseResult = ForgotPasswordSchema.safeParse(body);
 
+        // console.log('[MSW] test logging email:', body.email);
         if (!parseResult.success) {
             return HttpResponse.json({ message: 'Invalid data' }, { status: 422 });
         }
@@ -175,6 +176,25 @@ export const handlers = [
             success: true,
             message: 'Passwort-Reset-Link wurde gesendet!',
         });
+    }),
+
+    http.post(`${api}/auth/spa/reset-password`, async ({ request }) => {
+      const body = await request.json() as ResetPasswordRequestBody;
+      // console.log('✅ Fully qualified MSW handler HIT', body);
+      
+      if(body.password !== body.password_confirmation) {
+        HttpResponse.json({ 
+          success: false, 
+          message: ErrorMessages.ResetPassword.password,
+          errors: {
+              password: [ErrorMessages.ResetPassword.password],
+              password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
+          } 
+        })
+      }
+      
+
+      return HttpResponse.json({ success: true, message: SuccessMessages.ResetPassword.requestSuccess, body });
     }),
 
     // fallback for catching future route mismatches during test debugging
