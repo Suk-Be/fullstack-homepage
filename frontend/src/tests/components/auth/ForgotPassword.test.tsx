@@ -44,7 +44,7 @@ describe('ForgotPassword', () => {
         await user.click(submitButton);
 
         await waitFor(() => {
-            screen.debug();
+            // screen.debug();
             const errorMessage = screen.getByText(
                 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.',
             );
