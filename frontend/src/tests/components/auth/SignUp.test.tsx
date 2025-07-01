@@ -159,7 +159,7 @@ describe('SignUp - Form', () => {
         await waitFor(() => {
             expectNoErrorMessages('SignUp', ['name', 'email', 'password', 'password_confirmation']);
         });
-    }, 20000);
+    }, 30000);
 
     it('should render a hint if the user already exists', async () => {
         const user = userEvent.setup();

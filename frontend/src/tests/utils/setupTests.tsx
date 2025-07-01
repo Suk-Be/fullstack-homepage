@@ -24,9 +24,9 @@ beforeAll(() => {
         };
     });
 
-    // server.listen();
+    server.listen();
 
-    server.listen({ onUnhandledRequest: 'bypass' }); // Keep 'bypass' for clarity
+    // server.listen({ onUnhandledRequest: 'bypass' }); // Keep 'bypass' for clarity
 
     // THIS IS THE KEY DEBUGGING LISTENER
     // server.events.on('request:start', ({ request }) => {

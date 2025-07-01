@@ -31,7 +31,7 @@ export const logRecoverableError = ({
                 timestamp: new Date().toISOString(),
             }),
         });
-    } else {
+    } else if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
         console.warn(`[DEV LOG] ${context}`, error, extra);
     }
 };
