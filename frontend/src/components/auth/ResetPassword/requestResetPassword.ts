@@ -1,4 +1,6 @@
 import LaravelApiClient from '../../../plugins/axios';
+import initializeCookies from '../../../plugins/initializeCookie';
+import resetCookiesOnResponseError from '../../../utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
 
@@ -13,18 +15,21 @@ const resetPassword = async (
     password: string,
     password_confirmation: string,
     token: string,
-): Promise<ResetPasswordResult> => {    
+): Promise<ResetPasswordResult> => {
     try {
-        // console.log('in try, before post: ', email, password, password_confirmation, token)
+        await initializeCookies();
         const response = await LaravelApiClient.post('/auth/spa/reset-password', {
             email,
             password,
-            password_confirmation, 
+            password_confirmation,
             token,
         });
-        // console.log('in try, after post: ', email, password, password_confirmation, token)
-        return setResponseValidationSuccess( response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!');
+        return setResponseValidationSuccess(
+            response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
+        );
     } catch (error: any) {
+        // on 419 or 422
+        await resetCookiesOnResponseError(error);
         return setResponseValidationError(error);
     }
 };
