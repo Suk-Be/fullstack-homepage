@@ -3,10 +3,12 @@ import { serverBaseUrl } from '../utils/apiBaseUrl';
 
 let csrfFetched = false;
 
-// Call initialize on app startup or before first protected request
-// it is called in App.tsx
+export function resetCsrfFetched() {
+    csrfFetched = false;
+}
+
 async function initializeCookie() {
-    if (csrfFetched) return; // skip if already fetched
+    if (csrfFetched) return; 
     csrfFetched = true;
 
     try {
