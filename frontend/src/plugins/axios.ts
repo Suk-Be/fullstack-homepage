@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import apiBaseUrl from '../utils/apiBaseUrl';
+import { getAxiosStatus, logRecoverableError } from '../utils/logger';
 
 const api = apiBaseUrl();
 
@@ -24,22 +25,33 @@ LaravelApiClient.interceptors.request.use(
     (error) => Promise.reject(error),
 );
 
-// Response interceptor: handle Laravel errors globally
 LaravelApiClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        const status = error.response?.status;
+        const axiosStatus = getAxiosStatus(error);
 
-        if (status === 401) {
-            console.warn('Access errors', error.response.data.message);
+        if (axiosStatus === 401) {
+            logRecoverableError({
+                context: 'Access errors',
+                error,
+                extra: { axiosStatus },
+            });
         }
 
-        if (status === 419) {
-            console.warn('Token errors', error.response.data.message);
+        if (axiosStatus === 419) {
+            logRecoverableError({
+                context: 'Token errors',
+                error,
+                extra: { axiosStatus },
+            });
         }
 
-        if (status === 422 && error.response?.data?.errors) {
-            console.warn('Validation errors', error.response.data.errors);
+        if (axiosStatus === 422 && error.response?.data?.errors) {
+            logRecoverableError({
+                context: 'Validation errors',
+                error,
+                extra: { axiosStatus },
+            });
         }
 
         return Promise.reject(error);

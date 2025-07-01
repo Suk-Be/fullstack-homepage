@@ -1,5 +1,5 @@
-import { isAxiosError } from 'axios';
 import initializeCookies from '../../plugins/initializeCookies';
+import { getAxiosStatus, logRecoverableError } from '../logger';
 
 /**
  * Checks if the given error is an Axios error with a 419 (CSRF token mismatch)
@@ -11,9 +11,14 @@ import initializeCookies from '../../plugins/initializeCookies';
  */
 
 const resetCookiesOnResponseError = async (error: unknown): Promise<void> => {
-    const axiosStatus = isAxiosError(error) ? error.response?.status : null;
+    const axiosStatus = getAxiosStatus(error);
 
     if (axiosStatus === 419 || axiosStatus === 422) {
+        logRecoverableError({
+            context: 'reset cookies on response error',
+            error,
+            extra: { axiosStatus },
+        });
         // reset cookies and re-fetch cookies
         await initializeCookies();
     }

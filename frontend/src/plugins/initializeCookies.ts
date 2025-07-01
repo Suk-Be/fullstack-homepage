@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { serverBaseUrl } from '../utils/apiBaseUrl';
+import { getAxiosStatus, logRecoverableError } from '../utils/logger';
 
 let isCsrfFetched = false;
 
@@ -20,8 +21,13 @@ async function setCookies() {
             // next line sets the xsrf cookie
             withCredentials: true,
         });
-    } catch (err) {
-        console.error('Failed to fetch CSRF cookie', err);
+    } catch (error) {
+        const axiosStatus = getAxiosStatus(error);
+        logRecoverableError({
+            context: 'Failed to fetch CSRF cookie',
+            error,
+            extra: { axiosStatus },
+        });
     }
 }
 
