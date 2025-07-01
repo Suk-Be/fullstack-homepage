@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios';
-import initializeCookies from '../../plugins/initializeCookie';
+import initializeCookies from '../../plugins/initializeCookies';
 
 /**
  * Checks if the given error is an Axios error with a 419 (CSRF token mismatch)

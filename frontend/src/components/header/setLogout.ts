@@ -1,11 +1,8 @@
 import LaravelApiClient from '../../plugins/axios';
-import initializeCookie, { resetCsrfFetched } from '../../plugins/fetchCsrfCookie';
+import initializeCookies from '../../plugins/initializeCookies';
 
 const setLogout = async (logState: boolean) => {
     try {
-        // Logout request
-        await LaravelApiClient.post('/auth/spa/logout');
-
         // log post-logout state
         if (logState) {
             await LaravelApiClient.get('/me')
@@ -22,9 +19,8 @@ const setLogout = async (logState: boolean) => {
         }
 
         // Re-fetch XSRF cookie after session ends to reset token
-        resetCsrfFetched();
-        await initializeCookie();
-        console.log('XSRF cookie re-initialized after logout');
+        await initializeCookies();
+        console.log('XSRF and Session cookie re-initialized after logout');
     } catch (error) {
         console.error('Logout error:', error);
     }

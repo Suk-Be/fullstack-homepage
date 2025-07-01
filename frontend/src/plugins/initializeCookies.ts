@@ -10,7 +10,7 @@ function resetIsCsrfFetchedAndResetCookies() {
     document.cookie = 'laravel_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-async function setCookie() {
+async function setCookies() {
     if (isCsrfFetched) return;
 
     isCsrfFetched = true;
@@ -26,9 +26,18 @@ async function setCookie() {
 }
 
 async function initializeCookies() {
-    resetIsCsrfFetchedAndResetCookies();
-    await setCookie();
+    let lastInitializedAt = 0;
+    const THROTTLE_DELAY_MS = 5000; // 5 seconds
+
+    const now = Date.now();
+
+    if (now - lastInitializedAt > THROTTLE_DELAY_MS) {
+        resetIsCsrfFetchedAndResetCookies();
+        await setCookies();
+    } else {
+        console.log('[Throttle] Skipping cookie initialization due to throttling.');
+    }
 }
 
 export default initializeCookies;
-export { resetIsCsrfFetchedAndResetCookies, setCookie };
+export { resetIsCsrfFetchedAndResetCookies, setCookies };

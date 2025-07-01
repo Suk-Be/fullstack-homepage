@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './App.css';
 import Layout from './pages/Layout';
-import initializeCookie from './plugins/initializeCookie';
+import initializeCookie from './plugins/initializeCookies';
 import Providers from './providers';
 
 function App() {
