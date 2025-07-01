@@ -36,7 +36,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
         email: { hasError: false, message: '' },
     });
     // frontend api response validation errors
-    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+    // const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
 
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,8 +47,9 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
-        // reset backend validation
-        setErrors({});
+        setFieldErrors({
+            email: { hasError: false, message: '' },
+        });
         setSuccessMessage(null);
 
         const { isValid, emailError, emailErrorMessage } = validateForgotPasswordInput(email);
@@ -66,10 +67,15 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
         const result = await requestForgotPassword(email);
 
         if (result.success) {
-            // console.log('forgot password: ', result);
             setEmail('');
+            setFieldErrors({
+                email: { hasError: false, message: '' },
+            });
             setSuccessMessage(result.message || SuccessMessages.ForgotPassword.requestSuccess);
-            setTimeout(() => handleClose(), 1000);
+            setTimeout(() => {
+                setSuccessMessage(null);
+                handleClose();
+            }, 1000);
         } else {
             const backendRawErrors = result.errors || {};
             const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
@@ -95,10 +101,6 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
             ...prev,
             [field]: { hasError: false, message: '' },
         }));
-        setErrors((prev) => {
-            const { [field]: _ignored, ...rest } = prev;
-            return rest;
-        });
     };
 
     return (
