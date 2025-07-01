@@ -1,4 +1,6 @@
+import { isAxiosError } from 'axios';
 import LaravelApiClient from '../../../plugins/axios';
+import initializeCookies from '../../../plugins/initializeCookie';
 import { User } from '../../../types/User';
 import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
@@ -21,6 +23,7 @@ const requestLogin = async ({
     password: string;
 }): Promise<LoginResult> => {
     try {
+        // await setCookie();
         const response = await LaravelApiClient.post('/auth/spa/login', {
             email,
             password,
@@ -28,8 +31,15 @@ const requestLogin = async ({
 
         await requestMe(shouldFetchUser);
 
-        return setResponseValidationSuccess( response.data.message || 'Login erfogreich!');
+        return setResponseValidationSuccess(response.data.message || 'Login erfogreich!');
     } catch (error: unknown) {
+        const axiosStatus = isAxiosError(error) ? error.response?.status : null;
+
+        if (axiosStatus === 419 || axiosStatus === 422) {
+            // reset cookies and re-fetch cookies
+            await initializeCookies();
+        }
+
         return setResponseValidationError(error);
     }
 };

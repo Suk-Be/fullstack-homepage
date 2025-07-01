@@ -1,6 +1,17 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, TextField } from '@mui/material';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+} from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import useModalToggle from '../../../hooks/useModalToggle';
@@ -35,18 +46,10 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
     });
-    // e.g. api response validation errors
-    /**
-     * {
-     *   email: ["This email is already taken."],
-     *   password: ["Password must be at least 8 characters."]
-     * }
-     */
-    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
 
     // disable submit button
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     // forgot password
     const { open, handleClose, handleClickOpen } = useModalToggle();
 
@@ -56,15 +59,13 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
-        // reset backend validation
-        setErrors({});
+        setFieldErrors({
+            email: { hasError: false, message: '' },
+            password: { hasError: false, message: '' },
+        });
 
         // Frontend validation
-        const { 
-          isValid, 
-          emailError, emailErrorMessage, 
-          passwordError, passwordErrorMessage 
-        } =
+        const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
             validateSignInInputs(email, password);
 
         setFieldErrors({
@@ -135,10 +136,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             ...prev,
             [field]: { hasError: false, message: '' },
         }));
-        setErrors((prev) => {
-            const { [field]: _ignored, ...rest } = prev;
-            return rest;
-        });
     };
 
     return (
