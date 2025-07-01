@@ -20,10 +20,8 @@ interface ResetPasswordRequestBody {
 
 export const handlers = [
     // 1. CSRF cookie request
-    // http.get(`${api}/csrf-cookie`, () => {
     http.get(`${api}/csrf-cookie`, () => {
-        // Simulate the cookie directly (js-cookie reads from document.cookie)
-        // console.log('>>>> DEBUGGING MSW: create cookie!');
+        // Simulate the cookie
         document.cookie = 'XSRF-TOKEN=mocked-csrf-token; Path=/';
 
         return HttpResponse.json(
@@ -35,7 +33,6 @@ export const handlers = [
     }),
 
     http.post(`${api}/auth/spa/register`, async (ctx) => {
-        // console.log('>>>> DEBUGGING MSW: register call');
         const body = (await ctx.request.json()) as {
             email: string;
             name: string;
@@ -49,15 +46,14 @@ export const handlers = [
             return HttpResponse.json(
                 {
                     message: 'Invalid data',
-                    errors: parseResult.error.flatten(), // helpful for frontend forms
+                    errors: parseResult.error.flatten(),
                 },
                 { status: 422 },
             );
         }
 
-        // Mock response of already registered user email
+        // Mock error response for existing user registration
         if (body.email === registeredUserData.email) {
-            // console.log('>>>> DEBUGGING MSW: same email found');
             return HttpResponse.json(
                 {
                     message: ErrorMessages.SignUp.responseEmail,
@@ -86,7 +82,7 @@ export const handlers = [
     http.get(`${api}/me`, ({ request }) => {
         const csrfHeader = request.headers.get('X-XSRF-TOKEN');
 
-        // Simulate CSRF token check (optional)
+        // Mock error CSRF token
         if (csrfHeader !== 'mocked-csrf-token') {
             return HttpResponse.json({ message: 'Invalid CSRF token' }, { status: 419 });
         }
@@ -148,7 +144,6 @@ export const handlers = [
         const body = (await ctx.request.json()) as { email: string };
         const parseResult = ForgotPasswordSchema.safeParse(body);
 
-        // console.log('[MSW] test logging email:', body.email);
         if (!parseResult.success) {
             return HttpResponse.json({ message: 'Invalid data' }, { status: 422 });
         }
@@ -162,7 +157,6 @@ export const handlers = [
         });
 
         if (!user) {
-            // console.error('[MSW] No user found with email:', body.email);
             return HttpResponse.json(
                 {
                     success: false,
@@ -179,22 +173,24 @@ export const handlers = [
     }),
 
     http.post(`${api}/auth/spa/reset-password`, async ({ request }) => {
-      const body = await request.json() as ResetPasswordRequestBody;
-      // console.log('✅ Fully qualified MSW handler HIT', body);
-      
-      if(body.password !== body.password_confirmation) {
-        HttpResponse.json({ 
-          success: false, 
-          message: ErrorMessages.ResetPassword.password,
-          errors: {
-              password: [ErrorMessages.ResetPassword.password],
-              password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
-          } 
-        })
-      }
-      
+        const body = (await request.json()) as ResetPasswordRequestBody;
 
-      return HttpResponse.json({ success: true, message: SuccessMessages.ResetPassword.requestSuccess, body });
+        if (body.password !== body.password_confirmation) {
+            HttpResponse.json({
+                success: false,
+                message: ErrorMessages.ResetPassword.password,
+                errors: {
+                    password: [ErrorMessages.ResetPassword.password],
+                    password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
+                },
+            });
+        }
+
+        return HttpResponse.json({
+            success: true,
+            message: SuccessMessages.ResetPassword.requestSuccess,
+            body,
+        });
     }),
 
     // fallback for catching future route mismatches during test debugging
