@@ -1,9 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import ErrorMessages from '../../data/ErrorMessages';
 import SuccessMessages from '../../data/SuccessMessages';
-import { ForgotPasswordSchema } from '../../schemas/forgotPasswordSchema';
-import { LoginSchema } from '../../schemas/loginSchema';
-import { RegisterSchema } from '../../schemas/registerSchema';
+import { forgotPasswordResponseSchema } from '../../schemas/forgotPasswordSchema';
+import { loginResponseSchema } from '../../schemas/loginSchema';
+import { registerResponseSchema } from '../../schemas/registerSchema';
 import { UserSchema } from '../../schemas/userSchema';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
@@ -40,7 +40,7 @@ export const handlers = [
             password_confirmation: string;
         };
 
-        const parseResult = RegisterSchema.safeParse(body);
+        const parseResult = registerResponseSchema.safeParse(body);
 
         if (!parseResult.success) {
             return HttpResponse.json(
@@ -106,7 +106,7 @@ export const handlers = [
 
     http.post(`${api}/auth/spa/login`, async (ctx) => {
         const body = await ctx.request.json();
-        const parseResult = LoginSchema.safeParse(body);
+        const parseResult = loginResponseSchema.safeParse(body);
 
         if (!parseResult.success) {
             return HttpResponse.json({ message: 'Invalid data' }, { status: 422 });
@@ -142,7 +142,7 @@ export const handlers = [
 
     http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {
         const body = (await ctx.request.json()) as { email: string };
-        const parseResult = ForgotPasswordSchema.safeParse(body);
+        const parseResult = forgotPasswordResponseSchema.safeParse(body);
 
         if (!parseResult.success) {
             return HttpResponse.json({ message: 'Invalid data' }, { status: 422 });
