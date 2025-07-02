@@ -1,29 +1,25 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
-import { ZodError } from 'zod';
 import ErrorMessages from '../../../data/ErrorMessages';
 import SuccessMessages from '../../../data/SuccessMessages';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
-import {
-  ResetPasswordFormattedErrors,
-  ResetPasswordSchema,
-} from '../../../schemas/resetPasswordSchema';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
 import { testId } from '../../../utils/testId';
 import { Card, SectionCenteredChild, SignInContainer } from '../../ContainerElements';
 import resetPassword from './requestResetPassword';
+import validateInputs from './validateResetPassPassword';
 
 type FieldError = {
     hasError: boolean;
@@ -36,15 +32,16 @@ type FormErrors = {
 };
 
 const ResetPassword = () => {
+    // url related
     const location = useLocation();
     const navigate = useNavigate();
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [token, setToken] = useState<string | null>(null);
+    const [email, setEmail] = useState('');
 
+    // input field states
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    // validation states
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({
         password: { hasError: false, message: '' },
         password_confirmation: { hasError: false, message: '' },
@@ -79,6 +76,7 @@ const ResetPassword = () => {
     }, [location.search]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        // resets
         event.preventDefault();
         setIsSubmitting(true);
         setFieldErrors({
@@ -88,67 +86,80 @@ const ResetPassword = () => {
         setSuccessMessage(null);
         setGeneralErrorMessage(null);
 
-        if (!token) {
-            setGeneralErrorMessage(ErrorMessages.ResetPassword.token);
+        const {
+            isValid,
+            passwordError,
+            passwordErrorMessage,
+            passwordConfirmationError,
+            passwordConfirmationErrorMessage,
+            tokenError,
+            tokenErrorMessage,
+        } = validateInputs({
+            password,
+            password_confirmation: passwordConfirmation,
+            token: token ?? '',
+        });
+
+        setFieldErrors({
+            password: { hasError: passwordError, message: passwordErrorMessage },
+            password_confirmation: {
+                hasError: passwordConfirmationError,
+                message: passwordConfirmationErrorMessage,
+            },
+        });
+
+        // without token
+        if (tokenError) {
+            setGeneralErrorMessage(tokenErrorMessage);
             setIsSubmitting(false);
             return;
         }
 
-        try {
-            ResetPasswordSchema.parse({
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                token
-            });
-        } catch (error) {
-            if (error instanceof ZodError) {
-                const formatted: ResetPasswordFormattedErrors = error.format();
-                setFieldErrors({
-                    password: {
-                        hasError: Boolean(formatted.password?._errors?.[0]),
-                        message: formatted.password?._errors?.[0] || '',
-                    },
-                    password_confirmation: {
-                        hasError: Boolean(formatted.password_confirmation?._errors?.[0]),
-                        message: formatted.password_confirmation?._errors?.[0] || '',
-                    },
-                });
-            }
+        setFieldErrors({
+            password: { hasError: passwordError, message: passwordErrorMessage },
+            password_confirmation: {
+                hasError: passwordConfirmationError,
+                message: passwordConfirmationErrorMessage,
+            },
+        });
+
+        if (!isValid) {
             setIsSubmitting(false);
             return;
         }
 
-        const result = await resetPassword(email, password, passwordConfirmation, token);
+        const result = await resetPassword(email, password, passwordConfirmation, token as string);
 
         if (result.success) {
             setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
-            // Optional: Nach einer kurzen Verzögerung zur Anmeldeseite navigieren
+
             if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
-              setTimeout(() => navigate('/'), 3000);
+                setTimeout(() => navigate('/'), 3000);
             }
-            
         } else {
             const backendRawErrors = result.errors || {};
-            // General error message for the whole form, or specific field errors
-            if (backendRawErrors.general && backendRawErrors.general.length > 0) {
-                setGeneralErrorMessage(backendRawErrors.general[0]);
-            } else if (result.message) {
-                setGeneralErrorMessage(result.message);
-            }
+            const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
+
+            const passwordBackendErrorMessage = setResponseErrorMessage(
+                backendRawErrors,
+                'password',
+                generalErrorMessage,
+            );
+
+            const passwordConfirmationBackendErrorMessage = setResponseErrorMessage(
+                backendRawErrors,
+                'password_confirmation',
+                generalErrorMessage,
+            );
 
             setFieldErrors({
                 password: {
-                    hasError: !!setResponseErrorMessage(backendRawErrors, 'password', ''),
-                    message: setResponseErrorMessage(backendRawErrors, 'password', ''),
+                    hasError: !!passwordBackendErrorMessage,
+                    message: passwordBackendErrorMessage,
                 },
                 password_confirmation: {
-                    hasError: !!setResponseErrorMessage(
-                        backendRawErrors,
-                        'password_confirmation',
-                        '',
-                    ),
-                    message: setResponseErrorMessage(backendRawErrors, 'password_confirmation', ''),
+                    hasError: !!passwordConfirmationBackendErrorMessage,
+                    message: passwordConfirmationBackendErrorMessage,
                 },
             });
         }
