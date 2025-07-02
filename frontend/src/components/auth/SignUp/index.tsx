@@ -1,14 +1,14 @@
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
@@ -104,7 +104,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             passwordConfirmationErrorMessage,
             nameError,
             nameErrorMessage,
-        } = validateInputs(form.name, form.email, form.password, form.password_confirmation);
+        } = validateInputs(form);
 
         setFieldErrors({
             name: { hasError: nameError, message: nameErrorMessage },

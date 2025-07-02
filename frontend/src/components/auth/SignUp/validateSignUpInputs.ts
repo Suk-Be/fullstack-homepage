@@ -1,4 +1,4 @@
-import ErrorMessages from '../../../data/ErrorMessages';
+import { RegisterInput, registerInputSchema } from '../../../schemas/registerSchema';
 
 export interface ValidationResult {
     isValid: boolean;
@@ -12,56 +12,34 @@ export interface ValidationResult {
     nameErrorMessage: string;
 }
 
-/**
- * Validates input fields for the SignUp form.
- */
+export default function validateInputs(data: RegisterInput): ValidationResult {
+    const result = registerInputSchema.safeParse(data);
 
-export default function validateInputs(
-    name: string,
-    email: string,
-    password: string,
-    passwordConfirmation: string,
-) {
-    // init
-    let isValid = true;
-    const result: ValidationResult = {
-        isValid: true,
-        nameError: false,
-        nameErrorMessage: '',
-        emailError: false,
-        emailErrorMessage: '',
-        passwordError: false,
-        passwordErrorMessage: '',
-        passwordConfirmationError: false,
-        passwordConfirmationErrorMessage: '',
+    if (result.success) {
+        return {
+            isValid: true,
+            nameError: false,
+            nameErrorMessage: '',
+            emailError: false,
+            emailErrorMessage: '',
+            passwordError: false,
+            passwordErrorMessage: '',
+            passwordConfirmationError: false,
+            passwordConfirmationErrorMessage: '',
+        };
+    }
+
+    const fieldErrors = result.error.flatten().fieldErrors;
+
+    return {
+        isValid: false,
+        nameError: !!fieldErrors.name,
+        nameErrorMessage: fieldErrors.name?.[0] || '',
+        emailError: !!fieldErrors.email,
+        emailErrorMessage: fieldErrors.email?.[0] || '',
+        passwordError: !!fieldErrors.password,
+        passwordErrorMessage: fieldErrors.password?.[0] || '',
+        passwordConfirmationError: !!fieldErrors.password_confirmation,
+        passwordConfirmationErrorMessage: fieldErrors.password_confirmation?.[0] || '',
     };
-
-    // validate
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        result.emailError = true;
-        result.emailErrorMessage = ErrorMessages.SignUp.email;
-        isValid = false;
-    }
-
-    if (!password || password.length < 8) {
-        result.passwordError = true;
-        result.passwordErrorMessage = ErrorMessages.SignUp.password;
-        isValid = false;
-    }
-
-    if (!passwordConfirmation || passwordConfirmation !== password) {
-        result.passwordConfirmationError = true;
-        result.passwordConfirmationErrorMessage = ErrorMessages.SignUp.password_confirmation;
-        isValid = false;
-    }
-
-    if (!name || name.length < 1) {
-        result.nameError = true;
-        result.nameErrorMessage = ErrorMessages.SignUp.name;
-        isValid = false;
-    }
-
-    // return validation result
-    result.isValid = isValid;
-    return result;
 }
