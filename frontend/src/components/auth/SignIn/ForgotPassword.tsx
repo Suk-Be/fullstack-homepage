@@ -52,7 +52,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
         });
         setSuccessMessage(null);
 
-        const { isValid, emailError, emailErrorMessage } = validateForgotPasswordInput(email);
+        const { isValid, emailError, emailErrorMessage } = validateForgotPasswordInput({ email });
 
         setFieldErrors({
             email: { hasError: emailError, message: emailErrorMessage },

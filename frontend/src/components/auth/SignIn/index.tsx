@@ -38,24 +38,21 @@ type ErrorState = {
 };
 
 const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
-    // inputs
+    // input field states
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // frontend input validation errors
+    // validation states
     const [fieldErrors, setFieldErrors] = useState<ErrorState>({
         email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
     });
 
-    // disable submit button
+    // toggle buttons
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // forgot password
     const { open, handleClose, handleClickOpen } = useModalToggle();
-
     const { showPassword, handleTogglePassword } = usePasswordToggle();
 
-    // execute validations, submit and clearing fields
+    // execute validation, request and fields clearing
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -64,29 +61,29 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             password: { hasError: false, message: '' },
         });
 
-        // Frontend validation
+        // input validation
         const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
-            validateSignInInputs(email, password);
+            validateSignInInputs({ email, password });
 
         setFieldErrors({
             email: { hasError: emailError, message: emailErrorMessage },
             password: { hasError: passwordError, message: passwordErrorMessage },
         });
 
-        // do not submit if frontend validation fails
+        // not submit if frontend validation has errors
         if (!isValid) {
             setIsSubmitting(false);
             return;
         }
 
-        // submit
+        // post form data to backend
         const result = await requestLogin({
             shouldFetchUser: false,
             email,
             password,
         });
 
-        // frontend validation on backend's validation response
+        // clear fields on success
         if (result.success) {
             setEmail('');
             setPassword('');
@@ -95,7 +92,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                 password: { hasError: false, message: '' },
             });
         } else {
-            // response validation
+            // with axios errors
             const backendRawErrors = result.errors || {};
             const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
 
@@ -111,6 +108,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                 generalErrorMessage,
             );
 
+            // set field errors based on backend response
             setFieldErrors({
                 email: {
                     hasError: !!emailBackendErrorMessage, // Set hasError based on whether a message exists
@@ -126,11 +124,8 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         setIsSubmitting(false);
     };
 
-    /**
-     * Clears the error state and rendered error for the given form field.
-     * @example
-     * clearFieldError('email');
-     */
+    // Clears the error state and rendered error for the given form field.
+    // @example clearFieldError('email');
     const clearFieldError = (field: keyof ErrorState) => {
         setFieldErrors((prev) => ({
             ...prev,

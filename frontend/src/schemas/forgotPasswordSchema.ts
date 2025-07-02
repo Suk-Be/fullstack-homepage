@@ -1,11 +1,16 @@
-import { z, ZodFormattedError } from 'zod';
+import { z } from 'zod';
+import ErrorMessages from '../data/ErrorMessages';
 
-export const ForgotPasswordSchema = z.object({
-    email: z
-        .string()
-        .email('Bitte geben Sie eine gültige E-Mail-Adresse ein.')
-        .min(1, 'Bitte geben Sie Ihre E-Mail-Adresse ein.'),
+export const forgotPasswordResponseSchema = z.object({
+    email: z.string().email(ErrorMessages.ForgotPassword.responseEmail),
 });
 
-export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>;
-export type ForgotPasswordFormattedErrors = ZodFormattedError<z.infer<typeof ForgotPasswordSchema>>;
+export const forgotPasswordInputSchema = z.object({
+    email: z
+        .string()
+        .min(1, ErrorMessages.ForgotPassword.email)
+        .email({ message: ErrorMessages.ForgotPassword.email }),
+});
+
+export type ForgotPasswordResponse = z.infer<typeof forgotPasswordResponseSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
