@@ -129,7 +129,7 @@ export const handlers = [
             return HttpResponse.json(
                 {
                     message: ErrorMessages.SignIn.responseEmail,
-                    errors: {
+                    errors: { 
                         email: [ErrorMessages.SignIn.responseEmail],
                     },
                 },
@@ -138,6 +138,10 @@ export const handlers = [
         }
 
         return HttpResponse.json({ token: 'fake-token', user, status: 200 });
+    }),
+
+    http.post(`${api}/auth/spa/logout`, () => {
+        return HttpResponse.json({ message: 'Sie haben sich erfolgreich abgemeldet.', status: 200 });
     }),
 
     http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {

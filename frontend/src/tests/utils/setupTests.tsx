@@ -24,6 +24,17 @@ beforeAll(() => {
         };
     });
 
+    window.matchMedia = window.matchMedia || function () {
+      return {
+        matches: false,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      };
+    };
+
     server.listen();
 
     // server.listen({ onUnhandledRequest: 'bypass' }); // Keep 'bypass' for clarity
