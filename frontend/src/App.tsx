@@ -4,16 +4,25 @@ import requestMe from './components/auth/SignUp/requestMe';
 import Layout from './pages/Layout';
 import initializeCookies from './plugins/initializeCookies';
 import Providers from './providers';
+import { getAxiosStatus, logRecoverableError } from './utils/logger';
 
 function App() {
     useEffect(() => {
         const initAuth = async () => {
-            await initializeCookies();
-
-            try {
-                await requestMe(true); // or LaravelApiClient.get('/api/user')
-            } catch (error) {
-                console.log('[Auth] No active session found');
+          try {
+                await initializeCookies();
+                try {
+                    await requestMe(true);
+                } catch (error) {
+                    console.log('[Auth] No active session found');
+                }
+            } catch (error) { 
+              const axiosStatus = getAxiosStatus(error);
+              logRecoverableError({
+                context: '[Auth] Failed to initialize cookies:',
+                error,
+                extra: { axiosStatus },
+              })
             }
         };
 
