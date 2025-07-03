@@ -31,7 +31,7 @@ const Layout = () => {
                 <div className="main-wrapper">
                     <main>
                         <Outlet />
-                        <Toaster />
+                        <Toaster position="top-right" />
                     </main>
                     <Footer />
                 </div>
