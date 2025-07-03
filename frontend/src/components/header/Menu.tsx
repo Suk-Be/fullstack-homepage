@@ -1,9 +1,9 @@
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
-import setLogout from './setLogout';
 import { testId } from '../../utils/testId';
 import RouterLinkWrapper from '../RouterLink';
 import { Claim, Logo } from '../TextElements';
+import setLogout from './requestLogout';
 
 interface BasicMenuProps {
     changeLoginStatus?: () => void;
@@ -19,7 +19,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
         setAnchorEl(null);
     };
     const handleLogout = async () => {
-        const logState = true;
+        const logState = false;
         await setLogout(logState);
 
         if (changeLoginStatus) {
@@ -90,7 +90,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleClick}
-                        {...testId('button-main-menu')}
+                        {...testId('button-open-menu')}
                     >
                         <Avatar alt="Hulk AI" src="https://sokdesign.de/images/avatar.jpg" />
                     </Button>
@@ -105,6 +105,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
                             },
                         }}
                         sx={{ maxWidth: 'calc(100% - 4rem)' }}
+                        {...testId('button-close-menu')}
                     >
                         <MenuItem onClick={handleClose}>
                             <MuiLink component={RouterLinkWrapper} href="/playground">

@@ -19,7 +19,7 @@ describe('LayoutPage', () => {
         const logoLink = screen.getByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
         const datenschutzLink = screen.getByTestId('link-datenschutz-page');
-        const avatarLink = screen.getByTestId('button-main-menu');
+        const avatarLink = screen.getByTestId('button-open-menu');
 
         const logoInHeader = logoLink.querySelector('h5');
         const claimInHeader = logoLink.querySelector('p');

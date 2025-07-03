@@ -15,7 +15,7 @@ describe('BasicMenu', () => {
 
         const logoLink = screen.getByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
-        const avatarLink = screen.getByTestId('button-main-menu');
+        const avatarLink = screen.getByTestId('button-open-menu');
 
         return {
             logoLink,
