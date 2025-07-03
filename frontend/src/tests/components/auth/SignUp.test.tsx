@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import SignUp from '../../../components/auth/SignUp';
-import * as registerModule from '../../../components/auth/SignUp/requestRegister';
+import * as requestRegisterModule from '../../../components/auth/SignUp/requestRegister';
 import { db } from '../../mocks/db';
 import userFactory from '../../mocks/factories/userFactories';
 import {
-    expectErrorMessages,
-    expectNoErrorMessages,
-    switchToComponentHelper,
+  expectErrorMessages,
+  expectNoErrorMessages,
+  switchToComponentHelper,
 } from '../../utils/testHelperFunctions';
 import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
@@ -197,8 +197,8 @@ describe('SignUp - Form', () => {
             passwordConfirmationInput,
         } = renderRegistrationForm();
 
-        const mockRegister = vi
-            .spyOn(registerModule, 'default')
+        const mockRegisterRequest = vi
+            .spyOn(requestRegisterModule, 'default')
             .mockResolvedValueOnce({ success: true } as any);
 
         await user.clear(nameInput);
@@ -217,7 +217,7 @@ describe('SignUp - Form', () => {
 
         await waitFor(() => {
             // Ensure the API was called
-            expect(mockRegister).toHaveBeenCalledWith({
+            expect(mockRegisterRequest).toHaveBeenCalledWith({
                 shouldFetchUser: false,
                 form: {
                     name: 'New User',
