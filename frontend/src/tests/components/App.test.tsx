@@ -12,18 +12,14 @@ const { mockInitializeCookies, mockRequestMe } = vi.hoisted(() => {
 });
 
 // Mock every Module that App.tsx uses
-vi.mock('../../plugins/initializeCookies', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('../../plugins/initializeCookies')>();
+vi.mock('../../plugins/initializeCookies', () => {
     return {
-        ...actual,
         default: mockInitializeCookies,
     };
 });
 
-vi.mock('../../components/auth/SignUp/requestMe', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('../../components/auth/SignUp/requestMe')>();
+vi.mock('../../components/auth/SignUp/requestMe', () => {
     return {
-        ...actual,
         default: mockRequestMe,
     };
 });
