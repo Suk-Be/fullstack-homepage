@@ -6,7 +6,6 @@ import * as requestLogoutModule from '../../../components/header/requestLogout';
 import { HPProps } from '../../../data/HomePage';
 import { navigateTo, renderWithProviders } from '../../utils/testRenderUtils';
 
-
 describe('Menu component', () => {
     const renderUtilsComponent = () => {
         const mockChangeLoginStatus = vi.fn(() => false);
@@ -120,9 +119,9 @@ describe('Menu component', () => {
             expect(logoutLink).toBeInTheDocument();
         });
         await user.click(screen.getByRole('link', { name: /logout/i }));
+        
         await waitFor(() => {
             expect(mockLogoutRequest).toHaveBeenCalled();
         });
-        // screen.debug();
     });
 });

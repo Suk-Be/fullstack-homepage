@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { testId } from '../../utils/testId';
 import RouterLinkWrapper from '../RouterLink';
 import { Claim, Logo } from '../TextElements';
-import setLogout from './requestLogout';
+import requestLogout from './requestLogout';
 
 interface BasicMenuProps {
     changeLoginStatus?: () => void;
@@ -20,7 +20,7 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
     };
     const handleLogout = async () => {
         const logState = false;
-        await setLogout(logState);
+        await requestLogout(logState);
 
         if (changeLoginStatus) {
             changeLoginStatus();
