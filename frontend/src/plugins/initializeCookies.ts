@@ -2,6 +2,7 @@ import axios from 'axios';
 import { serverBaseUrl } from '../utils/apiBaseUrl';
 import { getAxiosStatus, logRecoverableError } from '../utils/logger';
 
+let lastInitializedAt = 0;
 let isCsrfFetched = false;
 
 function resetIsCsrfFetchedAndResetCookies() {
@@ -32,18 +33,18 @@ async function setCookies() {
 }
 
 async function initializeCookies() {
-    let lastInitializedAt = 0;
     const THROTTLE_DELAY_MS = 5000; // 5 seconds
-
     const now = Date.now();
 
     if (now - lastInitializedAt > THROTTLE_DELAY_MS) {
+        lastInitializedAt = now;
         resetIsCsrfFetchedAndResetCookies();
         await setCookies();
-    } else {
+    } if (import.meta.env.MODE === 'development') {
         console.log('[Throttle] Skipping cookie initialization due to throttling.');
     }
 }
 
 export default initializeCookies;
 export { resetIsCsrfFetchedAndResetCookies, setCookies };
+
