@@ -186,7 +186,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 value={email}
                             />
                         </FormControl>
-                        <FormControl>
+                        <FormControl sx={{paddingBottom: '1rem'}}>
                             <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
                                 error={fieldErrors.password.hasError}
@@ -226,10 +226,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 }}
                             />
                         </FormControl>
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Login für dieses Gerät merken"
-                        />
                         <Button
                             type="submit"
                             fullWidth
