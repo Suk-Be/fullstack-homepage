@@ -26,7 +26,6 @@ const routes: RouteObject[] = [
         path: '/auth/callback',
         element: <AuthCallback />,
     },
-    
 ];
 
 export default routes;
