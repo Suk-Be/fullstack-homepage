@@ -3,10 +3,8 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
     Box,
     Button,
-    Checkbox,
     Divider,
     FormControl,
-    FormControlLabel,
     FormLabel,
     IconButton,
     InputAdornment,
@@ -14,8 +12,11 @@ import {
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import useModalToggle from '../../../hooks/useModalToggle';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
+import type { AppDispatch } from '../../../store';
+import { login } from '../../../store/loginSlice';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
@@ -52,6 +53,9 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     const { open, handleClose, handleClickOpen } = useModalToggle();
     const { showPassword, handleTogglePassword } = usePasswordToggle();
 
+    // Redux dispatch
+    const dispatch: AppDispatch = useDispatch();
+
     // execute validation, request and fields clearing
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -85,6 +89,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
         // clear fields on success
         if (result.success) {
+            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
             setEmail('');
             setPassword('');
             setFieldErrors({
@@ -186,7 +191,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 value={email}
                             />
                         </FormControl>
-                        <FormControl sx={{paddingBottom: '1rem'}}>
+                        <FormControl sx={{ paddingBottom: '1rem' }}>
                             <FormLabel htmlFor="password">Passwort</FormLabel>
                             <TextField
                                 error={fieldErrors.password.hasError}

@@ -1,15 +1,14 @@
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../../store';
+import { logout } from '../../store/loginSlice';
 import { testId } from '../../utils/testId';
 import RouterLinkWrapper from '../RouterLink';
 import { Claim, Logo } from '../TextElements';
 import requestLogout from './requestLogout';
 
-interface BasicMenuProps {
-    changeLoginStatus?: () => void;
-}
-
-export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
+export default function BasicMenu() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -18,13 +17,16 @@ export default function BasicMenu({ changeLoginStatus }: BasicMenuProps) {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const dispatch: AppDispatch = useDispatch();
     const handleLogout = async () => {
         const logState = false;
-        await requestLogout(logState);
+        const result = await requestLogout(logState);
 
-        if (changeLoginStatus) {
-            changeLoginStatus();
+        if (result.success) {
+            dispatch(logout());
         }
+
         setAnchorEl(null);
     };
 

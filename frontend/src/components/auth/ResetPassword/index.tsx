@@ -11,10 +11,13 @@ import {
     Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import ErrorMessages from '../../../data/ErrorMessages';
 import SuccessMessages from '../../../data/SuccessMessages';
 import usePasswordToggle from '../../../hooks/usePasswordToggle';
+import type { AppDispatch } from '../../../store';
+import { login } from '../../../store/loginSlice';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
 import { testId } from '../../../utils/testId';
 import { Card, SectionCenteredChild, SignInContainer } from '../../ContainerElements';
@@ -75,6 +78,8 @@ const ResetPassword = () => {
         }
     }, [location.search]);
 
+    const dispatch: AppDispatch = useDispatch();
+
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         // resets
         event.preventDefault();
@@ -132,10 +137,10 @@ const ResetPassword = () => {
 
         if (result.success) {
             setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
-
             if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
                 setTimeout(() => navigate('/'), 3000);
             }
+            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
         } else {
             const backendRawErrors = result.errors || {};
             const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
