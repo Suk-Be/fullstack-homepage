@@ -1,11 +1,16 @@
-import { PropsWithChildren } from 'react';
-import ReactQueryProvider from './ReactQueryProvider';
+import CssBaseline from '@mui/material/CssBaseline';
+import MUIThemeProvider from './MUIThemeProvider';
+import ReactRouterProvider from './ReactRouterProvider';
+import ReduxProvider from './ReduxProvider';
 
-const Providers = ({ children }: PropsWithChildren) => {
+const Providers = () => {
     return (
-        <>
-            <ReactQueryProvider>{children}</ReactQueryProvider>
-        </>
+        <ReduxProvider>
+            <MUIThemeProvider>
+                <CssBaseline enableColorScheme />
+                <ReactRouterProvider />
+            </MUIThemeProvider>
+        </ReduxProvider>
     );
 };
 

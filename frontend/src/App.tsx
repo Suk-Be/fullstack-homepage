@@ -3,7 +3,6 @@ import './App.css';
 import requestMe from './components/auth/SignUp/requestMe';
 import Layout from './pages/Layout';
 import initializeCookies from './plugins/initializeCookies';
-import Providers from './providers';
 import { getAxiosStatus, logRecoverableError } from './utils/logger';
 
 function App() {
@@ -30,9 +29,9 @@ function App() {
     }, []);
 
     return (
-        <Providers>
+        <>
             <Layout />
-        </Providers>
+        </>
     );
 }
 
