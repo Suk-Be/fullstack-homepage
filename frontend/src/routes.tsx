@@ -1,12 +1,12 @@
 import { RouteObject } from 'react-router';
 import App from './App';
-import AuthCallback from './components/auth/shared-components/AuthCallback';
 import DatenschutzPage from './pages/DatenschutzPage';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import SocialiteCallbackPage from './pages/SocialiteCallbackPage';
 
 const routes: RouteObject[] = [
     {
@@ -22,9 +22,9 @@ const routes: RouteObject[] = [
         ],
     },
     {
-        // Socialite callback routes for github, google
+        // http://localhost:5173/auth/callback
         path: '/auth/callback',
-        element: <AuthCallback />,
+        element: <SocialiteCallbackPage />,
     },
 ];
 
