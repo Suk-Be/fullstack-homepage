@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/dom';
+import { screen, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react';
 import { expect } from 'vitest';
 import ErrorMessages from '../../data/ErrorMessages';
 import { navigateTo } from './testRenderUtils';
@@ -66,10 +67,40 @@ const switchToComponentHelper = async ({
     urlToRender?: string;
     linkName: string | RegExp;
 }) => {
-    navigateTo(urlToRender);
+    navigateTo({ route: urlToRender, preloadedState: {} });
     const linkSwitchingComponent = screen.getByRole(ctaHandler, { name: linkName });
     const user = userEvent.setup();
     await user.click(linkSwitchingComponent);
 };
 
-export { expectErrorMessages, expectNoErrorMessages, switchToComponentHelper };
+const loginAndScrollHelper = async ({
+    route,
+    reduxState,
+}: {
+    route: string;
+    reduxState: {
+        login: { isLoggedIn: boolean };
+    };
+}) => {
+    navigateTo({ route, preloadedState: reduxState });
+
+    // Simulate scroll down then scroll up
+    await act(async () => {
+        window.pageYOffset = 100;
+        window.dispatchEvent(new Event('scroll'));
+
+        window.pageYOffset = 0;
+        window.dispatchEvent(new Event('scroll'));
+    });
+
+    await waitFor(() => {
+        expect(document.body.classList.contains('scroll-down')).toBe(true);
+    });
+};
+
+export {
+    expectErrorMessages,
+    expectNoErrorMessages,
+    loginAndScrollHelper,
+    switchToComponentHelper,
+};

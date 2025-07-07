@@ -1,7 +1,8 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { HPProps } from '../../../data/HomePage';
+import { loginAndScrollHelper } from '../../utils/testHelperFunctions';
 import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
@@ -89,5 +90,35 @@ describe('BasicMenu', () => {
             name: /playgroundpage/i,
         });
         expect(missingPlaygroundPageLink).not.toBeInTheDocument();
+    });
+});
+
+describe('Toggle Basic Menu', () => {
+    it('renders the main menu if logged in and scrolled up', async () => {
+        loginAndScrollHelper({
+            route: '/',
+            reduxState: {
+                login: { isLoggedIn: true },
+            },
+        });
+
+        await waitFor(() => {
+            const mainMenu = screen.getByTestId('header-main-menu');
+            expect(mainMenu).toBeInTheDocument();
+        });
+    });
+
+    it('does not render the main menu if logged in and scrolled up', async () => {
+        loginAndScrollHelper({
+            route: '/',
+            reduxState: {
+                login: { isLoggedIn: false },
+            },
+        });
+
+        await waitFor(() => {
+            const mainMenu = screen.queryByTestId('header-main-menu');
+            expect(mainMenu).not.toBeInTheDocument();
+        });
     });
 });
