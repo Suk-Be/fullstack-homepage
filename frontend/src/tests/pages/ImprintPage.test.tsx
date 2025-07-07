@@ -4,7 +4,10 @@ import { navigateTo } from '../utils/testRenderUtils';
 
 describe('ImprintPage', () => {
     it('should render the imprint contents', async () => {
-        navigateTo('/impressum');
+        navigateTo({
+            route: '/impressum',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         const heading = screen.getByRole('heading', {
             name: /impressum/i,

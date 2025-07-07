@@ -7,7 +7,10 @@ describe('Datenschutz', () => {
     const renderUtils = () => {
         const user = userEvent.setup();
 
-        navigateTo('/datenschutz'); // Render HomePage
+        navigateTo({
+            route: '/datenschutz',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         const linkImprintPage = screen.getByTestId('link-datenschutz-impressum-page');
 

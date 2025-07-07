@@ -4,7 +4,10 @@ import { navigateTo } from '../utils/testRenderUtils';
 
 describe('DatenschutzPage', () => {
     it('should render the Datenschutz Page', async () => {
-        navigateTo('/datenschutz');
+        navigateTo({
+            route: '/datenschutz',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         const heading = screen.getByRole('heading', { name: /Datenschutzerklärung/i });
 

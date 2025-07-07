@@ -4,12 +4,17 @@ import { describe, vi } from 'vitest';
 import BasicMenu from '../../../components/header/Menu';
 import * as requestLogoutModule from '../../../components/header/requestLogout';
 import { HPProps } from '../../../data/HomePage';
+import type { PathAndReduxState } from '../../utils/testRenderUtils';
 import { navigateTo, renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('Menu component', () => {
+    const HPisLoggedIn = {
+        route: '/',
+        preloadedState: { login: { isLoggedIn: true } },
+    };
+
     const renderUtilsComponent = () => {
-        const mockChangeLoginStatus = vi.fn(() => false);
-        renderWithProviders(<BasicMenu changeLoginStatus={mockChangeLoginStatus} />);
+        renderWithProviders(<BasicMenu />, { ...HPisLoggedIn } as PathAndReduxState);
 
         const user = userEvent.setup();
         const openButton = screen.getByTestId('button-open-menu');
@@ -29,8 +34,8 @@ describe('Menu component', () => {
         };
     };
 
-    const renderUtilsPage = () => {
-        navigateTo('/');
+    const renderUtilsPage = ({ route, preloadedState }: PathAndReduxState) => {
+        navigateTo({ route, preloadedState });
 
         const user = userEvent.setup();
         const homepageLink = screen.getByTestId('link-home-page');
@@ -82,7 +87,7 @@ describe('Menu component', () => {
             default: (props: any) => <a {...props} />,
         }));
 
-        const { user, homepageLink } = renderUtilsPage();
+        const { user, homepageLink } = renderUtilsPage(HPisLoggedIn);
 
         // screen.debug();
 
@@ -93,7 +98,7 @@ describe('Menu component', () => {
     });
 
     it('should get Playground Page route when clicked in menu', async () => {
-        const { user, openButton } = renderUtilsPage();
+        const { user, openButton } = renderUtilsPage(HPisLoggedIn);
 
         await user.click(openButton);
 
@@ -106,12 +111,10 @@ describe('Menu component', () => {
     });
 
     it('should logout a logged in user', async () => {
-        // it does have the Menu.tsx rendered
-        const { user, openButton } = renderUtilsPage();
+        const { user, openButton } = renderUtilsPage(HPisLoggedIn);
 
-        // SpyOn functionality
-        const mockLogoutRequest = vi
-          .spyOn(requestLogoutModule, 'default')
+        // SpyOn
+        const mockLogoutRequest = vi.spyOn(requestLogoutModule, 'default');
 
         await user.click(openButton);
         await waitFor(() => {
@@ -119,7 +122,7 @@ describe('Menu component', () => {
             expect(logoutLink).toBeInTheDocument();
         });
         await user.click(screen.getByRole('link', { name: /logout/i }));
-        
+
         await waitFor(() => {
             expect(mockLogoutRequest).toHaveBeenCalled();
         });

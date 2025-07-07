@@ -13,16 +13,16 @@ describe('LayoutPage', () => {
         localStorage.clear(); // cleanup
     });
 
-    const renderUtil = (path: string) => {
-        navigateTo(path);
+    const renderUtil = (route: string, preloadedState = {}) => {
+        navigateTo({
+            route,
+            preloadedState,
+        });
 
-        const logoLink = screen.getByTestId('link-home-page');
+        const logoLink = screen.queryByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
         const datenschutzLink = screen.getByTestId('link-datenschutz-page');
-        const avatarLink = screen.getByTestId('button-open-menu');
-
-        const logoInHeader = logoLink.querySelector('h5');
-        const claimInHeader = logoLink.querySelector('p');
+        const avatarLink = screen.queryByTestId('button-open-menu');
 
         const user = userEvent.setup();
 
@@ -31,10 +31,14 @@ describe('LayoutPage', () => {
             avatarLink,
             impressumLink,
             datenschutzLink,
-            logoInHeader,
-            claimInHeader,
             user,
         };
+    };
+
+    const mockReduxLoggedInState = {
+        login: {
+            isLoggedIn: true,
+        },
     };
 
     it.each([
@@ -55,8 +59,8 @@ describe('LayoutPage', () => {
         ({ link }) => {
             const { logoLink, avatarLink, impressumLink, datenschutzLink } = renderUtil(link);
 
-            expect(logoLink).toBeInTheDocument();
-            expect(avatarLink).toBeInTheDocument();
+            expect(logoLink).not.toBeInTheDocument();
+            expect(avatarLink).not.toBeInTheDocument();
             expect(impressumLink).toBeInTheDocument();
             expect(datenschutzLink).toBeInTheDocument();
         },
@@ -72,7 +76,12 @@ describe('LayoutPage', () => {
             link: '/playground',
         },
     ])('should render a header with Logo and Claim on $page', ({ link }) => {
-        const { logoInHeader, claimInHeader } = renderUtil(link);
+        renderUtil(link, mockReduxLoggedInState);
+
+        const logoLink = screen.getByTestId('link-home-page');
+
+        const logoInHeader = logoLink.querySelector('h5');
+        const claimInHeader = logoLink.querySelector('p');
         expect(logoInHeader!).toHaveTextContent(/suk-be jang/i);
         expect(claimInHeader!).toHaveTextContent(/web developer/i);
     });
@@ -93,9 +102,9 @@ describe('LayoutPage', () => {
     ])(
         'should render a Submenu when clicked on main menu with links on $page',
         async ({ link }) => {
-            const { user, avatarLink } = renderUtil(link);
+            const { user, avatarLink } = renderUtil(link, mockReduxLoggedInState);
             expect(avatarLink).toBeInTheDocument();
-            await user.click(avatarLink);
+            await user.click(avatarLink!);
             const menuItemPlaygroundPage = screen.getByRole('link', {
                 name: /PlaygroundPage/i,
             });

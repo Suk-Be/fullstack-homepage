@@ -5,11 +5,14 @@ import { HPProps } from '../../data/HomePage';
 import { navigateTo } from '../utils/testRenderUtils';
 
 describe('HomePage', () => {
-    const renderUtil = (path: string) => {
+    const renderUtil = (route: string, preloadedState = {}) => {
         const user = userEvent.setup();
-        navigateTo(path); // HomePage
+        navigateTo({
+            route,
+            preloadedState,
+        });
 
-        const header = screen.getByTestId('header-main-menu');
+        const header = screen.queryByTestId('header-main-menu');
         const footer = screen.getByTestId('footer');
 
         const profile = HPProps.data.filter((item) => item.type === 'profile')[0];
@@ -26,8 +29,19 @@ describe('HomePage', () => {
         };
     };
 
-    it('should render header and footer', async () => {
+    it('should render no header (if not logged in) and footer', async () => {
         const { header, footer } = renderUtil('/');
+        expect(header).not.toBeInTheDocument();
+        expect(footer).toBeInTheDocument();
+    });
+
+    it('should render a header (if logged in) and footer', async () => {
+        const mockReduxState = {
+            login: {
+                isLoggedIn: true,
+            },
+        };
+        const { header, footer } = renderUtil('/', mockReduxState);
         expect(header).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });

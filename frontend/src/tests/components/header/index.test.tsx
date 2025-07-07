@@ -2,20 +2,28 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { HPProps } from '../../../data/HomePage';
-import { navigateTo } from '../../utils/testRenderUtils';
+import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
     beforeEach(() => {
         localStorage.setItem('cookiesAccepted', 'true');
     });
-    const renderUtils = () => {
+
+    const HPLoginState = (isLoggedIn: boolean): PathAndReduxState => {
+        return {
+            route: '/',
+            preloadedState: { login: { isLoggedIn } },
+        };
+    };
+
+    const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {
         const user = userEvent.setup();
 
-        navigateTo('/'); // Render HomePage
+        navigateTo({ route, preloadedState });
 
-        const logoLink = screen.getByTestId('link-home-page');
+        const logoLink = screen.queryByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
-        const avatarLink = screen.getByTestId('button-open-menu');
+        const avatarLink = screen.queryByTestId('button-open-menu');
 
         return {
             logoLink,
@@ -24,21 +32,27 @@ describe('BasicMenu', () => {
             user,
         };
     };
-    it('should render a header with Logo and an Avatar', () => {
-        const { logoLink, avatarLink } = renderUtils();
+    it('should render a header with no Logo and an no Avatar if user is not logged in', () => {
+        renderUtils(HPLoginState(false));
+        const menu = screen.queryByTestId('header-main-menu');
+        expect(menu).not.toBeInTheDocument();
+    });
+
+    it('should render a header with Logo and an Avatar if user is logged in', () => {
+        const { logoLink, avatarLink } = renderUtils(HPLoginState(true));
 
         expect(logoLink).toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
     });
-    it('should call Home Page route when the logo is clicked', async () => {
-        const { logoLink, user } = renderUtils();
-        await user.click(logoLink);
+    it('should call Home Page route when the logo is clicked (logged in)', async () => {
+        const { logoLink, user } = renderUtils(HPLoginState(true));
+        await user.click(logoLink!);
 
         const heading = screen.getByText(HPProps.data[0].attributes.title);
         expect(heading).toBeInTheDocument();
     });
-    it('should have a hidden MainMenu that opens when avatar is clicked', async () => {
-        const { avatarLink, user } = renderUtils();
+    it('should have a hidden MainMenu that opens when avatar is clicked (logged in)', async () => {
+        const { avatarLink, user } = renderUtils(HPLoginState(true));
 
         const playgroundPageLinkQuery = screen.queryByRole('link', {
             name: /playgroundpage/i,
@@ -51,7 +65,7 @@ describe('BasicMenu', () => {
         expect(logoutLinkQuery).not.toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
 
-        await user.click(avatarLink);
+        await user.click(avatarLink!);
 
         const playgroundPageLink = screen.getByRole('link', {
             name: /playgroundpage/i,
@@ -62,9 +76,9 @@ describe('BasicMenu', () => {
         expect(playgroundPageLink).toBeInTheDocument();
         expect(logoutLink).toBeInTheDocument();
     });
-    it('should hide menu when a link inside the menu is clicked', async () => {
-        const { user, avatarLink } = renderUtils();
-        await user.click(avatarLink);
+    it('should hide menu when a link inside the menu is clicked (logged in)', async () => {
+        const { user, avatarLink } = renderUtils(HPLoginState(true));
+        await user.click(avatarLink!);
         const playgroundPageLink = screen.getByRole('link', {
             name: /playgroundpage/i,
         });

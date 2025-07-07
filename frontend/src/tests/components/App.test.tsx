@@ -1,7 +1,8 @@
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../../App';
 import { server } from '../mocks/server'; // Import the MSW server instance
+import { renderWithProviders } from '../utils/testRenderUtils';
 
 // --- Use vi.hoisted to ensure mocks are available when vi.mock factories run ---
 const { mockInitializeCookies, mockRequestMe } = vi.hoisted(() => {
@@ -45,7 +46,7 @@ describe('App initial load behavior (auto-login)', () => {
     });
 
     it('should attempt auto-login by calling initializeCookies and requestMe on mount', async () => {
-        render(<App />);
+        renderWithProviders(<App />);
 
         await waitFor(() => {
             expect(mockInitializeCookies).toHaveBeenCalledTimes(1);
@@ -62,7 +63,7 @@ describe('App initial load behavior (auto-login)', () => {
 
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-        render(<App />);
+        renderWithProviders(<App />);
 
         await waitFor(() => {
             expect(mockInitializeCookies).toHaveBeenCalledTimes(1);
@@ -80,7 +81,7 @@ describe('App initial load behavior (auto-login)', () => {
 
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-        render(<App />);
+        renderWithProviders(<App />);
 
         await waitFor(() => {
             expect(mockInitializeCookies).toHaveBeenCalledTimes(1);
