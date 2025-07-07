@@ -1,11 +1,16 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { delay, http, HttpResponse } from 'msw';
 import React from 'react';
+import { Provider as ReduxProvider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { MemoryRouter } from 'react-router-dom';
 import routes from '../../routes';
+import type { RootState } from '../../store';
+import layoutSlice from '../../store/layoutSlice';
+import loginSlice from '../../store/loginSlice';
 import AppThemeProvider from '../../themes/AppTheme';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { server } from '../mocks/server';
@@ -36,64 +41,81 @@ const authProviderUrls = [
     },
 ];
 
+const rootReducer = combineReducers({
+    login: loginSlice,
+    layout: layoutSlice,
+});
+
+type PreloadedState<T> = Partial<T> | {};
+
+export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
+    configureStore({
+        reducer: rootReducer,
+        preloadedState,
+    });
+
 /**
- * TestUtility
- * Creates MemoryRouter with Mui ThemeProvider and RouterProvider
- * @param entryPath
- * @returns a testable page for the entry path (url)
+ * Useful for mocking navigating pages
+ * @param route
+ * @param preloadedState any state from RootState can be mocked
+ * @returns a testable page with state data passes in
  *
- * example: navigateTo('/') renders the HomePage
+ * example: navigateTo('/', { login: { isLoggedIn: true } })
+ * renders HomePage with login status (isLoggedIn: true)
  */
-const navigateTo = (entryPath: string) => {
-    const router = createMemoryRouter(routes, { initialEntries: [entryPath] });
+
+export type PathAndReduxState = {
+    route?: string;
+    preloadedState?: PreloadedState<RootState>;
+};
+
+const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => {
+    const store = setupStore(preloadedState);
+    const router = createMemoryRouter(routes, { initialEntries: [route] });
     return render(
-        <AppThemeProvider>
-            <RouterProvider router={router} />
-        </AppThemeProvider>,
+        <ReduxProvider store={store}>
+            <AppThemeProvider>
+                <RouterProvider router={router} />
+            </AppThemeProvider>
+        </ReduxProvider>,
     );
 };
 
 /**
  * Renders a React component wrapped with necessary providers for testing.
  *
- * This includes:
- * - `MemoryRouter` for simulating routing with React Router
- * - `ThemeProvider` and `CssBaseline` from MUI for consistent styling
- *
- * It also sets the browser's history to the specified route so that
- * components relying on routing behave as expected.
- *
  * @param {React.ReactElement} ui - The React component to render.
- * @param {Object} [options] - Optional render options.
- * @param {string} [options.route='/'] - Initial route for MemoryRouter and history.
- *
- * @returns {ReturnType<typeof import('@testing-library/react').render>} - The result of RTL's render function, including query utilities.
+ * @param preloadedState any state from RootState can be mocked
  *
  * @example
- * renderWithProviders(<MyComponent />);
- *
- * @example
- * renderWithProviders(<MyComponent />, { route: '/dashboard' });
+ * renderWithProviders(<MyDashboard />, { route: '/dashboard', preloadedState: { user: { name: 'John Doe' } } });
  */
 
 const theme = createTheme(); // or your custom theme
 
-type RenderOptions = {
-    route?: string;
-};
+const renderWithProviders = (
+    ui: React.ReactElement,
+    { route = '/', preloadedState }: PathAndReduxState = {},
+) => {
+    const store = setupStore(preloadedState);
 
-const renderWithProviders = (ui: React.ReactElement, { route = '/' }: RenderOptions = {}) => {
     window.history.pushState({}, 'Test page', route);
 
-    return render(
-        <MemoryRouter initialEntries={[route]}>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                {ui}
-            </ThemeProvider>
-        </MemoryRouter>,
-    );
+    return {
+        ...render(
+            <ReduxProvider store={store}>
+                <MemoryRouter initialEntries={[route]}>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        {ui}
+                    </ThemeProvider>
+                </MemoryRouter>
+            </ReduxProvider>,
+        ),
+        // It's often useful to return the store instance so tests can dispatch actions
+        // and assert on the store's state directly.
+        store,
+    };
 };
 
 export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
-
