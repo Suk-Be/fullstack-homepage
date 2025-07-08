@@ -41,7 +41,7 @@ export const brand = {
     600: 'hsl(148, 100%, 41%)',
     700: 'hsl(148, 100%, 31%)',
     800: 'hsl(148, 100%, 21%)',
-    900: 'hsl(148, 100%, 11%)',
+    900: 'hsl(148, 100%, 11%)', // green headline
 };
 
 export const gray = {
@@ -53,8 +53,8 @@ export const gray = {
     500: 'hsl(0, 7%, 52%)',
     600: 'hsl(0, 7%, 42%)',
     700: 'hsl(0, 7%, 32%)',
-    800: 'hsl(0, 7%, 22%)',
-    900: 'hsl(0, 7%, 12%)',
+    800: 'hsl(0, 7%, 22%)', // paragraph
+    900: 'hsl(0, 7%, 12%)', // headline
 };
 
 export const blue = {
