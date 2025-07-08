@@ -6,8 +6,9 @@ import { setResponseValidationSuccess } from '../../../utils/auth/setResponseVal
 const requestMe = async (shouldFetchUser = false) => {
     if (shouldFetchUser) {
         try {
-            const { data: user } = await LaravelApiClient.get<User>('/me');
-            console.log('Erfolgreich angemeldeter User: ', user);
+            await LaravelApiClient.get<User>('/me');
+            // const { data: user } = await LaravelApiClient.get<User>('/me');
+            // console.log('Erfolgreich angemeldeter User: ', user);
             return setResponseValidationSuccess('User daten geholt und gelogged!');
         } catch (error: unknown) {
             return setResponseValidationError(error);

@@ -6,9 +6,20 @@ import ResetPassword from '../../../components/auth/ResetPassword';
 import * as resetPassword from '../../../components/auth/ResetPassword/requestResetPassword';
 import ErrorMessages from '../../../data/ErrorMessages';
 import SuccessMessages from '../../../data/SuccessMessages';
+import { login } from '../../../store/loginSlice';
 import { registeredUserData } from '../../mocks/data';
 import { db } from '../../mocks/db';
 import { renderWithProviders } from '../../utils/testRenderUtils';
+
+const mockDispatch = vi.fn();
+
+vi.mock('react-redux', async () => {
+    const actual = await vi.importActual('react-redux');
+    return {
+        ...actual,
+        useDispatch: vi.fn(() => mockDispatch),
+    };
+});
 
 describe('ForgotPassword', () => {
     beforeEach(() => {
@@ -19,16 +30,16 @@ describe('ForgotPassword', () => {
         });
     });
 
-    const testToken = 'test-token'
+    const testToken = 'test-token';
 
     const renderUtils = () => {
         const user = userEvent.setup();
-        
+
         renderWithProviders(<ResetPassword />, {
-          route: `/reset-password?token=${testToken}&email=${registeredUserData.email}`,
+            route: `/reset-password?token=${testToken}&email=${registeredUserData.email}`,
         });
 
-        const submitButton = screen.getByRole('button', {name: /passwort zurücksetzen/i});
+        const submitButton = screen.getByRole('button', { name: /passwort zurücksetzen/i });
 
         return {
             user,
@@ -38,23 +49,25 @@ describe('ForgotPassword', () => {
 
     it('validates password and password confirmation', async () => {
         const { user, submitButton } = renderUtils();
-        const spy = vi.spyOn(resetPassword, 'default')
+        const spy = vi.spyOn(resetPassword, 'default');
         const passwordInput = screen.getByLabelText(/neues/i);
         const confirmPasswordInput = screen.getByLabelText(/bestätigen/i);
 
         await user.click(submitButton);
 
         const newPasswordFieldError = screen.getByText(ErrorMessages.ResetPassword.password);
-        const confirmNewPasswordFieldError = screen.getByText(ErrorMessages.ResetPassword.password_confirmation);
+        const confirmNewPasswordFieldError = screen.getByText(
+            ErrorMessages.ResetPassword.password_confirmation,
+        );
 
         expect(newPasswordFieldError).toBeInTheDocument();
         expect(confirmNewPasswordFieldError).toBeInTheDocument();
 
-        const password = 'test123456'
+        const password = 'test123456';
         await user.type(passwordInput, password);
-        
+
         await user.click(submitButton);
-        
+
         expect(newPasswordFieldError).not.toBeInTheDocument();
         expect(confirmNewPasswordFieldError).toBeInTheDocument();
 
@@ -67,12 +80,43 @@ describe('ForgotPassword', () => {
         await waitFor(() => {
             expect(spy).toHaveBeenCalled();
             expect(spy).toHaveBeenCalledWith(
-              registeredUserData.email,
-              password,
-              password,
-              testToken,
+                registeredUserData.email,
+                password,
+                password,
+                testToken,
             );
-            expect(screen.getByText(SuccessMessages.ResetPassword.requestSuccess)).toBeInTheDocument();
+            expect(
+                screen.getByText(SuccessMessages.ResetPassword.requestSuccess),
+            ).toBeInTheDocument();
+        });
+    });
+
+    it('dispatches login when result.success is true', async () => {
+        const { user, submitButton } = renderUtils();
+
+        const spy = vi.spyOn(resetPassword, 'default');
+        const passwordInput = screen.getByLabelText(/neues/i);
+        const confirmPasswordInput = screen.getByLabelText(/bestätigen/i);
+
+        const password = 'test123456';
+        await user.type(passwordInput, password);
+        await user.type(confirmPasswordInput, password);
+
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            expect(spy).toHaveBeenCalled();
+            expect(spy).toHaveBeenCalledWith(
+                registeredUserData.email,
+                password,
+                password,
+                testToken,
+            );
+            expect(
+                screen.getByText(SuccessMessages.ResetPassword.requestSuccess),
+            ).toBeInTheDocument();
+
+            expect(mockDispatch).toHaveBeenCalledWith(login());
         });
     });
 });

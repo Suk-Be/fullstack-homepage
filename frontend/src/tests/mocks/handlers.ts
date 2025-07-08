@@ -4,7 +4,6 @@ import SuccessMessages from '../../data/SuccessMessages';
 import { forgotPasswordResponseSchema } from '../../schemas/forgotPasswordSchema';
 import { loginResponseSchema } from '../../schemas/loginSchema';
 import { registerResponseSchema } from '../../schemas/registerSchema';
-import { UserSchema } from '../../schemas/userSchema';
 import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
 import { db } from './db';
@@ -79,31 +78,6 @@ export const handlers = [
         return HttpResponse.json({ id: 1, name, email }, { status: 201 });
     }),
 
-    http.get(`${api}/me`, ({ request }) => {
-        const csrfHeader = request.headers.get('X-XSRF-TOKEN');
-
-        // Mock error CSRF token
-        if (csrfHeader !== 'mocked-csrf-token') {
-            return HttpResponse.json({ message: 'Invalid CSRF token' }, { status: 419 });
-        }
-
-        // Return mock user data
-        const mockUser = UserSchema.parse({
-            id: registeredUserData.id,
-            name: registeredUserData.name,
-            email: registeredUserData.email,
-            email_verified_at: null,
-        });
-
-        const result = UserSchema.safeParse(mockUser);
-
-        if (!result.success) {
-            return HttpResponse.json({ message: 'Invalid mock user format' }, { status: 500 });
-        }
-
-        return HttpResponse.json(mockUser, { status: 200 });
-    }),
-
     http.post(`${api}/auth/spa/login`, async (ctx) => {
         const body = await ctx.request.json();
         const parseResult = loginResponseSchema.safeParse(body);
@@ -176,6 +150,14 @@ export const handlers = [
         });
     }),
 
+    http.get(`${api}/me`, () => {
+      return HttpResponse.json({
+        id: 1,
+        name: 'Mock User',
+        email: 'mock@example.com',
+      });
+    }),
+
     http.post(`${api}/auth/spa/reset-password`, async ({ request }) => {
         const body = (await request.json()) as ResetPasswordRequestBody;
 
@@ -196,6 +178,8 @@ export const handlers = [
             body,
         });
     }),
+
+    
 
     // fallback for catching future route mismatches during test debugging
     http.post('*', async ({ request }) => {

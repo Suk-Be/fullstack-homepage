@@ -137,10 +137,10 @@ const ResetPassword = () => {
 
         if (result.success) {
             setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
+            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
             if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
                 setTimeout(() => navigate('/'), 3000);
             }
-            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
         } else {
             const backendRawErrors = result.errors || {};
             const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
