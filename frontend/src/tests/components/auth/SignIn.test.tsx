@@ -3,14 +3,25 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import SignIn from '../../../components/auth/SignIn';
 import ErrorMessages from '../../../data/ErrorMessages';
+import { login } from '../../../store/loginSlice';
 import { registeredUserData } from '../../mocks/data';
 import { db } from '../../mocks/db';
 import {
   expectErrorMessages,
   expectNoErrorMessages,
-  switchToComponentHelper
-} from '../../utils/testHelperFunctions';
+  switchToComponentHelper,
+} from '../../utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
+
+const mockDispatch = vi.fn();
+
+vi.mock('react-redux', async () => {
+    const actual = await vi.importActual('react-redux');
+    return {
+        ...actual,
+        useDispatch: vi.fn(() => mockDispatch),
+    };
+});
 
 describe('SignIn component', () => {
 
@@ -59,6 +70,7 @@ describe('SignIn component', () => {
             // screen.debug(screen.getByTestId('form'));
             expectNoErrorMessages('SignIn', ['email', 'password']);
             expect(submitButton).not.toBeDisabled();
+            expect(mockDispatch).toHaveBeenCalledWith(login());
         });
     });
 
