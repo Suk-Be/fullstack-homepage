@@ -19,14 +19,17 @@ const SocialiteCallbackPage = () => {
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        LaravelApiClient.get('/me')
+        LaravelApiClient.get('/csrf-cookie')
+            .then(() => {
+                return LaravelApiClient.get('/me');
+            })
             .then((res) => {
                 console.log('Logged in user:', res.data);
                 dispatch(login());
                 navigate('/');
             })
             .catch((err) => {
-                console.log('Not logged in:', err);
+                console.log('/me failed:', err);
                 navigate('/');
             });
     }, []);
