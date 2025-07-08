@@ -21,6 +21,9 @@ import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import requestRegister from './requestRegister';
 import validateInputs from './validateSignUpInputs';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store';
+import { login } from '../../../store/loginSlice';
 
 type ErrorState = {
     hasError: boolean;
@@ -88,6 +91,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
     const { showPassword, handleTogglePassword } = usePasswordToggle();
 
+    const dispatch: AppDispatch = useDispatch();
+
     // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -129,6 +134,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         });
 
         if (result.success) {
+            dispatch(login());
             setForm({
                 name: '',
                 email: '',

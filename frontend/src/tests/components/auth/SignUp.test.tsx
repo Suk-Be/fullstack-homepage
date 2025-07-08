@@ -3,14 +3,25 @@ import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import SignUp from '../../../components/auth/SignUp';
 import * as requestRegisterModule from '../../../components/auth/SignUp/requestRegister';
+import { login } from '../../../store/loginSlice';
 import { db } from '../../mocks/db';
 import userFactory from '../../mocks/factories/userFactories';
 import {
   expectErrorMessages,
   expectNoErrorMessages,
   switchToComponentHelper,
-} from '../../utils/testHelperFunctions';
+} from '../../utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
+
+const mockDispatch = vi.fn();
+
+vi.mock('react-redux', async () => {
+    const actual = await vi.importActual('react-redux');
+    return {
+        ...actual,
+        useDispatch: vi.fn(() => mockDispatch),
+    };
+});
 
 const registeredUserData = {
     id: '1',
@@ -231,6 +242,8 @@ describe('SignUp - Form', () => {
             expect(emailInput).toHaveValue('');
             expect(passwordInput).toHaveValue('');
             expect(passwordConfirmationInput).toHaveValue('');
+
+            expect(mockDispatch).toHaveBeenCalledWith(login());
         });
     });
 });
