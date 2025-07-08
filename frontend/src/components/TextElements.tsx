@@ -1,4 +1,5 @@
-import { Typography } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { PropsWithChildren } from 'react';
 
 // HomePage
@@ -91,17 +92,17 @@ interface SubTitleProps extends PropsWithChildren {
 
 const SubTitle = ({
     fontSize = '1.3rem',
-    color = 'rgba(33,29,29, 0.5)',
     marginBottom = '1rem',
     sx,
     children,
     ...rest
 }: SubTitleProps) => {
+    const theme = useTheme();
     return (
         <Typography
             component="p"
             sx={{
-                color: color,
+                color: alpha(theme.palette.grey[900], 0.5),
                 fontSize: fontSize,
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
