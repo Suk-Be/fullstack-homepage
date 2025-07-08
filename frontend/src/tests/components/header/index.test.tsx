@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { HPProps } from '../../../data/HomePage';
-import { loginAndScrollHelper } from '../../utils/testHelperFunctions';
+import { loginAndScrollHelper } from '../../utils/testAssertUtils';
 import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
