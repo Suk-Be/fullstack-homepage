@@ -2,13 +2,14 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { HPProps } from '../../data/HomePage';
+import { mockReduxLoggedInState } from '../mocks/redux';
 import { navigateTo } from '../utils/testRenderUtils';
 
 describe('HomePage', () => {
-    const renderUtil = (route: string, preloadedState = {}) => {
+    const renderUtil = (preloadedState = {}) => {
         const user = userEvent.setup();
         navigateTo({
-            route,
+            route: '/',
             preloadedState,
         });
 
@@ -30,24 +31,19 @@ describe('HomePage', () => {
     };
 
     it('should render no header (if not logged in) and footer', async () => {
-        const { header, footer } = renderUtil('/');
+        const { header, footer } = renderUtil();
         expect(header).not.toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 
     it('should render a header (if logged in) and footer', async () => {
-        const mockReduxState = {
-            login: {
-                isLoggedIn: true,
-            },
-        };
-        const { header, footer } = renderUtil('/', mockReduxState);
+        const { header, footer } = renderUtil(mockReduxLoggedInState);
         expect(header).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 
     it('should render a profile section', async () => {
-        const { profile } = renderUtil('/');
+        const { profile } = renderUtil();
 
         const profilePic = screen.getByAltText(/suk-be jang/i);
         const subtitle = screen.getByRole('heading', { name: profile.attributes.title });
@@ -59,7 +55,7 @@ describe('HomePage', () => {
     });
 
     it('should render a teaser section', async () => {
-        const { teaser } = renderUtil('/');
+        const { teaser } = renderUtil();
 
         const title = screen.getByRole('heading', { name: teaser.attributes.title });
         const subtitle = screen.getByText('Konzeption und Weiterentwicklung');
@@ -77,7 +73,7 @@ describe('HomePage', () => {
     });
 
     it('should render an offer frontend entwicklung section', async () => {
-        const { offer } = renderUtil('/');
+        const { offer } = renderUtil();
 
         const headline1 = screen.getByTestId('offer-headline-01');
         const paragraph1 = screen.getByTestId('offer-content-01');
