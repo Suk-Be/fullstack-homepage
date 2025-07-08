@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { mockReduxLoggedInState } from '../mocks/redux';
 import { navigateTo } from '../utils/testRenderUtils';
 
 describe('LayoutPage', () => {
@@ -33,12 +34,6 @@ describe('LayoutPage', () => {
             datenschutzLink,
             user,
         };
-    };
-
-    const mockReduxLoggedInState = {
-        login: {
-            isLoggedIn: true,
-        },
     };
 
     it.each([
