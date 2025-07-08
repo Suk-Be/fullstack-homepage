@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import AccordionExpandIcon from './AccordionTeaser';
 import SignIn from './SignIn/index';
 import SignUp from './SignUp';
 
@@ -12,4 +15,10 @@ const ToggleSignIn = () => {
     );
 };
 
-export default ToggleSignIn;
+const ToggleTeaser = () => {
+  const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
+
+  return isLoggedIn ? <AccordionExpandIcon /> : <ToggleSignIn />;
+}
+
+export default ToggleTeaser;

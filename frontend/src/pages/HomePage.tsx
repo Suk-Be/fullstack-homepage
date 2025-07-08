@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import ToggleSignIn from '../components/auth';
+import ToggleTeaser from '../components/auth';
 import OfferHP from '../components/offer';
 import ProfileHP from '../components/profile';
 import { HPProps } from '../data/HomePage';
@@ -32,7 +32,7 @@ const HomePage = () => {
                 <Box sx={{ width: { xs: '100%', md: '67%' } }}>
                     {/* @ts-ignore*/}
                     <OfferHP offer={offer} teaser={teaser} />
-                    <ToggleSignIn />
+                    <ToggleTeaser />
                 </Box>
             </Box>
         </>
