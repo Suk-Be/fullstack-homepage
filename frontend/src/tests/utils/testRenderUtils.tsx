@@ -91,7 +91,6 @@ const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => 
  * renderWithProviders(<MyDashboard />, { route: '/dashboard', preloadedState: { user: { name: 'John Doe' } } });
  */
 
-
 const theme = createTheme(); // or your custom theme
 
 const renderWithProviders = (
@@ -102,22 +101,16 @@ const renderWithProviders = (
 
     window.history.pushState({}, 'Test page', route);
 
-    return {
-        ...render(
-            <ReduxProvider store={store}>
-                <MemoryRouter initialEntries={[route]}>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        {ui}
-                    </ThemeProvider>
-                </MemoryRouter>
-            </ReduxProvider>,
-        ),
-        // It's often useful to return the store instance so tests can dispatch actions
-        // and assert on the store's state directly.
-        store,
-    };
+    return render(
+        <ReduxProvider store={store}>
+            <MemoryRouter initialEntries={[route]}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    {ui}
+                </ThemeProvider>
+            </MemoryRouter>
+        </ReduxProvider>,
+    );
 };
 
 export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
-
