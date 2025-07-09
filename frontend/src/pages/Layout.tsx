@@ -5,6 +5,7 @@ import { Outlet } from 'react-router';
 import { ResponsiveContainer } from '../components/ContainerElements';
 import Footer from '../components/footer';
 import MenuNav from '../components/header';
+import { testId } from '../utils/testId';
 
 const Layout = () => {
     useEffect(() => {
@@ -27,13 +28,13 @@ const Layout = () => {
             <CssBaseline />
 
             <ResponsiveContainer>
-                <MenuNav />
+                <MenuNav {...testId('header')} />
                 <div className="main-wrapper">
-                    <main>
+                    <main {...testId('main')}>
                         <Outlet />
                         <Toaster position="top-right" />
                     </main>
-                    <Footer />
+                    <Footer {...testId('footer')}/>
                 </div>
             </ResponsiveContainer>
             <aside

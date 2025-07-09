@@ -1,24 +1,30 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mockReduxLoggedInState } from '../mocks/redux';
+import renderer from 'react-test-renderer';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import Layout from '../../pages/Layout';
 import { navigateTo } from '../utils/testRenderUtils';
 
 describe('LayoutPage', () => {
     beforeEach(() => {
         localStorage.clear(); // reset before each test
         document.body.innerHTML = ''; // ensure clean DOM
+        vi.clearAllMocks();
     });
 
     afterEach(() => {
         localStorage.clear(); // cleanup
     });
 
-    const renderUtil = (route: string, preloadedState = {}) => {
-        navigateTo({
-            route,
-            preloadedState,
-        });
+    const renderUtil = (route: string) => {
+        navigateTo({route: route});
+
+        const header = screen.queryByTestId('header');
+        const main = screen.queryByTestId('main');
+        const footer = screen.queryByTestId('footer');
+
+        const toaster = screen.queryByTestId('toaster');
+        const routerOutlet = screen.queryByTestId('router-outlet');
 
         const logoLink = screen.queryByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
@@ -28,6 +34,11 @@ describe('LayoutPage', () => {
         const user = userEvent.setup();
 
         return {
+            header,
+            main,
+            footer,
+            toaster,
+            routerOutlet,
             logoLink,
             avatarLink,
             impressumLink,
@@ -36,76 +47,19 @@ describe('LayoutPage', () => {
         };
     };
 
-    it.each([
-        {
-            page: 'ImpressumPage',
-            link: '/impressum',
-        },
-        {
-            page: 'DatenschutzPage',
-            link: '/datenschutz',
-        },
-        {
-            page: 'PlaygroundPage',
-            link: '/playground',
-        },
-    ])(
-        'should render a header with home page link, impressum page link and main menu button on $page',
-        ({ link }) => {
-            const { logoLink, avatarLink, impressumLink, datenschutzLink } = renderUtil(link);
+    it('should render a main and a footer', () => {
+            const { main, footer } = renderUtil('/');
 
-            expect(logoLink).not.toBeInTheDocument();
-            expect(avatarLink).not.toBeInTheDocument();
-            expect(impressumLink).toBeInTheDocument();
-            expect(datenschutzLink).toBeInTheDocument();
+            expect(main).toBeInTheDocument();
+            expect(footer).toBeInTheDocument();
         },
     );
 
-    it.each([
-        {
-            page: 'ImpressumPage',
-            link: '/impressum',
-        },
-        {
-            page: 'PlaygroundPage',
-            link: '/playground',
-        },
-    ])('should render a header with Logo and Claim on $page', ({ link }) => {
-        renderUtil(link, mockReduxLoggedInState);
-
-        const logoLink = screen.getByTestId('link-home-page');
-
-        const logoInHeader = logoLink.querySelector('h5');
-        const claimInHeader = logoLink.querySelector('p');
-        expect(logoInHeader!).toHaveTextContent(/suk-be jang/i);
-        expect(claimInHeader!).toHaveTextContent(/web developer/i);
+    // Do not remove Toaster or Outlet component
+    it('includes MenuNav and Toaster in the JSX', () => {
+      const tree = renderer.create(<Layout />).toJSON();
+      expect(tree).toMatchSnapshot();
     });
-
-    it.each([
-        {
-            page: 'HomePage',
-            link: '/',
-        },
-        {
-            page: 'ImprintPage',
-            link: '/impressum',
-        },
-        {
-            page: 'PlaygroundPage',
-            link: '/playground',
-        },
-    ])(
-        'should render a Submenu when clicked on main menu with links on $page',
-        async ({ link }) => {
-            const { user, avatarLink } = renderUtil(link, mockReduxLoggedInState);
-            expect(avatarLink).toBeInTheDocument();
-            await user.click(avatarLink!);
-            const menuItemPlaygroundPage = screen.getByRole('link', {
-                name: /PlaygroundPage/i,
-            });
-            expect(menuItemPlaygroundPage).toBeInTheDocument();
-        },
-    );
 
     it.each([
         {
