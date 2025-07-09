@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HPProps } from '../../../data/HomePage';
 import { loginAndScrollHelper } from '../../utils/testAssertUtils';
 import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
@@ -8,6 +8,7 @@ import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
 describe('BasicMenu', () => {
     beforeEach(() => {
         localStorage.setItem('cookiesAccepted', 'true');
+        vi.clearAllMocks();
     });
 
     const HPLoginState = (isLoggedIn: boolean): PathAndReduxState => {
@@ -18,9 +19,8 @@ describe('BasicMenu', () => {
     };
 
     const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {
-        const user = userEvent.setup();
-
         navigateTo({ route, preloadedState });
+        const user = userEvent.setup();
 
         const logoLink = screen.queryByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
@@ -33,18 +33,19 @@ describe('BasicMenu', () => {
             user,
         };
     };
-    it('should render a header with no Logo and an no Avatar if user is not logged in', () => {
+    it('should render a header with no Logo and an no Avatar if user is (not logged in)', () => {
         renderUtils(HPLoginState(false));
         const menu = screen.queryByTestId('header-main-menu');
         expect(menu).not.toBeInTheDocument();
     });
 
-    it('should render a header with Logo and an Avatar if user is logged in', () => {
+    it('should render a header with Logo and an Avatar if user is (logged in)', () => {
         const { logoLink, avatarLink } = renderUtils(HPLoginState(true));
 
         expect(logoLink).toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
     });
+
     it('should call Home Page route when the logo is clicked (logged in)', async () => {
         const { logoLink, user } = renderUtils(HPLoginState(true));
         await user.click(logoLink!);

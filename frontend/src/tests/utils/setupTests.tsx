@@ -10,6 +10,8 @@ beforeAll(() => {
             Visibility: () => <svg data-testid="VisibilityIcon" />,
             VisibilityOff: () => <svg data-testid="VisibilityOffIcon" />,
             HowToReg: () => <svg data-testid="HowToRegIcon" />,
+            ArrowCircleDown: () => <svg data-testid="ArrowCircleDownIcon" />,
+            ArrowCircleUp: () => <svg data-testid="ArrowCircleUpIcon" />,
         };
     });
 
@@ -24,16 +26,18 @@ beforeAll(() => {
         };
     });
 
-    window.matchMedia = window.matchMedia || function () {
-      return {
-        matches: false,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      };
-    };
+    window.matchMedia =
+        window.matchMedia ||
+        function () {
+            return {
+                matches: false,
+                addListener: vi.fn(),
+                removeListener: vi.fn(),
+                addEventListener: vi.fn(),
+                removeEventListener: vi.fn(),
+                dispatchEvent: vi.fn(),
+            };
+        };
 
     server.listen();
 

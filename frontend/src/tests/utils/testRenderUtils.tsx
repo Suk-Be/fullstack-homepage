@@ -91,6 +91,7 @@ const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => 
  * renderWithProviders(<MyDashboard />, { route: '/dashboard', preloadedState: { user: { name: 'John Doe' } } });
  */
 
+
 const theme = createTheme(); // or your custom theme
 
 const renderWithProviders = (
