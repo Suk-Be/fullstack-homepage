@@ -28,10 +28,12 @@ const Layout = () => {
             <CssBaseline />
 
             <ResponsiveContainer>
-                <MenuNav {...testId('header')} />
+                <MenuNav />
                 <div className="main-wrapper">
                     <main {...testId('main')}>
+                        {/* container for content pages */}
                         <Outlet />
+                        {/* container for toast notifications */}
                         <Toaster position="top-right" />
                     </main>
                     <Footer {...testId('footer')}/>

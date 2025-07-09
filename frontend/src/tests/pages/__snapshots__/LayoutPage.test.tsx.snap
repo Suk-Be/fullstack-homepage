@@ -1,3 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`LayoutPage > includes MenuNav and Toaster in the JSX 1`] = `null`;

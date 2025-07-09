@@ -1,0 +1,1 @@
+export type PreloadedState<T> = Partial<T> | {};

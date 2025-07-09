@@ -1,30 +1,38 @@
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import renderer from 'react-test-renderer';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import Layout from '../../pages/Layout';
-import { navigateTo } from '../utils/testRenderUtils';
+import type { RootState } from '../../store';
+import { PreloadedState } from '../../types/Redux';
+import { mockReduxLoggedInState, mockReduxLoggedOutState } from '../mocks/redux';
+import { setupStore } from '../utils/testRenderUtils';
 
 describe('LayoutPage', () => {
     beforeEach(() => {
         localStorage.clear(); // reset before each test
         document.body.innerHTML = ''; // ensure clean DOM
-        vi.clearAllMocks();
     });
 
     afterEach(() => {
         localStorage.clear(); // cleanup
     });
 
-    const renderUtil = (route: string) => {
-        navigateTo({route: route});
+    const renderUtil = (route: string, loginState: PreloadedState<RootState>) => {
+        const store = setupStore(loginState);
 
-        const header = screen.queryByTestId('header');
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={[route]}>
+                    <Layout />
+                </MemoryRouter>
+            </Provider>,
+        );
+
+        const header = screen.queryByTestId('header-main-menu');
         const main = screen.queryByTestId('main');
         const footer = screen.queryByTestId('footer');
-
-        const toaster = screen.queryByTestId('toaster');
-        const routerOutlet = screen.queryByTestId('router-outlet');
 
         const logoLink = screen.queryByTestId('link-home-page');
         const impressumLink = screen.getByTestId('link-impressum-page');
@@ -37,8 +45,6 @@ describe('LayoutPage', () => {
             header,
             main,
             footer,
-            toaster,
-            routerOutlet,
             logoLink,
             avatarLink,
             impressumLink,
@@ -47,18 +53,38 @@ describe('LayoutPage', () => {
         };
     };
 
+    it('renders the main menu if logged in', async () => {
+        const { header } = renderUtil('/', mockReduxLoggedInState);
+
+        // MainMenu
+        expect(header).toBeInTheDocument();
+    });
+
+    it('does not render the main menu if logged out', async () => {
+        const store = setupStore(mockReduxLoggedOutState);
+
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/']}>
+                    <Layout />
+                </MemoryRouter>
+            </Provider>,
+        );
+
+        expect(screen.queryByTestId('header-main-menu')).not.toBeInTheDocument();
+    });
+
     it('should render a main and a footer', () => {
-            const { main, footer } = renderUtil('/');
+        const { main, footer } = renderUtil('/', mockReduxLoggedInState);
 
-            expect(main).toBeInTheDocument();
-            expect(footer).toBeInTheDocument();
-        },
-    );
+        expect(main).toBeInTheDocument();
+        expect(footer).toBeInTheDocument();
+    });
 
-    // Do not remove Toaster or Outlet component
-    it('includes MenuNav and Toaster in the JSX', () => {
-      const tree = renderer.create(<Layout />).toJSON();
-      expect(tree).toMatchSnapshot();
+    it('renders and a mounted toast container', () => {
+        renderUtil('/', mockReduxLoggedInState);
+
+        expect(document.getElementById('_rht_toaster')).toBeInTheDocument();
     });
 
     it.each([
@@ -75,7 +101,7 @@ describe('LayoutPage', () => {
             link: '/datenschutz',
         },
     ])('shows cookie banner on $page if cookies not', async ({ link }) => {
-        renderUtil(link);
+        renderUtil(link, mockReduxLoggedOutState);
 
         const banner = await screen.findByText(/diese website verwendet cookies/i);
         expect(banner).toBeVisible();
@@ -95,7 +121,7 @@ describe('LayoutPage', () => {
             link: '/datenschutz',
         },
     ])('hides cookie banner on $page and after accepting', async ({ link }) => {
-        const { user } = renderUtil(link);
+        const { user } = renderUtil(link, mockReduxLoggedOutState);
 
         const button = await screen.findByRole('button', { name: /ok/i });
         await user.click(button);
@@ -123,7 +149,7 @@ describe('LayoutPage', () => {
         },
     ])('does not show banner if cookies were already accepted', ({ link }) => {
         localStorage.setItem('cookiesAccepted', 'true');
-        renderUtil(link);
+        renderUtil(link, mockReduxLoggedOutState);
 
         const banner = screen.queryByText(/diese website verwendet cookies/i);
         expect(banner).not.toBeVisible();
