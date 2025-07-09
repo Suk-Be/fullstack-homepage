@@ -25,7 +25,6 @@ const requestLogout = async (logState: boolean) => {
                             extra: { axiosStatus },
                         });
                     } else {
-                        // console.error('Unexpected error checking login status:', error);
                         logRecoverableError({
                             context: 'Unexpected error checking login status.',
                             error,

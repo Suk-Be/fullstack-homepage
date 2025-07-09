@@ -5,8 +5,11 @@ import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
 import PlaygroundPage from './pages/PlaygroundPage';
+import ProjectTemplateEnginePage from './pages/ProjectTemplateEnginePage';
+import ProjectTestPage from './pages/ProjectTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SocialiteCallbackPage from './pages/SocialiteCallbackPage';
+import ProtectedApp from './ProtectedApp';
 
 const routes: RouteObject[] = [
     {
@@ -19,6 +22,13 @@ const routes: RouteObject[] = [
             { path: 'impressum', element: <ImprintPage /> },
             { path: 'datenschutz', element: <DatenschutzPage /> },
             { path: 'reset-password', element: <ResetPasswordPage /> },
+            {
+                element: <ProtectedApp />,
+                children: [
+                    { path: 'template-engine', element: <ProjectTemplateEnginePage /> },
+                    { path: 'test-another-project', element: <ProjectTestPage /> },
+                ],
+            },
         ],
     },
     {

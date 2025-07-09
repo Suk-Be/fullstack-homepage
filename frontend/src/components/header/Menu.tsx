@@ -114,6 +114,16 @@ export default function BasicMenu() {
                                 PlaygroundPage
                             </MuiLink>
                         </MenuItem>
+                        <MenuItem onClick={handleClose}>
+                            <MuiLink component={RouterLinkWrapper} href="/template-engine">
+                                Template Engine
+                            </MuiLink>
+                        </MenuItem>
+                        <MenuItem onClick={handleClose}>
+                            <MuiLink component={RouterLinkWrapper} href="/test-another-project">
+                                Test Protected Page
+                            </MuiLink>
+                        </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <MuiLink component={RouterLinkWrapper} href="/">
                                 Logout
