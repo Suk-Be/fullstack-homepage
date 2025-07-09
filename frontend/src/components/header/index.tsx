@@ -6,6 +6,7 @@ import BasicMenu from './Menu';
 
 const MenuNav = () => {
     const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
+    // is needed to make menu visible on scroll
     useScroll(isLoggedIn);
 
     const Header = () => {

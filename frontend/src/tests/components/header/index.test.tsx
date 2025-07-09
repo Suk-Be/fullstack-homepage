@@ -1,9 +1,12 @@
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import MenuNav from '../../../components/header';
 import { HPProps } from '../../../data/HomePage';
-import { loginAndScrollHelper } from '../../utils/testAssertUtils';
-import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
+import { mockReduxLoggedInState, mockReduxLoggedOutState } from '../../mocks/redux';
+import { navigateTo, PathAndReduxState, setupStore } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
     beforeEach(() => {
@@ -33,6 +36,7 @@ describe('BasicMenu', () => {
             user,
         };
     };
+
     it('should render a header with no Logo and an no Avatar if user is (not logged in)', () => {
         renderUtils(HPLoginState(false));
         const menu = screen.queryByTestId('header-main-menu');
@@ -95,31 +99,29 @@ describe('BasicMenu', () => {
 });
 
 describe('Toggle Basic Menu', () => {
-    it('renders the main menu if logged in and scrolled up', async () => {
-        loginAndScrollHelper({
-            route: '/',
-            reduxState: {
-                login: { isLoggedIn: true },
-            },
-        });
+    it('renders the main menu if logged in', async () => {
+        const store = setupStore(mockReduxLoggedInState);
 
-        await waitFor(() => {
-            const mainMenu = screen.getByTestId('header-main-menu');
-            expect(mainMenu).toBeInTheDocument();
-        });
+        render(
+            <Provider store={store}>
+                <MemoryRouter initialEntries={['/']}>
+                    <MenuNav />
+                </MemoryRouter>
+            </Provider>,
+        );
+
+        expect(screen.queryByTestId('header-main-menu')).toBeInTheDocument();
     });
 
-    it('does not render the main menu if logged in and scrolled up', async () => {
-        loginAndScrollHelper({
-            route: '/',
-            reduxState: {
-                login: { isLoggedIn: false },
-            },
-        });
+    it('does not render the main menu if logged out', async () => {
+        const store = setupStore(mockReduxLoggedOutState);
 
-        await waitFor(() => {
-            const mainMenu = screen.queryByTestId('header-main-menu');
-            expect(mainMenu).not.toBeInTheDocument();
-        });
+        render(
+            <Provider store={store}>
+                <MenuNav />
+            </Provider>,
+        );
+
+        expect(screen.queryByTestId('header-main-menu')).not.toBeInTheDocument();
     });
 });
