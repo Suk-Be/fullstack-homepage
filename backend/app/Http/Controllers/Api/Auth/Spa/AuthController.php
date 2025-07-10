@@ -11,11 +11,17 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
+use App\Exceptions\AlreadyAuthenticatedException;
 
 class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
+        // If you want to prevent registration if already logged in, you'd add this:
+        // if (Auth::check()) {
+        //     throw new AlreadyAuthenticatedException();
+        // }
+
         $validated = $request->validate(
             [
                 'name' => 'required|string|max:255',
@@ -55,7 +61,7 @@ class AuthController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'email' => 'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
+            'email' => 'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
         ]);
 
     }
