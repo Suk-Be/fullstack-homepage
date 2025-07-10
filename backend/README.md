@@ -267,15 +267,15 @@ Route::prefix('auth/spa')->group(function () {
 });
 ```
 
-#### What are invokable controllers?
+#### What are invocable controllers?
 
-Laravel Invokable Controllers: Simplify Route Handling for Faster Development
+Laravel Invocable Controllers: Simplify Route Handling for Faster Development
 
-Invokable controllers are a special type of controller in Laravel that allow you to define a single \_\_invoke() method to handle a route instead of defining multiple action methods.
+Invocable controllers are a special type of controller in Laravel that allow you to define a single \_\_invoke() method to handle a route instead of defining multiple action methods.
 
-In Laravel, a controller is a PHP class that handles HTTP requests and manages the application's response. An invokable controller is a special type of controller in Laravel that allows you to define a single \_\_invoke() the method instead of defining multiple action methods like index(), store(), show() etc.
+In Laravel, a controller is a PHP class that handles HTTP requests and manages the application's response. An invocable controller is a special type of controller in Laravel that allows you to define a single \_\_invoke() the method instead of defining multiple action methods like index(), store(), show() etc.
 
-To create an invokable controller, you need to define a class with a \_\_invoke() method. Here's an example:
+To create an invocable controller, you need to define a class with a \_\_invoke() method. Here's an example:
 
 ```php
 class ExampleController extends Controller
@@ -613,8 +613,8 @@ Tested in Postman and Browser
 }
 ```
 
-FYI: Bitte bedenken, dass das Frontend die password_confimration ebenfalls an den AuthController schickt.
-Obwohl im AuthController der key password_confirmation nicht validiert oder in den User table geschreiben wird, wird die password_confirmation erwartet. Es wird Snake case erwartet.
+FYI: Bitte bedenken, dass das Frontend die password_confirmation ebenfalls an den AuthController schickt.
+Obwohl im AuthController der key password_confirmation nicht validiert oder in den User table geschrieben wird, wird die password_confirmation erwartet. Es wird Snake case erwartet.
 
 # Frontend Implementierung in react
 
@@ -788,7 +788,7 @@ export default setLogout;
 
 # Social Auth Services
 
-Laravel offers a plugin for auth services to logins called sociallite.
+Laravel offers a plugin for auth services to logins called socialite.
 
 -   <https://laravel.com/docs/12.x/socialite>
 -   <https://www.itsolutionstuff.com/post/laravel-12-socialite-login-with-google-account-exampleexample.html>
@@ -797,9 +797,9 @@ Laravel offers a plugin for auth services to logins called sociallite.
 
 -   <https://console.cloud.google.com/>
 
-Offers Api services like OAuth2.0 that laravel sociallite needs to authenticate with. Please use the step by step example to create a 'project' in the google cloud.
+Offers Api services like OAuth2.0 that laravel socialite needs to authenticate with. Please use the step by step example to create a 'project' in the google cloud.
 
-The configuration of this project provides that are needed to connec with the sociallite service:
+The configuration of this project provides that are needed to connect with the socialite service:
 
 -   client-id
 -   client-key
@@ -841,7 +841,7 @@ To create a new one click the 'New OAuth app' Button and follow the instructions
 
 For Single Page Apps with web api oauth you should not 'Enable Device Flow'. This would be of use if you have users that you can manage to be authorized with a CLI Tool or GitCredentialManager. Which we do not use or need.
 
--   application name makes OAuth app distinctable on OAuth app. I used 'laravel, sanctum spa, socialite and mui'
+-   application name makes OAuth app distinctly on OAuth app. I used 'laravel, sanctum spa, socialite and mui'
 -   Homepage URL. <https://www.sokdesign.de/>
 -   Authorization callback URL <http://localhost:8000/api/auth/github/callback>
 
@@ -1191,7 +1191,7 @@ You're mocking dependencies (e.g. an API client or repository).
 | Does it only test one class’s logic with no HTTP calls? | Unit Test                |
 | Does it rely on mocks or fakes for dependencies?        | Unit Test                |
 
-# Use sociallite and connect to google cloud oauth service
+# Use socialite and connect to google cloud oauth service
 
 Since github registration with github oauth registration worked, this code will be used fora ll google and github registration.
 
@@ -1204,7 +1204,7 @@ Since github registration with github oauth registration worked, this code will 
     - GithubController and GoogleController extending BaseSocialiteController
     - api.php extending routes and use new Controllers
 4. Frontend
-    - Refactor ClickHandler to a reuseable Clickhandler
+    - Refactor ClickHandler to a reuseable Click handler
 
 ### Create an oauth service in google cloud
 
@@ -1341,7 +1341,7 @@ const handleSignUp = (provider: string) => {
 };
 ```
 
-To make the mui Button interface easier to read we refacor the component
+To make the mui Button interface easier to read we refactor the component
 
 ```tsx
 // not refactored
@@ -1412,7 +1412,7 @@ GITHUB_CLIENT_SECRET: client secret
 GITHUB_REDIRECT_URI: Authorization callback URL
 
 GOOGLE_CLIENT_ID: Client-ID
-GOOGLE_CLIENT_SECRET: Clientschlüssel
+GOOGLE_CLIENT_SECRET: Client Schlüssel
 GOOGLE_REDIRECT: Autorisierte Weiterleitungs-URIs
 ```
 
@@ -1752,12 +1752,12 @@ class NewPasswordController extends Controller
 
 ## frontend implementation
 
-Es werden zwei formulare benötigt:
+Es werden zwei Formulare benötigt:
 
 -   Passwort vergessen mit dem /forgot-password link
--   Passwort resetten mit dem /reset-password link
+-   Passwort zurücksetzen mit dem /reset-password link
 
-Passwort vergessen, simlpe Darstellung
+Passwort vergessen, simple Darstellung
 
 ```tsx
 // ForgorPassword.tsx
@@ -1835,7 +1835,7 @@ export default function ForgotPassword({ open, handleClose }: ForgotPasswordProp
 }
 ```
 
-Passwort resetten, simple Darstellung
+Passwort zurücksetzen, simple Darstellung
 
 ```tsx
 // ...
@@ -2041,9 +2041,9 @@ Gehe zur offiziellen GitHub-Seite von Mailpit, um die neueste Version herunterzu
 Mailpit GitHub Releases-Seite: <https://github.com/axllent/mailpit/releases>
 
 Schritt 2: Mailpit starten (windows 10)
-Verschiebe Mailpit in die Nähe deines Entwicklungsordeners und starte Mailpit über die console.
+Verschiebe Mailpit in die Nähe deines Entwicklungsordners und starte Mailpit über die console.
 
-Anschließend erhälst du die Info dass Mailpit auf bestimmte ports lauscht.
+Anschließend erhältst du die Info dass Mailpit auf bestimmte ports lauscht.
 
 SMTP: 127.0.0.1:1025
 Web UI: 127.0.0.1:8025
@@ -2083,7 +2083,7 @@ php artisan optimize:clear
 php artisan queue:work
 ```
 
-Man kann die Notification Implementation direkt mit ticker testen. So kann man auch check ob der Email versand ohne Frontend funktioniert.
+Man kann die Notification Implementation direkt mit ticker testen. So kann man auch check ob der Email Versand ohne Frontend funktioniert.
 
 ```php
 class ResetPasswordNotification extends Notification implements ShouldQueue // <--- HIER
@@ -2105,12 +2105,12 @@ Mail::raw('This is a direct test email from Tinker.', function ($message) {
 Illuminate\Mail\SentMessage
 ```
 
-Man erhält in der Mailpit app (in Localohost:8025 ) das definierte Subject.
+Man erhält in der Mailpit app (in Localhost:8025 ) das definierte Subject.
 In der Console erhält man 'Illuminate\Mail\SentMessage' oder eventuell einen Fehler auf den man reagieren kann.
 
 ## Windows 10 and mailpit
 
-Windows blocked the port 1025 i used that is why an error message occured and the server stopped running
+Windows blocked the port 1025 i used that is why an error message occurred and the server stopped running
 
 ```bash
 mailpit.exe
