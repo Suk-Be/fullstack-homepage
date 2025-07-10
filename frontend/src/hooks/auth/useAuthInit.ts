@@ -19,7 +19,7 @@ export const useAuthInit = () => {
                         dispatch(login());
                     }
                 } catch (error) {
-                    logRecoverableError({ context: '[Auth] No active session found:', error  });
+                    logRecoverableError({ context: '[Auth] No active session found:', error });
                     dispatch(logout());
                 }
             } catch (error) {
@@ -30,6 +30,7 @@ export const useAuthInit = () => {
                     error,
                     extra: { axiosStatus },
                 });
+                dispatch(logout());
             }
         };
 
