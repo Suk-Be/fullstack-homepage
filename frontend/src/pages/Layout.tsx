@@ -36,7 +36,7 @@ const Layout = () => {
                         {/* container for toast notifications */}
                         <Toaster position="top-right" />
                     </main>
-                    <Footer {...testId('footer')}/>
+                    <Footer {...testId('footer')} />
                 </div>
             </ResponsiveContainer>
             <aside
