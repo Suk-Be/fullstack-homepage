@@ -5,6 +5,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Middleware\EnsureEmailIsVerified;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,7 +30,22 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Customize global exception handling here (if needed)
-        // Example: $exceptions->renderable(AlreadyAuthenticatedException::class, fn() => ...);
+        $exceptions->renderable(function (MethodNotAllowedHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Die HTTP-Methode wird für diese Route nicht unterstützt.',
+                ], 405);
+            }
+            // For non-JSON requests, let Laravel's default handler take over
+            return parent::render($request, $e); // This passes it back to your App\Exceptions\Handler's default
+        });
+        $exceptions->renderable(function (NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Ressource nicht gefunden.',
+                ], 404);
+            }
+            return parent::render($request, $e);
+        });
     })
     ->create();
