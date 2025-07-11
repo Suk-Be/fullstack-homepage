@@ -11,7 +11,10 @@ import {
     Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import usePasswordToggle from '../../../hooks/usePasswordToggle';
+import { useDispatch } from 'react-redux';
+import useToggle from '../../../hooks/useToggle';
+import { AppDispatch } from '../../../store';
+import { login } from '../../../store/loginSlice';
 import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
 import { testId } from '../../../utils/testId';
 import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
@@ -21,9 +24,6 @@ import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import requestRegister from './requestRegister';
 import validateInputs from './validateSignUpInputs';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../store';
-import { login } from '../../../store/loginSlice';
 
 type ErrorState = {
     hasError: boolean;
@@ -57,14 +57,6 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: '',
     });
 
-    /**
-     * Tracks the client-side (frontend) validation errors for each form field.
-     * - each key of the fieldErrors object has the same name as input name of the form
-     * - hasError is used on the mui TextField error api to render the helperText api
-     * - message is used on the mui TextField helperText api to contain the error message
-     *
-     * Used for immediate feedback before any API call is made.
-     */
     const createErrorState = () => ({ hasError: false, message: '' });
     const [fieldErrors, setFieldErrors] = useState<FrontendErrorsState>({
         name: createErrorState(),
@@ -73,23 +65,11 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: createErrorState(),
     });
 
-    /**
-     * Tracks server-side (backend) validation errors returned from the API.
-     *
-     * The object maps field names to arrays of error messages received from the backend.
-     * This is useful for displaying detailed validation errors from the server response.
-     *
-     * Example:
-     * {
-     *   email: ["This email is already taken."],
-     *   password: ["Password must be at least 8 characters."]
-     * }
-     */
     const [errors, setErrors] = useState<ValidationErrors>({});
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { showPassword, handleTogglePassword } = usePasswordToggle();
+    const [showPassword, handleTogglePassword] = useToggle();
 
     const dispatch: AppDispatch = useDispatch();
 

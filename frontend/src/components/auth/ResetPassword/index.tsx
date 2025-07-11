@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import ErrorMessages from '../../../data/ErrorMessages';
 import SuccessMessages from '../../../data/SuccessMessages';
-import usePasswordToggle from '../../../hooks/usePasswordToggle';
+import useToggle from '../../../hooks/useToggle';
 import type { AppDispatch } from '../../../store';
 import { login } from '../../../store/loginSlice';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
@@ -55,7 +55,7 @@ const ResetPassword = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [generalErrorMessage, setGeneralErrorMessage] = useState<string | null>(null);
 
-    const { showPassword, handleTogglePassword } = usePasswordToggle();
+    const [showPassword, handleTogglePassword] = useToggle();
 
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
     const handleTogglePasswordConfirmation = useCallback(() => {

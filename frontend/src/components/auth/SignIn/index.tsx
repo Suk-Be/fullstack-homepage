@@ -14,7 +14,7 @@ import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useModalToggle from '../../../hooks/useModalToggle';
-import usePasswordToggle from '../../../hooks/usePasswordToggle';
+import useToggle from '../../../hooks/useToggle';
 import type { AppDispatch } from '../../../store';
 import { login } from '../../../store/loginSlice';
 import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
@@ -51,7 +51,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     // toggle buttons
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { open, handleClose, handleClickOpen } = useModalToggle();
-    const { showPassword, handleTogglePassword } = usePasswordToggle();
+    const [showPassword, togglePasswordVisibility] = useToggle(false);
 
     // Redux dispatch
     const dispatch: AppDispatch = useDispatch();
@@ -210,7 +210,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    onClick={handleTogglePassword}
+                                                    onClick={togglePasswordVisibility}
                                                     edge="end"
                                                     aria-label="Toggle password visibility"
                                                 >

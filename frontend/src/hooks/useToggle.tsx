@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
 
 export default function useToggle(initialValue = false) {
-    const [value, setValue] = useState(initialValue);
+    const [value, toggleValue] = useState(initialValue);
 
+    // Memoized callback function
     const toggle = useCallback(() => {
-        setValue((prev) => !prev);
+        toggleValue((prev) => !prev);
     }, []);
 
     return [value, toggle] as const;
