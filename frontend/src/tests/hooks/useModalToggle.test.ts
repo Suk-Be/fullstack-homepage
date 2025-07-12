@@ -3,69 +3,64 @@ import { vi } from 'vitest';
 import useModalToggle from '../../hooks/useModalToggle';
 
 describe('useModalToggle', () => {
+    const renderUtil = () => {
+      const { result, rerender } = renderHook(() => useModalToggle());
+      const windowOpen = result.current.open
+      const handleClickOpen = result.current.handleClickOpen
+      const handleClose = result.current.handleClose
+      return {
+        result,
+        rerender,
+        windowOpen,
+        handleClickOpen,
+        handleClose
+      }
+    }
+    
     afterEach(() => {
         vi.restoreAllMocks();
         vi.useRealTimers();
     });
 
-    // Test Case 1: Initial state should be false
-    it('should be initialized with the open state to false', () => {
-        const { result } = renderHook(() => useModalToggle());
+    it('should be initial a closed modal', () => {
+        const { windowOpen } = renderUtil();
 
-        expect(result.current.open).toBe(false);
+        expect(windowOpen).toBe(false);
     });
 
-    // Test Case 2: handleClickOpen should set open to true
-    it('should set open state to true when handleClickOpen is called', () => {
-        const { result } = renderHook(() => useModalToggle());
+    it('should open modal when open handler is click', () => {
+        const { result, handleClickOpen } = renderUtil();
 
-        act(() => {
-            result.current.handleClickOpen();
-        });
+        act(() => handleClickOpen());
 
         expect(result.current.open).toBe(true);
     });
 
-    // Test Case 3: handleClose should set open to false
-    it('should set open to false when handleClose is called', () => {
-        const { result } = renderHook(() => useModalToggle());
+    it('should open and close modal (toggle) when handlers are clicked', () => {
+        const { result, handleClickOpen, handleClose } = renderUtil();
 
-        // Set to true
-        act(() => {
-            result.current.handleClickOpen();
-        });
+        act(() => handleClickOpen());
 
         expect(result.current.open).toBe(true);
 
-        // call handleClose
-        act(() => {
-            result.current.handleClose();
-        });
+        act(() => handleClose());
 
         expect(result.current.open).toBe(false);
     });
 
-    // Test Case 4: handleClickOpen and handleClose should maintain referential equality
     it('should memoize handleClickOpen and handleClose functions', () => {
-        const { result, rerender } = renderHook(() => useModalToggle());
+        const { result, rerender, handleClickOpen } = renderUtil();
 
-        // Store initial references
         const initialHandleClickOpen = result.current.handleClickOpen;
         const initialHandleClose = result.current.handleClose;
-
-        // Rerender the hook
         rerender();
 
         expect(result.current.handleClickOpen).toBe(initialHandleClickOpen);
         expect(result.current.handleClose).toBe(initialHandleClose);
 
-        // Call one of the functions to change state, then rerender
-        act(() => {
-            result.current.handleClickOpen();
-        });
+        act(() => handleClickOpen());
         rerender();
 
-        // Assert memoization
         expect(result.current.handleClickOpen).toBe(initialHandleClickOpen);
         expect(result.current.handleClose).toBe(initialHandleClose);
     });

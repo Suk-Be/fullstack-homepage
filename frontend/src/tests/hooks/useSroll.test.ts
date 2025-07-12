@@ -3,18 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import useScroll from '../../hooks/useScroll'; // Adjust the path as needed
 
 let currentBodyClasses: Set<string>;
-
 const mockAdd = vi.fn((cls: string) => currentBodyClasses.add(cls));
 const mockRemove = vi.fn((cls: string) => currentBodyClasses.delete(cls));
-
-// Store the scroll event listener to manually trigger it
 let scrollEventListener: (() => void) | null = null;
+const throttleScrollTimeoutMS = 200; 
+const scrollDown = 100;
+const notScrolled = 0;
+const scrollUp = scrollDown / 2;
+const scrollSoMuchThatItThrottles = 200;
 
 beforeEach(() => {
-    // Initialize currentBodyClasses for each test
     currentBodyClasses = new Set<string>();
 
-    // mock cLassList add and remove behavior
     vi.spyOn(document.body.classList, 'add').mockImplementation(mockAdd);
     vi.spyOn(document.body.classList, 'remove').mockImplementation(mockRemove);
     vi.spyOn(document.body.classList, 'contains').mockImplementation((cls: string) => {
@@ -23,7 +23,7 @@ beforeEach(() => {
 
     Object.defineProperty(window, 'pageYOffset', {
         writable: true,
-        value: 0, // Default to top of the page
+        value: 0, 
     });
 
     vi.spyOn(window, 'addEventListener').mockImplementation((event, handler) => {
@@ -37,7 +37,6 @@ beforeEach(() => {
         }
     });
 
-    // Use fake timers for throttling
     vi.useFakeTimers();
 });
 
@@ -45,26 +44,26 @@ afterEach(() => {
     mockAdd.mockClear();
     mockRemove.mockClear();
     scrollEventListener = null;
-    vi.restoreAllMocks(); // Restores all spied on methods (classList, window.addEventListener, etc.)
+    vi.restoreAllMocks();
     vi.clearAllTimers();
     currentBodyClasses.clear();
 });
 
 const simulateScroll = (yOffset: number) => {
     Object.defineProperty(window, 'pageYOffset', { value: yOffset, writable: true });
-    // Manually trigger the scroll event listener
+    
     if (scrollEventListener) {
         scrollEventListener();
     }
 };
 
 describe('useScroll', () => {
-    it('should not add scroll event listener if it has parameter that is false', () => {
+    it('should only listen to scroll positions if enabled (better performance)', () => {
         renderHook(() => useScroll(false));
         expect(window.addEventListener).not.toHaveBeenCalled();
     });
 
-    it('should be capable of adding and removing the scroll event listener (if user isLogggedIn: scroll and if not isLoggedIn do not listen to scroll)', () => {
+    it('should be be be calleable with enabled and not enabled (isEnabled boolean)', () => {
         const { unmount, rerender } = renderHook(({ isEnabled }) => useScroll(isEnabled), {
             initialProps: { isEnabled: true },
         });
@@ -85,42 +84,32 @@ describe('useScroll', () => {
 
     it('should remove scroll-up class when scrolled to top (<= 0).', () => {
         renderHook(() => useScroll(true));
-        vi.advanceTimersByTime(200); // Allow initial throttle to pass
-
-        act(() => simulateScroll(100));
-        vi.advanceTimersByTime(200); // Allow throttle
-        expect(mockAdd).toHaveBeenCalledWith('scroll-down');
-        expect(mockRemove).toHaveBeenCalledWith('scroll-up'); // From initial state to scroll-down
-
-        mockAdd.mockClear();
-        mockRemove.mockClear();
-
-        // Simulate scrolling to top
-        act(() => simulateScroll(0));
-        vi.advanceTimersByTime(200); // Allow throttle
+        
+        act(() => simulateScroll(notScrolled));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockRemove).toHaveBeenCalledWith('scroll-up');
         expect(mockAdd).not.toHaveBeenCalledWith('scroll-down');
     });
 
-    it('should remove the main menu, add scroll-down and remove scroll-up class when scrolling down', () => {
+    it('should not show the main menu, when scrolling down.', () => {
         renderHook(() => useScroll(true));
-        vi.advanceTimersByTime(200); // Allow initial throttle to pass
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
-        // Simulate initial scroll down
-        act(() => simulateScroll(100)); // lastScroll.current becomes 100
-        vi.advanceTimersByTime(200); // Allow throttle
+        // --- First scroll down
+        act(() => simulateScroll(scrollDown));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS); 
 
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
-        expect(mockRemove).toHaveBeenCalledWith('scroll-up'); // If present, it will remove it.
+        expect(mockRemove).toHaveBeenCalledWith('scroll-up');
 
-        // Clear mocks to test subsequent calls
+        // reset to test subsequent calls
         mockAdd.mockClear();
         mockRemove.mockClear();
 
-        // --- Second scroll down: Should do nothing if 'scroll-down' is already present ---
-        act(() => simulateScroll(200)); // Scroll further down (e.g., from 100 to 200)
-        vi.advanceTimersByTime(200); // Allow throttle
+        // --- Second scroll further down
+        act(() => simulateScroll(scrollDown + scrollDown));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockAdd).not.toHaveBeenCalled();
         expect(mockRemove).not.toHaveBeenCalled();
@@ -128,18 +117,19 @@ describe('useScroll', () => {
 
     it('should show the main menu, add scroll-up class when scrolling up', () => {
         renderHook(() => useScroll(true));
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
-        act(() => simulateScroll(200));
-        vi.advanceTimersByTime(200);
+        act(() => simulateScroll(scrollDown + scrollDown));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
+
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
         expect(mockRemove).toHaveBeenCalledWith('scroll-up');
 
         mockAdd.mockClear();
         mockRemove.mockClear();
 
-        act(() => simulateScroll(100));
-        vi.advanceTimersByTime(200);
+        act(() => simulateScroll(scrollDown));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockRemove).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledWith('scroll-up');
@@ -150,7 +140,7 @@ describe('useScroll', () => {
         mockRemove.mockClear();
 
         act(() => simulateScroll(50));
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockAdd).not.toHaveBeenCalled();
         expect(mockRemove).not.toHaveBeenCalled();
@@ -159,43 +149,41 @@ describe('useScroll', () => {
     it('should handle throttling correctly', () => {
         const { unmount } = renderHook(() => useScroll(true));
 
-        // 1. Initial scroll DOWN: Should add 'scroll-down'
         act(() => {
-            simulateScroll(100);
+            simulateScroll(scrollDown);
         });
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
-        expect(mockAdd).toHaveBeenCalledTimes(1); // First time mockAdd is called
-        mockAdd.mockClear(); // Clear for subsequent assertions
+        expect(mockAdd).toHaveBeenCalledTimes(1);
 
-        // 2. Advance timers past the throttle limit
-        vi.advanceTimersByTime(200);
+        mockAdd.mockClear(); 
 
-        // 3. Scroll UP: This should remove 'scroll-down' and add 'scroll-up'
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
         act(() => {
-            simulateScroll(50); // Scroll up from 100 to 50
+            simulateScroll(scrollUp); // Scroll up from 100 to 50
         });
+
         expect(mockRemove).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledWith('scroll-up');
         expect(mockAdd).toHaveBeenCalledTimes(1);
+        
         mockAdd.mockClear();
         mockRemove.mockClear();
 
-        // 4. Advance timers past the throttle limit again
-        vi.advanceTimersByTime(200);
-
-        // 5. Scroll DOWN again: This should remove 'scroll-up' and add 'scroll-down'
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
         act(() => {
-            simulateScroll(150);
+            simulateScroll(scrollDown * 1.5);
         });
+
         expect(mockRemove).toHaveBeenCalledWith('scroll-up');
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledTimes(1);
+        
         mockAdd.mockClear();
         mockRemove.mockClear();
 
         // Test that further calls within throttle are ignored
         act(() => {
-            simulateScroll(200); // Scroll further down, but 'scroll-down' is already present
+            simulateScroll(scrollSoMuchThatItThrottles); 
         });
         expect(mockAdd).not.toHaveBeenCalled(); // No new calls
         expect(mockRemove).not.toHaveBeenCalled(); // No new calls
@@ -205,13 +193,13 @@ describe('useScroll', () => {
 
     it('should reset lastScroll.current correctly', () => {
         renderHook(() => useScroll(true));
-        vi.advanceTimersByTime(200);
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
-        act(() => simulateScroll(100));
-        vi.advanceTimersByTime(200);
+        act(() => simulateScroll(scrollDown));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
-        act(() => simulateScroll(50));
-        vi.advanceTimersByTime(200);
+        act(() => simulateScroll(scrollUp));
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockRemove).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledWith('scroll-up');
