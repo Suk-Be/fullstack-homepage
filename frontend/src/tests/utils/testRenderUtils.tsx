@@ -99,7 +99,7 @@ const renderWithProviders = (
 ) => {
     const store = setupStore(preloadedState);
 
-    window.history.pushState({}, 'Test page', route);
+    // window.history.pushState({}, 'Test page', route);
 
     return render(
         <ReduxProvider store={store}>
@@ -113,4 +113,6 @@ const renderWithProviders = (
     );
 };
 
+
 export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
+
