@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
 import ProtectedApp from '../ProtectedApp';
-import { renderWithProviders } from './utils/testRenderUtils';
+import { renderRouteHasNotChanged, renderWithProviders } from './utils/testRenderUtils';
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
     return {
@@ -26,7 +26,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
             mockNavigate(props.to);
             return null; // Don't render anything when Navigate is called
         },
-        Outlet: () => <div data-testid="outlet-content">Outlet Content</div>, // Simple mock for Outlet
     };
 });
 
@@ -35,7 +34,7 @@ describe('ProtectedApp', () => {
           vi.clearAllMocks()
     });
 
-    it('redirects if not logged in to Home Page', async () => {
+    it('should redirect to Home Page (if not logged in)', async () => {
         renderWithProviders(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
@@ -45,12 +44,13 @@ describe('ProtectedApp', () => {
 
         await waitFor(() => {
           expect(mockNavigate).toHaveBeenCalledWith('/');
+          expect(window.location.pathname).toBe('/');
         })
         
     });
 
-    it('renders the outlet content if user is logged in', async () => {
-      renderWithProviders(<ProtectedApp />, {
+    it('should use the protected route (if logged in)', async () => {
+      const { history } = renderRouteHasNotChanged(<ProtectedApp />, {
         route: '/template-engine',
         preloadedState: {
           login: { isLoggedIn: true },
@@ -58,10 +58,8 @@ describe('ProtectedApp', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).not.toHaveBeenCalled();
-        // todo Outlet not testable with current libs
-        // expect(screen.getByText(/Outlet Content/i)).toBeInTheDocument();
-        // expect(screen.getByTestId('outlet-content')).toBeInTheDocument();
+        // history.location.pathname verifies that route did not change
+        expect(history.location.pathname).toBe('/template-engine');
       });
     });
 });

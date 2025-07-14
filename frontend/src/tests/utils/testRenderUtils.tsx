@@ -2,11 +2,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Router } from 'react-router-dom';
 import routes from '../../routes';
 import type { RootState } from '../../store';
 import layoutSlice from '../../store/layoutSlice';
@@ -113,6 +114,50 @@ const renderWithProviders = (
     );
 };
 
+/**
+ * Verify that a called route has not changed
+ * e.g.
+ * it('should use the protected route (if logged in)', async () => {
+ *       const { history } = testRenderWithProviders(<ProtectedApp />, {
+ *         route: '/template-engine',
+ *         preloadedState: {
+ *           login: { isLoggedIn: true },
+ *         },
+ *       });
+ * 
+ *       await waitFor(() => {
+ *         expect(history.location.pathname).toBe('/template-engine');
+ *       });
+ *     });
+ */
 
-export { authProviderUrls, navigateTo, renderWithProviders, simluateDelay, simulateError };
+
+const renderRouteHasNotChanged = (
+  ui: React.ReactElement,
+  {
+    route = '/',
+    history = createMemoryHistory({ initialEntries: [route] }),
+    preloadedState = {},
+    store = setupStore(preloadedState),
+    ...renderOptions
+  } = {}
+) => {
+  function Wrapper({ children }: { children: ReactNode }) {
+    return (
+      <ReduxProvider store={store}>
+        <Router location={history.location} navigator={history}>
+          {children}
+        </Router>
+      </ReduxProvider>
+    );
+  }
+
+  return {
+    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+    history,
+  };
+}
+
+
+export { authProviderUrls, navigateTo, renderRouteHasNotChanged, renderWithProviders, simluateDelay, simulateError };
 
