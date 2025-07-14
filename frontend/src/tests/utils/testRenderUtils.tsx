@@ -57,6 +57,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 
 /**
  * Useful for mocking navigating pages
+ * It uses RouterProvider from react-router, that uses a MenoryRouter for testing purposes
  * @param route
  * @param preloadedState any state from RootState can be mocked
  * @returns a testable page with state data passes in
@@ -84,6 +85,7 @@ const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => 
 
 /**
  * Renders a React component wrapped with necessary providers for testing.
+ * It uses MemoryRouter from react-router-dom, without RouterProvider from react-router
  *
  * @param {React.ReactElement} ui - The React component to render.
  * @param preloadedState any state from RootState can be mocked
@@ -116,6 +118,7 @@ const renderWithProviders = (
 
 /**
  * Verify that a called route has not changed
+ * It uses router from react-router-dom, it gives full control over the browser history
  * e.g.
  * it('should use the protected route (if logged in)', async () => {
  *       const { history } = testRenderWithProviders(<ProtectedApp />, {

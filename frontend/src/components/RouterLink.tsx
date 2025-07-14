@@ -30,12 +30,18 @@ import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router';
   </MuiLink>
  */
 
+interface RouterLinkWrapperProps extends Omit<RouterLinkProps, 'to'> {
+  href: RouterLinkProps['to'];
+}
+
 const RouterLinkWrapper = React.forwardRef<
     HTMLAnchorElement,
-    Omit<RouterLinkProps, 'to'> & { href: RouterLinkProps['to'] }
+    RouterLinkWrapperProps
 >((props, ref) => {
     const { href, ...other } = props;
     return <RouterLink ref={ref} to={href} {...other} />;
 });
+
+RouterLinkWrapper.displayName = 'RouterLinkWrapper';
 
 export default RouterLinkWrapper;
