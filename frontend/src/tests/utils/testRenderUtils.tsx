@@ -6,8 +6,8 @@ import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
 import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { createMemoryRouter, RouterProvider } from 'react-router';
-import { MemoryRouter, Router } from 'react-router-dom';
+import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
+import { Router } from 'react-router-dom';
 import routes from '../../routes';
 import type { RootState } from '../../store';
 import layoutSlice from '../../store/layoutSlice';
@@ -85,7 +85,7 @@ const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => 
 
 /**
  * Renders a React component wrapped with necessary providers for testing.
- * It uses MemoryRouter from react-router-dom, without RouterProvider from react-router
+ * It uses MemoryRouter from react-router for checking router internals
  *
  * @param {React.ReactElement} ui - The React component to render.
  * @param preloadedState any state from RootState can be mocked
@@ -117,25 +117,40 @@ const renderWithProviders = (
 };
 
 /**
- * Verify that a called route has not changed
- * It uses router from react-router-dom, it gives full control over the browser history
- * e.g.
- * it('should use the protected route (if logged in)', async () => {
- *       const { history } = testRenderWithProviders(<ProtectedApp />, {
- *         route: '/template-engine',
- *         preloadedState: {
- *           login: { isLoggedIn: true },
- *         },
- *       });
- * 
- *       await waitFor(() => {
- *         expect(history.location.pathname).toBe('/template-engine');
- *       });
- *     });
+ * Is used occasionally: only useful for route testing with browser routing
+ * It uses router from react-router-dom, it gives control over the browser url
+ * e.g. testing that a callback url for github registration is called
+  it('should render the SocialiteCallbackPage', async () => {
+    renderWithProvidersReactRouterDOM(<SocialiteCallbackPage />, {
+      route: '/auth/callback',
+      preloadedState: mockReduxLoggedInState,
+    });
+
+    expect(screen.getByText(/logging in/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(login());
+    });
+  });
+  
+ * e.g. checking if protected route is called if logged in
+  it('should use the protected route (if logged in)', async () => {
+      const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
+        route: '/template-engine',
+        preloadedState: {
+          login: { isLoggedIn: true },
+        },
+      });
+
+      await waitFor(() => {
+        // history.location.pathname verifies that route did not change
+        expect(history.location.pathname).toBe('/template-engine');
+      });
+    });
  */
 
 
-const renderRouteHasNotChanged = (
+const renderWithProvidersReactRouterDOM = (
   ui: React.ReactElement,
   {
     route = '/',
@@ -162,5 +177,5 @@ const renderRouteHasNotChanged = (
 }
 
 
-export { authProviderUrls, navigateTo, renderRouteHasNotChanged, renderWithProviders, simluateDelay, simulateError };
+export { authProviderUrls, navigateTo, renderWithProviders, renderWithProvidersReactRouterDOM, simluateDelay, simulateError };
 

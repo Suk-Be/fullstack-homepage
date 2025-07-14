@@ -14,13 +14,11 @@ import { describe, vi } from 'vitest';
 import SocialiteCallbackPage from '../../pages/SocialiteCallbackPage';
 import { login } from '../../store/loginSlice';
 import { mockReduxLoggedInState } from '../mocks/redux';
-import { renderWithProviders } from '../utils/testRenderUtils';
-
-
+import { renderWithProvidersReactRouterDOM } from '../utils/testRenderUtils';
 
 describe('SocialiteCallbackPage', () => {
     it('should render the SocialiteCallbackPage', async () => {
-        renderWithProviders(<SocialiteCallbackPage />, {
+        renderWithProvidersReactRouterDOM(<SocialiteCallbackPage />, {
             route: '/auth/callback',
             preloadedState: mockReduxLoggedInState,
         });

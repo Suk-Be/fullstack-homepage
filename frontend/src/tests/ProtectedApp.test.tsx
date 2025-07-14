@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
 import ProtectedApp from '../ProtectedApp';
-import { renderRouteHasNotChanged, renderWithProviders } from './utils/testRenderUtils';
+import { renderWithProviders, renderWithProvidersReactRouterDOM } from './utils/testRenderUtils';
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
     return {
@@ -50,7 +50,7 @@ describe('ProtectedApp', () => {
     });
 
     it('should use the protected route (if logged in)', async () => {
-      const { history } = renderRouteHasNotChanged(<ProtectedApp />, {
+      const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
         route: '/template-engine',
         preloadedState: {
           login: { isLoggedIn: true },

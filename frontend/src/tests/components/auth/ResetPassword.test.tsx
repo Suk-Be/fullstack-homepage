@@ -9,7 +9,7 @@ import SuccessMessages from '../../../data/SuccessMessages';
 import { login } from '../../../store/loginSlice';
 import { registeredUserData } from '../../mocks/data';
 import { db } from '../../mocks/db';
-import { renderWithProviders } from '../../utils/testRenderUtils';
+import { renderWithProvidersReactRouterDOM } from '../../utils/testRenderUtils';
 
 const mockDispatch = vi.fn();
 
@@ -35,7 +35,7 @@ describe('ForgotPassword', () => {
     const renderUtils = () => {
         const user = userEvent.setup();
 
-        renderWithProviders(<ResetPassword />, {
+        renderWithProvidersReactRouterDOM(<ResetPassword />, {
             route: `/reset-password?token=${testToken}&email=${registeredUserData.email}`,
         });
 
