@@ -8,13 +8,11 @@ import type { PathAndReduxState } from '../../utils/testRenderUtils';
 import { navigateTo, renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('Menu component', () => {
-    const HPisLoggedIn = {
-        route: '/',
-        preloadedState: { login: { isLoggedIn: true } },
-    };
-
     const renderUtilsComponent = () => {
-        renderWithProviders(<BasicMenu />, { ...HPisLoggedIn } as PathAndReduxState);
+        renderWithProviders(<BasicMenu />, {
+            route: '/',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         const user = userEvent.setup();
         const openButton = screen.getByTestId('button-open-menu');
@@ -23,7 +21,9 @@ describe('Menu component', () => {
         const homepageLink = screen.getByTestId('link-home-page');
         const playgroundLink = screen.queryByRole('link', { name: /playground/i });
         const templateEngineLink = screen.queryByRole('link', { name: /template-engine/i });
-        const testAnotherProtectedPageLink = screen.queryByRole('link', { name: /test-another-project/i });
+        const testAnotherProtectedPageLink = screen.queryByRole('link', {
+            name: /test-another-project/i,
+        });
         const logoutLink = screen.queryByRole('link', { name: /logout/i });
 
         return {
@@ -53,16 +53,24 @@ describe('Menu component', () => {
     };
 
     it('should render a Menu that can be toggled', async () => {
-        const { user, openButton, closeButton, homepageLink, playgroundLink, templateEngineLink, testAnotherProtectedPageLink, logoutLink } =
-            renderUtilsComponent();
+        const {
+            user,
+            openButton,
+            closeButton,
+            homepageLink,
+            playgroundLink,
+            templateEngineLink,
+            testAnotherProtectedPageLink,
+            logoutLink,
+        } = renderUtilsComponent();
 
         // closed Menu
         expect(homepageLink).toBeInTheDocument();
         expect(openButton).toBeInTheDocument();
 
-        expect(closeButton).not.toBeInTheDocument();
-        expect(playgroundLink).not.toBeInTheDocument();
-        expect(logoutLink).not.toBeInTheDocument();
+        expect(closeButton).toBeInTheDocument();
+        expect(playgroundLink).toBe(null);
+        expect(logoutLink).toBe(null);
 
         await user.click(openButton);
 
@@ -71,8 +79,10 @@ describe('Menu component', () => {
             const closeButton = screen.getByTestId('button-close-menu');
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
             const templateEngineLink = screen.getByRole('link', { name: /template engine/i });
-            
-            const testAnotherProtectedPageLink = screen.getByRole('link', { name: /test protected page/i });
+
+            const testAnotherProtectedPageLink = screen.getByRole('link', {
+                name: /test protected page/i,
+            });
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 
             expect(closeButton).toBeInTheDocument();
@@ -85,11 +95,11 @@ describe('Menu component', () => {
         await user.click(closeButton as HTMLButtonElement);
 
         await waitFor(() => {
-            expect(closeButton).not.toBeInTheDocument();
-            expect(playgroundLink).not.toBeInTheDocument();
-            expect(templateEngineLink).not.toBeInTheDocument();
-            expect(testAnotherProtectedPageLink).not.toBeInTheDocument();
-            expect(logoutLink).not.toBeInTheDocument();
+            expect(closeButton).toBeInTheDocument();
+            expect(playgroundLink).toBe(null);
+            expect(templateEngineLink).toBe(null);
+            expect(testAnotherProtectedPageLink).toBe(null);
+            expect(logoutLink).toBe(null);
         });
     });
 
@@ -98,9 +108,10 @@ describe('Menu component', () => {
             default: (props: any) => <a {...props} />,
         }));
 
-        const { user, homepageLink } = renderUtilsPage(HPisLoggedIn);
-
-        // screen.debug();
+        const { user, homepageLink } = renderUtilsPage({
+            route: '/',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         await user.click(homepageLink);
 
@@ -109,7 +120,10 @@ describe('Menu component', () => {
     });
 
     it('should get Playground Page route when clicked in menu', async () => {
-        const { user, openButton } = renderUtilsPage(HPisLoggedIn);
+        const { user, openButton } = renderUtilsPage({
+            route: '/',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         await user.click(openButton);
 
@@ -122,7 +136,10 @@ describe('Menu component', () => {
     });
 
     it('should logout a logged in user', async () => {
-        const { user, openButton } = renderUtilsPage(HPisLoggedIn);
+        const { user, openButton } = renderUtilsPage({
+            route: '/',
+            preloadedState: { login: { isLoggedIn: true } },
+        });
 
         // SpyOn
         const mockLogoutRequest = vi.spyOn(requestLogoutModule, 'default');
