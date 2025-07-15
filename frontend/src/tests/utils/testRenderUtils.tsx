@@ -149,33 +149,37 @@ const renderWithProviders = (
     });
  */
 
-
 const renderWithProvidersReactRouterDOM = (
-  ui: React.ReactElement,
-  {
-    route = '/',
-    history = createMemoryHistory({ initialEntries: [route] }),
-    preloadedState = {},
-    store = setupStore(preloadedState),
-    ...renderOptions
-  } = {}
+    ui: React.ReactElement,
+    {
+        route = '/',
+        history = createMemoryHistory({ initialEntries: [route] }),
+        preloadedState = {},
+        store = setupStore(preloadedState),
+        ...renderOptions
+    } = {},
 ) => {
-  function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <ReduxProvider store={store}>
-        <Router location={history.location} navigator={history}>
-          {children}
-        </Router>
-      </ReduxProvider>
-    );
-  }
+    function Wrapper({ children }: { children: ReactNode }) {
+        return (
+            <ReduxProvider store={store}>
+                <Router location={history.location} navigator={history}>
+                    {children}
+                </Router>
+            </ReduxProvider>
+        );
+    }
 
-  return {
-    ...render(ui, { wrapper: Wrapper, ...renderOptions }),
-    history,
-  };
-}
+    return {
+        ...render(ui, { wrapper: Wrapper, ...renderOptions }),
+        history,
+    };
+};
 
-
-export { authProviderUrls, navigateTo, renderWithProviders, renderWithProvidersReactRouterDOM, simluateDelay, simulateError };
-
+export {
+    authProviderUrls,
+    navigateTo,
+    renderWithProviders,
+    renderWithProvidersReactRouterDOM,
+    simluateDelay,
+    simulateError,
+};
