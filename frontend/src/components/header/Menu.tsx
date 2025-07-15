@@ -98,16 +98,52 @@ export default function BasicMenu() {
                     </Button>
                     <Menu
                         id="basic-menu"
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
                         slotProps={{
                             list: {
                                 'aria-labelledby': 'basic-button',
+                                sx: {
+                                    padding: '1rem',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-end',
+                                    gap: 1,
+                                    '& li a': {
+                                        color: (theme) => theme.palette.grey[600],
+                                        textDecoration: 'none',
+                                        '&:hover': {
+                                            textDecoration: 'none', // prevent underline on hover
+                                        },
+                                    },
+                                    '& li:last-child': {
+                                        marginTop: '1rem',
+                                        fontWeight: 'bold',
+                                    },
+                                },
+                            },
+                            paper: {
+                                sx: {
+                                    minWidth: {
+                                        xs: 'calc(100vw - 2.5rem)',
+                                        sm: '50vw',
+                                        md: '400px',
+                                    },
+                                },
                             },
                         }}
-                        sx={{ maxWidth: 'calc(100% - 4rem)' }}
                         {...testId('button-close-menu')}
+                        disableScrollLock
                     >
                         <MenuItem onClick={handleClose}>
                             <MuiLink component={RouterLinkWrapper} href="/playground">
