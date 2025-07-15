@@ -22,6 +22,8 @@ describe('Menu component', () => {
 
         const homepageLink = screen.getByTestId('link-home-page');
         const playgroundLink = screen.queryByRole('link', { name: /playground/i });
+        const templateEngineLink = screen.queryByRole('link', { name: /template-engine/i });
+        const testAnotherProtectedPageLink = screen.queryByRole('link', { name: /test-another-project/i });
         const logoutLink = screen.queryByRole('link', { name: /logout/i });
 
         return {
@@ -30,6 +32,8 @@ describe('Menu component', () => {
             closeButton,
             homepageLink,
             playgroundLink,
+            templateEngineLink,
+            testAnotherProtectedPageLink,
             logoutLink,
         };
     };
@@ -49,7 +53,7 @@ describe('Menu component', () => {
     };
 
     it('should render a Menu that can be toggled', async () => {
-        const { user, openButton, closeButton, homepageLink, playgroundLink, logoutLink } =
+        const { user, openButton, closeButton, homepageLink, playgroundLink, templateEngineLink, testAnotherProtectedPageLink, logoutLink } =
             renderUtilsComponent();
 
         // closed Menu
@@ -66,10 +70,15 @@ describe('Menu component', () => {
         await waitFor(() => {
             const closeButton = screen.getByTestId('button-close-menu');
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
+            const templateEngineLink = screen.getByRole('link', { name: /template engine/i });
+            
+            const testAnotherProtectedPageLink = screen.getByRole('link', { name: /test protected page/i });
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 
             expect(closeButton).toBeInTheDocument();
             expect(playgroundLink).toBeInTheDocument();
+            expect(templateEngineLink).toBeInTheDocument();
+            expect(testAnotherProtectedPageLink).toBeInTheDocument();
             expect(logoutLink).toBeInTheDocument();
         });
 
@@ -78,6 +87,8 @@ describe('Menu component', () => {
         await waitFor(() => {
             expect(closeButton).not.toBeInTheDocument();
             expect(playgroundLink).not.toBeInTheDocument();
+            expect(templateEngineLink).not.toBeInTheDocument();
+            expect(testAnotherProtectedPageLink).not.toBeInTheDocument();
             expect(logoutLink).not.toBeInTheDocument();
         });
     });
