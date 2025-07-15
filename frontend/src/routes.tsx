@@ -18,7 +18,6 @@ const routes: RouteObject[] = [
         errorElement: <ErrorPage />,
         children: [
             { index: true, element: <HomePage /> },
-            { path: 'playground', element: <PlaygroundPage /> },
             { path: 'impressum', element: <ImprintPage /> },
             { path: 'datenschutz', element: <DatenschutzPage /> },
             { path: 'reset-password', element: <ResetPasswordPage /> },
@@ -26,6 +25,7 @@ const routes: RouteObject[] = [
                 element: <ProtectedApp />,
                 children: [
                     { path: 'template-engine', element: <ProjectTemplateEnginePage /> },
+                    { path: 'playground', element: <PlaygroundPage /> },
                     { path: 'test-another-project', element: <ProjectTestPage /> },
                 ],
             },
