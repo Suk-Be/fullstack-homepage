@@ -1,7 +1,7 @@
+import RouterLinkWrapper from '@/components/RouterLink';
+import { testId } from '@/utils/testId';
 import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
 import { useState } from 'react';
-import { testId } from '../../utils/testId';
-import RouterLinkWrapper from '../RouterLink';
 
 const Footer = () => {
     const [value, setValue] = useState(0);

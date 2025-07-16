@@ -1,13 +1,13 @@
+import Layout from '@/pages/Layout';
+import type { RootState } from '@/store';
+import { mockReduxLoggedInState, mockReduxLoggedOutState } from '@/tests/mocks/redux';
+import { setupStore } from '@/tests/utils/testRenderUtils';
+import { PreloadedState } from '@/types/Redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import Layout from '../../pages/Layout';
-import type { RootState } from '../../store';
-import { PreloadedState } from '../../types/Redux';
-import { mockReduxLoggedInState, mockReduxLoggedOutState } from '../mocks/redux';
-import { setupStore } from '../utils/testRenderUtils';
 
 describe('LayoutPage', () => {
     beforeEach(() => {

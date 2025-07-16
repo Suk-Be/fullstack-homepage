@@ -1,7 +1,7 @@
-import AllTeasers from '../componentsTemplateEngine/card';
-import Logo from '../componentsTemplateEngine/mainNav/Logo';
-import ToggleAuthMenu from '../componentsTemplateEngine/mainNav/ToggleAuthMenu';
-import type { PageProps, Welcome } from '../types/templateEngine';
+import AllTeasers from '@/componentsTemplateEngine/card';
+import Logo from '@/componentsTemplateEngine/mainNav/Logo';
+import ToggleAuthMenu from '@/componentsTemplateEngine/mainNav/ToggleAuthMenu';
+import type { PageProps, Welcome } from '@/types/templateEngine';
 
 export const WelcomeProps = {
     data: [

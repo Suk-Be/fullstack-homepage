@@ -1,22 +1,20 @@
+import useToggle from '@/hooks/useToggle'; // Assuming useToggle is in useToggle.js or useToggle.ts
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import useToggle from '../../hooks/useToggle'; // Assuming useToggle is in useToggle.js or useToggle.ts
-
-
 
 describe('useToggle', () => {
     const testUtil = () => {
-      const { result } = renderHook(() => useToggle());
-      const toggle = result.current[1];
+        const { result } = renderHook(() => useToggle());
+        const toggle = result.current[1];
 
-      return {
-        result,
-        toggle
-      }
-    }
+        return {
+            result,
+            toggle,
+        };
+    };
 
     it('should initialize with false if no parameter is given', () => {
-        const { result } = testUtil()
+        const { result } = testUtil();
         expect(result.current[0]).toBe(false);
     });
 

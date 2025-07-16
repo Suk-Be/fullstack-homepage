@@ -1,6 +1,6 @@
+import { serverBaseUrl } from '@/utils/apiBaseUrl';
+import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import axios from 'axios';
-import { serverBaseUrl } from '../utils/apiBaseUrl';
-import { getAxiosStatus, logRecoverableError } from '../utils/logger';
 
 let lastInitializedAt = 0;
 let isCsrfFetched = false;
@@ -40,11 +40,11 @@ async function initializeCookies() {
         lastInitializedAt = now;
         resetIsCsrfFetchedAndResetCookies();
         await setCookies();
-    } if (import.meta.env.MODE === 'development') {
+    }
+    if (import.meta.env.MODE === 'development') {
         console.log('[Throttle] Skipping cookie initialization due to throttling.');
     }
 }
 
 export default initializeCookies;
 export { resetIsCsrfFetchedAndResetCookies, setCookies };
-

@@ -1,7 +1,7 @@
+import { navigateTo, PathAndReduxState } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { navigateTo, PathAndReduxState } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
     const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {

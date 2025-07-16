@@ -1,7 +1,7 @@
+import { useAuthInit } from '@/hooks/auth/useAuthInit';
+import * as LoggerModule from '@/utils/logger';
 import { renderHook, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import { useAuthInit } from '../../../hooks/auth/useAuthInit';
-import * as LoggerModule from '../../../utils/logger';
 
 // 1. Define all your mock functions within vi.hoisted
 const {
@@ -22,28 +22,28 @@ const {
     };
 });
 
-vi.mock('../../../components/auth/SignUp/requestMe', () => {
+vi.mock('@/components/auth/SignUp/requestMe', () => {
     return {
         default: mockRequestMe,
     };
 });
 
-vi.mock('../../../plugins/initializeCookies', () => {
+vi.mock('@/plugins/initializeCookies', () => {
     return {
         default: mockInitializeCookies,
     };
 });
 
-vi.mock('../../../utils/logger', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('../../../utils/logger')>();
+vi.mock('@/utils/logger', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/utils/logger')>();
     return {
         ...actual, // Keep other exports like logRecoverableError
         getAxiosStatus: mockGetAxiosStatus, // Use your hoisted mock here
     };
 });
 
-vi.mock('../../../store/loginSlice', async (importOriginal) => {
-    const actual = await importOriginal<typeof import('../../../store/loginSlice')>();
+vi.mock('@/store/loginSlice', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/store/loginSlice')>();
     return {
         ...actual,
         login: mockLoginActionCreator,

@@ -1,6 +1,6 @@
-import useToggle from '../../../hooks/useToggle';
-import SignIn from '../SignIn/index';
-import SignUp from '../SignUp';
+import SignIn from '@/components/auth/SignIn/index';
+import SignUp from '@/components/auth/SignUp';
+import useToggle from '@/hooks/useToggle';
 
 const ToggleSignIn = () => {
     const [showLogin, toggleShowLogin] = useToggle(true);
@@ -16,4 +16,4 @@ const ToggleSignIn = () => {
     );
 };
 
-export default ToggleSignIn
+export default ToggleSignIn;

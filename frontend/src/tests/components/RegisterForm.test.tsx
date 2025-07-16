@@ -1,9 +1,9 @@
+import { RegisterForm } from '@/components/RegisterForm';
+import ErrorMessages from '@/data/ErrorMessages';
+import { db } from '@/tests/mocks/db';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe } from 'vitest';
-import { RegisterForm } from '../../components/RegisterForm';
-import ErrorMessages from '../../data/ErrorMessages';
-import { db } from '../mocks/db';
 
 const registeredUserData = {
     id: '1',

@@ -1,5 +1,5 @@
+import { RootState } from '@/store/';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import AccordionExpandIcon from './AccordionTeaser';
 import ToggleSignIn from './Toggles';
 

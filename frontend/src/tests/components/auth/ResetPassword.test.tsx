@@ -1,15 +1,15 @@
+import ResetPassword from '@/components/auth/ResetPassword';
+import * as resetPassword from '@/components/auth/ResetPassword/requestResetPassword';
+import ErrorMessages from '@/data/ErrorMessages';
+import SuccessMessages from '@/data/SuccessMessages';
+import { login } from '@/store/loginSlice';
+import { registeredUserData } from '@/tests/mocks/data';
+import { db } from '@/tests/mocks/db';
+import { renderWithProvidersReactRouterDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import ResetPassword from '../../../components/auth/ResetPassword';
-import * as resetPassword from '../../../components/auth/ResetPassword/requestResetPassword';
-import ErrorMessages from '../../../data/ErrorMessages';
-import SuccessMessages from '../../../data/SuccessMessages';
-import { login } from '../../../store/loginSlice';
-import { registeredUserData } from '../../mocks/data';
-import { db } from '../../mocks/db';
-import { renderWithProvidersReactRouterDOM } from '../../utils/testRenderUtils';
 
 const mockDispatch = vi.fn();
 

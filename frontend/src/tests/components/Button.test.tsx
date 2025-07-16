@@ -1,6 +1,6 @@
+import ButtonUsage from '@/components/Button';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import ButtonUsage from '../../components/Button';
 
 describe('ButtonUsage', () => {
     it('should render children property', () => {

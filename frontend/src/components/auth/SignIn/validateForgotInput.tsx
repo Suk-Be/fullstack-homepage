@@ -1,7 +1,4 @@
-import {
-    ForgotPasswordInput,
-    forgotPasswordInputSchema,
-} from '../../../schemas/forgotPasswordSchema';
+import { ForgotPasswordInput, forgotPasswordInputSchema } from '@/schemas/forgotPasswordSchema';
 
 export function validateForgotPasswordInput(data: ForgotPasswordInput) {
     const result = forgotPasswordInputSchema.safeParse(data);

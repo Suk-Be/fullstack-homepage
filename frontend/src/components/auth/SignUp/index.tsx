@@ -1,3 +1,13 @@
+import AuthHeaderLayout from '@/components/auth/shared-components/AuthHeaderLayout';
+import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
+import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
+import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIcons';
+import { ParagraphHP } from '@/components/TextElements';
+import useToggle from '@/hooks/useToggle';
+import { AppDispatch } from '@/store';
+import { login } from '@/store/loginSlice';
+import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
+import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
@@ -12,16 +22,6 @@ import {
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import useToggle from '../../../hooks/useToggle';
-import { AppDispatch } from '../../../store';
-import { login } from '../../../store/loginSlice';
-import { handleSignInUp as handleSignUp } from '../../../utils/clickHandler';
-import { testId } from '../../../utils/testId';
-import { Card, SignInContainer as SignUpContainer } from '../../ContainerElements';
-import { GithubIcon, GoogleIcon } from '../../shared-components/CustomIcons';
-import { ParagraphHP } from '../../TextElements';
-import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
-import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import requestRegister from './requestRegister';
 import validateInputs from './validateSignUpInputs';
 

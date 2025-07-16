@@ -1,5 +1,5 @@
+import { RegisterResponse } from '@/types/entities';
 import { AxiosError } from 'axios';
-import { RegisterResponse } from '../../types/entities';
 import { createResponseErrorValidationObject } from './createResponseErrorValidationObject';
 
 export interface ApiErrorData {

@@ -1,4 +1,4 @@
-import { LoginInput, loginInputSchema } from '../../../schemas/loginSchema';
+import { LoginInput, loginInputSchema } from '@/schemas/loginSchema';
 
 export function validateSignInInputs(data: LoginInput) {
     const result = loginInputSchema.safeParse(data);

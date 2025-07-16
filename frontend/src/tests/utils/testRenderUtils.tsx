@@ -1,3 +1,10 @@
+import routes from '@/routes';
+import type { RootState } from '@/store';
+import layoutSlice from '@/store/layoutSlice';
+import loginSlice from '@/store/loginSlice';
+import { server } from '@/tests/mocks/server';
+import AppThemeProvider from '@/themes/AppTheme';
+import apiBaseUrl from '@/utils/apiBaseUrl';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -8,13 +15,6 @@ import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
 import { Router } from 'react-router-dom';
-import routes from '../../routes';
-import type { RootState } from '../../store';
-import layoutSlice from '../../store/layoutSlice';
-import loginSlice from '../../store/loginSlice';
-import AppThemeProvider from '../../themes/AppTheme';
-import apiBaseUrl from '../../utils/apiBaseUrl';
-import { server } from '../mocks/server';
 
 const simluateDelay = (endpoint: string) =>
     server.use(

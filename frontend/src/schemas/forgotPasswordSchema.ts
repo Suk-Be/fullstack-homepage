@@ -1,5 +1,5 @@
+import ErrorMessages from '@/data/ErrorMessages';
 import { z } from 'zod';
-import ErrorMessages from '../data/ErrorMessages';
 
 export const forgotPasswordResponseSchema = z.object({
     email: z.string().email(ErrorMessages.ForgotPassword.responseEmail),

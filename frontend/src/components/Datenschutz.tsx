@@ -1,8 +1,8 @@
 import { Link as MuiLink } from '@mui/material';
-import { testId } from '../utils/testId';
-import { Section } from './ContainerElements';
-import RouterLinkWrapper from './RouterLink';
-import { HeadlineHP, ParagraphHP } from './TextElements';
+import { testId } from '@/utils/testId';
+import { Section } from '@/components/ContainerElements';
+import RouterLinkWrapper from '@/components/RouterLink';
+import { HeadlineHP, ParagraphHP } from '@/components/TextElements';
 
 export default function Datenschutz() {
     return (

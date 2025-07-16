@@ -1,6 +1,6 @@
+import Imprint from '@/components/Imprint';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import Imprint from '../../components/Imprint';
 
 describe('Imprint', () => {
     it('should render a heading', () => {

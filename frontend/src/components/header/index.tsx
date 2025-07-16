@@ -1,7 +1,7 @@
+import useScroll from '@/hooks/useScroll';
+import { RootState } from '@/store/';
+import { testId } from '@/utils/testId';
 import { useSelector } from 'react-redux';
-import useScroll from '../../hooks/useScroll';
-import { RootState } from '../../store';
-import { testId } from '../../utils/testId';
 import BasicMenu from './Menu';
 
 const MenuNav = () => {

@@ -1,7 +1,7 @@
-import type { RootState } from '../../store';
-import layoutReducer from '../../store/layoutSlice';
-import loginReducer from '../../store/loginSlice';
-import { PreloadedState } from '../../types/Redux';
+import type { RootState } from '@/store';
+import layoutReducer from '@/store/layoutSlice';
+import loginReducer from '@/store/loginSlice';
+import { PreloadedState } from '@/types/Redux';
 
 export const mockReduxLoggedInState: PreloadedState<RootState> = {
     login: {

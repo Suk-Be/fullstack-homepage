@@ -1,4 +1,4 @@
-import { ResetPasswordInput, resetPasswordInputSchema } from '../../../schemas/resetPasswordSchema';
+import { ResetPasswordInput, resetPasswordInputSchema } from '@/schemas/resetPasswordSchema';
 
 export interface ValidationResult {
     isValid: boolean;

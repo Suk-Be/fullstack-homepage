@@ -1,9 +1,9 @@
+import LaravelApiClient from '@/plugins/axios';
+import type { AppDispatch } from '@/store';
+import { login } from '@/store/loginSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import LaravelApiClient from '../plugins/axios';
-import type { AppDispatch } from '../store';
-import { login } from '../store/loginSlice';
 
 /**
  * Shows the loading state when Authproviders are authenticating.

@@ -1,10 +1,10 @@
+import { blue, gray, red } from '@/themes/themePrimitives';
 import { buttonBaseClasses } from '@mui/material/ButtonBase';
 import { chipClasses } from '@mui/material/Chip';
 import { iconButtonClasses } from '@mui/material/IconButton';
 import { alpha, Components, Theme } from '@mui/material/styles';
 import { svgIconClasses } from '@mui/material/SvgIcon';
 import { typographyClasses } from '@mui/material/Typography';
-import { blue, gray, red } from '../themePrimitives';
 
 const dataDisplayCustomizations: Components<Theme> = {
     MuiList: {

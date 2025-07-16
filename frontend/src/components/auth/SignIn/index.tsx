@@ -1,3 +1,14 @@
+import { Card, SignInContainer } from '@/components/ContainerElements';
+import AuthHeaderLayout from '@/components/auth/shared-components/AuthHeaderLayout';
+import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
+import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIcons';
+import useModalToggle from '@/hooks/useModalToggle';
+import useToggle from '@/hooks/useToggle';
+import type { AppDispatch } from '@/store';
+import { login } from '@/store/loginSlice';
+import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
+import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
+import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
@@ -13,17 +24,6 @@ import {
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import useModalToggle from '../../../hooks/useModalToggle';
-import useToggle from '../../../hooks/useToggle';
-import type { AppDispatch } from '../../../store';
-import { login } from '../../../store/loginSlice';
-import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
-import { handleSignInUp as handleSignIn } from '../../../utils/clickHandler';
-import { testId } from '../../../utils/testId';
-import { Card, SignInContainer } from '../../ContainerElements';
-import { GithubIcon, GoogleIcon } from '../../shared-components/CustomIcons';
-import AuthHeaderLayout from '../shared-components/AuthHeaderLayout';
-import RegisterButtonSocialite from '../shared-components/RegisterButtonSocialite';
 import ForgotPassword from './ForgotPassword';
 import requestLogin from './requestLogin';
 import { validateSignInInputs } from './validateSignInInputs';

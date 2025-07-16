@@ -1,5 +1,5 @@
-import { WelcomeProps } from '../../pages/WelcomePage';
-import { Teaser } from '../../types/templateEngine';
+import { WelcomeProps } from '@/pages/WelcomePage';
+import { Teaser } from '@/types/templateEngine';
 
 export const categoryData = [
     { id: 1, name: 'Electronics' },

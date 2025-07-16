@@ -1,7 +1,7 @@
+import apiBaseUrl from '@/utils/apiBaseUrl';
+import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import apiBaseUrl from '../utils/apiBaseUrl';
-import { getAxiosStatus, logRecoverableError } from '../utils/logger';
 
 const api = apiBaseUrl();
 

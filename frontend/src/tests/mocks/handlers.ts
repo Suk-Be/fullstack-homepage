@@ -1,10 +1,10 @@
+import ErrorMessages from '@/data/ErrorMessages';
+import SuccessMessages from '@/data/SuccessMessages';
+import { forgotPasswordResponseSchema } from '@/schemas/forgotPasswordSchema';
+import { loginResponseSchema } from '@/schemas/loginSchema';
+import { registerResponseSchema } from '@/schemas/registerSchema';
+import apiBaseUrl from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
-import ErrorMessages from '../../data/ErrorMessages';
-import SuccessMessages from '../../data/SuccessMessages';
-import { forgotPasswordResponseSchema } from '../../schemas/forgotPasswordSchema';
-import { loginResponseSchema } from '../../schemas/loginSchema';
-import { registerResponseSchema } from '../../schemas/registerSchema';
-import apiBaseUrl from '../../utils/apiBaseUrl';
 import { registeredUserData } from './data';
 import { db } from './db';
 
@@ -103,7 +103,7 @@ export const handlers = [
             return HttpResponse.json(
                 {
                     message: ErrorMessages.SignIn.responseEmail,
-                    errors: { 
+                    errors: {
                         email: [ErrorMessages.SignIn.responseEmail],
                     },
                 },
@@ -115,7 +115,10 @@ export const handlers = [
     }),
 
     http.post(`${api}/auth/spa/logout`, () => {
-        return HttpResponse.json({ message: 'Sie haben sich erfolgreich abgemeldet.', status: 200 });
+        return HttpResponse.json({
+            message: 'Sie haben sich erfolgreich abgemeldet.',
+            status: 200,
+        });
     }),
 
     http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {
@@ -151,11 +154,11 @@ export const handlers = [
     }),
 
     http.get(`${api}/me`, () => {
-      return HttpResponse.json({
-        id: 1,
-        name: 'Mock User',
-        email: 'mock@example.com',
-      });
+        return HttpResponse.json({
+            id: 1,
+            name: 'Mock User',
+            email: 'mock@example.com',
+        });
     }),
 
     http.post(`${api}/auth/spa/reset-password`, async ({ request }) => {
@@ -178,8 +181,6 @@ export const handlers = [
             body,
         });
     }),
-
-    
 
     // fallback for catching future route mismatches during test debugging
     http.post('*', async ({ request }) => {

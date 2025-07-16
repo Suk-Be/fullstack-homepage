@@ -1,8 +1,5 @@
-import RowspanningGrid from '../../../componentsTemplateEngine/gridLayout/layoutPresets/RowspanningGrid';
-import {
-    componentToHtmlText,
-    toDomModel,
-} from '../../../utils/templateEngine/parseHtmlToText/index';
+import RowspanningGrid from '@/componentsTemplateEngine/gridLayout/layoutPresets/RowspanningGrid';
+import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
  * Helper function to get a list of texts from the child nodes from a passed in react component

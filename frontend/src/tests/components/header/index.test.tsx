@@ -1,12 +1,12 @@
+import MenuNav from '@/components/header';
+import { HPProps } from '@/data/HomePage';
+import { mockReduxLoggedInState, mockReduxLoggedOutState } from '@/tests/mocks/redux';
+import { navigateTo, PathAndReduxState, setupStore } from '@/tests/utils/testRenderUtils';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import MenuNav from '../../../components/header';
-import { HPProps } from '../../../data/HomePage';
-import { mockReduxLoggedInState, mockReduxLoggedOutState } from '../../mocks/redux';
-import { navigateTo, PathAndReduxState, setupStore } from '../../utils/testRenderUtils';
 
 describe('BasicMenu', () => {
     beforeEach(() => {

@@ -1,3 +1,7 @@
+import SuccessMessages from '@/data/SuccessMessages';
+import useInputFocusOnModalOpen from '@/hooks/useInputFocusOnModalOpen';
+import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
+import { testId } from '@/utils/testId';
 import { Box, FormControl, FormLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -7,10 +11,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
-import SuccessMessages from '../../../data/SuccessMessages';
-import useInputFocusOnModalOpen from '../../../hooks/useInputFocusOnModalOpen';
-import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage';
-import { testId } from '../../../utils/testId';
 import requestForgotPassword from './requestForgotPassword';
 import { validateForgotPasswordInput } from './validateForgotInput';
 

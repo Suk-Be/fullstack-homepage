@@ -1,12 +1,12 @@
+import useScroll from '@/hooks/useScroll'; // Adjust the path as needed
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import useScroll from '../../hooks/useScroll'; // Adjust the path as needed
 
 let currentBodyClasses: Set<string>;
 const mockAdd = vi.fn((cls: string) => currentBodyClasses.add(cls));
 const mockRemove = vi.fn((cls: string) => currentBodyClasses.delete(cls));
 let scrollEventListener: (() => void) | null = null;
-const throttleScrollTimeoutMS = 200; 
+const throttleScrollTimeoutMS = 200;
 const scrollDown = 100;
 const notScrolled = 0;
 const scrollUp = scrollDown / 2;
@@ -23,7 +23,7 @@ beforeEach(() => {
 
     Object.defineProperty(window, 'pageYOffset', {
         writable: true,
-        value: 0, 
+        value: 0,
     });
 
     vi.spyOn(window, 'addEventListener').mockImplementation((event, handler) => {
@@ -51,7 +51,7 @@ afterEach(() => {
 
 const simulateScroll = (yOffset: number) => {
     Object.defineProperty(window, 'pageYOffset', { value: yOffset, writable: true });
-    
+
     if (scrollEventListener) {
         scrollEventListener();
     }
@@ -84,7 +84,7 @@ describe('useScroll', () => {
 
     it('should remove scroll-up class when scrolled to top (<= 0).', () => {
         renderHook(() => useScroll(true));
-        
+
         act(() => simulateScroll(notScrolled));
         vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
@@ -98,7 +98,7 @@ describe('useScroll', () => {
 
         // --- First scroll down
         act(() => simulateScroll(scrollDown));
-        vi.advanceTimersByTime(throttleScrollTimeoutMS); 
+        vi.advanceTimersByTime(throttleScrollTimeoutMS);
 
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
         expect(mockRemove).toHaveBeenCalledWith('scroll-up');
@@ -155,7 +155,7 @@ describe('useScroll', () => {
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledTimes(1);
 
-        mockAdd.mockClear(); 
+        mockAdd.mockClear();
 
         vi.advanceTimersByTime(throttleScrollTimeoutMS);
         act(() => {
@@ -165,7 +165,7 @@ describe('useScroll', () => {
         expect(mockRemove).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledWith('scroll-up');
         expect(mockAdd).toHaveBeenCalledTimes(1);
-        
+
         mockAdd.mockClear();
         mockRemove.mockClear();
 
@@ -177,13 +177,13 @@ describe('useScroll', () => {
         expect(mockRemove).toHaveBeenCalledWith('scroll-up');
         expect(mockAdd).toHaveBeenCalledWith('scroll-down');
         expect(mockAdd).toHaveBeenCalledTimes(1);
-        
+
         mockAdd.mockClear();
         mockRemove.mockClear();
 
         // Test that further calls within throttle are ignored
         act(() => {
-            simulateScroll(scrollSoMuchThatItThrottles); 
+            simulateScroll(scrollSoMuchThatItThrottles);
         });
         expect(mockAdd).not.toHaveBeenCalled(); // No new calls
         expect(mockRemove).not.toHaveBeenCalled(); // No new calls

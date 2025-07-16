@@ -1,4 +1,4 @@
-import { RegisterInput, registerInputSchema } from '../../../schemas/registerSchema';
+import { RegisterInput, registerInputSchema } from '@/schemas/registerSchema';
 
 export interface ValidationResult {
     isValid: boolean;

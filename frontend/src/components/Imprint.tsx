@@ -1,5 +1,5 @@
-import { Section } from './ContainerElements';
-import { HeadlineHP, ParagraphHP } from './TextElements';
+import { Section } from '@/components/ContainerElements';
+import { HeadlineHP, ParagraphHP } from '@/components/TextElements';
 
 export default function Imprint() {
     return (

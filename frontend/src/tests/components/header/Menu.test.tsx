@@ -1,11 +1,11 @@
+import BasicMenu from '@/components/header/Menu';
+import * as requestLogoutModule from '@/components/header/requestLogout';
+import { HPProps } from '@/data/HomePage';
+import type { PathAndReduxState } from '@/tests/utils/testRenderUtils';
+import { navigateTo, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, vi } from 'vitest';
-import BasicMenu from '../../../components/header/Menu';
-import * as requestLogoutModule from '../../../components/header/requestLogout';
-import { HPProps } from '../../../data/HomePage';
-import type { PathAndReduxState } from '../../utils/testRenderUtils';
-import { navigateTo, renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('Menu component', () => {
     const renderUtilsComponent = () => {

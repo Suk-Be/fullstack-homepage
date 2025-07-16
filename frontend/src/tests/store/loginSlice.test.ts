@@ -1,4 +1,4 @@
-import loginReducer, { login, logout } from '../../store/loginSlice';
+import loginReducer, { login, logout } from '@/store/loginSlice';
 
 describe('loginSlice', () => {
     it('should return the initial state', () => {

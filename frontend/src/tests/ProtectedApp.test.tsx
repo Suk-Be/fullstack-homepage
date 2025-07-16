@@ -1,6 +1,6 @@
+import ProtectedApp from '@/ProtectedApp';
 import { waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
-import ProtectedApp from '../ProtectedApp';
 import { renderWithProviders, renderWithProvidersReactRouterDOM } from './utils/testRenderUtils';
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
@@ -31,7 +31,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 
 describe('ProtectedApp', () => {
     beforeEach(() => {
-          vi.clearAllMocks()
+        vi.clearAllMocks();
     });
 
     it('should redirect to Home Page (if not logged in)', async () => {
@@ -43,24 +43,22 @@ describe('ProtectedApp', () => {
         });
 
         await waitFor(() => {
-          expect(mockNavigate).toHaveBeenCalledWith('/');
-          expect(window.location.pathname).toBe('/');
-        })
-        
+            expect(mockNavigate).toHaveBeenCalledWith('/');
+            expect(window.location.pathname).toBe('/');
+        });
     });
 
     it('should use the protected route (if logged in)', async () => {
-      const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
-        route: '/template-engine',
-        preloadedState: {
-          login: { isLoggedIn: true },
-        },
-      });
+        const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
+            route: '/template-engine',
+            preloadedState: {
+                login: { isLoggedIn: true },
+            },
+        });
 
-      await waitFor(() => {
-        // history.location.pathname verifies that route did not change
-        expect(history.location.pathname).toBe('/template-engine');
-      });
+        await waitFor(() => {
+            // history.location.pathname verifies that route did not change
+            expect(history.location.pathname).toBe('/template-engine');
+        });
     });
 });
-

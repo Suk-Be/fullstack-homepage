@@ -1,9 +1,6 @@
 // import SimpleGrid from '../../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
-import SimpleGrid from '../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
-import {
-    componentToHtmlText,
-    toDomModel,
-} from '../../../utils/templateEngine/parseHtmlToText/index';
+import SimpleGrid from '@/componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
+import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
  * Helper function to get a list of texts from the child nodes from a passed in react component

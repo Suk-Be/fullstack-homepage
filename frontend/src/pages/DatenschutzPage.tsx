@@ -1,5 +1,5 @@
+import Datenschutz from '@/components/Datenschutz';
 import { Box } from '@mui/material';
-import Datenschutz from '../components/Datenschutz';
 
 const DatenschutzPage = () => {
     return (

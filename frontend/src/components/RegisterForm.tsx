@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import LaravelApiClient from '../plugins/axios';
+import LaravelApiClient from '@/plugins/axios';
 
 type RegisterFormData = {
     name: string;

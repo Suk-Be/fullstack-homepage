@@ -1,7 +1,7 @@
-import LaravelApiClient from '../../../plugins/axios';
-import { User } from '../../../types/User';
-import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
-import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
+import LaravelApiClient from '@/plugins/axios';
+import { User } from '@/types/User';
+import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
+import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
 
 const requestMe = async (shouldFetchUser = false) => {
     if (shouldFetchUser) {

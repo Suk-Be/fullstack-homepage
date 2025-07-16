@@ -1,9 +1,9 @@
-import LaravelApiClient from '../../../plugins/axios';
-import initializeCookies from '../../../plugins/initializeCookies';
-import { User } from '../../../types/User';
-import resetCookiesOnResponseError from '../../../utils/auth/resetCookiesOnResponseError';
-import { setResponseValidationError } from '../../../utils/auth/setResponseValidationError';
-import { setResponseValidationSuccess } from '../../../utils/auth/setResponseValidationSuccess';
+import LaravelApiClient from '@/plugins/axios';
+import initializeCookies from '@/plugins/initializeCookies';
+import { User } from '@/types/User';
+import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
+import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
+import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
 import requestMe from '../SignUp/requestMe';
 
 interface LoginResult {

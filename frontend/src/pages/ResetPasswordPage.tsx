@@ -1,6 +1,6 @@
+import ResetPassword from '@/components/auth/ResetPassword';
+import { ResponsiveContainer } from '@/components/ContainerElements';
 import { CssBaseline } from '@mui/material';
-import ResetPassword from '../components/auth/ResetPassword';
-import { ResponsiveContainer } from '../components/ContainerElements';
 
 const ResetPasswordPage = () => {
     return (

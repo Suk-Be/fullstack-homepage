@@ -1,11 +1,11 @@
+import RouterLinkWrapper from '@/components/RouterLink';
+import { Claim, Logo } from '@/components/TextElements';
+import type { AppDispatch } from '@/store/';
+import { logout } from '@/store/loginSlice';
+import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../../store';
-import { logout } from '../../store/loginSlice';
-import { testId } from '../../utils/testId';
-import RouterLinkWrapper from '../RouterLink';
-import { Claim, Logo } from '../TextElements';
 import requestLogout from './requestLogout';
 
 export default function BasicMenu() {

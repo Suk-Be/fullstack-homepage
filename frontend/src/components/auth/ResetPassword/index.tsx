@@ -1,3 +1,11 @@
+import { Card, SectionCenteredChild, SignInContainer } from '@/components/ContainerElements';
+import ErrorMessages from '@/data/ErrorMessages';
+import SuccessMessages from '@/data/SuccessMessages';
+import useToggle from '@/hooks/useToggle';
+import type { AppDispatch } from '@/store';
+import { login } from '@/store/loginSlice';
+import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
+import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
@@ -13,14 +21,6 @@ import {
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
-import ErrorMessages from '../../../data/ErrorMessages';
-import SuccessMessages from '../../../data/SuccessMessages';
-import useToggle from '../../../hooks/useToggle';
-import type { AppDispatch } from '../../../store';
-import { login } from '../../../store/loginSlice';
-import setResponseErrorMessage from '../../../utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
-import { testId } from '../../../utils/testId';
-import { Card, SectionCenteredChild, SignInContainer } from '../../ContainerElements';
 import resetPassword from './requestResetPassword';
 import validateInputs from './validateResetPassPassword';
 

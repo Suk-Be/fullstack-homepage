@@ -1,8 +1,8 @@
+import { Section, SectionRelative } from '@/components/ContainerElements';
+import { Claim, Logo, ParagraphHP } from '@/components/TextElements';
+import { testId } from '@/utils/testId';
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
-import { testId } from '../../utils/testId';
-import { Section, SectionRelative } from '../ContainerElements';
-import { Claim, Logo, ParagraphHP } from '../TextElements';
 import ProfilePic from './ProfilePicture';
 import RibbonLayout from './Ribbon';
 

@@ -1,7 +1,7 @@
+import useInputFocusOnModalOpen from '@/hooks/useInputFocusOnModalOpen';
 import { renderHook } from '@testing-library/react';
 import type { Mock } from 'vitest';
 import { vi } from 'vitest';
-import useInputFocusOnModalOpen from '../../hooks/useInputFocusOnModalOpen';
 
 describe('useInputFocusOnModalOpen', () => {
     let mockFocus: Mock;

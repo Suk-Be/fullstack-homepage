@@ -1,17 +1,17 @@
+import SignUp from '@/components/auth/SignUp';
+import * as requestRegisterModule from '@/components/auth/SignUp/requestRegister';
+import { login } from '@/store/loginSlice';
+import { db } from '@/tests/mocks/db';
+import userFactory from '@/tests/mocks/factories/userFactories';
+import {
+    expectErrorMessages,
+    expectNoErrorMessages,
+    switchToComponentHelper,
+} from '@/tests/utils/testAssertUtils';
+import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import SignUp from '../../../components/auth/SignUp';
-import * as requestRegisterModule from '../../../components/auth/SignUp/requestRegister';
-import { login } from '../../../store/loginSlice';
-import { db } from '../../mocks/db';
-import userFactory from '../../mocks/factories/userFactories';
-import {
-  expectErrorMessages,
-  expectNoErrorMessages,
-  switchToComponentHelper,
-} from '../../utils/testAssertUtils';
-import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
 const mockDispatch = vi.fn();
 

@@ -1,17 +1,17 @@
+import SignIn from '@/components/auth/SignIn';
+import ErrorMessages from '@/data/ErrorMessages';
+import { login } from '@/store/loginSlice';
+import { registeredUserData } from '@/tests/mocks/data';
+import { db } from '@/tests/mocks/db';
+import {
+    expectErrorMessages,
+    expectNoErrorMessages,
+    switchToComponentHelper,
+} from '@/tests/utils/testAssertUtils';
+import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import SignIn from '../../../components/auth/SignIn';
-import ErrorMessages from '../../../data/ErrorMessages';
-import { login } from '../../../store/loginSlice';
-import { registeredUserData } from '../../mocks/data';
-import { db } from '../../mocks/db';
-import {
-  expectErrorMessages,
-  expectNoErrorMessages,
-  switchToComponentHelper,
-} from '../../utils/testAssertUtils';
-import { authProviderUrls, renderWithProviders } from '../../utils/testRenderUtils';
 
 const mockDispatch = vi.fn();
 
@@ -24,7 +24,6 @@ vi.mock('react-redux', async () => {
 });
 
 describe('SignIn component', () => {
-
     beforeEach(() => {
         db.user.create(registeredUserData);
 
@@ -83,7 +82,9 @@ describe('SignIn component', () => {
 
         await waitFor(() => {
             // screen.debug(screen.getByTestId('form'));
-            const errorMessagesForEmailAndPassword = screen.getAllByText(ErrorMessages.SignIn.responseEmail)
+            const errorMessagesForEmailAndPassword = screen.getAllByText(
+                ErrorMessages.SignIn.responseEmail,
+            );
             expect(errorMessagesForEmailAndPassword[0]).toBeInTheDocument();
             expect(errorMessagesForEmailAndPassword[1]).toBeInTheDocument();
             expect(submitButton).not.toBeDisabled();
@@ -99,7 +100,6 @@ describe('SignIn component', () => {
             expectErrorMessages('SignIn', ['email', 'password']);
         });
     });
-
 
     it('opens a "ForgotPassword" modal on click', async () => {
         const { user } = renderUtils();
@@ -187,4 +187,4 @@ describe('SignIn - AuthProviders and Toggle SignUp/In', () => {
             expect(screen.getByRole('heading', { name: /registrieren/i })).toBeInTheDocument();
         });
     });
-})
+});

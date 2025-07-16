@@ -1,5 +1,5 @@
+import Imprint from '@/components/Imprint';
 import { Box } from '@mui/material';
-import Imprint from '../components/Imprint';
 
 const ImprintPage = () => {
     return (

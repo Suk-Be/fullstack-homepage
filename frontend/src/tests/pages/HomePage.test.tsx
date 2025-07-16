@@ -1,9 +1,9 @@
+import { HPProps } from '@/data/HomePage';
+import { mockReduxLoggedInState } from '@/tests/mocks/redux';
+import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { HPProps } from '../../data/HomePage';
-import { mockReduxLoggedInState } from '../mocks/redux';
-import { navigateTo } from '../utils/testRenderUtils';
 
 describe('HomePage', () => {
     const renderUtil = (preloadedState = {}) => {

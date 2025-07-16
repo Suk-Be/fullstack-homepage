@@ -1,11 +1,11 @@
+import ForgotPassword from '@/components/auth/SignIn/ForgotPassword';
+import { registeredUserData } from '@/tests/mocks/data';
+import { db } from '@/tests/mocks/db';
+import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import ForgotPassword from '../../../components/auth/SignIn/ForgotPassword';
-import { registeredUserData } from '../../mocks/data';
-import { db } from '../../mocks/db';
-import { renderWithProviders } from '../../utils/testRenderUtils';
 
 describe('ForgotPassword', () => {
     beforeEach(() => {

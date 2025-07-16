@@ -1,10 +1,10 @@
+import requestMe from '@/components/auth/SignUp/requestMe';
+import initializeCookies from '@/plugins/initializeCookies';
+import { AppDispatch } from '@/store';
+import { login, logout } from '@/store/loginSlice';
+import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import requestMe from '../../components/auth/SignUp/requestMe';
-import initializeCookies from '../../plugins/initializeCookies';
-import { AppDispatch } from '../../store';
-import { login, logout } from '../../store/loginSlice';
-import { getAxiosStatus, logRecoverableError } from '../../utils/logger';
 
 export const useAuthInit = () => {
     const dispatch: AppDispatch = useDispatch();

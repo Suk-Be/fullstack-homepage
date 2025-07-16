@@ -1,7 +1,7 @@
+import ErrorMessages from '@/data/ErrorMessages';
 import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { expect } from 'vitest';
-import ErrorMessages from '../../data/ErrorMessages';
 import { navigateTo } from './testRenderUtils';
 
 /**

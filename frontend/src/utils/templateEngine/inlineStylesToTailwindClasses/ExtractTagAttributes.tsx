@@ -1,5 +1,5 @@
+import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { JSXElementConstructor, ReactElement, ReactNode } from 'react';
-import { toTextOpeningTagFrom } from '../../../utils/templateEngine/parseHtmlToText';
 
 type Component = ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
 /**

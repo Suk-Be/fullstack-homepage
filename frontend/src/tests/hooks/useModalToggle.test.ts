@@ -1,22 +1,22 @@
+import useModalToggle from '@/hooks/useModalToggle';
 import { act, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
-import useModalToggle from '../../hooks/useModalToggle';
 
 describe('useModalToggle', () => {
     const renderUtil = () => {
-      const { result, rerender } = renderHook(() => useModalToggle());
-      const windowOpen = result.current.open
-      const handleClickOpen = result.current.handleClickOpen
-      const handleClose = result.current.handleClose
-      return {
-        result,
-        rerender,
-        windowOpen,
-        handleClickOpen,
-        handleClose
-      }
-    }
-    
+        const { result, rerender } = renderHook(() => useModalToggle());
+        const windowOpen = result.current.open;
+        const handleClickOpen = result.current.handleClickOpen;
+        const handleClose = result.current.handleClose;
+        return {
+            result,
+            rerender,
+            windowOpen,
+            handleClickOpen,
+            handleClose,
+        };
+    };
+
     afterEach(() => {
         vi.restoreAllMocks();
         vi.useRealTimers();

@@ -1,8 +1,8 @@
+import ToggleTeaser from '@/components/auth';
+import OfferHP from '@/components/offer';
+import ProfileHP from '@/components/profile';
+import { HPProps } from '@/data/HomePage';
 import { Box } from '@mui/material';
-import ToggleTeaser from '../components/auth';
-import OfferHP from '../components/offer';
-import ProfileHP from '../components/profile';
-import { HPProps } from '../data/HomePage';
 
 const HomePage = () => {
     const profile = HPProps.data.filter((item) => item.type === 'profile')[0];
