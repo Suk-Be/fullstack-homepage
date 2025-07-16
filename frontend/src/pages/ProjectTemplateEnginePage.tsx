@@ -1,12 +1,9 @@
-import { FC } from 'react';
+import './ProjectTemplateEnginePage.css';
 
-const ProjectTemplateEnginePage: FC = () => {
-    return (
-        <div>
-            <h2>Template Engine Project Details</h2>
-            <p>This is the detailed page for the Template Engine project.</p>
-        </div>
-    );
-};
-
-export default ProjectTemplateEnginePage;
+export default function ProjectTemplateEnginePage() {
+  return (
+    <div className="p-4 rounded-lg bg-gray-100">
+      <h1 className="text-2xl font-bold text-blue-600">Tailwind Working?</h1>
+    </div>
+  );
+}
