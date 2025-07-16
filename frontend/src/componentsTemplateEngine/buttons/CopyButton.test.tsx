@@ -1,7 +1,8 @@
-import { buttonText } from '@/utils/buttonText';
+import { buttonText } from '@/utils/templateEngine/buttonText';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CopyButton from './CopyButton';
+import { vi } from 'vitest';
 
 describe('CopyButton', () => {
     const renderComponent = (text = buttonText.copyToClipboard[0]) => {
