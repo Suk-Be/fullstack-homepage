@@ -1,6 +1,52 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+    --color-green-dark: #356640;
+    --color-green: #38ff94;
+    --color-yellow: #ffc82c;
+    --color-gray-dark: #211d1d;
+    --color-gray: #777576;
+    --color-gray-light: #b0adae;
+
+    --font-sans: 'Fira Sans', sans-serif;
+    --font-serif: Eczar, serif;
+
+    --spacing-8xl: 96rem;
+    --spacing-9xl: 128rem;
+
+    --radius-4xl: 2rem;
+
+    --shadow-card: 0px_14px_34px_0px_rgba (53, 102, 64, 0.5);
+
+    --animate-waving-hand: waving-hand 2s linear infinite;
+
+    @keyframes waving-hand {
+        /* In the context of the code snippet you provided, `'0%':` is used as a keyframe
+      selector in CSS animations. */
+        '0%': {
+            transform: 'rotate(0.0deg)';
+        }
+        '10%': {
+            transform: 'rotate(14deg)';
+        }
+        '20%': {
+            transform: 'rotate(-8deg)';
+        }
+        '30%': {
+            transform: 'rotate(14deg)';
+        }
+        '40%': {
+            transform: 'rotate(-4deg)';
+        }
+        '50%': {
+            transform: 'rotate(10.0deg)';
+        }
+        '60%': {
+            transform: 'rotate(0.0deg)';
+        }
+        '100%': {
+            transform: 'rotate(0.0deg)';
+        }
+    }
+}
 
 @layer components {
     [type='range'] {

@@ -7,7 +7,7 @@ import AsideLeft from '@/componentsTemplateEngine/layouts/containerLayoutsPage/A
 import AsideRight from '@/componentsTemplateEngine/layouts/containerLayoutsPage/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/layouts/containerLayoutsPage/ContentCenter';
 import { ChangeEvent, FC, useState } from 'react';
-// import './ProjectTemplateEnginePage.css';
+import '../ProjectTemplateEnginePage.css';
 
 const ProjectTemplateEnginePage: FC = () => {
     const [grid, setGrid] = useState({

@@ -2,12 +2,6 @@ import forms from '@tailwindcss/forms';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 export default {
-    content: [
-        './src/pages/ProjectTemplateEnginePage.tsx',
-        './src/pages/ProjectTemplateEnginePage.css',
-    ],
-    theme: {
-        extend: {},
-    },
+    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './src/*.css'],
     plugins: [forms, tailwindcssAnimate],
 };

@@ -1,4 +1,7 @@
-/* MAIN RULES
+@import 'ProjectTemplateEnginePage.css';
+@import 'tailwindcss';
+
+/* MAIN RULES header and footer
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .main-wrapper {
     min-height: 100vh;
