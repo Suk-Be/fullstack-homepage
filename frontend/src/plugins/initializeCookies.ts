@@ -48,3 +48,4 @@ async function initializeCookies() {
 
 export default initializeCookies;
 export { resetIsCsrfFetchedAndResetCookies, setCookies };
+
