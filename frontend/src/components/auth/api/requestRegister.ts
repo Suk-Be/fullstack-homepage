@@ -1,7 +1,7 @@
 import requestMe from '@/components/auth/api/requestMe';
 import LaravelApiClient from '@/plugins/axios';
-import initializeCookies from '@/plugins/initializeCookies';
 import { RegisterFormData, RegisterResponse } from '@/types/entities';
+import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';

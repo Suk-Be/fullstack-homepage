@@ -1,4 +1,4 @@
-import initializeCookies from '@/plugins/initializeCookies';
+import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 
 /**

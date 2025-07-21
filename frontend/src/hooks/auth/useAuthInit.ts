@@ -1,7 +1,7 @@
 import requestMe from '@/components/auth/api/requestMe';
-import initializeCookies from '@/plugins/initializeCookies';
 import { AppDispatch } from '@/store';
 import { login, logout } from '@/store/loginSlice';
+import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';

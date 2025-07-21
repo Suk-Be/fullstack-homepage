@@ -1,10 +1,10 @@
-import toast from 'react-hot-toast';
 import LaravelApiClient from '@/plugins/axios';
-import { resetIsCsrfFetchedAndResetCookies } from '@/plugins/initializeCookies';
+import { resetIsCsrfFetchedAndResetCookies } from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
+import toast from 'react-hot-toast';
 
 const requestLogout = async (logState: boolean) => {
     try {
