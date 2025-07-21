@@ -1,21 +1,23 @@
+import Loading from '@/components/auth/shared-components/Loading';
+import NotLoggedInPage from '@/pages/NotLoggedInPage';
+import { RootState } from '@/store';
 import { FC, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet } from 'react-router';
-import { Navigate } from 'react-router-dom';
-import { RootState } from './store';
 
 interface ProtectedRouteProps {
     children?: ReactNode;
 }
 
 const ProtectedApp: FC<ProtectedRouteProps> = () => {
-    const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
+  const { isLoggedIn, isLoading } = useSelector((state: RootState) => state.login);
 
-    if (!isLoggedIn) {
-        return <Navigate to="/" replace />;
-    }
+  if (isLoading) {
+    return <Loading message='Überprüfung der Authentifizierung ...' />; 
+  }
 
-    return <Outlet />;
+  return isLoggedIn ? <Outlet /> : <NotLoggedInPage />;
+
 };
 
 export default ProtectedApp;
