@@ -1,6 +1,7 @@
+import Loading from '@/components/auth/shared-components/Loading';
 import LaravelApiClient from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
-import { login } from '@/store/loginSlice';
+import { login, logout } from '@/store/loginSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -30,11 +31,17 @@ const SocialiteCallbackPage = () => {
             })
             .catch((err) => {
                 console.log('/me failed:', err);
+                dispatch(logout());
                 navigate('/');
             });
     }, []);
 
-    return <p>Logging in...</p>;
+    return (
+      <>
+        <Loading message='im Anmelde Prozess ...' />
+      </>
+    
+  )
 };
 
 export default SocialiteCallbackPage;
