@@ -1,3 +1,4 @@
+import resetPassword from '@/components/auth/api/requestResetPassword';
 import { Card, SectionCenteredChild, SignInContainer } from '@/components/ContainerElements';
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
@@ -9,19 +10,18 @@ import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-    Box,
-    Button,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
-import resetPassword from './requestResetPassword';
 import validateInputs from './validateResetPassPassword';
 
 type FieldError = {

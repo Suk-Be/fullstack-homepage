@@ -1,3 +1,4 @@
+import requestForgotPassword from '@/components/auth/api/requestForgotPassword';
 import SuccessMessages from '@/data/SuccessMessages';
 import useInputFocusOnModalOpen from '@/hooks/useInputFocusOnModalOpen';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
@@ -11,7 +12,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { FormEvent, useState } from 'react';
-import requestForgotPassword from './requestForgotPassword';
 import { validateForgotPasswordInput } from './validateForgotInput';
 
 interface ForgotPasswordProps {

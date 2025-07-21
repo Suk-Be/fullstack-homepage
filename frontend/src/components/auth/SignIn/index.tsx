@@ -1,31 +1,30 @@
 import { Card, SignInContainer } from '@/components/ContainerElements';
+import requestLogin from '@/components/auth/api/requestLogin';
 import AuthHeaderLayout from '@/components/auth/shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
 import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIcons';
 import useModalToggle from '@/hooks/useModalToggle';
 import useToggle from '@/hooks/useToggle';
-import type { AppDispatch } from '@/store';
-import { login } from '@/store/loginSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { login, logout } from '@/store/loginSlice';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ForgotPassword from './ForgotPassword';
-import requestLogin from './requestLogin';
 import { validateSignInInputs } from './validateSignInInputs';
 
 type FieldError = {
@@ -54,7 +53,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     const [showPassword, togglePasswordVisibility] = useToggle(false);
 
     // Redux dispatch
-    const dispatch: AppDispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     // execute validation, request and fields clearing
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -124,6 +123,8 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                     message: passwordBackendErrorMessage,
                 },
             });
+
+            dispatch(logout());
         }
 
         setIsSubmitting(false);

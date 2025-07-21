@@ -1,5 +1,5 @@
 import initializeCookies from '@/plugins/initializeCookies';
-import { getAxiosStatus, logRecoverableError } from '../logger';
+import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 
 /**
  * Checks if the given error is an Axios error with a 419 (CSRF token mismatch)

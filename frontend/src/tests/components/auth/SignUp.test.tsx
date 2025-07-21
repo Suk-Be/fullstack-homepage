@@ -1,12 +1,12 @@
 import SignUp from '@/components/auth/SignUp';
-import * as requestRegisterModule from '@/components/auth/SignUp/requestRegister';
+import * as requestRegisterModule from '@/components/auth/api/requestRegister';
 import { login } from '@/store/loginSlice';
 import { db } from '@/tests/mocks/db';
 import userFactory from '@/tests/mocks/factories/userFactories';
 import {
-    expectErrorMessages,
-    expectNoErrorMessages,
-    switchToComponentHelper,
+  expectErrorMessages,
+  expectNoErrorMessages,
+  switchToComponentHelper,
 } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';

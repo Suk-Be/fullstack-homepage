@@ -1,5 +1,5 @@
 import ResetPassword from '@/components/auth/ResetPassword';
-import * as resetPassword from '@/components/auth/ResetPassword/requestResetPassword';
+import * as resetPassword from '@/components/auth/api/requestResetPassword';
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import { login } from '@/store/loginSlice';

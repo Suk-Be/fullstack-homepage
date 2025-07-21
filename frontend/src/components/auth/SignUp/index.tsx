@@ -5,24 +5,24 @@ import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIco
 import { ParagraphHP } from '@/components/TextElements';
 import useToggle from '@/hooks/useToggle';
 import { AppDispatch } from '@/store';
-import { login } from '@/store/loginSlice';
+import { login, logout } from '@/store/loginSlice';
 import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import requestRegister from './requestRegister';
+import requestRegister from '../api/requestRegister';
 import validateInputs from './validateSignUpInputs';
 
 type ErrorState = {
@@ -139,6 +139,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                     },
                 }));
             });
+            dispatch(logout());
         }
 
         setIsSubmitting(false);
