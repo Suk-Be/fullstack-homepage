@@ -5,6 +5,12 @@ import axios from 'axios';
 let lastInitializedAt = 0;
 let isCsrfFetched = false;
 
+// only for test resets
+export function __testOnlyReset() {
+  lastInitializedAt = 0;
+  isCsrfFetched = false;
+}
+
 function resetIsCsrfFetchedAndResetCookies() {
     isCsrfFetched = false;
 
