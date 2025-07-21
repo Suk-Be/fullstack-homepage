@@ -1,20 +1,32 @@
+import NotFound from '@/components/auth/shared-components/NotFound';
+import { ResponsiveContainer } from '@/components/ContainerElements';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 
 const ErrorPage = () => {
 	const error = useRouteError();
-	const prod = import.meta.env.PROD;
+	const isProduction = import.meta.env.PROD;
+
+  const renderErrorMessage = () => {
+    // router error
+    if (isRouteErrorResponse(error)) {
+      if (isProduction) {
+        return <NotFound />;
+      }
+      return <NotFound errorMessage={`Router Status: ${error.status} - ${error.statusText || 'Unknown Error'}`} />;
+    }
+    // generic JavaScript error
+    else {
+      if (isProduction) {
+        return <NotFound />;
+      }
+      return <NotFound errorMessage={`JS Error: ${(error as Error).message}` || 'An unexpected error occurred.'} />;
+    }
+  };
 
 	return (
-		<div>
-			<main className="prose p-5">
-				<h1>Oops...</h1>
-				{isRouteErrorResponse(error)
-					? 'The requested page was not found.'
-					: prod
-					? 'An unexpected error occurred.'
-					: (error as Error).message}
-			</main>
-		</div>
+    <ResponsiveContainer>
+				{renderErrorMessage()}
+    </ResponsiveContainer>
 	);
 };
 

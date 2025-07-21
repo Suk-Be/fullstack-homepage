@@ -29,6 +29,7 @@ const routes: RouteObject[] = [
                     { path: 'test-another-project', element: <ProjectTestPage /> },
                 ],
             },
+            { path: '*', element: <ErrorPage /> },
         ],
     },
     {
