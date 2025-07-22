@@ -1,12 +1,12 @@
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
+import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { registeredUserData } from './mocks/data';
 import { db } from './mocks/db';
-import { navigateTo } from './utils/testRenderUtils';
 
 describe('routes', () => {
   beforeEach(() => {
