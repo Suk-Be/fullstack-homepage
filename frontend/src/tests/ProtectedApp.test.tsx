@@ -1,5 +1,5 @@
 import ProtectedApp from '@/ProtectedApp';
-import { waitFor } from '@testing-library/react'; // Assuming your login slice is here
+import { screen, waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
 import { renderWithProviders, renderWithProvidersReactRouterDOM } from './utils/testRenderUtils';
 
@@ -34,17 +34,31 @@ describe('ProtectedApp', () => {
         vi.clearAllMocks();
     });
 
-    it('should redirect to Home Page (if not logged in)', async () => {
+    it('should show a loading indicator on load', async () => {
         renderWithProviders(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: false },
+                login: { isLoggedIn: false, isLoading: true },
+            },
+        });
+
+        
+        expect(screen.getByText(/überprüfung der authentifizierung/i)).toBeInTheDocument();
+    });
+
+    // logic for setting login state can be found in useAuthInit.ts which used by provider auth initializer
+    it('should redirect to a Not Logged In Page (if not logged in and not active session cookie is found)', async () => {
+        renderWithProviders(<ProtectedApp />, {
+            route: '/template-engine',
+            preloadedState: {
+                login: { isLoggedIn: false,  isLoading: false },
             },
         });
 
         await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith('/');
-            expect(window.location.pathname).toBe('/');
+            expect(screen.getByText(/willkommen zurück/i)).toBeInTheDocument();
+            expect(screen.getByText(/um diese seite nutzen zu können/i)).toBeInTheDocument();
+            expect(screen.getByRole('link', {name: /zur startseite/i})).toBeInTheDocument();
         });
     });
 
@@ -52,7 +66,7 @@ describe('ProtectedApp', () => {
         const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: true },
+                login: { isLoggedIn: true, isLoading: false },
             },
         });
 
