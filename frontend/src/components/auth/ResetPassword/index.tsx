@@ -184,7 +184,7 @@ const ResetPassword = () => {
         return (
             <SignInContainer>
                 <Card>
-                    <Typography color="error">{generalErrorMessage}</Typography>
+                    <Typography variant="h5" color="error">{generalErrorMessage}</Typography>
                     <Button onClick={() => navigate('/')}>Zurück zum Login</Button>
                 </Card>
             </SignInContainer>

@@ -7,6 +7,10 @@ const ErrorPage = () => {
 	const isProduction = import.meta.env.PROD;
 
   const renderErrorMessage = () => {
+    // This guards against error being falsy.
+    if (!error) {
+      return <NotFound errorMessage="Unknown error occurred." />;
+    }
     // router error
     if (isRouteErrorResponse(error)) {
       if (isProduction) {
