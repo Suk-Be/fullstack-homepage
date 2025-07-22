@@ -1,4 +1,3 @@
-
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
 import { render, screen } from '@testing-library/react';
@@ -66,7 +65,7 @@ describe('routes', () => {
     expect(heading).toBeInTheDocument();
   });
 
-  it('should render the ResetPassworPage', async () => {
+  it('should render the ResetPasswordPage', async () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/reset-password?token=test123&email=test@example.com']}>
