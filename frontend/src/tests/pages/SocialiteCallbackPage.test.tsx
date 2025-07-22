@@ -22,7 +22,7 @@ describe('SocialiteCallbackPage', () => {
             preloadedState: mockReduxLoggedInState,
         });
 
-        expect(screen.getByText(/logging in/i)).toBeInTheDocument();
+        expect(screen.getByText(/anmelde prozess/i)).toBeInTheDocument();
 
         await waitFor(() => {
             expect(mockDispatch).toHaveBeenCalledWith(login());
