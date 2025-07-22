@@ -119,4 +119,14 @@ describe('ForgotPassword', () => {
             expect(mockDispatch).toHaveBeenCalledWith(login());
         });
     });
+
+    it('shows error if token is missing in URL', () => {
+      renderWithProvidersReactRouterDOM(<ResetPassword />, {
+        route: `/reset-password?email=${registeredUserData.email}`, // no token here
+      });
+
+      expect(screen.getByText(ErrorMessages.ResetPassword.urlToken)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /zurück zum login/i })).toBeInTheDocument();
+    });
+
 });
