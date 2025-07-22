@@ -79,16 +79,11 @@ describe('Menu component', () => {
             const closeButton = screen.getByTestId('button-close-menu');
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
             const templateEngineLink = screen.getByRole('link', { name: /template engine/i });
-
-            const testAnotherProtectedPageLink = screen.getByRole('link', {
-                name: /test protected page/i,
-            });
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 
             expect(closeButton).toBeInTheDocument();
             expect(playgroundLink).toBeInTheDocument();
             expect(templateEngineLink).toBeInTheDocument();
-            expect(testAnotherProtectedPageLink).toBeInTheDocument();
             expect(logoutLink).toBeInTheDocument();
         });
 
@@ -98,7 +93,6 @@ describe('Menu component', () => {
             expect(closeButton).toBeInTheDocument();
             expect(playgroundLink).toBe(null);
             expect(templateEngineLink).toBe(null);
-            expect(testAnotherProtectedPageLink).toBe(null);
             expect(logoutLink).toBe(null);
         });
     });

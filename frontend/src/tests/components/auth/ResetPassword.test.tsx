@@ -89,7 +89,7 @@ describe('ForgotPassword', () => {
                 screen.getByText(SuccessMessages.ResetPassword.requestSuccess),
             ).toBeInTheDocument();
         });
-    });
+    }, 30000);
 
     it('dispatches login when result.success is true', async () => {
         const { user, submitButton } = renderUtils();

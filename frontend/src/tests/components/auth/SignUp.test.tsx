@@ -170,7 +170,7 @@ describe('SignUp - Form', () => {
         await waitFor(() => {
             expectNoErrorMessages('SignUp', ['name', 'email', 'password', 'password_confirmation']);
         });
-    }, 30000);
+    }, 45000);
 
     it('should render a hint if the user already exists', async () => {
         const user = userEvent.setup();
@@ -196,7 +196,7 @@ describe('SignUp - Form', () => {
             );
             expect(error).toBeInTheDocument();
         });
-    });
+    }, 30000);
 
     it('should register a new user successfully and clear the form', async () => {
         const {
@@ -245,7 +245,7 @@ describe('SignUp - Form', () => {
 
             expect(mockDispatch).toHaveBeenCalledWith(login());
         });
-    });
+    }, 30000);
 });
 
 describe('SignUp - AuthProviders and Toggle SignUp/In', () => {

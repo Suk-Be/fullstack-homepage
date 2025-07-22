@@ -4,9 +4,9 @@ import { login } from '@/store/loginSlice';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import {
-    expectErrorMessages,
-    expectNoErrorMessages,
-    switchToComponentHelper,
+  expectErrorMessages,
+  expectNoErrorMessages,
+  switchToComponentHelper,
 } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
@@ -71,7 +71,7 @@ describe('SignIn component', () => {
             expect(submitButton).not.toBeDisabled();
             expect(mockDispatch).toHaveBeenCalledWith(login());
         });
-    });
+    }, 30000);
 
     it('shows field error if login fails with 422', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();

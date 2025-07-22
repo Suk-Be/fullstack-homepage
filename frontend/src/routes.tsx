@@ -6,7 +6,6 @@ import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import ProjectTemplateEnginePage from './pages/ProjectTemplateEnginePage';
-import ProjectTestPage from './pages/ProjectTestPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SocialiteCallbackPage from './pages/SocialiteCallbackPage';
 import ProtectedApp from './ProtectedApp';
@@ -26,7 +25,6 @@ const routes: RouteObject[] = [
                 children: [
                     { path: 'template-engine', element: <ProjectTemplateEnginePage /> },
                     { path: 'playground', element: <PlaygroundPage /> },
-                    { path: 'test-another-project', element: <ProjectTestPage /> },
                 ],
             },
             { path: '*', element: <ErrorPage /> },
