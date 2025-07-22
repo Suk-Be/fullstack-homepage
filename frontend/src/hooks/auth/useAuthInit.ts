@@ -21,10 +21,11 @@ export const useAuthInit = () => {
           if (result && result.success) {
             dispatch(login());
           } else {
-            // if cannot access private route set global state
+            // response private route not successful
             dispatch(logout());
           }
         } catch (error) {
+          // session expired
           logRecoverableError({ context: '[Auth] No active session found:', error });
           dispatch(logout());
         }
