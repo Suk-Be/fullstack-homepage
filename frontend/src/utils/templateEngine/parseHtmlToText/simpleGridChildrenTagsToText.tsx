@@ -1,5 +1,5 @@
 // import SimpleGrid from '../../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
-import SimpleGrid from '@/componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
+import SimpleGrid from '@/componentsTemplateEngine/presetRenderings/SimpleGrid';
 import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**

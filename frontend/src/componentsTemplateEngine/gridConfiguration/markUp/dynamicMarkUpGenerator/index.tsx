@@ -1,7 +1,7 @@
+import DialogModal from '@/componentsTemplateEngine/DialogModal';
+import { DynamicGridProps } from '@/types/templateEngine';
+import { buttonText } from '@/utils/templateEngine/buttonText';
 import { useState } from 'react';
-import DialogModal from '../../../componentsTemplateEngine/DialogModal';
-import { DynamicGridProps } from '../../../types/templateEngine';
-import { buttonText } from '../../../utils/templateEngine/buttonText';
 
 const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
     let [isOpen, setIsOpen] = useState({

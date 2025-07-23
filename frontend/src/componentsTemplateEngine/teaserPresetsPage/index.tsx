@@ -1,6 +1,6 @@
+import Button from '@/componentsTemplateEngine/buttons/Button';
+import Divider from '@/componentsTemplateEngine/gridConfiguration/ui/Divider';
 import { Link } from 'react-router-dom';
-import Button from '../buttons/Button';
-import Divider from '../gridConfiguration/Divider';
 import GridTeaserElement from './GridTeaserElement';
 
 const TeaserPresetsPage = () => {

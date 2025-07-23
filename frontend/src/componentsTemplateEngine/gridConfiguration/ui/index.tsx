@@ -1,4 +1,4 @@
-import { GridProps, HandleChange, HandleToggle } from '../../types/templateEngine';
+import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
 import { FC } from 'react';
 import BorderConfiguration from './BorderConfiguration';
 import GapConfiguration from './GapConfiguration';

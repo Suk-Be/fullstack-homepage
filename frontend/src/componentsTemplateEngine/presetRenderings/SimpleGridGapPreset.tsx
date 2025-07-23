@@ -1,5 +1,5 @@
-import MarkupGenerator from '../markUpGeneratorStatic';
-import SimpleGridMarkup from '../markUpGeneratorStatic/SimpleGridMarkup';
+import MarkupGenerator from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator';
+import SimpleGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator/SimpleGridMarkup';
 import Headline from './Headline';
 import SimpleGrid from './SimpleGrid';
 

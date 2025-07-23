@@ -1,10 +1,10 @@
-import AsideLeft from '@/componentsTemplateEngine/containers/layoutConfigurator/AsideLeft';
-import AsideRight from '@/componentsTemplateEngine/containers/layoutConfigurator/AsideRight';
-import ContentCenter from '@/componentsTemplateEngine/containers/layoutConfigurator/ContentCenter';
-import MainContainer from '@/componentsTemplateEngine/containers/layoutConfigurator/MainContainer';
-import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration';
-import DynamicGridLayout from '@/componentsTemplateEngine/gridLayout/layoutPresets/DynamicGrid';
-import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridLayout/markupGeneratorDynamic';
+import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
+import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
+import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
+import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
+import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
+import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
+import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderings/DynamicGrid';
 import TeaserPresetsPage from '@/componentsTemplateEngine/teaserPresetsPage';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';

@@ -1,7 +1,4 @@
-import ChildrenTags from '../../../componentsTemplateEngine/gridLayout/markUpElements/ChildrenTags';
-import ParentTag from '../../../componentsTemplateEngine/gridLayout/markUpElements/ParentTag';
-import DynamicTag from '../../../componentsTemplateEngine/gridLayout/markupGeneratorDynamic/DynamicTag';
-import { componentToHtmlText, toDomModel } from '../../../utils/templateEngine/parseHtmlToText/index';
+import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 import {
     ComponentPropsWithoutRef,
     FC,
@@ -9,6 +6,9 @@ import {
     ReactElement,
     ReactNode,
 } from 'react';
+import ChildrenTags from '../generatorElements/ChildrenTags';
+import ParentTag from '../generatorElements/ParentTag';
+import DynamicTag from './DynamicTag';
 
 interface DynamicGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;

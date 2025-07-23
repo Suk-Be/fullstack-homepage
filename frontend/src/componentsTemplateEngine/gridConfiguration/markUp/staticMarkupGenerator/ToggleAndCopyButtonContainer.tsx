@@ -1,7 +1,7 @@
+import CodeButton from '@/componentsTemplateEngine/buttons/CodeButton';
+import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
+import { buttonText } from '@/utils/templateEngine/buttonText';
 import { ComponentPropsWithoutRef, FC, MouseEventHandler } from 'react';
-import CodeButton from '../../../componentsTemplateEngine/buttons/CodeButton';
-import CopyButton from '../../../componentsTemplateEngine/buttons/CopyButton';
-import { buttonText } from '../../../utils/templateEngine/buttonText';
 
 interface ButtonContainerProps extends ComponentPropsWithoutRef<'button'> {
     clickHandlerShowMarkupSetButtonText?: MouseEventHandler<HTMLButtonElement> | undefined;

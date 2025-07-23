@@ -1,4 +1,4 @@
-import GridElement from '../../../componentsTemplateEngine/gridLayout/markUpElements/GridElement';
+import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
 import { twMerge } from 'tailwind-merge';
 
 const ColspanningGrid = ({ className }: { className: string }) => {

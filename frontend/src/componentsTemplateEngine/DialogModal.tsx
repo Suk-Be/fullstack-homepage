@@ -1,11 +1,11 @@
-import Button from '../componentsTemplateEngine/buttons/Button';
-import CopyButton from '../componentsTemplateEngine/buttons/CopyButton';
-import { ModalProps } from '../types/templateEngine';
-import { buttonText } from '../utils/templateEngine/buttonText';
-import { componentToHtmlText, toDomModel } from '../utils/templateEngine/parseHtmlToText';
+import Button from '@/componentsTemplateEngine/buttons/Button';
+import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
+import DynamicGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator/DynamicGridMarkup';
+import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderings/DynamicGrid';
+import { ModalProps } from '@/types/templateEngine';
+import { buttonText } from '@/utils/templateEngine/buttonText';
+import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import DynamicGridLayout from './gridLayout/layoutPresets/DynamicGrid';
-import DynamicGridMarkup from './gridLayout/markupGeneratorDynamic/DynamicGridMarkup';
 
 function DialogModal({
     inlineStyles,

@@ -1,8 +1,8 @@
-import RowspanningGrid from '../../../componentsTemplateEngine/gridLayout/layoutPresets/RowspanningGrid';
-import ChildrenTags from '../../../componentsTemplateEngine/gridLayout/markUpElements/ChildrenTags';
-import ParentTag from '../../../componentsTemplateEngine/gridLayout/markUpElements/ParentTag';
-import rowSpanningGridTagsToText from '../../../utils/templateEngine/parseHtmlToText/rowSpanningGridTagsToText';
+import RowspanningGrid from '@/componentsTemplateEngine/presetRenderings/RowspanningGrid';
+import rowSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/rowSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
+import ChildrenTags from './ChildrenTags';
+import ParentTag from './ParentTag';
 
 const RowspanningGridMarkup: FC<ComponentPropsWithoutRef<'div'>> = () => {
     return (

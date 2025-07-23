@@ -1,4 +1,4 @@
-import ColspanningGrid from '@/componentsTemplateEngine/gridLayout/layoutPresets/ColspanningGrid';
+import ColspanningGrid from '@/componentsTemplateEngine/presetRenderings/ColspanningGrid';
 import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**

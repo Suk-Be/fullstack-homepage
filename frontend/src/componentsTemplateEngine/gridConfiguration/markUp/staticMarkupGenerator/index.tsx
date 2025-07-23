@@ -1,8 +1,8 @@
-import MarkupCode from '../../../componentsTemplateEngine/gridLayout/markUpGeneratorStatic/MarkupCode';
-import ToggleAndCopyButtonContainer from '../../../componentsTemplateEngine/gridLayout/markUpGeneratorStatic/ToggleAndCopyButtonContainer';
-import { buttonText } from '../../../utils/templateEngine/buttonText';
-import { componentToHtmlText, toDomModel } from '../../../utils/templateEngine/parseHtmlToText';
+import { buttonText } from '@/utils/templateEngine/buttonText';
+import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText';
 import { FC, MouseEventHandler, ReactNode, useState } from 'react';
+import MarkupCode from './MarkupCode';
+import ToggleAndCopyButtonContainer from './ToggleAndCopyButtonContainer';
 
 const MarkupGenerator: FC<{ gridMarkupComponent: ReactNode }> = ({ gridMarkupComponent }) => {
     const [isShownMarkupAndButtonText, setShowMarkupAndsetButtonText] = useState({

@@ -1,4 +1,4 @@
-import GridElement from '../../../componentsTemplateEngine/gridLayout/markUpElements/GridElement';
+import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
 import { CSSProperties, FC } from 'react';
 
 interface GridProps {

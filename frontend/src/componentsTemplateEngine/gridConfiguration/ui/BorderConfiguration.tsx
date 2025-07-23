@@ -1,8 +1,8 @@
-import HeadlineConfiguration from '../../componentsTemplateEngine/gridConfiguration/HeadlineConfiguration';
-import InputLabel from '../../componentsTemplateEngine/gridConfiguration/InputLabel';
-import RangeSlider from '../../componentsTemplateEngine/gridConfiguration/RangeSlider';
-import StyledCheckbox from '../../componentsTemplateEngine/gridConfiguration/StytledCheckbox';
-import { GridProps, HandleChange, HandleToggle } from '../../types/templateEngine';
+import HeadlineConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui/HeadlineConfiguration';
+import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
+import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/RangeSlider';
+import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/StytledCheckbox';
+import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
 import Divider from './Divider';
 
 type Props = {

@@ -1,6 +1,6 @@
-import MainContainerPresets from '@/componentsTemplateEngine/containers/layoutPresets/MainContainerPresetsPage';
-import SimpleGridGapPreset from '@/componentsTemplateEngine/gridLayout/layoutPresets/SimpleGridGapPreset';
-import SpanningGridPreset from '@/componentsTemplateEngine/gridLayout/layoutPresets/SpanningGridPreset';
+import MainContainerPresets from '@/componentsTemplateEngine/pageContainers/layoutPresets/MainContainerPresetsPage';
+import SimpleGridGapPreset from '@/componentsTemplateEngine/presetRenderings/SimpleGridGapPreset';
+import SpanningGridPreset from '@/componentsTemplateEngine/presetRenderings/SpanningGridPreset';
 
 export default function Presets() {
     return (

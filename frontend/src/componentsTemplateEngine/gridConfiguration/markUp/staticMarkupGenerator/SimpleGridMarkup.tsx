@@ -1,8 +1,8 @@
+import SimpleGrid from '@/componentsTemplateEngine/presetRenderings/SimpleGrid';
+import simpleGridChildrenTagsToText from '@/utils/templateEngine/parseHtmlToText/simpleGridChildrenTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import SimpleGrid from '../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
-import ChildrenTags from '../../../componentsTemplateEngine/gridLayout/markUpElements/ChildrenTags';
-import ParentTag from '../../../componentsTemplateEngine/gridLayout/markUpElements/ParentTag';
-import simpleGridChildrenTagsToText from '../../../utils/templateEngine/parseHtmlToText/simpleGridChildrenTagsToText';
+import ChildrenTags from '../generatorElements/ChildrenTags';
+import ParentTag from '../generatorElements/ParentTag';
 
 interface SimpleGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     hasGap: 'gap-2' | 'gap-4';

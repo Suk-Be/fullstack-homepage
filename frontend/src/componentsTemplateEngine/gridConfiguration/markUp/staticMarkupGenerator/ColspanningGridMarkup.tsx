@@ -1,9 +1,9 @@
-import ColumnsSpanningGrid from '../../../componentsTemplateEngine/gridLayout/layoutPresets/ColspanningGrid';
-import ChildrenTags from '../../../componentsTemplateEngine/gridLayout/markUpElements/ChildrenTags';
-import ParentTag from '../../../componentsTemplateEngine/gridLayout/markUpElements/ParentTag';
-import colSpanningGridTagsToText from '../../../utils/templateEngine/parseHtmlToText/colSpanningGridTagsToText';
+import ColumnsSpanningGrid from '@/componentsTemplateEngine/presetRenderings/ColspanningGrid';
+import colSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/colSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+import ChildrenTags from '../generatorElements/ChildrenTags';
+import ParentTag from '../generatorElements/ParentTag';
 
 interface ColspanningGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     hasCol: 'col-span-2';

@@ -1,13 +1,13 @@
-import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 import {
     borderWidthValue as gridBorderWidthValue,
     colValue as gridColumnValue,
     gapValue as gridGapValue,
     paddingValues as padValues,
-} from '../../../utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
-import ExtractTagAttributes from '../../../utils/templateEngine/inlineStylesToTailwindClasses/ExtractTagAttributes';
-import SeparateStyleRulesArray from '../../../utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
-import { toTextOpeningTagFrom } from '../../../utils/templateEngine/parseHtmlToText';
+} from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
+import ExtractTagAttributes from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractTagAttributes';
+import SeparateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
+import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
+import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
 type DynamicTagProps = {
     isDynamicTag?: boolean;

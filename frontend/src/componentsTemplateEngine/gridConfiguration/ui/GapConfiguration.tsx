@@ -1,5 +1,5 @@
-import InputLabel from '../../componentsTemplateEngine/gridConfiguration/InputLabel';
-import { GridProps, HandleChange } from '../../types/templateEngine';
+import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
+import { GridProps, HandleChange } from '@/types/templateEngine';
 import Divider from './Divider';
 import HeadlineConfiguration from './HeadlineConfiguration';
 import RangeSlider from './RangeSlider';

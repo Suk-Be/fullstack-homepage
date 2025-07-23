@@ -1,4 +1,4 @@
-import { toTextClosingTagFrom, toTextOpeningTagFrom } from '../../../utils/templateEngine/parseHtmlToText';
+import { toTextClosingTagFrom, toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
 type ParentTagProps = {
