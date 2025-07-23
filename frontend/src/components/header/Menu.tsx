@@ -155,6 +155,11 @@ export default function BasicMenu() {
                                 Template Engine
                             </MuiLink>
                         </MenuItem>
+                        <MenuItem onClick={handleClose}>
+                            <MuiLink component={RouterLinkWrapper} href="/template-engine/presets">
+                                Template Engine Presets
+                            </MuiLink>
+                        </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <MuiLink component={RouterLinkWrapper} href="/">
                                 Logout

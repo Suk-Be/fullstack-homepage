@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Button from '../../buttons/Button';
 import Divider from '../../gridConfiguration/Divider';
 import GridTeaserElement from './GridTeaserElement';
@@ -6,7 +7,7 @@ const LayoutPresetsTeaser = () => {
     return (
         <aside data-testid="layout-presets-teaser">
             <h2 className="text-lg font-bold pt-4">Layout Presets</h2>
-            <a href="/layouts/presets" className="group">
+            <Link to="/template-engine/presets" className="group">
                 <GridTeaserElement />
 
                 <Button
@@ -24,7 +25,7 @@ const LayoutPresetsTeaser = () => {
                 >
                     Browse Presets
                 </Button>
-            </a>
+            </Link>
 
             <Divider className="my-4" />
         </aside>
