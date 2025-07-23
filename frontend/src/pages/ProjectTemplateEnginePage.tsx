@@ -1,11 +1,11 @@
+import AsideLeft from '@/componentsTemplateEngine/containers/layoutConfigurator/AsideLeft';
+import AsideRight from '@/componentsTemplateEngine/containers/layoutConfigurator/AsideRight';
+import ContentCenter from '@/componentsTemplateEngine/containers/layoutConfigurator/ContentCenter';
+import MainContainer from '@/componentsTemplateEngine/containers/layoutConfigurator/MainContainer';
 import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration';
 import DynamicGridLayout from '@/componentsTemplateEngine/gridLayout/layoutPresets/DynamicGrid';
 import LayoutPresetsTeaser from '@/componentsTemplateEngine/gridLayout/layoutPresetsTeaser';
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridLayout/markupGeneratorDynamic';
-import AsideLeft from '@/componentsTemplateEngine/layouts/containerLayoutsPage/AsideLeft';
-import AsideRight from '@/componentsTemplateEngine/layouts/containerLayoutsPage/AsideRight';
-import ContentCenter from '@/componentsTemplateEngine/layouts/containerLayoutsPage/ContentCenter';
-import MainContainer from '@/componentsTemplateEngine/layouts/containerLayoutsPage/MainContainer';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
