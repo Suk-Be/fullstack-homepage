@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 
-const MainContainerPresets = ({ children }: PropsWithChildren) => {
+const MainContainer = ({ children }: PropsWithChildren) => {
     return (
         <div
             className="
@@ -15,4 +15,4 @@ const MainContainerPresets = ({ children }: PropsWithChildren) => {
     );
 };
 
-export default MainContainerPresets;
+export default MainContainer;
