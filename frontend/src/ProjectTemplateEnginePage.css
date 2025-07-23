@@ -1,4 +1,10 @@
 @theme {
+    --breakpoint-xs: 0rem;
+    --breakpoint-sm: 50rem;
+    --breakpoint-md: 64rem;
+    --breakpoint-lg: 100rem;
+    --breakpoint-xl: 120rem;
+
     --color-green-dark: #356640;
     --color-green: #38ff94;
     --color-yellow: #ffc82c;

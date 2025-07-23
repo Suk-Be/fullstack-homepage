@@ -2,7 +2,14 @@ import { PropsWithChildren } from 'react';
 
 const MainContainerPresets = ({ children }: PropsWithChildren) => {
     return (
-        <div className="flex-1 flex pt-[6rem] lg:pt-[8rem] flex-col w-full p-4 lg:p-10 bg-white gap-2 text-gray-700">
+        <div
+            className="
+            flex-1 flex gap-2 
+            p-4 pt-[6rem] lg:pt-[8rem] lg:p-10 
+            flex-col lg:flex-row 
+            full 
+            bg-white text-gray-700"
+        >
             {children}
         </div>
     );
