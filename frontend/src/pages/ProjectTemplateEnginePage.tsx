@@ -6,6 +6,7 @@ import MainContainer from '@/componentsTemplateEngine/layouts/MainContainerPrese
 import AsideLeft from '@/componentsTemplateEngine/layouts/containerLayoutsPage/AsideLeft';
 import AsideRight from '@/componentsTemplateEngine/layouts/containerLayoutsPage/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/layouts/containerLayoutsPage/ContentCenter';
+import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
 
@@ -40,7 +41,7 @@ const ProjectTemplateEnginePage: FC = () => {
 
     const GridItemsArray = [...Array(grid.items).keys()];
     return (
-        <div className="flex flex-col w-full bg-black">
+        <div className="flex flex-col w-full bg-black" {...testId('tempate-engine-page')}>
             <MainContainer>
                 <AsideLeft>
                     <GridConfiguration

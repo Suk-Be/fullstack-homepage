@@ -149,7 +149,7 @@ const renderWithProviders = (
     });
  */
 
-const renderWithProvidersReactRouterDOM = (
+const renderWithProvidersDOM = (
     ui: React.ReactElement,
     {
         route = '/',
@@ -179,7 +179,7 @@ export {
     authProviderUrls,
     navigateTo,
     renderWithProviders,
-    renderWithProvidersReactRouterDOM,
+    renderWithProvidersDOM,
     simluateDelay,
     simulateError,
 };

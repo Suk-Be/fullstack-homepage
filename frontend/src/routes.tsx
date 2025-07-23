@@ -4,8 +4,10 @@ import DatenschutzPage from './pages/DatenschutzPage';
 import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
+import NotFoundPage from './pages/NotFoundPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import ProjectTemplateEnginePage from './pages/ProjectTemplateEnginePage';
+import ProjectTemplateEnginePresetsPage from './pages/ProjectTemplateEnginePresetsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SocialiteCallbackPage from './pages/SocialiteCallbackPage';
 import ProtectedApp from './ProtectedApp';
@@ -24,16 +26,23 @@ const routes: RouteObject[] = [
                 element: <ProtectedApp />,
                 children: [
                     { path: 'template-engine', element: <ProjectTemplateEnginePage /> },
+                    {
+                        path: 'template-engine/presets',
+                        element: <ProjectTemplateEnginePresetsPage />,
+                    },
                     { path: 'playground', element: <PlaygroundPage /> },
                 ],
             },
-            { path: '*', element: <ErrorPage /> },
         ],
     },
     {
         // http://localhost:5173/auth/callback
         path: '/auth/callback',
         element: <SocialiteCallbackPage />,
+    },
+    {
+        path: '*',
+        element: <NotFoundPage />,
     },
 ];
 
