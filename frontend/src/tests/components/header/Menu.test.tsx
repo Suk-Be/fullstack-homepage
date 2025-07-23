@@ -20,9 +20,9 @@ describe('Menu component', () => {
 
         const homepageLink = screen.getByTestId('link-home-page');
         const playgroundLink = screen.queryByRole('link', { name: /playground/i });
-        const templateEngineLink = screen.queryByRole('link', { name: /template-engine/i });
-        const testAnotherProtectedPageLink = screen.queryByRole('link', {
-            name: /test-another-project/i,
+        const templateEngineLink = screen.queryByRole('link', { name: 'Template Engine' });
+        const templateEnginePresetsLink = screen.queryByRole('link', {
+            name: 'Template Engine Presets',
         });
         const logoutLink = screen.queryByRole('link', { name: /logout/i });
 
@@ -33,7 +33,7 @@ describe('Menu component', () => {
             homepageLink,
             playgroundLink,
             templateEngineLink,
-            testAnotherProtectedPageLink,
+            templateEnginePresetsLink,
             logoutLink,
         };
     };
@@ -60,7 +60,7 @@ describe('Menu component', () => {
             homepageLink,
             playgroundLink,
             templateEngineLink,
-            testAnotherProtectedPageLink,
+            templateEnginePresetsLink,
             logoutLink,
         } = renderUtilsComponent();
 
@@ -78,12 +78,16 @@ describe('Menu component', () => {
         await waitFor(() => {
             const closeButton = screen.getByTestId('button-close-menu');
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
-            const templateEngineLink = screen.getByRole('link', { name: /template engine/i });
+            const templateEngineLink = screen.queryByRole('link', { name: 'Template Engine' });
+            const templateEnginePresetsLink = screen.queryByRole('link', {
+                name: 'Template Engine Presets',
+            });
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 
             expect(closeButton).toBeInTheDocument();
             expect(playgroundLink).toBeInTheDocument();
             expect(templateEngineLink).toBeInTheDocument();
+            expect(templateEnginePresetsLink).toBeInTheDocument();
             expect(logoutLink).toBeInTheDocument();
         });
 
@@ -93,6 +97,7 @@ describe('Menu component', () => {
             expect(closeButton).toBeInTheDocument();
             expect(playgroundLink).toBe(null);
             expect(templateEngineLink).toBe(null);
+            expect(templateEnginePresetsLink).toBe(null);
             expect(logoutLink).toBe(null);
         });
     });

@@ -1,6 +1,6 @@
 import { login } from '@/store/loginSlice';
 import { mockReduxLoggedInState } from '@/tests/mocks/redux';
-import { renderWithProvidersReactRouterDOM } from '@/tests/utils/testRenderUtils';
+import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/dom';
 import { describe, vi } from 'vitest';
 import SocialiteCallbackPage from '../../pages/SocialiteCallbackPage';
@@ -17,7 +17,7 @@ vi.mock('react-redux', async () => {
 
 describe('SocialiteCallbackPage', () => {
     it('should render the SocialiteCallbackPage', async () => {
-        renderWithProvidersReactRouterDOM(<SocialiteCallbackPage />, {
+        renderWithProvidersDOM(<SocialiteCallbackPage />, {
             route: '/auth/callback',
             preloadedState: mockReduxLoggedInState,
         });

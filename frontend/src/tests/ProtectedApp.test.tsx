@@ -1,7 +1,7 @@
 import ProtectedApp from '@/ProtectedApp';
 import { screen, waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
-import { renderWithProviders, renderWithProvidersReactRouterDOM } from './utils/testRenderUtils';
+import { renderWithProviders, renderWithProvidersDOM } from './utils/testRenderUtils';
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
     return {
@@ -42,7 +42,6 @@ describe('ProtectedApp', () => {
             },
         });
 
-        
         expect(screen.getByText(/überprüfung der authentifizierung/i)).toBeInTheDocument();
     });
 
@@ -51,19 +50,19 @@ describe('ProtectedApp', () => {
         renderWithProviders(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: false,  isLoading: false },
+                login: { isLoggedIn: false, isLoading: false },
             },
         });
 
         await waitFor(() => {
             expect(screen.getByText(/willkommen zurück/i)).toBeInTheDocument();
             expect(screen.getByText(/um diese seite nutzen zu können/i)).toBeInTheDocument();
-            expect(screen.getByRole('link', {name: /zur startseite/i})).toBeInTheDocument();
+            expect(screen.getByRole('link', { name: /zur startseite/i })).toBeInTheDocument();
         });
     });
 
     it('should use the protected route (if logged in)', async () => {
-        const { history } = renderWithProvidersReactRouterDOM(<ProtectedApp />, {
+        const { history } = renderWithProvidersDOM(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
                 login: { isLoggedIn: true, isLoading: false },

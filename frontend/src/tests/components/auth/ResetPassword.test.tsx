@@ -5,7 +5,7 @@ import SuccessMessages from '@/data/SuccessMessages';
 import { login } from '@/store/loginSlice';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
-import { renderWithProvidersReactRouterDOM } from '@/tests/utils/testRenderUtils';
+import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -35,7 +35,7 @@ describe('ForgotPassword', () => {
     const renderUtils = () => {
         const user = userEvent.setup();
 
-        renderWithProvidersReactRouterDOM(<ResetPassword />, {
+        renderWithProvidersDOM(<ResetPassword />, {
             route: `/reset-password?token=${testToken}&email=${registeredUserData.email}`,
         });
 
@@ -121,12 +121,11 @@ describe('ForgotPassword', () => {
     });
 
     it('shows error if token is missing in URL', () => {
-      renderWithProvidersReactRouterDOM(<ResetPassword />, {
-        route: `/reset-password?email=${registeredUserData.email}`, // no token here
-      });
+        renderWithProvidersDOM(<ResetPassword />, {
+            route: `/reset-password?email=${registeredUserData.email}`, // no token here
+        });
 
-      expect(screen.getByText(ErrorMessages.ResetPassword.urlToken)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /zurück zum login/i })).toBeInTheDocument();
+        expect(screen.getByText(ErrorMessages.ResetPassword.urlToken)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /zurück zum login/i })).toBeInTheDocument();
     });
-
 });
