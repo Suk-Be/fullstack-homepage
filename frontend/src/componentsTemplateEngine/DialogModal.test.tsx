@@ -1,7 +1,7 @@
-import { buttonText } from '../utils/templateEngine/buttonText';
+import { buttonText } from '@/utils/templateEngine/buttonText';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import DialogModal from './DialogModal';
 import { vi } from 'vitest';
+import DialogModal from './DialogModal';
 
 describe('DialogModal', () => {
     beforeAll(() => {

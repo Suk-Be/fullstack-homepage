@@ -1,6 +1,3 @@
-import { WelcomeProps } from '@/pages/WelcomePage';
-import { Teaser } from '@/types/templateEngine';
-
 export const categoryData = [
     { id: 1, name: 'Electronics' },
     { id: 2, name: 'Beauty' },
@@ -29,17 +26,4 @@ const RegisteredUserTemplateEngine = {
     email_verified_at: '2024-12-13 07:02:02',
 };
 
-const WelcomePageDataTemplateEngine = () => {
-    const { data } = WelcomeProps;
-
-    const teasers: Teaser[] = data.filter((teaser) => teaser.type === 'Teaser');
-    const teasersWithLinks: Teaser[] = data.filter((teaser) => teaser.type === 'TeaserWithLinks');
-
-    return {
-        teasers,
-        data,
-        teasersWithLinks,
-    };
-};
-
-export { AnonymousUserTemplateEngine, RegisteredUserTemplateEngine, WelcomePageDataTemplateEngine };
+export { AnonymousUserTemplateEngine, RegisteredUserTemplateEngine };
