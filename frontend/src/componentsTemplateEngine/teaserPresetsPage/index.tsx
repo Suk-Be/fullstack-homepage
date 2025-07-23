@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import Button from '../../buttons/Button';
-import Divider from '../../gridConfiguration/Divider';
+import Button from '../buttons/Button';
+import Divider from '../gridConfiguration/Divider';
 import GridTeaserElement from './GridTeaserElement';
 
-const LayoutPresetsTeaser = () => {
+const TeaserPresetsPage = () => {
     return (
         <aside data-testid="layout-presets-teaser">
             <h2 className="text-lg font-bold pt-4">Layout Presets</h2>
@@ -32,4 +32,4 @@ const LayoutPresetsTeaser = () => {
     );
 };
 
-export default LayoutPresetsTeaser;
+export default TeaserPresetsPage;

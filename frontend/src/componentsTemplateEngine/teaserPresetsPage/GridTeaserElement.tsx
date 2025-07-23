@@ -1,4 +1,4 @@
-import GridElement from '../../../componentsTemplateEngine/gridLayout/markUpElements/GridElement';
+import GridElement from '../gridLayout/markUpElements/GridElement';
 
 const GridTeaserElement = () => {
     return (

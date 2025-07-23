@@ -4,8 +4,8 @@ import ContentCenter from '@/componentsTemplateEngine/containers/layoutConfigura
 import MainContainer from '@/componentsTemplateEngine/containers/layoutConfigurator/MainContainer';
 import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration';
 import DynamicGridLayout from '@/componentsTemplateEngine/gridLayout/layoutPresets/DynamicGrid';
-import LayoutPresetsTeaser from '@/componentsTemplateEngine/gridLayout/layoutPresetsTeaser';
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridLayout/markupGeneratorDynamic';
+import TeaserPresetsPage from '@/componentsTemplateEngine/teaserPresetsPage';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
@@ -57,7 +57,7 @@ const ProjectTemplateEnginePage: FC = () => {
                 </ContentCenter>
 
                 <AsideRight>
-                    <LayoutPresetsTeaser />
+                    <TeaserPresetsPage />
                     <ExportDynamicCodeTeaser
                         inlineStyles={InlineStyles}
                         gridItemsArray={GridItemsArray}
