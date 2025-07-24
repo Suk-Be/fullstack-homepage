@@ -1,4 +1,4 @@
-import { FC, ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 const GridElement: FC<ComponentPropsWithoutRef<'div'>> = ({ id, className }) => (

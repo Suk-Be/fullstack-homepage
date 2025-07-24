@@ -26,7 +26,11 @@ const RangeSlider: FC<RangeSliderProps> = ({
             <div className="font-normal pb-2">
                 {children}
                 <span
-                    className="rounded bg-white text-gray-dark px-2 py-0.5 inline-block"
+                    className="
+                      rounded 
+                      bg-white text-gray-dark 
+                      px-2 py-0.5 
+                      inline-block"
                     data-testid={`${placeholder}-display-value`}
                 >
                     {value}
