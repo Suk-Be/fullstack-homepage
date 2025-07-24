@@ -1,4 +1,4 @@
-import ColumnsSpanningGrid from '@/componentsTemplateEngine/presetRenderings/ColspanningGrid';
+import ColumnsSpanningGrid from '@/componentsTemplateEngine/presetRenderExamples/ColspanningGrid';
 import colSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/colSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';

@@ -1,7 +1,7 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
 import DynamicGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator/DynamicGridMarkup';
-import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderings/DynamicGrid';
+import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderExamples/DynamicGrid';
 import { ModalProps } from '@/types/templateEngine';
 import { buttonText } from '@/utils/templateEngine/buttonText';
 import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText';

@@ -1,4 +1,4 @@
-import RowspanningGrid from '@/componentsTemplateEngine/presetRenderings/RowspanningGrid';
+import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/RowspanningGrid';
 import rowSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/rowSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import ChildrenTags from './ChildrenTags';

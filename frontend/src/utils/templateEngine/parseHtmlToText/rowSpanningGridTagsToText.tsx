@@ -1,4 +1,4 @@
-import RowspanningGrid from '@/componentsTemplateEngine/presetRenderings/RowspanningGrid';
+import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/RowspanningGrid';
 import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**

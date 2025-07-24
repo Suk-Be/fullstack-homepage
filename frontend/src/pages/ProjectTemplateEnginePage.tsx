@@ -4,7 +4,7 @@ import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigura
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
-import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderings/DynamicGrid';
+import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderExamples/DynamicGrid';
 import TeaserPresetsPage from '@/componentsTemplateEngine/teaserPresetsPage';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
