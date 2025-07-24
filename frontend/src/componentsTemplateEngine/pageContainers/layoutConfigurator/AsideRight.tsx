@@ -9,7 +9,7 @@ const AsideRight = ({ children }: PropsWithChildren) => {
             bg-gray-dark text-white 
             m-auto lg:m-0 
             w-full lg:w-1/6 
-            p-8 lg:p-4 
+            md:p-8 lg:p-4 
             border-2 
             overflow-y-auto 
             max-h-full max-height: 95.3vh"
@@ -19,7 +19,7 @@ const AsideRight = ({ children }: PropsWithChildren) => {
                   flex flex-col 
                   w-full h-full 
                   px-12 lg:px-0 
-                  gap-4"
+                  md:gap-4"
             >
                 {children}
             </div>
