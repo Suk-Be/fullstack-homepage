@@ -1,11 +1,11 @@
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
 import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
+import ExampleTeaser from '@/componentsTemplateEngine/layoutExampleTeaser';
 import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
 import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderExamples/DynamicGrid';
-import TeaserPresetsPage from '@/componentsTemplateEngine/teaserPresetsPage';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
@@ -35,13 +35,13 @@ const ProjectTemplateEnginePage: FC = () => {
         display: 'grid',
         gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
         gap: `${grid.gap}px`,
-        borderWidth: toggled ? `${grid.border}rem` : '0rem',
-        padding: `calc(${grid.paddingY}rem * 2) calc(${grid.paddingX}rem * 2)`,
+        borderWidth: toggled ? `${grid.border}rem/3` : '0rem',
+        padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
     };
 
     const GridItemsArray = [...Array(grid.items).keys()];
     return (
-        <div className="flex flex-col w-full bg-black" {...testId('tempate-engine-page')}>
+        <div className="flex flex-col w-full bg-black mb-[5rem]" {...testId('tempate-engine-page')}>
             <MainContainer>
                 <AsideLeft>
                     <GridConfiguration
@@ -57,11 +57,11 @@ const ProjectTemplateEnginePage: FC = () => {
                 </ContentCenter>
 
                 <AsideRight>
-                    <TeaserPresetsPage />
                     <ExportDynamicCodeTeaser
                         inlineStyles={InlineStyles}
                         gridItemsArray={GridItemsArray}
                     />
+                    <ExampleTeaser />
                 </AsideRight>
             </MainContainer>
         </div>
