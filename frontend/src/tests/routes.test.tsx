@@ -1,8 +1,8 @@
 import HomePage from '@/pages/HomePage';
 import ImprintPage from '@/pages/ImprintPage';
 import PlaygroundPage from '@/pages/PlaygroundPage';
+import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
-import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEnginePresetsPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
 import {
@@ -89,7 +89,7 @@ describe('routes', () => {
         },
         {
             path: '/template-engine/presets',
-            elementHeadline: 'Grid Layout Presets',
+            elementHeadline: 'Grid Layout Layout Examples',
             page: 'ProjectTemplateEnginePresetsPage',
             component: <ProjectTemplateEnginePresetsPage />,
             level: 1,

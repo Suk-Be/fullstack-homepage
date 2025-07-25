@@ -1,11 +1,8 @@
 import MenuNav from '@/components/header';
 import { HPProps } from '@/data/HomePage';
-import { mockReduxLoggedInState, mockReduxLoggedOutState } from '@/tests/mocks/redux';
-import { navigateTo, PathAndReduxState, setupStore } from '@/tests/utils/testRenderUtils';
-import { render, screen } from '@testing-library/react';
+import { navigateTo, PathAndReduxState, renderWithProviders } from '@/tests/utils/testRenderUtils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('BasicMenu', () => {
@@ -37,10 +34,12 @@ describe('BasicMenu', () => {
         };
     };
 
-    it('should render a header with no Logo and an no Avatar if user is (not logged in)', () => {
-        renderUtils(HPLoginState(false));
-        const menu = screen.queryByTestId('header-main-menu');
-        expect(menu).not.toBeInTheDocument();
+    it('should call Home Page route when the logo is clicked (logged in)', async () => {
+        const { logoLink, user } = renderUtils(HPLoginState(true));
+        await user.click(logoLink!);
+
+        const heading = screen.getByText(HPProps.data[0].attributes.title);
+        expect(heading).toBeInTheDocument();
     });
 
     it('should render a header with Logo and an Avatar if user is (logged in)', () => {
@@ -50,78 +49,71 @@ describe('BasicMenu', () => {
         expect(avatarLink).toBeInTheDocument();
     });
 
-    it('should call Home Page route when the logo is clicked (logged in)', async () => {
-        const { logoLink, user } = renderUtils(HPLoginState(true));
-        await user.click(logoLink!);
+    it.each([
+        { link: screen.queryByRole('link', { name: 'Template Engine' }) },
+        { link: screen.queryByRole('link', { name: 'Template Engine Layout Examples' }) },
+        { link: screen.queryByRole('link', { name: /playgroundpage/i }) },
+        { link: screen.queryByRole('link', { name: /logout/i }) },
+    ])(
+        'should have a hidden MainMenu that opens when avatar is clicked (logged in)',
+        async ({ link }) => {
+            const { avatarLink, user } = renderUtils(HPLoginState(true));
 
-        const heading = screen.getByText(HPProps.data[0].attributes.title);
-        expect(heading).toBeInTheDocument();
-    });
-    it('should have a hidden MainMenu that opens when avatar is clicked (logged in)', async () => {
-        const { avatarLink, user } = renderUtils(HPLoginState(true));
+            expect(link).not.toBeInTheDocument();
 
-        const playgroundPageLinkQuery = screen.queryByRole('link', {
-            name: /playgroundpage/i,
-        });
-        const logoutLinkQuery = screen.queryByRole('link', {
-            name: /logout/i,
-        });
+            expect(avatarLink).toBeInTheDocument();
+            await user.click(avatarLink!);
 
-        expect(playgroundPageLinkQuery).not.toBeInTheDocument();
-        expect(logoutLinkQuery).not.toBeInTheDocument();
-        expect(avatarLink).toBeInTheDocument();
+            expect(screen.queryByRole('link', { name: 'Template Engine' })).toBeInTheDocument();
+            expect(
+                screen.queryByRole('link', { name: 'Template Engine Layout Examples' }),
+            ).toBeInTheDocument();
+            expect(screen.queryByRole('link', { name: /playgroundpage/i })).toBeInTheDocument();
+            expect(screen.queryByRole('link', { name: /logout/i })).toBeInTheDocument();
+        },
+    );
 
-        await user.click(avatarLink!);
-
-        const playgroundPageLink = screen.getByRole('link', {
-            name: /playgroundpage/i,
-        });
-        const logoutLink = screen.getByRole('link', {
-            name: /logout/i,
-        });
-        expect(playgroundPageLink).toBeInTheDocument();
-        expect(logoutLink).toBeInTheDocument();
-    });
     it('should hide menu when a link inside the menu is clicked (logged in)', async () => {
         const { user, avatarLink } = renderUtils(HPLoginState(true));
+
         await user.click(avatarLink!);
-        const playgroundPageLink = screen.getByRole('link', {
-            name: /playgroundpage/i,
-        });
+        const playgroundPageLink = screen.getByRole('link', { name: /playgroundpage/i });
         expect(playgroundPageLink).toBeInTheDocument();
 
         await user.click(playgroundPageLink);
-        const missingPlaygroundPageLink = screen.queryByRole('link', {
-            name: /playgroundpage/i,
-        });
+        const missingPlaygroundPageLink = screen.queryByRole('link', { name: /playgroundpage/i });
         expect(missingPlaygroundPageLink).not.toBeInTheDocument();
+    });
+
+    it('should render a header with a Logo and no Avatar if user is (not logged in)', () => {
+        const { logoLink, avatarLink } = renderUtils(HPLoginState(false));
+
+        expect(logoLink).toBeInTheDocument();
+        expect(avatarLink).not.toBeInTheDocument();
     });
 });
 
 describe('Toggle Basic Menu', () => {
-    it('renders the main menu if logged in', async () => {
-        const store = setupStore(mockReduxLoggedInState);
+    it('renders the logged-in main menu if logged in', async () => {
+        renderWithProviders(<MenuNav />, {
+            route: '/',
+            preloadedState: { login: { isLoggedIn: true, isLoading: false } },
+        });
 
-        render(
-            <Provider store={store}>
-                <MemoryRouter initialEntries={['/']}>
-                    <MenuNav />
-                </MemoryRouter>
-            </Provider>,
-        );
-
-        expect(screen.queryByTestId('header-main-menu')).toBeInTheDocument();
+        expect(screen.queryByTestId('button-open-menu')).toBeInTheDocument();
     });
 
-    it('does not render the main menu if logged out', async () => {
-        const store = setupStore(mockReduxLoggedOutState);
+    it('does render the logged-out main menu if logged out', async () => {
+        renderWithProviders(<MenuNav />, {
+            route: '/',
+            preloadedState: { login: { isLoggedIn: false, isLoading: false } },
+        });
 
-        render(
-            <Provider store={store}>
-                <MenuNav />
-            </Provider>,
-        );
+        const openButton = screen.queryByTestId('button-open-menu');
+        const logoLink = screen.getByRole('link', { name: /suk-be jang \(web developer\)/i });
 
-        expect(screen.queryByTestId('header-main-menu')).not.toBeInTheDocument();
+        expect(logoLink).toBeInTheDocument();
+        expect(logoLink).toHaveRole('link');
+        expect(openButton).not.toBeInTheDocument();
     });
 });

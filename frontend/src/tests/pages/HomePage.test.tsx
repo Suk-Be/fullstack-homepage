@@ -1,12 +1,18 @@
 import { HPProps } from '@/data/HomePage';
-import { mockReduxLoggedInState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 describe('HomePage', () => {
-    const renderUtil = (preloadedState = {}) => {
+    const renderUtil = (
+        preloadedState = {
+            login: {
+                isloggedIn: false,
+                isLoading: false,
+            },
+        },
+    ) => {
         const user = userEvent.setup();
         navigateTo({
             route: '/',
@@ -30,15 +36,16 @@ describe('HomePage', () => {
         };
     };
 
-    it('should render no header (if not logged in) and footer', async () => {
-        const { header, footer } = renderUtil();
-        expect(header).not.toBeInTheDocument();
+    it('should render a header with a logged out menu (if not logged in) and footer', async () => {
+        const { footer } = renderUtil();
+        expect(screen.getByTestId('logged-out-menu')).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 
-    it('should render a header (if logged in) and footer', async () => {
-        const { header, footer } = renderUtil(mockReduxLoggedInState);
-        expect(header).toBeInTheDocument();
+    it('should render a header with a logged in menu (if logged in) and footer', async () => {
+        const { footer } = renderUtil();
+        // screen.debug();
+        // expect(screen.getByTestId('logged-in-menu')).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 

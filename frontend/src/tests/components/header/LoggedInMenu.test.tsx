@@ -1,4 +1,4 @@
-import BasicMenu from '@/components/header/Menu';
+import LoggedInMenu from '@/components/header/LoggedInMenu';
 import * as requestLogoutModule from '@/components/header/requestLogout';
 import { HPProps } from '@/data/HomePage';
 import type { PathAndReduxState } from '@/tests/utils/testRenderUtils';
@@ -7,11 +7,11 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, vi } from 'vitest';
 
-describe('Menu component', () => {
+describe('LoggedInMenu', () => {
     const renderUtilsComponent = () => {
-        renderWithProviders(<BasicMenu />, {
+        renderWithProviders(<LoggedInMenu />, {
             route: '/',
-            preloadedState: { login: { isLoggedIn: true } },
+            preloadedState: {},
         });
 
         const user = userEvent.setup();
@@ -80,7 +80,7 @@ describe('Menu component', () => {
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
             const templateEngineLink = screen.queryByRole('link', { name: 'Template Engine' });
             const templateEnginePresetsLink = screen.queryByRole('link', {
-                name: 'Template Engine Presets',
+                name: 'Template Engine Layout Examples',
             });
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 

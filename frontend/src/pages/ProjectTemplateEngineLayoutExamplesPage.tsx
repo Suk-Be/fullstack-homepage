@@ -7,7 +7,7 @@ export default function Presets() {
         <div className="flex-1 flex bg-white ">
             <MainContainerPresets>
                 <h1 className="text-5xl font-bold text-green-dark text-center text-gray-700 pb-2 sans">
-                    Grid Layout Presets
+                    Grid Layout Layout Examples
                 </h1>
                 <div className="w-full bg-white h-full">
                     <div className="grid grid-cols-1 xl:grid-cols-1 gap-9 px-4 py-4 w-full xl:w-1/2 mx-auto">

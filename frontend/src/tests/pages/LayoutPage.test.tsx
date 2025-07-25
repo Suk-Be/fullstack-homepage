@@ -53,25 +53,16 @@ describe('LayoutPage', () => {
         };
     };
 
-    it('renders the main menu if logged in', async () => {
+    it('renders a header (MenuNav component) if logged in', async () => {
         const { header } = renderUtil('/', mockReduxLoggedInState);
 
-        // MainMenu
         expect(header).toBeInTheDocument();
     });
 
-    it('does not render the main menu if logged out', async () => {
-        const store = setupStore(mockReduxLoggedOutState);
+    it('renders a header (MenuNav component) if logged out', async () => {
+        const { header } = renderUtil('/', mockReduxLoggedOutState);
 
-        render(
-            <Provider store={store}>
-                <MemoryRouter initialEntries={['/']}>
-                    <Layout />
-                </MemoryRouter>
-            </Provider>,
-        );
-
-        expect(screen.queryByTestId('header-main-menu')).not.toBeInTheDocument();
+        expect(header).toBeInTheDocument();
     });
 
     it('should render a main and a footer', () => {
