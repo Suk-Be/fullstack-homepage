@@ -1,4 +1,5 @@
 import DialogModal from '@/componentsTemplateEngine/DialogModal';
+import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/HeadlineAside';
 import { DynamicGridProps } from '@/types/templateEngine';
 import { buttonText } from '@/utils/templateEngine/buttonText';
 import { useState } from 'react';
@@ -25,7 +26,7 @@ const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridPr
     }
     return (
         <aside data-testid="create-markup-teaser">
-            <h2 className="text-lg font-bold pb-4">Export Code</h2>
+            <HeadlineAside children="Export Code" />
             <DialogModal
                 inlineStyles={inlineStyles}
                 gridItemsArray={gridItemsArray}
