@@ -16,10 +16,8 @@ const AsideRight = ({ children }: PropsWithChildren) => {
         >
             <div
                 className="
-                  flex flex-col 
                   w-full h-full 
-                  px-12 lg:px-0 
-                  md:gap-4"
+                  grid grid-cols-2 lg:grid-cols-1 gap-8"
             >
                 {children}
             </div>

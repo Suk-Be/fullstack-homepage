@@ -1,6 +1,6 @@
 import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
 
-const GridTeaserElement = () => {
+const GridExampleTeaser = () => {
     return (
         <div
             className="grid grid-cols-3 xl:grid-cols-3 gap-2 py-4 group-hover:scale-[1.02] transition-all transform"
@@ -19,4 +19,4 @@ const GridTeaserElement = () => {
     );
 };
 
-export default GridTeaserElement;
+export default GridExampleTeaser;

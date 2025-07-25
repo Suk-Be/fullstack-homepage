@@ -1,14 +1,14 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import Divider from '@/componentsTemplateEngine/gridConfiguration/ui/Divider';
 import { Link } from 'react-router-dom';
-import GridTeaserElement from './GridTeaserElement';
+import GridExampleTeaser from './ExampleTeaser';
 
-const TeaserPresetsPage = () => {
+const ExampleTeaser = () => {
     return (
         <aside data-testid="layout-presets-teaser">
-            <h2 className="text-lg font-bold pt-4">Layout Presets</h2>
+            <h2 className="text-lg font-bold pt-4">Layout Example Grids</h2>
             <Link to="/template-engine/presets" className="group">
-                <GridTeaserElement />
+                <GridExampleTeaser />
 
                 <Button
                     className="
@@ -23,7 +23,7 @@ const TeaserPresetsPage = () => {
                     group-focus:outline-1 
                     group-focus:outline-white"
                 >
-                    Browse Presets
+                    Browse Examples
                 </Button>
             </Link>
 
@@ -32,4 +32,4 @@ const TeaserPresetsPage = () => {
     );
 };
 
-export default TeaserPresetsPage;
+export default ExampleTeaser;

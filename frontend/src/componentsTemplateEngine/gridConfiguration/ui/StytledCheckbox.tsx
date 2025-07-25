@@ -36,7 +36,7 @@ const StyledCheckbox: FC<CheckboxProps> = ({ checked, onChange }) => {
 
                   data-[disabled]:cursor-not-allowed 
                   data-[disabled]:opacity-50 
-                  data-[checked]:data-[disabled]:bg-gray-500 mb-3"
+                  data-[checked]:data-[disabled]:bg-gray-500"
             >
                 <svg
                     className="stroke-white opacity-0 group-data-[checked]:opacity-100"

@@ -1,7 +1,6 @@
 import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
 import { GridProps, HandleChange } from '@/types/templateEngine';
-import HrInputs from './Divider';
-import HeadlineConfiguration from './HeadlineConfiguration';
+import HeadlineAside from './HeadlineAside';
 import RangeSlider from './RangeSlider';
 
 type Props = {
@@ -12,7 +11,7 @@ type Props = {
 const LayoutConfiguration = ({ handleChange, grid }: Props) => {
     return (
         <section data-testid="layout-configuration">
-            <HeadlineConfiguration children="Layout" />
+            <HeadlineAside children="Layout" />
             <RangeSlider
                 max="30"
                 value={grid.items}
@@ -30,7 +29,6 @@ const LayoutConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel children="Columns: " />
             </RangeSlider>
-            <HrInputs />
         </section>
     );
 };
