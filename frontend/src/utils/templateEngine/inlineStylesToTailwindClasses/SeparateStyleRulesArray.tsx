@@ -17,7 +17,7 @@ function cleanupRegExpMatchArray(arr: RegExpMatchArray | null | undefined, elem:
  * e.g. [ "display:grid", "grid-template-columns:repeat(1, minmax(0, 1fr))", "gap:0px",  "border-width:0rem", "padding:calc(0rem * 2) calc(0rem * 2)\""]
  */
 
-const SeparateStyleRulesArray = (StyleAttributes: RegExpMatchArray | null) => {
+const separateStyleRulesArray = (StyleAttributes: RegExpMatchArray | null) => {
     if (StyleAttributes !== null) {
         const lengthOfStyleAttribute = 7;
         // returns deletes style attribute from the single string
@@ -33,4 +33,4 @@ const SeparateStyleRulesArray = (StyleAttributes: RegExpMatchArray | null) => {
     }
 };
 
-export default SeparateStyleRulesArray;
+export default separateStyleRulesArray;
