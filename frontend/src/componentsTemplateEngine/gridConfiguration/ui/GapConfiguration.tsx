@@ -12,10 +12,10 @@ const GapConfiguration = ({ handleChange, grid }: Props) => {
     return (
         <section data-testid="gap-configuration">
             <HeadlineAside children="Options" />
-
             <RangeSlider max="7" value={grid.gap} onChange={handleChange('gap')} placeholder="gap">
                 <InputLabel children="Gap: " />
             </RangeSlider>
+            Unit: px
         </section>
     );
 };

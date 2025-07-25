@@ -27,6 +27,7 @@ const BorderConfiguration = ({ toggled, handleChange, grid, handleToggle }: Prop
                 >
                     <InputLabel children="Width: " htmlFor="border" />
                 </RangeSlider>
+                Unit: rem/3
             </div>
         </section>
     );

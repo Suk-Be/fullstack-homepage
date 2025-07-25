@@ -20,7 +20,6 @@ const PaddingConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel children="Horizontal: " />
             </RangeSlider>
-
             <RangeSlider
                 max="5"
                 value={grid.paddingY}
@@ -29,6 +28,7 @@ const PaddingConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel children="Vertical: " />
             </RangeSlider>
+            Unit: rem/2
         </section>
     );
 };
