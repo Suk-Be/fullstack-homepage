@@ -8,7 +8,7 @@ import {
 } from 'react';
 import ChildrenTags from '../generatorElements/ChildrenTags';
 import ParentTag from '../generatorElements/ParentTag';
-import DynamicTag from './DynamicTag';
+import DivWithTranspiledTailwindClasses from './DynamicInlineStyle';
 
 interface DynamicGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
@@ -29,7 +29,10 @@ const DynamicGridMarkup: FC<DynamicGridMarkupProps> = ({ Component }) => {
                 className="bg-gray-dark text-green p-6 rounded-xl"
                 data-testid="dynamic-grid-markup"
             >
-                <DynamicTag isDynamicTag={true} Component={Component} />
+                <DivWithTranspiledTailwindClasses
+                    isDynamicInlineStyle={true}
+                    Component={Component}
+                />
                 <ChildrenTags arr={dynamicGridChildrenTagsToText} />
                 <ParentTag isClosingTag={true} Component={Component} />
             </div>
