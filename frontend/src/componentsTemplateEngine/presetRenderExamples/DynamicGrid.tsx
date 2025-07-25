@@ -13,7 +13,7 @@ const DynamicGridLayout: FC<GridProps> = ({ style, arr }) => {
                 <GridElement
                     key={i.toString()}
                     id={i.toString()}
-                    className="w-32 h-24 bg-gray rounded-xl"
+                    className="w-[32px] h-[24px] md:w-[84px] md:h-[61px] lg:w-[100px] lg:h-[75px] xl:w-32 xl:h-24 bg-gray rounded-sm md:rounded-xl"
                 />
             ))}
         </div>
