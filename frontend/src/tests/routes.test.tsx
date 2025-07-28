@@ -82,14 +82,14 @@ describe('routes', () => {
     it.each([
         {
             path: '/template-engine',
-            elementHeadline: 'Layout Presets',
+            elementHeadline: 'Layout Example Grids',
             page: 'ProjectTemplateEnginePage',
             component: <ProjectTemplateEnginePage />,
             level: 2,
         },
         {
             path: '/template-engine/presets',
-            elementHeadline: 'Grid Layout Layout Examples',
+            elementHeadline: 'Layout Example Grids',
             page: 'ProjectTemplateEnginePresetsPage',
             component: <ProjectTemplateEnginePresetsPage />,
             level: 1,
