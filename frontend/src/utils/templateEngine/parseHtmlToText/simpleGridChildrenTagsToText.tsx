@@ -1,6 +1,9 @@
 // import SimpleGrid from '../../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
 import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
-import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
+import {
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
+} from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
  * Helper function to get a list of texts from the child nodes from a passed in react component
@@ -10,8 +13,9 @@ import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtm
  * fyi: for the simple grrid all children nodes are exact
  */
 
-const domSimpleGrid = toDomModel(componentToHtmlText(<SimpleGrid className="gap-4" />)).body
-    .firstChild?.childNodes;
+const domSimpleGrid = parseStringToADomModel(
+    createHtmlAsTextFromPassedComponent(<SimpleGrid className="gap-4" />),
+).body.firstChild?.childNodes;
 
 const simpleGridChildrenTagsToText = Array.from(domSimpleGrid ?? []).map((elem) => {
     let tmp = document.createElement('div');

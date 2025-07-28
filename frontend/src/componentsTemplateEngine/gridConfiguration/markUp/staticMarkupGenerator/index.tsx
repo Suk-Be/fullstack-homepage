@@ -1,5 +1,8 @@
 import { buttonText } from '@/utils/templateEngine/buttonText';
-import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText';
+import {
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
+} from '@/utils/templateEngine/parseHtmlToText';
 import { FC, MouseEventHandler, ReactNode, useState } from 'react';
 import MarkupCode from './MarkupCode';
 import ToggleAndCopyButtonContainer from './ToggleAndCopyButtonContainer';
@@ -26,7 +29,9 @@ const MarkupGenerator: FC<{ gridMarkupComponent: ReactNode }> = ({ gridMarkupCom
     });
 
     const clickHandlerCopy: MouseEventHandler<HTMLButtonElement> = () => {
-        const html = toDomModel(componentToHtmlText(gridMarkupComponent)).body.firstChild;
+        const html = parseStringToADomModel(
+            createHtmlAsTextFromPassedComponent(gridMarkupComponent),
+        ).body.firstChild;
 
         if (html) {
             navigator.clipboard.writeText(html.textContent || '');

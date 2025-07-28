@@ -1,3 +1,4 @@
+import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
 import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
 import ExampleTeaser from '@/componentsTemplateEngine/layoutExampleTeaser';
@@ -5,7 +6,6 @@ import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigura
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
-import DynamicGridLayout from '@/componentsTemplateEngine/presetRenderExamples/DynamicGrid';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
@@ -53,15 +53,15 @@ const ProjectTemplateEnginePage: FC = () => {
                 </AsideLeft>
 
                 <ContentCenter>
-                    <DynamicGridLayout style={InlineStyles} arr={GridItemsArray} />
+                    <CreateGridLayout style={InlineStyles} arr={GridItemsArray} />
                 </ContentCenter>
 
                 <AsideRight>
+                    <ExampleTeaser />
                     <ExportDynamicCodeTeaser
                         inlineStyles={InlineStyles}
                         gridItemsArray={GridItemsArray}
                     />
-                    <ExampleTeaser />
                 </AsideRight>
             </MainContainer>
         </div>

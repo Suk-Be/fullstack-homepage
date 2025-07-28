@@ -1,4 +1,4 @@
-import { ReactNode, ReactElement, JSXElementConstructor, ReactPortal } from 'react';
+import { JSXElementConstructor, ReactElement, ReactNode, ReactPortal } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JSX } from 'react/jsx-runtime';
 
@@ -6,34 +6,35 @@ import { JSX } from 'react/jsx-runtime';
  * Utilities to parse React Grid Component to HTML to render them as Code snippet
  */
 
+type ReactComponentLike =
+    | string
+    | number
+    | bigint
+    | boolean
+    | Iterable<ReactNode>
+    | Promise<
+          | string
+          | number
+          | bigint
+          | boolean
+          | ReactPortal
+          | ReactElement<unknown, string | JSXElementConstructor<any>>
+          | Iterable<ReactNode>
+          | null
+          | undefined
+      >
+    | JSX.Element
+    | null
+    | undefined;
+
 /**
  * Helper functions to return pieces markup of the same react component
  * @param Component: react component
  * @returns markup in one text string
  * example grid: componentToHtmlText(<SimpleGrid className="gap-4" />);
  */
-const componentToHtmlText = (
-    Component:
-        | string
-        | number
-        | bigint
-        | boolean
-        | Iterable<ReactNode>
-        | Promise<
-              | string
-              | number
-              | bigint
-              | boolean
-              | ReactPortal
-              | ReactElement<unknown, string | JSXElementConstructor<any>>
-              | Iterable<ReactNode>
-              | null
-              | undefined
-          >
-        | JSX.Element
-        | null
-        | undefined,
-) => renderToStaticMarkup(Component);
+const createHtmlAsTextFromPassedComponent = (Component: ReactComponentLike) =>
+    renderToStaticMarkup(Component);
 
 /**
  * Helper function to to create a Dom model that can be traversed by its dom objects
@@ -41,7 +42,7 @@ const componentToHtmlText = (
  * @returns a Dom model
  */
 const parser = new DOMParser();
-const toDomModel = (componentToHtmlText: string) =>
+const parseStringToADomModel = (componentToHtmlText: string) =>
     parser.parseFromString(componentToHtmlText, 'text/html');
 
 /**
@@ -52,7 +53,8 @@ const toDomModel = (componentToHtmlText: string) =>
 const toTextParentNode = (
     Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>,
 ) => {
-    const parentNode = toDomModel(componentToHtmlText(Component)).body.firstChild;
+    const parentNode = parseStringToADomModel(createHtmlAsTextFromPassedComponent(Component)).body
+        .firstChild;
     while (parentNode?.firstChild) {
         parentNode.removeChild(parentNode?.firstChild);
     }
@@ -96,8 +98,8 @@ const toTextClosingTagFrom = (
 };
 
 export {
-    componentToHtmlText,
-    toDomModel,
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
     toTextClosingTagFrom,
     toTextOpeningTagFrom,
     toTextParentNode,

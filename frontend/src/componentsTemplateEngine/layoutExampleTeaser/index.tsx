@@ -1,5 +1,4 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
-import Divider from '@/componentsTemplateEngine/gridConfiguration/ui/Divider';
 import { Link } from 'react-router-dom';
 import GridExampleTeaser from './ExampleTeaser';
 
@@ -26,8 +25,6 @@ const ExampleTeaser = () => {
                     Browse Examples
                 </Button>
             </Link>
-
-            <Divider className="my-4" />
         </aside>
     );
 };

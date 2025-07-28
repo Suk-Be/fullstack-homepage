@@ -6,7 +6,7 @@ interface GridProps {
     arr: number[];
 }
 
-const DynamicGridLayout: FC<GridProps> = ({ style, arr }) => {
+const CreateGridLayout: FC<GridProps> = ({ style, arr }) => {
     return (
         <div className="grid border-gray-light/25" style={style} data-testid="dynamic-layout">
             {arr.map((i) => (
@@ -20,4 +20,4 @@ const DynamicGridLayout: FC<GridProps> = ({ style, arr }) => {
     );
 };
 
-export default DynamicGridLayout;
+export default CreateGridLayout;

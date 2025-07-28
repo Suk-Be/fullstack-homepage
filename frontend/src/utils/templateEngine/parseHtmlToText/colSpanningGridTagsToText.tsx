@@ -1,5 +1,8 @@
 import ColspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/ColspanningGrid';
-import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtmlToText/index';
+import {
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
+} from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
  * Helper function to get a list of texts from the child nodes from a passed in react component
@@ -9,8 +12,8 @@ import { componentToHtmlText, toDomModel } from '@/utils/templateEngine/parseHtm
  * fyi: for the simple grrid all children nodes are exact
  */
 
-const domColumnSpanningGrid = toDomModel(
-    componentToHtmlText(<ColspanningGrid className="col-span-2" />),
+const domColumnSpanningGrid = parseStringToADomModel(
+    createHtmlAsTextFromPassedComponent(<ColspanningGrid className="col-span-2" />),
 ).body.firstChild?.childNodes;
 
 const colSpanningGridTagsToText = Array.from(domColumnSpanningGrid ?? []).map((elem) => {

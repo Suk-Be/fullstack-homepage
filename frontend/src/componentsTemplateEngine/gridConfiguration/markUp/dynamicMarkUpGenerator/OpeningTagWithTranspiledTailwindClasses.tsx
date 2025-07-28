@@ -14,7 +14,7 @@ type DynamicTagProps = {
     Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
 };
 
-const DivWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
+const OpeningTagWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
     isDynamicInlineStyle = false,
     Component,
 }) => {
@@ -49,4 +49,4 @@ const DivWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
     );
 };
 
-export default DivWithTranspiledTailwindClasses;
+export default OpeningTagWithTranspiledTailwindClasses;
