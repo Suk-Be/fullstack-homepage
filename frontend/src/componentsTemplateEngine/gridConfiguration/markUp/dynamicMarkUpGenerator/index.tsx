@@ -1,4 +1,4 @@
-import DialogModal from '@/componentsTemplateEngine/DialogModal';
+import DialogModal from '@/componentsTemplateEngine/createGridMarkupWithModal/DialogModal';
 import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/HeadlineAside';
 import { DynamicGridProps } from '@/types/templateEngine';
 import { buttonText } from '@/utils/templateEngine/buttonText';
