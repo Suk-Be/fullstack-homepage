@@ -1,6 +1,7 @@
 import RouterLinkWrapper from '@/components/RouterLink';
 import type { AppDispatch } from '@/store/';
 import { logout } from '@/store/loginSlice';
+import { resetUserGrid } from '@/store/userGridSlice';
 import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
@@ -24,6 +25,7 @@ export default function LoggedInMenu() {
         const result = await requestLogout(logState);
 
         if (result.success) {
+            dispatch(resetUserGrid());
             dispatch(logout());
         }
 
