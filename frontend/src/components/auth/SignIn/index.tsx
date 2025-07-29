@@ -6,21 +6,22 @@ import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIco
 import useModalToggle from '@/hooks/useModalToggle';
 import useToggle from '@/hooks/useToggle';
 import { useAppDispatch } from '@/store/hooks';
-import { login, logout } from '@/store/loginSlice';
+import { login, logout, setUserId } from '@/store/loginSlice';
+import { resetUserGrid } from '@/store/userGridSlice';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
@@ -52,10 +53,9 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     const { open, handleClose, handleClickOpen } = useModalToggle();
     const [showPassword, togglePasswordVisibility] = useToggle(false);
 
-    // Redux dispatch
     const dispatch = useAppDispatch();
 
-    // execute validation, request and fields clearing
+    // execute validation, request, fields clearing and dispatches
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -81,14 +81,14 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
 
         // post form data to backend
         const result = await requestLogin({
-            shouldFetchUser: false,
             email,
             password,
         });
 
         // clear fields on success
         if (result.success) {
-            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
+            dispatch(login());
+            dispatch(setUserId(result.userId!));
             setEmail('');
             setPassword('');
             setFieldErrors({
@@ -115,15 +115,15 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             // set field errors based on backend response
             setFieldErrors({
                 email: {
-                    hasError: !!emailBackendErrorMessage, // Set hasError based on whether a message exists
+                    hasError: !!emailBackendErrorMessage,
                     message: emailBackendErrorMessage,
                 },
                 password: {
-                    hasError: !!passwordBackendErrorMessage, // Set hasError based on whether a message exists
+                    hasError: !!passwordBackendErrorMessage,
                     message: passwordBackendErrorMessage,
                 },
             });
-
+            dispatch(resetUserGrid());
             dispatch(logout());
         }
 
