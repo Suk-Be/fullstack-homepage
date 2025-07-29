@@ -7,24 +7,27 @@ import { setResponseValidationError } from '@/utils/auth/setResponseValidationEr
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
 
 interface RegisterUserParams {
-    shouldFetchUser: boolean;
     form: RegisterFormData;
+    userId?: number;
 }
 
-const requestRegister = async ({
-    shouldFetchUser,
-    form,
-}: RegisterUserParams): Promise<RegisterResponse> => {
-    let success = false;
-
+const requestRegister = async ({ form }: RegisterUserParams): Promise<RegisterResponse> => {
     try {
         await initializeCookies();
-        await LaravelApiClient.post('/auth/spa/register', form);
-        success = true;
+        const response = await LaravelApiClient.post('/auth/spa/register', form);
 
-        if (shouldFetchUser && success === true) await requestMe(shouldFetchUser);
+        let userId: number | undefined = undefined;
+        const meResult = await requestMe();
+        if (meResult?.success && meResult.userId !== undefined) {
+            userId = meResult.userId;
+        }
 
-        return setResponseValidationSuccess('Die Registrierung hat geklappt!');
+        return {
+            ...setResponseValidationSuccess(
+                response.data.message || 'Die Registrierung hat geklappt!',
+            ),
+            userId,
+        };
     } catch (error: any) {
         // on 419 or 422
         await resetCookiesOnResponseError(error);
