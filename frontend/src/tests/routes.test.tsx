@@ -114,6 +114,10 @@ describe('routes', () => {
                         isLoggedIn: true,
                         isLoading: false,
                     },
+                    userGrid: {
+                        userId: 123,
+                        savedGrids: [],
+                    },
                 },
             });
             const heading = await screen.findByRole('heading', {

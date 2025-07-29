@@ -14,7 +14,7 @@ export type Product = {
 // registration form
 // fyi: Laravel returns field-specific validation errors in the errors object (for status 422)
 export type RegisterResponse =
-    | { success: true; message: string }
+    | { success: true; message: string; userId?: number }
     | { success: false; message: string; fieldErrors?: { [key: string]: string[] } };
 
 export type RegisterFormData = {
