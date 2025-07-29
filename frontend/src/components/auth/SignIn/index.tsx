@@ -6,7 +6,7 @@ import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIco
 import useModalToggle from '@/hooks/useModalToggle';
 import useToggle from '@/hooks/useToggle';
 import { useAppDispatch } from '@/store/hooks';
-import { login, logout, setUserId } from '@/store/loginSlice';
+import { login, logout } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userGridSlice';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
@@ -88,7 +88,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         // clear fields on success
         if (result.success) {
             dispatch(login());
-            dispatch(setUserId(result.userId!));
             setEmail('');
             setPassword('');
             setFieldErrors({
