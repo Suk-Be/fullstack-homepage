@@ -1,7 +1,8 @@
 import Loading from '@/components/auth/shared-components/Loading';
 import LaravelApiClient from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
-import { login, logout } from '@/store/loginSlice';
+import { login, logout, setUserId } from '@/store/loginSlice';
+import { resetUserGrid } from '@/store/userGridSlice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -25,23 +26,23 @@ const SocialiteCallbackPage = () => {
                 return LaravelApiClient.get('/me');
             })
             .then((res) => {
-                console.log('Logged in user:', res.data);
+                dispatch(setUserId(res.data.id));
                 dispatch(login());
                 navigate('/');
             })
             .catch((err) => {
                 console.log('/me failed:', err);
+                dispatch(resetUserGrid());
                 dispatch(logout());
                 navigate('/');
             });
     }, []);
 
     return (
-      <>
-        <Loading message='im Anmelde Prozess ...' />
-      </>
-    
-  )
+        <>
+            <Loading message="im Anmelde Prozess ..." />
+        </>
+    );
 };
 
 export default SocialiteCallbackPage;
