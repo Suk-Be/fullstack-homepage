@@ -1,26 +1,55 @@
-import loginReducer, { login, logout } from '@/store/loginSlice';
+import loginReducer, { login, LoginState, logout, setUserId } from '@/store/loginSlice';
 
 describe('loginSlice', () => {
+    const initialState: LoginState = {
+        userId: null,
+        isLoggedIn: false,
+        isLoading: true,
+    };
+
     it('should return the initial state', () => {
-        // reducer is called with undefined (not an state object) with an INIT action
-        // since redux does not know what to do with it. it returns the default state
-        expect(loginReducer(undefined, { type: '@@INIT' })).toEqual({
+        expect(loginReducer(undefined, { type: '@@INIT' })).toEqual(initialState);
+    });
+
+    it('should handle login', () => {
+        const prevState: LoginState = {
+            userId: null,
             isLoggedIn: false,
             isLoading: true,
-        });
-    });
+        };
 
-    it('should login when login is dispatched', () => {
-        expect(loginReducer({ isLoggedIn: false, isLoading: false }, login())).toEqual({
+        expect(loginReducer(prevState, login())).toEqual({
+            userId: null,
             isLoggedIn: true,
-            isLoading: false
+            isLoading: false,
         });
     });
 
-    it('should logout when logout is dispatched', () => {
-        expect(loginReducer({ isLoggedIn: true, isLoading: false }, logout())).toEqual({
+    it('should handle logout', () => {
+        const prevState: LoginState = {
+            userId: 123,
+            isLoggedIn: true,
+            isLoading: false,
+        };
+
+        expect(loginReducer(prevState, logout())).toEqual({
+            userId: 123,
             isLoggedIn: false,
-            isLoading: false
+            isLoading: false,
+        });
+    });
+
+    it('should handle setUserId', () => {
+        const prevState: LoginState = {
+            userId: null,
+            isLoggedIn: false,
+            isLoading: true,
+        };
+
+        expect(loginReducer(prevState, setUserId(42))).toEqual({
+            userId: 42,
+            isLoggedIn: false,
+            isLoading: true,
         });
     });
 });
