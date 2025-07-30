@@ -1,3 +1,4 @@
+import requestLogout from '@/components/auth/api/requestLogout';
 import RouterLinkWrapper from '@/components/RouterLink';
 import type { AppDispatch } from '@/store/';
 import { logout } from '@/store/loginSlice';
@@ -7,7 +8,6 @@ import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/mate
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import LinkedLogo from './LinkedLogo';
-import requestLogout from './requestLogout';
 
 export default function LoggedInMenu() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -21,8 +21,7 @@ export default function LoggedInMenu() {
 
     const dispatch: AppDispatch = useDispatch();
     const handleLogout = async () => {
-        const logState = false;
-        const result = await requestLogout(logState);
+        const result = await requestLogout();
 
         if (result.success) {
             dispatch(resetUserGrid());

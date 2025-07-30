@@ -1,11 +1,22 @@
+import * as requestLogoutModule from '@/components/auth/api/requestLogout';
 import LoggedInMenu from '@/components/header/LoggedInMenu';
-import * as requestLogoutModule from '@/components/header/requestLogout';
 import { HPProps } from '@/data/HomePage';
+import { logout } from '@/store/loginSlice';
 import type { PathAndReduxState } from '@/tests/utils/testRenderUtils';
 import { navigateTo, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, vi } from 'vitest';
+
+const mockDispatch = vi.fn();
+
+vi.mock('react-redux', async () => {
+    const actual = await vi.importActual('react-redux');
+    return {
+        ...actual,
+        useDispatch: vi.fn(() => mockDispatch),
+    };
+});
 
 describe('LoggedInMenu', () => {
     const renderUtilsComponent = () => {
@@ -130,11 +141,9 @@ describe('LoggedInMenu', () => {
             const playgroundLink = screen.getByRole('link', { name: /playground/i });
             expect(playgroundLink).toBeInTheDocument();
         });
-
-        // screen.debug();
     });
 
-    it('should logout a logged in user', async () => {
+    it('should logout a logged in user and change login state to isLoggedIn to false', async () => {
         const { user, openButton } = renderUtilsPage({
             route: '/',
             preloadedState: { login: { isLoggedIn: true } },
@@ -152,6 +161,7 @@ describe('LoggedInMenu', () => {
 
         await waitFor(() => {
             expect(mockLogoutRequest).toHaveBeenCalled();
+            expect(mockDispatch).toHaveBeenCalledWith(logout());
         });
     });
 });
