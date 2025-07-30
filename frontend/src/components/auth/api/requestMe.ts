@@ -14,7 +14,6 @@ const requestMe = async (): Promise<RequestMeResult | undefined> => {
         const { data: user } = await LaravelApiClient.get<User>('/me');
         const responseObj = setResponseValidationSuccess('User daten geholt und gelogged!');
 
-        // console.log('user: ', user);
         return {
             ...responseObj,
             userId: user.id,

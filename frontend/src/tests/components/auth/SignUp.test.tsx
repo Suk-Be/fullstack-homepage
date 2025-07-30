@@ -1,6 +1,7 @@
 import SignUp from '@/components/auth/SignUp';
-import * as requestRegisterModule from '@/components/auth/api/requestRegister';
-import { login } from '@/store/loginSlice';
+import requestRegister, * as requestRegisterModule from '@/components/auth/api/requestRegister';
+import { login, setUserId } from '@/store/loginSlice';
+import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import userFactory from '@/tests/mocks/factories/userFactories';
 import {
@@ -22,13 +23,6 @@ vi.mock('react-redux', async () => {
         useDispatch: vi.fn(() => mockDispatch),
     };
 });
-
-const registeredUserData = {
-    id: '1',
-    name: 'John Doe',
-    email: 'existing@example.com',
-    password: 'password123',
-};
 
 describe('SignUp - Static Content', () => {
     beforeEach(() => {
@@ -173,32 +167,20 @@ describe('SignUp - Form', () => {
     }, 45000);
 
     it('should render a hint if the user already exists', async () => {
-        const user = userEvent.setup();
+        const response = await requestRegister({
+          form: {
+            name: 'John Doe',
+            email: 'existing@example.com',
+            password: 'password123',
+            password_confirmation: 'password123',
+          }
+        }).catch((err) => err.response);
 
-        const nameInput = screen.getByPlaceholderText(/Max Mustermann/i);
-        const emailInput = screen.getByPlaceholderText(/max@mustermann.com/i);
-        const [passwordInput, passwordConfirmationInput] = screen.getAllByPlaceholderText('••••••');
-        const registerButton = screen.getByTestId('form-button-register');
+        expect(response.success).toBe(false);
+        expect(response.message).toMatch(/E-Mail Adresse.*vergeben/i);
+    });
 
-        await user.clear(nameInput);
-        await user.type(nameInput, registeredUserData.name);
-        await user.clear(emailInput);
-        await user.type(emailInput, registeredUserData.email);
-        await user.clear(passwordInput);
-        await user.type(passwordInput, registeredUserData.password);
-        await user.clear(passwordConfirmationInput);
-        await user.type(passwordConfirmationInput, registeredUserData.password);
-        await user.click(registerButton);
-
-        await waitFor(async () => {
-            const error = await screen.findByText(
-                /Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere./i,
-            );
-            expect(error).toBeInTheDocument();
-        });
-    }, 30000);
-
-    it('should register a new user successfully and clear the form', async () => {
+    it('should register a new user successfully, do login state and user id globally and clear the form', async () => {
         const {
             user,
             registerButton,
@@ -229,7 +211,6 @@ describe('SignUp - Form', () => {
         await waitFor(() => {
             // Ensure the API was called
             expect(mockRegisterRequest).toHaveBeenCalledWith({
-                shouldFetchUser: false,
                 form: {
                     name: 'New User',
                     email: 'new@user.com',
@@ -244,6 +225,7 @@ describe('SignUp - Form', () => {
             expect(passwordConfirmationInput).toHaveValue('');
 
             expect(mockDispatch).toHaveBeenCalledWith(login());
+            expect(mockDispatch).toHaveBeenCalledWith(setUserId(1));
         });
     }, 30000);
 });

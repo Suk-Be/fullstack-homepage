@@ -10,15 +10,15 @@ import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -227,7 +227,11 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 autoComplete="email"
                                 variant="outlined"
                                 error={fieldErrors.email.hasError || !!errors.email}
-                                helperText={fieldErrors.email.message}
+                                helperText={
+                                  fieldErrors.email.hasError ? (
+                                    <span data-testid="email-error">{fieldErrors.email.message}</span>
+                                  ) : null
+                                }
                                 color={fieldErrors.email.hasError ? 'error' : 'primary'}
                                 value={form.email}
                                 onChange={handleChange}

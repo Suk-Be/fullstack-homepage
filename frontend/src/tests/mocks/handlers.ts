@@ -4,7 +4,6 @@ import { forgotPasswordResponseSchema } from '@/schemas/forgotPasswordSchema';
 import { loginResponseSchema } from '@/schemas/loginSchema';
 import apiBaseUrl from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
-import { registeredUserData } from './data';
 import { db } from './db';
 
 const api = apiBaseUrl();
@@ -38,28 +37,30 @@ export const handlers = [
             password_confirmation: string;
         };
 
-        // Mock error response for existing user registration
-        if (body.email === registeredUserData.email) {
-            return HttpResponse.json(
-                {
-                    message: ErrorMessages.SignUp.responseEmail,
-                    fieldErrors: {
-                        email: [ErrorMessages.SignUp.responseEmail],
-                    },
+        const existingUser = db.user.findFirst({
+          where: {
+              email: {
+                  equals: body.email,
+              },
+          },
+        });
+
+        if (existingUser) {
+          return HttpResponse.json(
+            {
+                message: ErrorMessages.SignUp.responseEmail,
+                fieldErrors: {
+                    email: [ErrorMessages.SignUp.responseEmail],
                 },
-                { status: 422 },
-            );
-        }
+            },
+            { status: 422 },
+        );
+    }
 
-        const { email, name, password, password_confirmation } = body;
-
-        // successful user creation
+        // ansonsten User erstellen
         db.user.create({
             id: String(Date.now()),
-            email,
-            name,
-            password,
-            password_confirmation,
+            ...body,
         });
 
         return HttpResponse.json(

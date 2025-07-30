@@ -1,5 +1,6 @@
 import requestRegister from '@/components/auth/api/requestRegister';
 import { registeredUserData } from '@/tests/mocks/data';
+import { db } from '@/tests/mocks/db';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { describe, expect, it, vi } from 'vitest';
@@ -31,6 +32,8 @@ describe('requestRegister', () => {
   });
 
   it('gibt einen Validierungsfehler zurück, wenn E-Mail schon existiert', async () => {
+    db.user.create(registeredUserData);
+
     const result = await requestRegister({
       form: {
         ...validForm,
