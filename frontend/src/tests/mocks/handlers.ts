@@ -2,7 +2,6 @@ import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import { forgotPasswordResponseSchema } from '@/schemas/forgotPasswordSchema';
 import { loginResponseSchema } from '@/schemas/loginSchema';
-import { registerResponseSchema } from '@/schemas/registerSchema';
 import apiBaseUrl from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
 import { registeredUserData } from './data';
@@ -39,24 +38,12 @@ export const handlers = [
             password_confirmation: string;
         };
 
-        const parseResult = registerResponseSchema.safeParse(body);
-
-        if (!parseResult.success) {
-            return HttpResponse.json(
-                {
-                    message: 'Invalid data',
-                    errors: parseResult.error.flatten(),
-                },
-                { status: 422 },
-            );
-        }
-
         // Mock error response for existing user registration
         if (body.email === registeredUserData.email) {
             return HttpResponse.json(
                 {
                     message: ErrorMessages.SignUp.responseEmail,
-                    errors: {
+                    fieldErrors: {
                         email: [ErrorMessages.SignUp.responseEmail],
                     },
                 },
@@ -75,7 +62,15 @@ export const handlers = [
             password_confirmation,
         });
 
-        return HttpResponse.json({ id: 1, name, email }, { status: 201 });
+        return HttpResponse.json(
+            {
+                id: 1,
+                name: body.name,
+                email: body.email,
+                message: 'Die Registrierung hat geklappt!',
+            },
+            { status: 201 },
+        );
     }),
 
     http.post(`${api}/auth/spa/login`, async (ctx) => {

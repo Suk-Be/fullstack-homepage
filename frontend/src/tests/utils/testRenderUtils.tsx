@@ -1,7 +1,7 @@
 import routes from '@/routes';
 import type { RootState } from '@/store';
-import layoutSlice from '@/store/layoutSlice';
 import loginSlice from '@/store/loginSlice';
+import userGridSlice from '@/store/userGridSlice';
 import { server } from '@/tests/mocks/server';
 import AppThemeProvider from '@/themes/AppTheme';
 import apiBaseUrl from '@/utils/apiBaseUrl';
@@ -44,7 +44,7 @@ const authProviderUrls = [
 
 const rootReducer = combineReducers({
     login: loginSlice,
-    layout: layoutSlice,
+    userGrid: userGridSlice,
 });
 
 type PreloadedState<T> = Partial<T> | {};
@@ -176,10 +176,11 @@ const renderWithProvidersDOM = (
 };
 
 export {
-    authProviderUrls,
-    navigateTo,
-    renderWithProviders,
-    renderWithProvidersDOM,
-    simluateDelay,
-    simulateError,
+  authProviderUrls,
+  navigateTo,
+  renderWithProviders,
+  renderWithProvidersDOM,
+  simluateDelay,
+  simulateError
 };
+

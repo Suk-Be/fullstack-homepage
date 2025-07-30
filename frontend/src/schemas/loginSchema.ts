@@ -3,7 +3,7 @@ import z from 'zod';
 
 export const loginResponseSchema = z.object({
     email: z.string().email({ message: ErrorMessages.SignIn.responseEmail }),
-    password: z.string().min(8, { message: ErrorMessages.SignIn.password }),
+    password: z.string().min(1, { message: ErrorMessages.SignIn.password }),
 });
 
 export const loginInputSchema = z.object({
