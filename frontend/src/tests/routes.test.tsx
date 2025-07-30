@@ -116,7 +116,7 @@ describe('routes', () => {
                     },
                     userGrid: {
                         userId: 123,
-                        savedGrids: [],
+                        savedGrids: {},
                     },
                 },
             });
