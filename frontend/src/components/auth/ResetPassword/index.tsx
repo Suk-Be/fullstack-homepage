@@ -10,14 +10,14 @@ import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -137,7 +137,7 @@ const ResetPassword = () => {
 
         if (result.success) {
             setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
-            dispatch(login()); // Dispatch action to set isLoggedIn state to be true
+            dispatch(login());
             if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
                 setTimeout(() => navigate('/'), 3000);
             }
@@ -184,7 +184,9 @@ const ResetPassword = () => {
         return (
             <SignInContainer>
                 <Card>
-                    <Typography variant="h5" color="error">{generalErrorMessage}</Typography>
+                    <Typography variant="h5" color="error">
+                        {generalErrorMessage}
+                    </Typography>
                     <Button onClick={() => navigate('/')}>Zurück zum Login</Button>
                 </Card>
             </SignInContainer>

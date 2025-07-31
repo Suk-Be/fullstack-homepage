@@ -27,8 +27,6 @@ describe('CodeButton', () => {
     it('should render with "Show Markup" icon and text', () => {
         const { text } = renderComponent(buttonText.showMarkup[1]);
 
-        screen.debug();
-
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
         expect(screen.getByLabelText('icon with closed eye')).toBeInTheDocument();
