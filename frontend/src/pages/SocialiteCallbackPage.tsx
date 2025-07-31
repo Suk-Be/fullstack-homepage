@@ -3,6 +3,7 @@ import LaravelApiClient from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
 import { login, logout, setUserId } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userGridSlice';
+import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -30,10 +31,13 @@ const SocialiteCallbackPage = () => {
                 dispatch(login());
                 navigate('/');
             })
-            .catch((err) => {
-                if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
-                    console.log('/me failed:', err);
-                }
+            .catch((error) => {
+                const axiosStatus = getAxiosStatus(error);
+                logRecoverableError({
+                    context: '[Auth] Failed to get cookies:',
+                    error,
+                    extra: { axiosStatus },
+                });
 
                 dispatch(resetUserGrid());
                 dispatch(logout());
