@@ -31,7 +31,10 @@ const SocialiteCallbackPage = () => {
                 navigate('/');
             })
             .catch((err) => {
-                console.log('/me failed:', err);
+                if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
+                    console.log('/me failed:', err);
+                }
+
                 dispatch(resetUserGrid());
                 dispatch(logout());
                 navigate('/');
