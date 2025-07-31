@@ -1,8 +1,9 @@
+import { testId } from '@/utils/testId';
 import { PropsWithChildren } from 'react';
 
 const AsideRight = ({ children }: PropsWithChildren) => {
     return (
-        <div
+        <aside
             className="
             flex order-3 flex-wrap 
             rounded-lg 
@@ -13,6 +14,7 @@ const AsideRight = ({ children }: PropsWithChildren) => {
             border-2 
             overflow-y-auto 
             max-h-full max-height: 95.3vh"
+            {...testId('aside-right')}
         >
             <div
                 className="
@@ -21,7 +23,7 @@ const AsideRight = ({ children }: PropsWithChildren) => {
             >
                 {children}
             </div>
-        </div>
+        </aside>
     );
 };
 

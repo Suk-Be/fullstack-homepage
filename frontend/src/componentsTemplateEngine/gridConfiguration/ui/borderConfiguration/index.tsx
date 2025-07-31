@@ -1,8 +1,9 @@
-import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/HeadlineAside';
-import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
-import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/RangeSlider';
-import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/StytledCheckbox';
+import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StytledCheckbox';
+import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
+import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
+import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/RangeSlider';
 import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
+import { testId } from '@/utils/testId';
 
 type Props = {
     toggled: boolean;
@@ -13,7 +14,7 @@ type Props = {
 
 const BorderConfiguration = ({ toggled, handleChange, grid, handleToggle }: Props) => {
     return (
-        <section data-testid="border-configuration" id="border-configuration">
+        <section {...testId('border-configuration')} id="border-configuration">
             <HeadlineAside children="Border" />
 
             <div className="grid grid-cols-[auto_1fr] gap-4 items-center">

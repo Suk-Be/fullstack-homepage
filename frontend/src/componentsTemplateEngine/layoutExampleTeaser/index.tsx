@@ -1,10 +1,11 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
+import { testId } from '@/utils/testId';
 import { Link } from 'react-router-dom';
 import GridExampleTeaser from './ExampleTeaser';
 
 const ExampleTeaser = () => {
     return (
-        <aside data-testid="layout-presets-teaser">
+        <div {...testId('layout-example-teaser')}>
             <h2 className="text-lg font-bold pt-4">Layout Example Grids</h2>
             <Link to="/template-engine/presets" className="group">
                 <GridExampleTeaser />
@@ -25,7 +26,7 @@ const ExampleTeaser = () => {
                     Browse Examples
                 </Button>
             </Link>
-        </aside>
+        </div>
     );
 };
 

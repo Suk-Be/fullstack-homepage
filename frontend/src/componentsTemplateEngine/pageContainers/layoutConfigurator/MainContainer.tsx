@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { PropsWithChildren } from 'react';
 
 const MainContainer = ({ children }: PropsWithChildren) => {
@@ -9,6 +10,7 @@ const MainContainer = ({ children }: PropsWithChildren) => {
             flex-col lg:flex-row 
             full 
             bg-white text-gray-700"
+            {...testId('main-container')}
         >
             {children}
         </div>

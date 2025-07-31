@@ -1,7 +1,8 @@
-import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
+import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
 import { GridProps, HandleChange } from '@/types/templateEngine';
-import HeadlineAside from './HeadlineAside';
-import RangeSlider from './RangeSlider';
+import { testId } from '@/utils/testId';
+import HeadlineAside from './shared-comnponents/HeadlineAside';
+import RangeSlider from './shared-comnponents/RangeSlider';
 
 type Props = {
     handleChange: HandleChange;
@@ -10,7 +11,7 @@ type Props = {
 
 const PaddingConfiguration = ({ handleChange, grid }: Props) => {
     return (
-        <section data-testid="padding-configuration">
+        <section {...testId('padding-configuration')}>
             <HeadlineAside children="Padding" />
             <RangeSlider
                 max="5"

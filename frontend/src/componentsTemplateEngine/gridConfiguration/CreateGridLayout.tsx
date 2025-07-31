@@ -1,4 +1,5 @@
 import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
+import { testId } from '@/utils/testId';
 import { CSSProperties, FC } from 'react';
 
 interface GridProps {
@@ -8,7 +9,7 @@ interface GridProps {
 
 const CreateGridLayout: FC<GridProps> = ({ style, arr }) => {
     return (
-        <div className="grid border-gray-light/25" style={style} data-testid="dynamic-layout">
+        <div className="grid border-gray-light/25" style={style} {...testId('dynamic-grid')}>
             {arr.map((i) => (
                 <GridElement
                     key={i.toString()}

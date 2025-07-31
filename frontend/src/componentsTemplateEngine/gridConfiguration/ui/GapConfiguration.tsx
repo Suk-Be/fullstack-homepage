@@ -1,7 +1,8 @@
-import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/InputLabel';
+import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
 import { GridProps, HandleChange } from '@/types/templateEngine';
-import HeadlineAside from './HeadlineAside';
-import RangeSlider from './RangeSlider';
+import { testId } from '@/utils/testId';
+import HeadlineAside from './shared-comnponents/HeadlineAside';
+import RangeSlider from './shared-comnponents/RangeSlider';
 
 type Props = {
     handleChange: HandleChange;
@@ -10,7 +11,7 @@ type Props = {
 
 const GapConfiguration = ({ handleChange, grid }: Props) => {
     return (
-        <section data-testid="gap-configuration">
+        <section {...testId('gap-configuration')}>
             <HeadlineAside children="Options" />
             <RangeSlider max="7" value={grid.gap} onChange={handleChange('gap')} placeholder="gap">
                 <InputLabel children="Gap: " />

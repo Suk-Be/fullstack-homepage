@@ -1,7 +1,8 @@
 import DialogModal from '@/componentsTemplateEngine/createGridMarkupWithModal/DialogModal';
-import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/HeadlineAside';
+import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
 import { DynamicGridProps } from '@/types/templateEngine';
 import { buttonText } from '@/utils/templateEngine/buttonText';
+import { testId } from '@/utils/testId';
 import { useState } from 'react';
 
 const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
@@ -25,8 +26,8 @@ const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridPr
         });
     }
     return (
-        <aside data-testid="create-markup-teaser">
-            <HeadlineAside children="Export Code" />
+        <div {...testId('create-markup-teaser')}>
+            <HeadlineAside children="Erstelle HTML" />
             <DialogModal
                 inlineStyles={inlineStyles}
                 gridItemsArray={gridItemsArray}
@@ -35,7 +36,7 @@ const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridPr
                 handleOpen={handleOpen}
                 handleClose={handleClose}
             />
-        </aside>
+        </div>
     );
 };
 

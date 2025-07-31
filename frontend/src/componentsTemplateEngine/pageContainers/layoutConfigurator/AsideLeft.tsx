@@ -1,8 +1,9 @@
+import { testId } from '@/utils/testId';
 import { PropsWithChildren } from 'react';
 
 const AsideLeft = ({ children }: PropsWithChildren) => {
     return (
-        <div
+        <aside
             className="
             flex flex-col flex-wrap 
             order-2 lg:order-1 
@@ -13,9 +14,10 @@ const AsideLeft = ({ children }: PropsWithChildren) => {
             lg:p-4 
             overflow-y-auto 
             max-h-full max-height: 95.3vh"
+            {...testId('aside-left')}
         >
             {children}
-        </div>
+        </aside>
     );
 };
 

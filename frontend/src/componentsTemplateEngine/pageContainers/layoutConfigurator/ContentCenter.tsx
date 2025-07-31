@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { PropsWithChildren } from 'react';
 
 const ContentCenter = ({ children }: PropsWithChildren) => {
@@ -11,6 +12,7 @@ const ContentCenter = ({ children }: PropsWithChildren) => {
               lg:pt-[8rem] 
               justify-center items-center 
               mb-4 lg:mb-0"
+            {...testId('content-center')}
         >
             {children}
         </div>

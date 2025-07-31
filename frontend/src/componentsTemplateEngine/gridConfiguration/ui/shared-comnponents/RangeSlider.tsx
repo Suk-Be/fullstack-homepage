@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { Field, Input } from '@headlessui/react';
 import { ChangeEventHandler, ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
@@ -31,7 +32,7 @@ const RangeSlider: FC<RangeSliderProps> = ({
                       bg-white text-gray-dark 
                       px-2 py-0.5 
                       inline-block"
-                    data-testid={`${placeholder}-display-value`}
+                    {...testId(`${placeholder}-display-value`)}
                 >
                     {value}
                 </span>
@@ -47,6 +48,7 @@ const RangeSlider: FC<RangeSliderProps> = ({
                 onChange={onChange}
                 disabled={disabled}
                 placeholder={placeholder}
+                {...testId(`${placeholder}-value`)}
             />
         </Field>
     );
