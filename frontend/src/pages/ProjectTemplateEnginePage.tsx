@@ -1,6 +1,6 @@
 import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
-import GridConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
+import LayoutConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
 import GridSaver from '@/componentsTemplateEngine/gridSaver';
 import ExampleTeaser from '@/componentsTemplateEngine/layoutExampleTeaser';
 import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
@@ -45,7 +45,7 @@ const ProjectTemplateEnginePage: FC = () => {
         <div className="flex flex-col w-full bg-black mb-[5rem]" {...testId('tempate-engine-page')}>
             <MainContainer>
                 <AsideLeft>
-                    <GridConfiguration
+                    <LayoutConfiguration
                         grid={grid}
                         handleChange={handleChange}
                         toggled={toggled}
