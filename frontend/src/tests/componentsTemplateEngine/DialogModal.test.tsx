@@ -60,8 +60,6 @@ describe('DialogModal', () => {
             );
         });
 
-        screen.debug(screen.getByTestId('dialog-modal'));
-
         const openButton = screen.getByText('HTML + Tailwind');
 
         const closeButton = screen.getByText(/close/i);
