@@ -8,6 +8,7 @@ import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText';
+import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
 function DialogModal({
@@ -47,16 +48,15 @@ function DialogModal({
     }
 
     return (
-        <div className="flex flex-col gap-2 font-sans" data-testid="dialog-modal">
+        <div className="flex flex-col gap-2 font-sans" {...testId('dialog-modal')}>
             <Button
                 className="
                   w-full 
                   min-h-[200px]
                   bg-gray text-white"
                 onClick={handleOpen}
-                data-testid="button-open"
             >
-                Export HTML + Tailwind
+                HTML + Tailwind
             </Button>
 
             <Dialog
@@ -64,7 +64,7 @@ function DialogModal({
                 as="div"
                 className="relative z-10 focus:outline-none"
                 onClose={handleClose}
-                data-testid="dialog-markup"
+                {...testId('dialog-markup')}
             >
                 <DialogBackdrop className="fixed inset-0 bg-black/50 transition-opacity data-[closed]:opacity-0" />
 
