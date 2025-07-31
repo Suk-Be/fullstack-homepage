@@ -1,7 +1,7 @@
-import Button from '../../componentsTemplateEngine/buttons/Button';
-import { HideCodeSVG, ShowCodeSVG } from '../svgs';
-import { buttonText } from '../../utils/templateEngine/buttonText';
 import { ComponentPropsWithoutRef, FC } from 'react';
+import Button from '../../componentsTemplateEngine/buttons/Button';
+import { buttonText } from '../../utils/templateEngine/buttonText';
+import { HideCodeSVG, ShowCodeSVG } from '../svgs';
 
 const CodeButton: FC<ComponentPropsWithoutRef<'button'>> = ({ onClick, children }) => {
     const SVG = () => {

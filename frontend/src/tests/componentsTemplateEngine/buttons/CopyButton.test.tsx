@@ -1,14 +1,14 @@
+import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
+import { buttonText } from '@/utils/templateEngine/buttonText';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { buttonText } from '../../utils/templateEngine/buttonText';
-import CodeButton from './CodeButton';
 
-describe('CodeButton', () => {
-    const renderComponent = (text = buttonText.showMarkup[0]) => {
+describe('CopyButton', () => {
+    const renderComponent = (text = buttonText.copyToClipboard[0]) => {
         const onClick = vi.fn();
 
-        render(<CodeButton onClick={onClick}>{text}</CodeButton>);
+        render(<CopyButton onClick={onClick}>{text}</CopyButton>);
 
         return {
             text,
@@ -17,21 +17,19 @@ describe('CodeButton', () => {
     };
 
     it('should render with a default text and Icon', () => {
-        const { text } = renderComponent(buttonText.showMarkup[0]);
+        const { text } = renderComponent(buttonText.copyToClipboard[0]);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
-        expect(screen.getByLabelText('icon with open eye')).toBeInTheDocument();
+        expect(screen.getByLabelText('icon copy board')).toBeInTheDocument();
     });
 
-    it('should render with "Show Markup" icon and text', () => {
-        const { text } = renderComponent(buttonText.showMarkup[1]);
-
-        screen.debug();
+    it('should render with a copy-icon-check when the button text is "Is copied to Clipboard"', () => {
+        const { text } = renderComponent(buttonText.copyToClipboard[1]);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
-        expect(screen.getByLabelText('icon with closed eye')).toBeInTheDocument();
+        expect(screen.getByLabelText('icon copy board check')).toBeInTheDocument();
     });
 
     it('should call a function when clicked', async () => {

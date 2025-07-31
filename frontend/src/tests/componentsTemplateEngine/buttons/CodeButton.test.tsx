@@ -1,14 +1,14 @@
+import CodeButton from '@/componentsTemplateEngine/buttons/CodeButton';
 import { buttonText } from '@/utils/templateEngine/buttonText';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import CopyButton from './CopyButton';
 import { vi } from 'vitest';
 
-describe('CopyButton', () => {
-    const renderComponent = (text = buttonText.copyToClipboard[0]) => {
+describe('CodeButton', () => {
+    const renderComponent = (text = buttonText.showMarkup[0]) => {
         const onClick = vi.fn();
 
-        render(<CopyButton onClick={onClick}>{text}</CopyButton>);
+        render(<CodeButton onClick={onClick}>{text}</CodeButton>);
 
         return {
             text,
@@ -17,19 +17,21 @@ describe('CopyButton', () => {
     };
 
     it('should render with a default text and Icon', () => {
-        const { text } = renderComponent(buttonText.copyToClipboard[0]);
+        const { text } = renderComponent(buttonText.showMarkup[0]);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
-        expect(screen.getByLabelText('icon copy board')).toBeInTheDocument();
+        expect(screen.getByLabelText('icon with open eye')).toBeInTheDocument();
     });
 
-    it('should render with a copy-icon-check when the button text is "Is copied to Clipboard"', () => {
-        const { text } = renderComponent(buttonText.copyToClipboard[1]);
+    it('should render with "Show Markup" icon and text', () => {
+        const { text } = renderComponent(buttonText.showMarkup[1]);
+
+        screen.debug();
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
-        expect(screen.getByLabelText('icon copy board check')).toBeInTheDocument();
+        expect(screen.getByLabelText('icon with closed eye')).toBeInTheDocument();
     });
 
     it('should call a function when clicked', async () => {
