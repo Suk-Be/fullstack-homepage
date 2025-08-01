@@ -27,6 +27,6 @@ describe('SimpleGrid', () => {
 
         const gridElements = screen.getAllByTestId('grid-element');
 
-        expect(gridElements[0].className).toContain('gap-4');
+        expect(gridElements[0].className).toContain('h-24 bg-gray-light');
     });
 });

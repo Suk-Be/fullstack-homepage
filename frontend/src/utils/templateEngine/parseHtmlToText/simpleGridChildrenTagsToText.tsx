@@ -1,4 +1,3 @@
-// import SimpleGrid from '../../../../componentsTemplateEngine/gridLayout/layoutPresets/SimpleGrid';
 import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
 import {
     createHtmlAsTextFromPassedComponent,
@@ -14,7 +13,7 @@ import {
  */
 
 const domSimpleGrid = parseStringToADomModel(
-    createHtmlAsTextFromPassedComponent(<SimpleGrid className="gap-4" />),
+    createHtmlAsTextFromPassedComponent(<SimpleGrid layoutGapConfig="gap-4" />),
 ).body.firstChild?.childNodes;
 
 const simpleGridChildrenTagsToText = Array.from(domSimpleGrid ?? []).map((elem) => {

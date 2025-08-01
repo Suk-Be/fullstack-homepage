@@ -1,0 +1,64 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SimpleGridMarkup > matches snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="grid grid-cols-1 p-4"
+  >
+    <div
+      class="bg-gray-dark text-green p-6 rounded-xl"
+    >
+      <code
+        class="block pb-4"
+      >
+        &lt;div class="grid grid-cols-3 xl:grid-cols-5 px-4 py-4 gap-2" data-testid="grid-container"&gt;
+      </code>
+      <code
+        class="block pl-4"
+      >
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-gray-light"&gt;&lt;/div&gt;
+        </div>
+      </code>
+      <code
+        class="block pt-4"
+      >
+        &lt;/div&gt;
+      </code>
+    </div>
+  </div>
+</DocumentFragment>
+`;
