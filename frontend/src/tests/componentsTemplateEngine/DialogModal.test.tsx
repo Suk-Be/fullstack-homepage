@@ -1,5 +1,5 @@
 import DialogModal from '@/componentsTemplateEngine/createGridMarkupWithModal/DialogModal';
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { renderWithProvidersDOM } from '../utils/testRenderUtils';
@@ -28,7 +28,7 @@ describe('DialogModal', () => {
 
         const isOpen = {
             open: true,
-            text: buttonText.copyToClipboard[1],
+            text: copyButtonText.isCopiedToClipboard,
             isCopied: false,
         };
 

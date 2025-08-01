@@ -1,10 +1,10 @@
+import MarkupCode from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/MarkupCode';
 import { copyButtonText, toggleButtonText } from '@/utils/templateEngine/buttonText';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText';
 import { FC, MouseEventHandler, ReactNode, useState } from 'react';
-import MarkupCode from './MarkupCode';
 import ToggleAndCopyButtonContainer from './ToggleAndCopyButtonContainer';
 
 type ClickHandler = MouseEventHandler<HTMLButtonElement>;

@@ -1,11 +1,11 @@
 import CodeButton from '@/componentsTemplateEngine/buttons/CodeButton';
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { toggleButtonText } from '@/utils/templateEngine/buttonText';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
 describe('CodeButton', () => {
-    const renderComponent = (text = buttonText.showMarkup[0]) => {
+    const renderComponent = (text = toggleButtonText.showMarkup[0]) => {
         const onClick = vi.fn();
 
         render(<CodeButton onClick={onClick}>{text}</CodeButton>);
@@ -17,7 +17,7 @@ describe('CodeButton', () => {
     };
 
     it('should render with a default text and Icon', () => {
-        const { text } = renderComponent(buttonText.showMarkup[0]);
+        const { text } = renderComponent(toggleButtonText.showMarkup);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('CodeButton', () => {
     });
 
     it('should render with "Show Markup" icon and text', () => {
-        const { text } = renderComponent(buttonText.showMarkup[1]);
+        const { text } = renderComponent(toggleButtonText.hideMarkup);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();

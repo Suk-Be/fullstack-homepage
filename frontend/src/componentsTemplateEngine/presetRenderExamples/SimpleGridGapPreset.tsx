@@ -1,5 +1,5 @@
-import GenerateMarkupContainer from '@/componentsTemplateEngine/presetRenderExamples/staticMarkupGenerator';
-import SimpleGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/staticMarkupGenerator/generateMarkup/SimpleGridMarkup';
+import GenerateMarkupContainer from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup';
+import SimpleGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/SimpleGridMarkup';
 import { testId } from '@/utils/testId';
 import Headline from './Headline';
 import SimpleGrid from './SimpleGrid';

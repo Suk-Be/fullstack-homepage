@@ -1,11 +1,11 @@
 import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
 describe('CopyButton', () => {
-    const renderComponent = (text = buttonText.copyToClipboard[0]) => {
+    const renderComponent = (text = copyButtonText.copyToClipboard) => {
         const onClick = vi.fn();
 
         render(<CopyButton onClick={onClick}>{text}</CopyButton>);
@@ -17,7 +17,7 @@ describe('CopyButton', () => {
     };
 
     it('should render with a default text and Icon', () => {
-        const { text } = renderComponent(buttonText.copyToClipboard[0]);
+        const { text } = renderComponent(copyButtonText.copyToClipboard);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('CopyButton', () => {
     });
 
     it('should render with a copy-icon-check when the button text is "Is copied to Clipboard"', () => {
-        const { text } = renderComponent(buttonText.copyToClipboard[1]);
+        const { text } = renderComponent(copyButtonText.isCopiedToClipboard);
 
         expect(screen.getByText(text)).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();

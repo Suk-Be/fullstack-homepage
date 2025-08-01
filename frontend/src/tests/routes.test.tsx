@@ -89,7 +89,7 @@ describe('routes', () => {
         },
         {
             path: '/template-engine/presets',
-            elementHeadline: 'Layout Example Grids',
+            elementHeadline: 'Simple Example Grids',
             page: 'ProjectTemplateEnginePresetsPage',
             component: <ProjectTemplateEnginePresetsPage />,
             level: 1,

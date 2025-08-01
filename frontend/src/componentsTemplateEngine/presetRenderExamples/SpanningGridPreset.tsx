@@ -1,6 +1,6 @@
-import MarkupGenerator from '@/componentsTemplateEngine/presetRenderExamples/staticMarkupGenerator';
-import ColspanningGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/staticMarkupGenerator/ColspanningGridMarkup';
-import RowspanningGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/staticMarkupGenerator/RowspanningGridMarkup';
+import MarkupGenerator from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup';
+import ColspanningGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/ColspanningGridMarkup';
+import RowspanningGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/RowspanningGridMarkup';
 import { testId } from '@/utils/testId';
 import ColspanningGrid from './ColspanningGrid';
 import Headline from './Headline';
