@@ -1,7 +1,7 @@
 import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
 import simpleGridChildrenTagsToText from '@/utils/templateEngine/parseHtmlToText/simpleGridChildrenTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import GridMarkupWrapper from '../generatorElements/GridMarkupWrapper';
+import GridMarkupWrapper from './GridMarkupWrapper';
 
 interface SimpleGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     layoutGapConfig: 'gap-2' | 'gap-4';

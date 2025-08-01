@@ -2,7 +2,7 @@ import ColumnsSpanningGrid from '@/componentsTemplateEngine/presetRenderExamples
 import colSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/colSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
-import GridMarkupWrapper from '../generatorElements/GridMarkupWrapper';
+import GridMarkupWrapper from './GridMarkupWrapper';
 
 interface ColspanningGridMarkupProps extends ComponentPropsWithoutRef<'div'> {
     hasCol: 'col-span-2';
