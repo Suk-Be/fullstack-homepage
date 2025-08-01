@@ -1,7 +1,10 @@
+import ChildrenTags from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/ChildrenTags';
+import { ClosingTag } from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/WrappingTag';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText/index';
+import { testId } from '@/utils/testId';
 import {
     ComponentPropsWithoutRef,
     FC,
@@ -9,10 +12,7 @@ import {
     ReactElement,
     ReactNode,
 } from 'react';
-import ChildrenTags from '../generatorElements/ChildrenTags';
-import ParentTag from '../generatorElements/ParentTag';
 import OpeningTagWithTranspiledTailwindClasses from './OpeningTagWithTranspiledTailwindClasses';
-import { testId } from '@/utils/testId';
 
 interface LayoutDivProps extends ComponentPropsWithoutRef<'div'> {
     Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
@@ -28,8 +28,6 @@ const CreateGridMarkup: FC<LayoutDivProps> = ({ Component }) => {
         return div?.innerHTML;
     });
 
-    const ClosingTag = () => <ParentTag isClosingTag={true} Component={Component} />;
-
     return (
         <div className="grid grid-cols-1 p-4">
             <div
@@ -41,7 +39,7 @@ const CreateGridMarkup: FC<LayoutDivProps> = ({ Component }) => {
                     Component={Component}
                 />
                 <ChildrenTags arr={createInnerHtmlElements} />
-                <ClosingTag />
+                <ClosingTag component={Component} />
             </div>
         </div>
     );

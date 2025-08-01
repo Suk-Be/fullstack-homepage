@@ -1,22 +1,36 @@
-import MarkupGenerator from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator';
+import GenerateMarkupContainer from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator';
 import SimpleGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator/SimpleGridMarkup';
+import { testId } from '@/utils/testId';
 import Headline from './Headline';
 import SimpleGrid from './SimpleGrid';
 
 type SimpleGridPresetProps = {
     heading: string;
-    className: 'gap-4' | 'gap-2';
+    layoutGapConfig: 'gap-4' | 'gap-2';
+    testID: string;
 };
 
-const SimpleGridGapPreset = ({ heading, className }: SimpleGridPresetProps) => {
+const SimpleGridGapPreset = ({ heading, layoutGapConfig, testID }: SimpleGridPresetProps) => {
+    const RenderGrid = () => {
+        return (
+            <div className="w-full h-full">
+                <SimpleGrid layoutGapConfig={layoutGapConfig} />
+            </div>
+        );
+    };
+
+    const MarkupGrid = () => (
+        <GenerateMarkupContainer
+            component={<SimpleGridMarkup layoutGapConfig={layoutGapConfig} />}
+        />
+    );
+
     return (
-        <section className="w-full mx-auto">
+        <section className="w-full mx-auto" {...testId(testID)}>
             <Headline>{heading}</Headline>
             <div className="flex flex-col">
-                <div className="w-full h-full">
-                    <SimpleGrid className={className} />
-                </div>
-                <MarkupGenerator gridMarkupComponent={<SimpleGridMarkup hasGap={className} />} />
+                <RenderGrid />
+                <MarkupGrid />
             </div>
         </section>
     );

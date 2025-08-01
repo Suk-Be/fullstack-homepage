@@ -1,34 +1,48 @@
 import { toTextClosingTagFrom, toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
+type ComponentProps =
+    | ReactElement<unknown, string | JSXElementConstructor<any>>
+    | Iterable<ReactNode>;
+
 type WrappingTagProps = {
     isOpeningTag?: boolean;
     isClosingTag?: boolean;
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
+    component: ComponentProps;
 };
 
 const WrappingTag: FC<WrappingTagProps> = ({
     isOpeningTag = false,
     isClosingTag = false,
-    Component,
+    component,
 }) => {
-    const styleSpacingAroundCodeTop = "block pb-4"
-    const styleSpacingAroundCodeBottom = "block pt-4"
+    const styleSpacingAroundCodeTop = 'block pb-4';
+    const styleSpacingAroundCodeBottom = 'block pt-4';
 
     const Tag = () => {
         if (isOpeningTag) {
-            return <code className={styleSpacingAroundCodeTop}>
-              {toTextOpeningTagFrom(Component)}
-            </code>;
+            return (
+                <code className={styleSpacingAroundCodeTop}>{toTextOpeningTagFrom(component)}</code>
+            );
         }
         if (isClosingTag) {
-            return <code className={styleSpacingAroundCodeBottom}>
-              {toTextClosingTagFrom(Component)}
-            </code>;
+            return (
+                <code className={styleSpacingAroundCodeBottom}>
+                    {toTextClosingTagFrom(component)}
+                </code>
+            );
         }
+        return null;
     };
 
     return <Tag />;
 };
 
-export default WrappingTag;
+const OpeningTag: FC<{ component: ComponentProps }> = ({ component }) => (
+    <WrappingTag isOpeningTag={true} component={component} />
+);
+const ClosingTag: FC<{ component: ComponentProps }> = ({ component }) => (
+    <WrappingTag isClosingTag={true} component={component} />
+);
+
+export { ClosingTag, OpeningTag, WrappingTag };

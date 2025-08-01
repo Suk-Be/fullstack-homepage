@@ -1,6 +1,7 @@
 import RowspanningGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/RowspanningGridMarkup';
 import MarkupGenerator from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator';
 import ColspanningGridMarkup from '@/componentsTemplateEngine/gridConfiguration/markUp/staticMarkupGenerator/ColspanningGridMarkup';
+import { testId } from '@/utils/testId';
 import ColspanningGrid from './ColspanningGrid';
 import Headline from './Headline';
 import RowspanningGrid from './RowspanningGrid';
@@ -8,11 +9,12 @@ import RowspanningGrid from './RowspanningGrid';
 type SpanningGridPresetProps = {
     heading: string;
     colSpan?: 'col-span-2';
+    testID: string;
 };
 
-const SpanningGridPreset = ({ heading, colSpan }: SpanningGridPresetProps) => {
+const SpanningGridPreset = ({ heading, colSpan, testID }: SpanningGridPresetProps) => {
     return (
-        <section className="w-full mx-auto">
+        <section className="w-full mx-auto" {...testId(testID)}>
             <Headline>{heading}</Headline>
             <div className="flex flex-col">
                 <div className="w-full h-full">
@@ -21,11 +23,9 @@ const SpanningGridPreset = ({ heading, colSpan }: SpanningGridPresetProps) => {
                     </div>
                 </div>
                 {colSpan ? (
-                    <MarkupGenerator
-                        gridMarkupComponent={<ColspanningGridMarkup hasCol={colSpan} />}
-                    />
+                    <MarkupGenerator component={<ColspanningGridMarkup hasCol={colSpan} />} />
                 ) : (
-                    <MarkupGenerator gridMarkupComponent={<RowspanningGridMarkup />} />
+                    <MarkupGenerator component={<RowspanningGridMarkup />} />
                 )}
             </div>
         </section>

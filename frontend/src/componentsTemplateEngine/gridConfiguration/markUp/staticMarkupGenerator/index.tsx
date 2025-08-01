@@ -1,4 +1,4 @@
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { copyButtonText, toggleButtonText } from '@/utils/templateEngine/buttonText';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
@@ -7,45 +7,48 @@ import { FC, MouseEventHandler, ReactNode, useState } from 'react';
 import MarkupCode from './MarkupCode';
 import ToggleAndCopyButtonContainer from './ToggleAndCopyButtonContainer';
 
-const MarkupGenerator: FC<{ gridMarkupComponent: ReactNode }> = ({ gridMarkupComponent }) => {
-    const [isShownMarkupAndButtonText, setShowMarkupAndsetButtonText] = useState({
-        text: buttonText.showMarkup[0],
+type ClickHandler = MouseEventHandler<HTMLButtonElement>;
+
+const GenerateMarkupContainer: FC<{ component: ReactNode }> = ({ component }) => {
+    // toggle State
+    const [isToggledMarkup, toggleMarkup] = useState({
+        text: toggleButtonText.showMarkup,
         isShown: false,
     });
 
-    const clickHandlerShowMarkupSetButtonText: MouseEventHandler<HTMLButtonElement> = () => {
-        setShowMarkupAndsetButtonText((prevState) => ({
+    const clickHandlerShowMarkup: ClickHandler = () => {
+        toggleMarkup((prevState) => ({
             text:
-                prevState.text === buttonText.showMarkup[0]
-                    ? buttonText.showMarkup[1]
-                    : buttonText.showMarkup[0],
+                prevState.text === toggleButtonText.showMarkup
+                    ? toggleButtonText.hideMarkup
+                    : toggleButtonText.showMarkup,
             isShown: !prevState.isShown,
         }));
     };
 
+    // copy state
     const [isCopiedText, setCopyTextAndSetButtonText] = useState({
-        text: buttonText.copyToClipboard[0],
+        text: copyButtonText.copyToClipboard,
         isCopied: false,
     });
 
-    const clickHandlerCopy: MouseEventHandler<HTMLButtonElement> = () => {
-        const html = parseStringToADomModel(
-            createHtmlAsTextFromPassedComponent(gridMarkupComponent),
-        ).body.firstChild;
+    const clickHandlerCopy: ClickHandler = () => {
+        const html = parseStringToADomModel(createHtmlAsTextFromPassedComponent(component)).body
+            .firstChild;
 
         if (html) {
             navigator.clipboard.writeText(html.textContent || '');
         }
 
         setCopyTextAndSetButtonText({
-            text: buttonText.copyToClipboard[1],
+            text: copyButtonText.isCopiedToClipboard,
             isCopied: true,
         });
 
         setTimeout(
             () =>
                 setCopyTextAndSetButtonText({
-                    text: buttonText.copyToClipboard[0],
+                    text: copyButtonText.copyToClipboard,
                     isCopied: false,
                 }),
             750,
@@ -54,18 +57,15 @@ const MarkupGenerator: FC<{ gridMarkupComponent: ReactNode }> = ({ gridMarkupCom
 
     return (
         <>
-            <MarkupCode
-                gridMarkupComponent={gridMarkupComponent}
-                isShown={isShownMarkupAndButtonText.isShown}
-            />
+            <MarkupCode component={component} isShown={isToggledMarkup.isShown} />
             <ToggleAndCopyButtonContainer
                 clickHandlerCopy={clickHandlerCopy}
-                clickHandlerShowMarkupSetButtonText={clickHandlerShowMarkupSetButtonText}
-                isShownMarkup={isShownMarkupAndButtonText}
+                clickHandlerToggle={clickHandlerShowMarkup}
+                isShownMarkup={isToggledMarkup}
                 isCopiedText={isCopiedText}
             />
         </>
     );
 };
 
-export default MarkupGenerator;
+export default GenerateMarkupContainer;

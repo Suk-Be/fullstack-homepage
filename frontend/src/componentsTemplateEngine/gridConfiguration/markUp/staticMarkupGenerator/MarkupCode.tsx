@@ -1,14 +1,11 @@
 import { testId } from '@/utils/testId';
 import { FC, ReactNode } from 'react';
 
-const MarkupCode: FC<{ gridMarkupComponent: ReactNode; isShown: boolean }> = ({
-    gridMarkupComponent,
-    isShown,
-}) => {
+const MarkupCode: FC<{ component: ReactNode; isShown: boolean }> = ({ component, isShown }) => {
     return isShown ? (
         <div className="w-full h-full">
             <div className="w-full h-full" {...testId('markup-component')}>
-                {gridMarkupComponent}
+                {component}
             </div>
         </div>
     ) : null;
