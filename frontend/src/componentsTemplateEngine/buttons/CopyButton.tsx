@@ -1,11 +1,11 @@
-import Button from '../../componentsTemplateEngine/buttons/Button';
-import { CopySVG, IsCopiedSVG } from '../svgs';
-import { buttonText } from '../../utils/templateEngine/buttonText';
+import Button from '@/componentsTemplateEngine/buttons/Button';
+import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import { ComponentPropsWithoutRef, FC } from 'react';
+import { CopySVG, IsCopiedSVG } from '../svgs';
 
 const CopyButton: FC<ComponentPropsWithoutRef<'button'>> = ({ onClick, children }) => {
     const SVG = () => {
-        if (children === buttonText.copyToClipboard[1]) {
+        if (children === copyButtonText.isCopiedToClipboard) {
             return <IsCopiedSVG className="size-6 pr-2 animate-ping repeat-1" />;
         }
 

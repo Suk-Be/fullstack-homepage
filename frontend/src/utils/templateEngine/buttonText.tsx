@@ -5,11 +5,14 @@
  * each state showing a specific Icon and Text for the button
  *
  */
-const buttonText = {
-    copyToClipboard: ['Copy to Clipboard', 'Is copied to Clipboard'],
-    showMarkup: ['Show Markup', 'Hide Markup'],
+const copyButtonText = {
+    copyToClipboard: 'Copy to Clipboard',
+    isCopiedToClipboard: 'Is copied to Clipboard',
 };
 
-Object.freeze(buttonText);
+const toggleButtonText = {
+    showMarkup: 'Show Markup',
+    hideMarkup: 'Hide Markup',
+};
 
-export { buttonText };
+export { copyButtonText, toggleButtonText };

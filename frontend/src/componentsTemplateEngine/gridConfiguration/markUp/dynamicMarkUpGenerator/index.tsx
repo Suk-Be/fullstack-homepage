@@ -1,14 +1,14 @@
 import DialogModal from '@/componentsTemplateEngine/createGridMarkupWithModal/DialogModal';
 import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
 import { DynamicGridProps } from '@/types/templateEngine';
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import { testId } from '@/utils/testId';
 import { useState } from 'react';
 
 const ExportDynamicCodeTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
     let [isOpen, setIsOpen] = useState({
         open: false,
-        text: buttonText.copyToClipboard[0],
+        text: copyButtonText.copyToClipboard,
         isCopied: false,
     });
 

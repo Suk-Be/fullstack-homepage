@@ -3,7 +3,7 @@ import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
 import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
 import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator/CreateGridMarkUp';
 import { ModalProps } from '@/types/templateEngine';
-import { buttonText } from '@/utils/templateEngine/buttonText';
+import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
@@ -111,8 +111,8 @@ function DialogModal({
                                     className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                                 >
                                     {isOpen.isCopied
-                                        ? buttonText.copyToClipboard[1]
-                                        : buttonText.copyToClipboard[0]}
+                                        ? copyButtonText.isCopiedToClipboard
+                                        : copyButtonText.copyToClipboard}
                                 </CopyButton>
 
                                 <Button

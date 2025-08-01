@@ -1,11 +1,11 @@
+import Button from '@/componentsTemplateEngine/buttons/Button';
+import { toggleButtonText } from '@/utils/templateEngine/buttonText';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import Button from '../../componentsTemplateEngine/buttons/Button';
-import { buttonText } from '../../utils/templateEngine/buttonText';
 import { HideCodeSVG, ShowCodeSVG } from '../svgs';
 
 const CodeButton: FC<ComponentPropsWithoutRef<'button'>> = ({ onClick, children }) => {
     const SVG = () => {
-        if (children === buttonText.showMarkup[1]) {
+        if (children === toggleButtonText.hideMarkup) {
             return <HideCodeSVG className="size-6 pr-2 animate-ping repeat-1" />;
         }
 
