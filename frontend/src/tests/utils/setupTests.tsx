@@ -39,6 +39,12 @@ beforeAll(() => {
             };
         };
 
+    Object.assign(navigator, {
+        clipboard: {
+            writeText: vi.fn(),
+        },
+    });
+
     server.listen();
 
     // server.listen({ onUnhandledRequest: 'bypass' }); // Keep 'bypass' for clarity

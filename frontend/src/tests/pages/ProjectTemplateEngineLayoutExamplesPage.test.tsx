@@ -1,11 +1,14 @@
 import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
-import { fireEvent, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 describe('ProjectTemplateEnginePresetsPage', () => {
     const renderUtils = () => {
+        const user = userEvent.setup();
+
         renderWithProvidersDOM(<ProjectTemplateEnginePresetsPage />, {
             route: '/template-engine/presets',
             preloadedState: {
@@ -19,6 +22,8 @@ describe('ProjectTemplateEnginePresetsPage', () => {
                 },
             },
         });
+
+        return { user };
     };
 
     const testIDs = [
@@ -28,15 +33,17 @@ describe('ProjectTemplateEnginePresetsPage', () => {
         'example-spanning-grid-col-row-span',
     ];
 
-    it('should render all grid preset examples with correct testIDs', () => {
+    it('should render all grid preset examples with correct testIDs', async () => {
+        renderUtils();
+
         for (const id of testIDs) {
-            const section = screen.getByTestId(id);
+            const section = await screen.findByTestId(id);
             expect(section).toBeInTheDocument();
         }
     });
 
-    it('should render all markup toggle buttons and be able to interact', () => {
-        renderUtils();
+    it('should render all markup toggle buttons and be able to interact', async () => {
+        const { user } = renderUtils();
 
         const toggleButtons = screen.getAllByRole('button', {
             name: /show markup/i,
@@ -44,24 +51,24 @@ describe('ProjectTemplateEnginePresetsPage', () => {
 
         expect(toggleButtons.length).toBe(4); // 4 presets → 4 buttons
 
-        toggleButtons.forEach((btn) => {
-            fireEvent.click(btn);
+        for (const btn of toggleButtons) {
+            await user.click(btn);
             expect(btn.textContent?.toLowerCase()).toMatch(/hide markup/i);
-        });
+        }
     });
 
-    it('should render all copy to clipboard buttons and be able to interact', () => {
-        renderUtils();
+    it('should render all copy to clipboard buttons and be able to interact', async () => {
+        const { user } = renderUtils();
 
         const coypButtons = screen.getAllByRole('button', {
             name: /copy to clipboard/i,
         });
 
-        expect(coypButtons.length).toBe(4); // 4 presets → 4 buttons
+        expect(coypButtons.length).toBe(4);
 
-        coypButtons.forEach((btn) => {
-            fireEvent.click(btn);
+        for (const btn of coypButtons) {
+            await user.click(btn);
             expect(btn.textContent?.toLowerCase()).toMatch(/is copied/i);
-        });
+        }
     });
 });
