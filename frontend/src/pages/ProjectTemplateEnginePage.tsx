@@ -2,11 +2,11 @@ import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/Creat
 import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
 import LayoutConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
 import GridSaver from '@/componentsTemplateEngine/gridSaver';
-import ExampleTeaser from '@/componentsTemplateEngine/layoutExampleTeaser';
 import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
+import ExampleTeaser from '@/componentsTemplateEngine/teaser';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';

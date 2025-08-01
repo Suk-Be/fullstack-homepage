@@ -1,7 +1,7 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import { testId } from '@/utils/testId';
 import { Link } from 'react-router-dom';
-import GridExampleTeaser from './ExampleTeaser';
+import GridExampleTeaser from './LayoutExampleTeaser';
 
 const ExampleTeaser = () => {
     return (
