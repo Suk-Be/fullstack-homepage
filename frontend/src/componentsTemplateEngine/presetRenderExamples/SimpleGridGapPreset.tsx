@@ -2,7 +2,7 @@ import GenerateMarkupContainer from '@/componentsTemplateEngine/presetRenderExam
 import SimpleGridMarkup from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/SimpleGridMarkup';
 import { testId } from '@/utils/testId';
 import Headline from './Headline';
-import SimpleGrid from './SimpleGrid';
+import SimpleGrid from './grids/SimpleGrid';
 
 type SimpleGridPresetProps = {
     heading: string;

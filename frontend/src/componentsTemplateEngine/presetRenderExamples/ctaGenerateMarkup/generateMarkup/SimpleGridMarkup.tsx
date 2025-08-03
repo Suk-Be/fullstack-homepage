@@ -1,4 +1,4 @@
-import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
+import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/SimpleGrid';
 import simpleGridChildrenTagsToText from '@/utils/templateEngine/parseHtmlToText/simpleGridChildrenTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import GridMarkupWrapper from './GridMarkupWrapper';

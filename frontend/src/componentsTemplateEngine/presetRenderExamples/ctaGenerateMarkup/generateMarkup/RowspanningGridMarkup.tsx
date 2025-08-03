@@ -1,5 +1,5 @@
-import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/RowspanningGrid';
 import GridMarkupWrapper from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/GridMarkupWrapper';
+import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/RowspanningGrid';
 import rowSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/rowSpanningGridTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 
