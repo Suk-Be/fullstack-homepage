@@ -23,7 +23,7 @@ export default function ProjectTemplateEnginePresetsPage() {
                         />
                         <SpanningGridPreset
                             heading="with spanning columns"
-                            colSpan="col-span-2"
+                            layoutColSpanConfig="col-span-2"
                             testID="example-spanning-grid-col-span-2"
                         />
                         <SpanningGridPreset
