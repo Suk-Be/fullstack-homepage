@@ -1,4 +1,4 @@
-import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
+import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/SimpleGrid';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -23,10 +23,13 @@ describe('SimpleGrid', () => {
     });
 
     it('should apply the layoutGapConfig class to each GridElement', () => {
-        render(<SimpleGrid layoutGapConfig="gap-4" />);
+        const layoutGapConfig = 'gap-4';
+        render(<SimpleGrid layoutGapConfig={layoutGapConfig} />);
 
         const gridElements = screen.getAllByTestId('grid-element');
-
         expect(gridElements[0].className).toContain('h-24 bg-gray-light');
+
+        const gridContainerWithTestId = screen.getByTestId('grid-container');
+        expect(gridContainerWithTestId).toHaveClass(layoutGapConfig);
     });
 });

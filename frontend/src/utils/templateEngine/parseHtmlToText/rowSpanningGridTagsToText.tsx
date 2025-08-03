@@ -1,4 +1,4 @@
-import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/RowspanningGrid';
+import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/RowspanningGrid';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,

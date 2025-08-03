@@ -1,4 +1,4 @@
-import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/SimpleGrid';
+import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/SimpleGrid';
 import {
     createHtmlAsTextFromPassedComponent,
     parseStringToADomModel,
