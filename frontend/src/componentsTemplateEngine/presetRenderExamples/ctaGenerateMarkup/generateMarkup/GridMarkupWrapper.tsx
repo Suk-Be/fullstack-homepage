@@ -3,6 +3,7 @@ import {
     ClosingTag,
     OpeningTag,
 } from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/WrappingTag'; // Adjust path as needed
+import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement } from 'react';
 import { twMerge } from 'tailwind-merge'; // Assuming you have twMerge
 
@@ -20,7 +21,10 @@ const GridMarkupWrapper: FC<GridMarkupWrapperProps> = ({
     className,
 }) => {
     return (
-        <div className={twMerge('grid grid-cols-1 p-4', className)}>
+        <div
+            className={twMerge('grid grid-cols-1 p-4', className)}
+            {...testId('grid-markup-wrapper')}
+        >
             <div className="bg-gray-dark text-green p-6 rounded-xl">
                 <OpeningTag component={markupComponent} />
                 <ChildrenTags arr={childrenTagsArr} />
