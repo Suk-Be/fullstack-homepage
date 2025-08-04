@@ -41,6 +41,7 @@ const ProjectTemplateEnginePage: FC = () => {
     };
 
     const GridItemsArray = [...Array(grid.items).keys()];
+
     return (
         <div className="flex flex-col w-full bg-black mb-[5rem]" {...testId('tempate-engine-page')}>
             <MainContainer>
