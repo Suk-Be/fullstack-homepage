@@ -1,4 +1,4 @@
-import MarkupCode from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/generateMarkup/MarkupCode';
+import ShowMarkupCode from '@/componentsTemplateEngine/presetRenderExamples/ctaGenerateMarkup/ShowMarkupCode';
 import { copyButtonText, toggleButtonText } from '@/utils/templateEngine/buttonText';
 import {
     createHtmlAsTextFromPassedComponent,
@@ -57,7 +57,7 @@ const GenerateMarkupContainer: FC<{ component: ReactNode }> = ({ component }) =>
 
     return (
         <>
-            <MarkupCode component={component} isShown={isToggledMarkup.isShown} />
+            <ShowMarkupCode component={component} isShown={isToggledMarkup.isShown} />
             <ToggleAndCopyButtonContainer
                 clickHandlerCopy={clickHandlerCopy}
                 clickHandlerToggle={clickHandlerShowMarkup}
