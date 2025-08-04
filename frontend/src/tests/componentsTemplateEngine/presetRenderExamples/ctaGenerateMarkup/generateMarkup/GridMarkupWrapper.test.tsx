@@ -43,5 +43,37 @@ describe('GridMarkupWrapper', () => {
         // Wrapper-DIV Klasse prüfen
         const wrapper = screen.getByTestId('grid-markup-wrapper');
         expect(wrapper).toHaveClass('grid', 'p-4', 'custom-class');
+
+        expect(screen.getByTestId('grid-markup-wrapper')).toMatchInlineSnapshot(`
+          <div
+            class="grid grid-cols-1 p-4 custom-class"
+            data-testid="grid-markup-wrapper"
+          >
+            <div
+              class="bg-gray-dark text-green p-6 rounded-xl"
+            >
+              <code
+                class="block pb-4"
+              >
+                &lt;section class="example"&gt;
+              </code>
+              <code
+                class="block pl-4"
+              >
+                <div>
+                  &lt;div&gt;Child 1&lt;/div&gt;
+                </div>
+                <div>
+                  &lt;div&gt;Child 2&lt;/div&gt;
+                </div>
+              </code>
+              <code
+                class="block pt-4"
+              >
+                &lt;/section&gt;
+              </code>
+            </div>
+          </div>
+        `);
     });
 });
