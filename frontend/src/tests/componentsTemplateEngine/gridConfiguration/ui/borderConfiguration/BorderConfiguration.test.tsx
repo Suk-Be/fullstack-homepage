@@ -1,7 +1,8 @@
 import BorderConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration';
 import { MockGrid } from '@/tests/mocks/data';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { vi } from 'vitest';
 
 
@@ -47,22 +48,42 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/Rang
 }));
 
 describe('BorderConfiguration', () => {
-  const mockHandleChange = vi.fn().mockImplementation(() => vi.fn());
+  const mockOnChange = vi.fn();
+  const mockHandleChange = vi.fn(() => mockOnChange);
   const mockHandleToggle = vi.fn();
 
-  it('renders correctly with all elements', () => {
-    render(
-      <BorderConfiguration
-        toggled={true}
-        grid={MockGrid}
-        handleChange={mockHandleChange}
-        handleToggle={mockHandleToggle}
-      />,
-    );
+  const renderUtils = (initialToggle = false) => {
+    const user = userEvent.setup();
+    const Wrapper = () => {
+    const [toggled, setToggled] = useState(initialToggle);
 
-    expect(screen.getByTestId('border-configuration')).toBeInTheDocument();
+    return (
+        <BorderConfiguration
+          toggled={toggled}
+          grid={MockGrid}
+          handleChange={mockHandleChange}
+          handleToggle={() => {
+            mockHandleToggle(); 
+            setToggled(!toggled);
+          }}
+        />
+      );
+    };
 
+    render(<Wrapper />);
+
+    const borderConfiguration = screen.getByTestId('border-configuration')
     const checkbox = screen.getByTestId('styled-checkbox');
+
+    return {user, borderConfiguration, checkbox}
+  }
+
+  it('renders correctly with all elements', () => {
+    const toggled = true
+    const {borderConfiguration, checkbox} = renderUtils(toggled)
+
+    expect(borderConfiguration).toBeInTheDocument();
+
     expect(checkbox).toBeInTheDocument();
     expect(checkbox).toHaveAttribute('type', 'checkbox');
     expect(checkbox).toBeChecked();
@@ -74,19 +95,29 @@ describe('BorderConfiguration', () => {
   });
 
   it('calls handleToggle when checkbox changes', async () => {
-    render(
-      <BorderConfiguration
-        toggled={false}
-        grid={MockGrid}
-        handleChange={mockHandleChange}
-        handleToggle={mockHandleToggle}
-      />,
-    );
-    const user = userEvent.setup();
+    const toggled = true
+    const {user, checkbox} = renderUtils(toggled)
 
-    const checkbox = screen.getByTestId('styled-checkbox');
     await user.click(checkbox);
 
     expect(mockHandleToggle).toHaveBeenCalled();
+  });
+
+  it('enables the range input and calls handleChange when toggled on and input value changes', async () => {
+    const toggled = false
+    const {user, checkbox} = renderUtils(toggled)
+
+    const rangeInput = screen.getByTestId('border-value');
+
+    expect(rangeInput).toBeDisabled();
+
+    await user.click(checkbox);
+
+    expect(rangeInput).not.toBeDisabled();
+    
+    fireEvent.change(rangeInput, { target: { value: '2' } });
+
+    expect(mockHandleChange).toHaveBeenCalledWith('border');
+    expect(mockOnChange).toHaveBeenCalled();
   });
 });
