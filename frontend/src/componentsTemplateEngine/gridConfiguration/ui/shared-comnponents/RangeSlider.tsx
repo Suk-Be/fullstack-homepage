@@ -23,7 +23,7 @@ const RangeSlider: FC<RangeSliderProps> = ({
     placeholder,
 }) => {
     return (
-        <Field className="flex flex-col pb-4">
+        <Field className="flex flex-col pb-4" {...testId('range-slider')}>
             <div className="font-normal pb-2">
                 {children}
                 <span
