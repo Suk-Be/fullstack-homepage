@@ -18,22 +18,22 @@ exports[`ColspanningGridMarkup > matches snapshot 1`] = `
         class="block pl-4"
       >
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green-dark"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green-dark"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green-dark"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
       </code>
       <code
