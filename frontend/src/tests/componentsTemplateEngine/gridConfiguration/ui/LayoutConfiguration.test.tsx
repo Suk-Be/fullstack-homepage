@@ -1,4 +1,5 @@
 import LayoutConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui/';
+import { MockGrid } from '@/tests/mocks/data';
 import { GridProps, HandleChange } from '@/types/templateEngine';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
@@ -56,22 +57,13 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/Divi
 }));
 
 describe('LayoutConfiguration', () => {
-    const mockGrid: GridProps = {
-        items: '1',
-        columns: '1',
-        gap: '0',
-        border: '0',
-        paddingX: '0',
-        paddingY: '0',
-    };
-
     const mockHandleChange = vi.fn();
     const mockHandleToggle = vi.fn();
 
     it('renders all layout configuration sections with correct props', () => {
         render(
             <LayoutConfiguration
-                grid={mockGrid}
+                grid={MockGrid}
                 handleChange={mockHandleChange}
                 toggled={true}
                 handleToggle={mockHandleToggle}

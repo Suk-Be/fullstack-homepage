@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { Checkbox, CheckboxProps } from '@headlessui/react';
 import { FC } from 'react';
 
@@ -37,6 +38,7 @@ const StyledCheckbox: FC<CheckboxProps> = ({ checked, onChange }) => {
                   data-[disabled]:cursor-not-allowed 
                   data-[disabled]:opacity-50 
                   data-[checked]:data-[disabled]:bg-gray-500"
+                {...testId('styled-checkbox')}
             >
                 <svg
                     className="stroke-white opacity-0 group-data-[checked]:opacity-100"
