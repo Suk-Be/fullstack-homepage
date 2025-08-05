@@ -1,11 +1,11 @@
-import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StytledCheckbox';
+import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StyledCheckbox';
 import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
 import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
 import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/RangeSlider';
 import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
 
-type Props = {
+export type Props = {
     toggled: boolean;
     handleChange: HandleChange;
     grid: GridProps;

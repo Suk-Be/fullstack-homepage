@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 
 
 
-vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StytledCheckbox', () => ({
+vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StyledCheckbox', () => ({
   __esModule: true,
   default: ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
     <input
@@ -30,7 +30,6 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/Rang
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     placeholder: string;
-    children: React.ReactNode;
   }) => (
     <div data-testid="range-slider">
       <label htmlFor={placeholder}>Width: </label>
