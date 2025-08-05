@@ -1,6 +1,6 @@
 import GapConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui/GapConfiguration';
 import { MockGrid } from '@/tests/mocks/data';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
@@ -32,23 +32,37 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/Rang
   ),
 }));
 
-// Optional: mock InputLabel, falls nötig
 vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
 describe('GapConfiguration', () => {
-  it('renders correctly with all elements', () => {
+  const renderUtils = () => {
+    const user = userEvent.setup();
+    
     render(<GapConfiguration handleChange={mockHandleChange} grid={MockGrid} />);
-
-    expect(screen.getByTestId('gap-configuration')).toBeInTheDocument();
 
     const range = screen.getByTestId('gap-value');
     const display = screen.getByTestId('gap-display-value');
+    const input = screen.getByTestId('gap-value');
+
+    return {
+      user,
+      range,
+      display,
+      input
+    }
+  }
+
+  it('renders correctly with all elements', () => {
+    const {range, display} = renderUtils()
+
+    expect(screen.getByTestId('gap-configuration')).toBeInTheDocument();
 
     expect(range).toHaveAttribute('type', 'range');
     expect(range).toHaveValue(MockGrid.gap);
+
     expect(display).toHaveTextContent(MockGrid.gap);
 
     expect(screen.getByText('Unit: px')).toBeInTheDocument();
@@ -56,12 +70,12 @@ describe('GapConfiguration', () => {
   });
 
   it('calls handleChange when the range input changes', async () => {
-    const user = userEvent.setup();
-    render(<GapConfiguration handleChange={mockHandleChange} grid={MockGrid} />);
+    const {user, input} = renderUtils()
 
-    const input = screen.getByTestId('gap-value');
     await user.type(input, '{arrowup}');
+    expect(mockHandleChange).toHaveBeenCalledWith('gap');
 
+    fireEvent.change(input, { target: { value: '2' } });
     expect(mockHandleChange).toHaveBeenCalledWith('gap');
   });
 });

@@ -112,11 +112,9 @@ describe('BorderConfiguration', () => {
     expect(rangeInput).toBeDisabled();
 
     await user.click(checkbox);
-
     expect(rangeInput).not.toBeDisabled();
     
     fireEvent.change(rangeInput, { target: { value: '2' } });
-
     expect(mockHandleChange).toHaveBeenCalledWith('border');
     expect(mockOnChange).toHaveBeenCalled();
   });
