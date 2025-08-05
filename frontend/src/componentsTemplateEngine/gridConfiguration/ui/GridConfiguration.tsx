@@ -14,14 +14,6 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
         <section {...testId('grid-configuration')}>
             <HeadlineAside children="Layout" />
             <RangeSlider
-                max="30"
-                value={grid.items}
-                onChange={handleChange('items')}
-                placeholder="items"
-            >
-                <InputLabel children="Items: " />
-            </RangeSlider>
-            <RangeSlider
                 min="1"
                 max="10"
                 value={grid.columns}
@@ -29,6 +21,14 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
                 placeholder="columns"
             >
                 <InputLabel children="Columns: " />
+            </RangeSlider>
+            <RangeSlider
+                max="30"
+                value={grid.items}
+                onChange={handleChange('items')}
+                placeholder="items"
+            >
+                <InputLabel children="Items: " />
             </RangeSlider>
         </section>
     );
