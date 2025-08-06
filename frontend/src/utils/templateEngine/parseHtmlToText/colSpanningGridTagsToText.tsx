@@ -13,7 +13,7 @@ import {
  */
 
 const domColumnSpanningGrid = parseStringToADomModel(
-    createHtmlAsTextFromPassedComponent(<ColspanningGrid className="col-span-2" />),
+    createHtmlAsTextFromPassedComponent(<ColspanningGrid layoutConfig="col-span-2" />),
 ).body.firstChild?.childNodes;
 
 const colSpanningGridTagsToText = Array.from(domColumnSpanningGrid ?? []).map((elem) => {
