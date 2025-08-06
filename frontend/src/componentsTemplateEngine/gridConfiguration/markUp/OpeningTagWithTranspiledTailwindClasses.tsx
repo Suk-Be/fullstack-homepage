@@ -4,7 +4,7 @@ import {
     gapValue as gridGapValue,
     paddingValues as padValues,
 } from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractedStyleRuleValue';
-import extractTagAttributes from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributes';
+import extractTagAttributesForStyling from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributesForStyling';
 import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/separateStyleRulesArray';
 import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
@@ -20,27 +20,45 @@ const OpeningTagWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
     Component,
 }) => {
     const staticTailwindClasses = `grid border-gray-light/25`;
-    let dynamicTranspiledInlineStylesToTailwindClasses = ``;
+    let transpileInlineStylesToTailwind = ``;
 
     if (isDynamicInlineStyle) {
-        const StyleAttributes = extractTagAttributes(Component).styleAttributes;
+        // extracts style attributes and values from Component
+
+        /* e.g. 
+        extractTagAttributesForStyling(Component).styleAttributes;
+
+        Component <div class="grid border-gray-light/25" style="display: grid; gap: 1rem;">
+        returns 
+        style="display: grid; gap: 1rem;"
+        */
+        const StyleAttributes = extractTagAttributesForStyling(Component).styleAttributes;
+
+        // extracts inlinestyle rules and values as string[]
+
+        /* e.g. 
+        separateStyleRulesArray(StyleAttributes) // Needs const StyleAttributes = extractTagAttributesForStyling(Component).styleAttributes;
+
+        StyleAttributes style="display: grid; gap: 1rem;"
+        returns 
+        ["display: grid", "gap: 1rem"]
+        */
         const InlineStyleRulesArray = separateStyleRulesArray(StyleAttributes);
 
-        const colValue = gridColumnValue(InlineStyleRulesArray);
-        const gapValue = gridGapValue(InlineStyleRulesArray);
-        // console.log('gapValue: ', gapValue + 'rem');
-        const borderValue = gridBorderWidthValue(InlineStyleRulesArray);
-        const paddingValues = padValues(InlineStyleRulesArray);
+        // e.g. InlineStyleRulesArray ['display:grid', 'grid-template-columns:repeat(4, minmax(0, 1fr))', 'gap:3px', 'border-width:calc(2rem/3)', 'padding:calc(2rem/2) calc(3rem/2)']
 
-        dynamicTranspiledInlineStylesToTailwindClasses =
+        const colValue = gridColumnValue(InlineStyleRulesArray); // 'grid-template-columns:repeat(4, minmax(0, 1fr))' => 4
+        const gapValue = gridGapValue(InlineStyleRulesArray); // 'gap:3px' => [3px]
+        const borderValue = gridBorderWidthValue(InlineStyleRulesArray); // border-width:calc(2rem/3) => [0.67rem]
+        const paddingValues = padValues(InlineStyleRulesArray); // padding:calc(2rem/2) calc(3rem/2) => ['[0.67rem]', '[1.5rem]']
+
+        transpileInlineStylesToTailwind =
             colValue && gapValue && borderValue && paddingValues && paddingValues.length > 1
                 ? `${staticTailwindClasses} col-span-${colValue} gap-${gapValue} border-${borderValue} px-${paddingValues[0]} py-${paddingValues[1]}`
                 : '';
     }
     const DynComp = () => (
-        <div
-            className={isDynamicInlineStyle ? dynamicTranspiledInlineStylesToTailwindClasses : ''}
-        ></div>
+        <div className={isDynamicInlineStyle ? transpileInlineStylesToTailwind : ''}></div>
     );
 
     return (
