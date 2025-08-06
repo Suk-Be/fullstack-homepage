@@ -18,7 +18,7 @@ Object.freeze(InlineStyleRules);
 
 const { gridCols, gridGap, borderWidth, padding } = InlineStyleRules;
 
-const colValue = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) => {
+const colValue = (InlineStyleRulesArray: string[] | RegExpMatchArray | null | undefined) => {
     return tranlateInlineStyleValuesToTailwindValues(
         gridCols,
         { ...styleType, isGridCol: true },
@@ -26,7 +26,7 @@ const colValue = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) =>
     );
 };
 
-const gapValue = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) => {
+const gapValue = (InlineStyleRulesArray: string[] | RegExpMatchArray | null | undefined) => {
     return tranlateInlineStyleValuesToTailwindValues(
         gridGap,
         { ...styleType, isGap: true },
@@ -34,7 +34,9 @@ const gapValue = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) =>
     );
 };
 
-const borderWidthValue = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) => {
+const borderWidthValue = (
+    InlineStyleRulesArray: string[] | RegExpMatchArray | null | undefined,
+) => {
     return tranlateInlineStyleValuesToTailwindValues(
         borderWidth,
         { ...styleType, isBorder: true },
@@ -42,7 +44,7 @@ const borderWidthValue = (InlineStyleRulesArray: RegExpMatchArray | null | undef
     );
 };
 
-const paddingValues = (InlineStyleRulesArray: RegExpMatchArray | null | undefined) => {
+const paddingValues = (InlineStyleRulesArray: string[] | RegExpMatchArray | null | undefined) => {
     return tranlateInlineStyleValuesToTailwindValues(
         padding,
         { ...styleType, isPadding: true },

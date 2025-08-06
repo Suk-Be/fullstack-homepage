@@ -10,7 +10,7 @@ interface StyleType {
 const tranlateInlineStyleValuesToTailwindValues = (
     styleRule: string,
     styleType: StyleType,
-    InlineStyleRulesArray: RegExpMatchArray | null | undefined,
+    InlineStyleRulesArray: string[] | RegExpMatchArray | null | undefined,
 ) => {
     // rule controller
     const findRule = (rule: string) =>
