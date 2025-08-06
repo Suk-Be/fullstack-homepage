@@ -6,7 +6,7 @@ import { JSX } from 'react/jsx-runtime';
  * Utilities to parse React Grid Component to HTML to render them as Code snippet
  */
 
-type ReactComponentLike =
+export type ReactComponentLike =
     | string
     | number
     | bigint

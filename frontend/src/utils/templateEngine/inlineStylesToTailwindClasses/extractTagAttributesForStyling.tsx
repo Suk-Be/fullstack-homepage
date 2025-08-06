@@ -13,7 +13,7 @@ type Component = ReactElement<unknown, string | JSXElementConstructor<any>> | It
  *  "style="display:grid;grid-template-columns:repeat(1, minmax(0, 1fr));gap:0px;border-width:0rem;padding:calc(1rem * 2) calc(4rem * 2)"
  * ]
  */
-const extractTagAttributes = (Component: Component) => {
+const extractTagAttributesForStyling = (Component: Component) => {
     const OpeningTag = toTextOpeningTagFrom(Component);
     const getStyleAttributeValues = OpeningTag.match(/style\s*=\s*"([^"]*)"/gm);
     const getClassAttributeValues = OpeningTag.match(/class\s*=\s*"([^"]*)"/gm);
@@ -25,4 +25,4 @@ const extractTagAttributes = (Component: Component) => {
     return TagAttributes;
 };
 
-export default extractTagAttributes;
+export default extractTagAttributesForStyling;
