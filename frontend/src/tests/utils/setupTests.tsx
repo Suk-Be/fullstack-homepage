@@ -2,7 +2,10 @@ import { db } from '@/tests/mocks/db';
 import { server } from '@/tests/mocks/server';
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
+import { mockAnimationsApi } from 'jsdom-testing-mocks';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+
+mockAnimationsApi();
 
 beforeAll(() => {
     vi.mock('@mui/icons-material', async () => {
