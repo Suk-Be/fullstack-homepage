@@ -11,11 +11,13 @@ exports[`ColspanningGridMarkup > matches snapshot 1`] = `
     >
       <code
         class="block pb-4"
+        data-testid="opening-tag"
       >
         &lt;div class="grid grid-cols-3 xl:grid-cols-3 gap-4 px-4 py-4" data-testid="col-spannning-grid-container"&gt;
       </code>
       <code
         class="block pl-4"
+        data-testid="children-tags-container"
       >
         <div>
           &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
@@ -38,6 +40,7 @@ exports[`ColspanningGridMarkup > matches snapshot 1`] = `
       </code>
       <code
         class="block pt-4"
+        data-testid="closing-tag"
       >
         &lt;/div&gt;
       </code>

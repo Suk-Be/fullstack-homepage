@@ -54,11 +54,13 @@ describe('GridMarkupWrapper', () => {
             >
               <code
                 class="block pb-4"
+                data-testid="opening-tag"
               >
                 &lt;section class="example"&gt;
               </code>
               <code
                 class="block pl-4"
+                data-testid="children-tags-container"
               >
                 <div>
                   &lt;div&gt;Child 1&lt;/div&gt;
@@ -69,6 +71,7 @@ describe('GridMarkupWrapper', () => {
               </code>
               <code
                 class="block pt-4"
+                data-testid="closing-tag"
               >
                 &lt;/section&gt;
               </code>

@@ -11,11 +11,13 @@ exports[`SimpleGridMarkup > matches snapshot 1`] = `
     >
       <code
         class="block pb-4"
+        data-testid="opening-tag"
       >
         &lt;div class="grid grid-cols-3 xl:grid-cols-5 px-4 py-4 gap-2" data-testid="grid-container"&gt;
       </code>
       <code
         class="block pl-4"
+        data-testid="children-tags-container"
       >
         <div>
           &lt;div class="w-full rounded-xl h-24 bg-gray-light" data-testid="grid-element"&gt;&lt;/div&gt;
@@ -56,6 +58,7 @@ exports[`SimpleGridMarkup > matches snapshot 1`] = `
       </code>
       <code
         class="block pt-4"
+        data-testid="closing-tag"
       >
         &lt;/div&gt;
       </code>

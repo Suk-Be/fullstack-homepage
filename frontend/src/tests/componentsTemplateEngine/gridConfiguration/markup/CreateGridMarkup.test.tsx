@@ -22,8 +22,6 @@ describe('CreateGridMarkup', () => {
         expect(childrenTagsContainer).toBeInTheDocument();
         expect(closingTagContainer).toBeInTheDocument();
 
-        screen.debug(markupContainer);
-
         expect(screen.getByText(/Hello World/i)).toBeInTheDocument();
         expect(screen.getByText(/This is a test/i)).toBeInTheDocument();
 

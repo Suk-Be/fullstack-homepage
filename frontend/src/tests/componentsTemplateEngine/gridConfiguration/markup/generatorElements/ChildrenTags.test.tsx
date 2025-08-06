@@ -43,8 +43,6 @@ describe('ChildrenTags', () => {
 
         renderUtils(htmlStrings);
 
-        screen.debug();
-
         htmlStrings.forEach((text) => {
             expect(screen.getByText(text)).toBeInTheDocument();
         });
