@@ -1,8 +1,8 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
 import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
-import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator/CreateGridMarkUp';
-import { ModalProps } from '@/types/templateEngine';
+import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markUp/CreateGridMarkUp';
+import { DynamicGridProps } from '@/types/templateEngine';
 import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import {
     createHtmlAsTextFromPassedComponent,
@@ -10,15 +10,17 @@ import {
 } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import { useState } from 'react';
 
-function DialogModal({
-    inlineStyles,
-    gridItemsArray,
-    handleClose,
-    handleOpen,
-    setIsOpen,
-    isOpen,
-}: ModalProps) {
+function DialogModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
+    const [isOpen, setIsOpen] = useState({
+        open: false,
+        text: copyButtonText.copyToClipboard,
+        isCopied: false,
+    });
+
+    const handleOpen = () => setIsOpen({ ...isOpen, open: true });
+    const handleClose = () => setIsOpen({ ...isOpen, open: false });
     const renderMarkup = () => (
         <CreateGridMarkUp
             Component={<CreateGridLayout style={inlineStyles} arr={gridItemsArray} />}

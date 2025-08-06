@@ -1,30 +1,47 @@
 import LayoutExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
-vi.mock(
-    '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement',
-    () => ({
-        __esModule: true,
-        default: ({ className }: { className: string }) => (
-            <div data-testid="grid-element" className={className} />
-        ),
-    }),
-);
+// Mocks
+vi.mock('./LayoutExampleTeaser', () => ({
+    __esModule: true,
+    default: () => <div data-testid="grid-eample-teaser" />,
+}));
 
-describe('LayoutExampleTeaser', () => {
-    it('renders the teaser grid correctly', () => {
-        render(<LayoutExampleTeaser />);
+vi.mock('@/componentsTemplateEngine/buttons/Button', () => ({
+    __esModule: true,
+    default: ({ children, className }: any) => (
+        <button data-testid="button-example-teaser" className={className}>
+            {children}
+        </button>
+    ),
+}));
 
-        const container = screen.getByTestId('grid-eample-teaser');
+describe('ExampleTeaser', () => {
+    it('renders layout example teaser correctly', () => {
+        render(
+            <MemoryRouter>
+                <LayoutExampleTeaser />
+            </MemoryRouter>,
+        );
 
+        const container = screen.getByTestId('layout-example-teaser');
         expect(container).toBeInTheDocument();
-        expect(container).toHaveAttribute('role', 'img');
-        expect(container).toHaveAttribute('aria-label', 'presets-grid-image');
-        const gridElements = screen.getAllByTestId('grid-element');
-        expect(gridElements).toHaveLength(6);
-        const expectedClasses =
-            'grid grid-cols-3 xl:grid-cols-3 gap-2 py-4 group-hover:scale-[1.02] transition-all transform';
-        expect(container.className).toContain(expectedClasses);
+
+        expect(screen.getByRole('heading', { name: /layout example grids/i })).toBeInTheDocument();
+
+        expect(screen.getByTestId('grid-eample-teaser')).toBeInTheDocument();
+
+        // Button vorhanden
+        const button = screen.getByTestId('button-example-teaser');
+        expect(button).toBeInTheDocument();
+        expect(button).toHaveTextContent('Browse Examples');
+        const style =
+            'mb-4 text-center bg-gray-light text-white shadow-inner shadow-white/50 group-focus:outline-none group-hover:bg-gray-dark  group-hover:text-green group-open:bg-gray-dark/700 group-focus:outline-1 group-focus:outline-white';
+        expect(button.className).toContain(style);
+
+        const link = screen.getByRole('link');
+        expect(link).toHaveAttribute('href', '/template-engine/presets');
     });
 });

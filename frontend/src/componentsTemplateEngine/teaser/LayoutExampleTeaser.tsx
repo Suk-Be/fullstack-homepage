@@ -1,22 +1,22 @@
-import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
+import Button from '@/componentsTemplateEngine/buttons/Button';
 import { testId } from '@/utils/testId';
+import { Link } from 'react-router-dom';
+import LayoutExampleTeaserVisual from './LayoutExampleTeaserVisual';
 
 const LayoutExampleTeaser = () => {
     return (
-        <div
-            className="grid grid-cols-3 xl:grid-cols-3 gap-2 py-4 group-hover:scale-[1.02] transition-all transform"
-            role="img"
-            aria-label="presets-grid-image"
-            {...testId('grid-eample-teaser')}
-        >
-            <GridElement className="w-full h-12 rounded-xl bg-green-dark shadow-inner shadow-white/50 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
-            <GridElement className="w-full h-12 rounded-xl col-span-2 bg-green shadow-inner shadow-white/90 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
+        <div {...testId('layout-example-teaser')}>
+            <h2 className="text-lg font-bold pt-4">Layout Example Grids</h2>
+            <Link to="/template-engine/presets" className="group">
+                <LayoutExampleTeaserVisual />
 
-            <GridElement className="w-full h-12 rounded-xl col-span-2 bg-green shadow-inner shadow-white/90 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
-            <GridElement className="w-full h-12 rounded-xl bg-green-dark shadow-inner shadow-white/50 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
-
-            <GridElement className="w-full h-12 rounded-xl bg-green-dark shadow-inner shadow-white/50 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
-            <GridElement className="w-full h-12 rounded-xl col-span-2 bg-green shadow-inner shadow-white/90 group-focus:outline-none group-focus:outline-1 group-focus:outline-white" />
+                <Button
+                    className="mb-4 text-center bg-gray-light text-white shadow-inner shadow-white/50 group-focus:outline-none group-hover:bg-gray-dark  group-hover:text-green group-open:bg-gray-dark/700 group-focus:outline-1 group-focus:outline-white"
+                    {...testId('button-example-teaser')}
+                >
+                    Browse Examples
+                </Button>
+            </Link>
         </div>
     );
 };
