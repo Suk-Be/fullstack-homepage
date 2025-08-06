@@ -16,7 +16,7 @@ export default function calculateAndFormatFraction(fractionString: string, decim
 
         // check if division is applicabale
         if (!fractionString.includes('/')) {
-            return "[Error: Invalid fraction format - missing '/' ]";
+            return "[Error: Invalid fraction format - missing '/']";
         }
         if (parts.length !== 2) {
             return '[Error: Invalid fraction format - unexpected number of parts]';
