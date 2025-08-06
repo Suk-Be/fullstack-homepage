@@ -43,13 +43,14 @@ const tranlateInlineStyleValuesToTailwindValues = (
          * Get the dynamic border-width value of an inline style rule
          * e.g. border-width:3rem/3, number 3 is dynamic and one digit
          */
-        const denominator = rule.slice(-1); // 3
-        const lengthBorderWidth = 13;
-        const deleteBorderWidth = rule.substring(lengthBorderWidth);
-        const counter = deleteBorderWidth.slice(0, -5);
-        const fraction = counter + '/' + denominator;
-        const borderWidth = calculateAndFormatFraction(fraction);
-        const borderWidthValue = `[${borderWidth}rem]`;
+
+        const getDenominator = rule.slice(-2).replace(')', ''); // 3
+        const lengthStringBorderWidthRule = 13;
+        const deleteBorderWidthRule = rule.substring(lengthStringBorderWidthRule);
+        const getCounter = deleteBorderWidthRule.slice(0, -5).replace('r', '').slice(5); //  x
+        const fraction = getCounter + '/' + getDenominator; // x / 3
+        const calculateBorderWidth = calculateAndFormatFraction(fraction);
+        const borderWidthValue = `[${calculateBorderWidth}rem]`;
         return borderWidthValue;
     }
     if (styleType.isPadding && rule !== undefined) {

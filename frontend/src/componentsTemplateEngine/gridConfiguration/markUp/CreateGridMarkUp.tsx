@@ -32,7 +32,7 @@ const CreateGridMarkup: FC<LayoutDivProps> = ({ Component }) => {
         <div className="grid grid-cols-1 p-4">
             <div
                 className="bg-gray-dark text-green p-6 rounded-xl"
-                {...testId('dynamic-grid-markup')}
+                {...testId('create-grid-markup')}
             >
                 <OpeningTagWithTranspiledTailwindClasses
                     isDynamicInlineStyle={true}

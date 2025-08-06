@@ -1,4 +1,5 @@
 import { toTextClosingTagFrom, toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
+import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
 type ComponentProps =
@@ -22,12 +23,14 @@ const WrappingTag: FC<WrappingTagProps> = ({
     const Tag = () => {
         if (isOpeningTag) {
             return (
-                <code className={styleSpacingAroundCodeTop}>{toTextOpeningTagFrom(component)}</code>
+                <code className={styleSpacingAroundCodeTop} {...testId('opening-tag')}>
+                    {toTextOpeningTagFrom(component)}
+                </code>
             );
         }
         if (isClosingTag) {
             return (
-                <code className={styleSpacingAroundCodeBottom}>
+                <code className={styleSpacingAroundCodeBottom} {...testId('closing-tag')}>
                     {toTextClosingTagFrom(component)}
                 </code>
             );

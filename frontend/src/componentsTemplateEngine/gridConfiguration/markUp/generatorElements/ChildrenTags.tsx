@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { FC } from 'react';
 
 type ChlidrenTagsProps = {
@@ -6,7 +7,7 @@ type ChlidrenTagsProps = {
 
 const ChildrenTags: FC<ChlidrenTagsProps> = ({ arr }: ChlidrenTagsProps) => {
     return (
-        <code className="block pl-4">
+        <code className="block pl-4" {...testId('children-tags-container')}>
             {arr.map((elem: string, index: number) => (
                 <div key={index}>{elem}</div>
             ))}

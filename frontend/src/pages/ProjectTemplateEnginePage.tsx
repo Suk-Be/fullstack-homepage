@@ -1,12 +1,12 @@
 import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
-import ExportDynamicCodeTeaser from '@/componentsTemplateEngine/gridConfiguration/markUp/dynamicMarkUpGenerator';
 import LayoutConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
 import GridSaver from '@/componentsTemplateEngine/gridSaver';
 import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
-import ExampleTeaser from '@/componentsTemplateEngine/teaser';
+import TeaserGenerateMarkup from '@/componentsTemplateEngine/teaser/GenerateMarkupTeaser';
+import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import '../ProjectTemplateEnginePage.css';
@@ -36,9 +36,13 @@ const ProjectTemplateEnginePage: FC = () => {
         display: 'grid',
         gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
         gap: `${grid.gap}px`,
-        borderWidth: toggled ? `${grid.border}rem/3` : '0rem',
+        borderWidth: toggled ? `calc(${grid.border}rem/3)` : '0rem',
         padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
     };
+
+    // console.log('grid: ', grid);
+
+    // console.log('InlineStyles: ', InlineStyles);
 
     const GridItemsArray = [...Array(grid.items).keys()];
 
@@ -61,7 +65,7 @@ const ProjectTemplateEnginePage: FC = () => {
 
                 <AsideRight>
                     <ExampleTeaser />
-                    <ExportDynamicCodeTeaser
+                    <TeaserGenerateMarkup
                         inlineStyles={InlineStyles}
                         gridItemsArray={GridItemsArray}
                     />

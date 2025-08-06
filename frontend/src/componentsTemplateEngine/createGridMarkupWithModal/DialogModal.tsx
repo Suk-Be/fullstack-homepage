@@ -21,6 +21,7 @@ function DialogModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
 
     const handleOpen = () => setIsOpen({ ...isOpen, open: true });
     const handleClose = () => setIsOpen({ ...isOpen, open: false });
+
     const renderMarkup = () => (
         <CreateGridMarkUp
             Component={<CreateGridLayout style={inlineStyles} arr={gridItemsArray} />}

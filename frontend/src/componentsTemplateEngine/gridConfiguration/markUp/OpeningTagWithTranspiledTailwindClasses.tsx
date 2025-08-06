@@ -7,6 +7,7 @@ import {
 import extractTagAttributes from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributes';
 import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/separateStyleRulesArray';
 import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
+import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
 type DynamicTagProps = {
@@ -43,7 +44,7 @@ const OpeningTagWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
     );
 
     return (
-        <code className="block pb-4">
+        <code className="block pb-4" {...testId('opening-tag-inline-style')}>
             {isDynamicInlineStyle === true ? toTextOpeningTagFrom(<DynComp />) : null}
         </code>
     );
