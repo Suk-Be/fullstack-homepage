@@ -4,11 +4,9 @@
  * @param elem
  * @returns a mutated array with all elem passed extracted
  */
-function cleanupRegExpMatchArray(arr: RegExpMatchArray | null | undefined, elem: string) {
-    arr?.forEach((item, index) => {
-        if (item === elem) arr.splice(index, 1);
-    });
-    return arr;
+function cleanupRegExpMatchArray(arr: string[] | null | undefined, elem: string) {
+    if (!arr) return null;
+    return arr.filter((item) => item !== elem);
 }
 
 /**
@@ -19,18 +17,27 @@ function cleanupRegExpMatchArray(arr: RegExpMatchArray | null | undefined, elem:
 
 const separateStyleRulesArray = (StyleAttributes: RegExpMatchArray | null) => {
     if (StyleAttributes !== null) {
-        const lengthOfStyleAttribute = 7;
-        // returns deletes style attribute from the single string
-        const StyleRules = StyleAttributes?.[0]?.substring(lengthOfStyleAttribute);
-        const RegExArrayWithStyleRulesAndRedundantSpaceEntries = StyleRules?.match(/[^;]*/gm);
-        // deletes redundant list entries
-        const InlineStyleRulesAsArray = cleanupRegExpMatchArray(
-            RegExArrayWithStyleRulesAndRedundantSpaceEntries,
-            '',
+        // Der Style-String enthält sowohl 'style="' als auch das schließende '"'
+        const StyleRulesWithQuotes = StyleAttributes?.[0];
+
+        if (!StyleRulesWithQuotes) {
+            return [];
+        }
+
+        // Schneide 'style="' am Anfang und das letzte '"' am Ende ab
+        const lengthOfStyleAttribute = 7; // Länge von 'style="'
+        const cleanedStyleString = StyleRulesWithQuotes.substring(
+            lengthOfStyleAttribute,
+            StyleRulesWithQuotes.length - 1,
         );
 
-        return InlineStyleRulesAsArray;
+        // Split am Semikolon
+        const InlineStyleRulesAsArray = cleanedStyleString.split(';').map((rule) => rule.trim());
+
+        // entfernt leere Einträge
+        return cleanupRegExpMatchArray(InlineStyleRulesAsArray, '');
     }
+    return null;
 };
 
 export default separateStyleRulesArray;
