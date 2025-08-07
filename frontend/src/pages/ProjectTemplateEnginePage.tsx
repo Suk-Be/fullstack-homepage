@@ -36,13 +36,9 @@ const ProjectTemplateEnginePage: FC = () => {
         display: 'grid',
         gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
         gap: `${grid.gap}px`,
-        borderWidth: toggled ? `calc(${grid.border}rem/3)` : '0rem',
+        borderWidth: toggled ? `calc(${grid.border}rem/3)` : 'calc(0rem/3)',
         padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
     };
-
-    // console.log('grid: ', grid);
-
-    // console.log('InlineStyles: ', InlineStyles);
 
     const GridItemsArray = [...Array(grid.items).keys()];
 
