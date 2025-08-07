@@ -9,7 +9,7 @@ vi.mock('@/utils/templateEngine/parseHtmlToText', () => ({
 }));
 
 // childrenTagsArr (z. B. divs innerhalb des Grids)
-vi.mock('@/utils/templateEngine/parseHtmlToText/rowSpanningGridTagsToText', () => ({
+vi.mock('@/utils/templateEngine/parseHtmlToText/rowSpanningGridItemTagsToText', () => ({
     default: [
         '<div class="col-span-2">Content 1</div>',
         '<div class="row-span-2">Content 2</div>',
