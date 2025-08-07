@@ -1,5 +1,5 @@
 import SimpleGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/SimpleGrid';
-import simpleGridChildrenTagsToText from '@/utils/templateEngine/parseHtmlToText/simpleGridChildrenTagsToText';
+import simpleGridItemTagsToText from '@/utils/templateEngine/parseHtmlToText/simpleGridItemTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import GridMarkupWrapper from './GridMarkupWrapper';
 
@@ -11,7 +11,7 @@ const SimpleGridMarkup: FC<SimpleGridMarkupProps> = ({ layoutGapConfig }) => {
     return (
         <GridMarkupWrapper
             markupComponent={<SimpleGrid layoutGapConfig={layoutGapConfig} />}
-            childrenTagsArr={simpleGridChildrenTagsToText}
+            childrenTagsArr={simpleGridItemTagsToText}
         />
     );
 };
