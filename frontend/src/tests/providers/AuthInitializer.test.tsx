@@ -1,6 +1,6 @@
 import AuthInitializer from '@/providers/AuthInitializer';
 import { render } from '@testing-library/react';
-import { beforeEach, describe, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, Mock, vi } from 'vitest';
 
 vi.mock('@/hooks/auth/useAuthInit', () => ({
   useAuthInit: vi.fn(), 
@@ -10,7 +10,7 @@ import { useAuthInit } from '@/hooks/auth/useAuthInit';
 
 describe('AuthInitializer', () => {
   beforeEach(() => {
-    (useAuthInit as vi.Mock).mockClear();
+    (useAuthInit as Mock).mockClear();
   });
 
   it('should call useAuthInit hook when rendered', () => {
