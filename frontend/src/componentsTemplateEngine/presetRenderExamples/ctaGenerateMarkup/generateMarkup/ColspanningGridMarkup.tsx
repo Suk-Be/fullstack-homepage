@@ -1,5 +1,5 @@
 import ColumnsSpanningGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/ColspanningGrid';
-import colSpanningGridTagsToText from '@/utils/templateEngine/parseHtmlToText/colSpanningGridTagsToText';
+import colSpanningGridItemTagsToText from '@/utils/templateEngine/parseHtmlToText/colSpanningGridItemTagsToText';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 import GridMarkupWrapper from './GridMarkupWrapper';
@@ -12,7 +12,7 @@ const ColspanningGridMarkup: FC<ColspanningGridMarkupProps> = ({ layoutConfig, c
     return (
         <GridMarkupWrapper
             markupComponent={<ColumnsSpanningGrid layoutConfig={layoutConfig} />}
-            childrenTagsArr={colSpanningGridTagsToText}
+            childrenTagsArr={colSpanningGridItemTagsToText}
             className={twMerge(className)} // Pass the className to the wrapper
         />
     );

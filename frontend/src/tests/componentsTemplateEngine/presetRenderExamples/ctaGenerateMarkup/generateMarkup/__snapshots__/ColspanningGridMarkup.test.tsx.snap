@@ -23,19 +23,19 @@ exports[`ColspanningGridMarkup > matches snapshot 1`] = `
           &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
-        </div>
-        <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
           &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
         <div>
-          &lt;div class="w-full rounded-xl h-24 bg-green" data-testid="grid-element"&gt;&lt;/div&gt;
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
         </div>
       </code>
       <code
