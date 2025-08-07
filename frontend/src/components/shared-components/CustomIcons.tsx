@@ -1,8 +1,9 @@
+import { testId } from '@/utils/testId';
 import SvgIcon from '@mui/material/SvgIcon';
 
 export function SitemarkIcon() {
     return (
-        <SvgIcon sx={{ height: 21, width: 100 }}>
+        <SvgIcon sx={{ height: 21, width: 100 }} {...testId('sitemark-icon')}>
             <svg
                 width={86}
                 height={19}
@@ -53,7 +54,7 @@ export function SitemarkIcon() {
 
 export function FacebookIcon() {
     return (
-        <SvgIcon>
+        <SvgIcon {...testId('facebook-icon')}>
             <svg
                 width="16"
                 height="16"
@@ -89,7 +90,7 @@ export function FacebookIcon() {
 
 export function GoogleIcon() {
     return (
-        <SvgIcon>
+        <SvgIcon {...testId('google-icon')}>
             <svg
                 width="16"
                 height="16"
@@ -120,7 +121,7 @@ export function GoogleIcon() {
 
 export function GithubIcon() {
     return (
-        <SvgIcon>
+        <SvgIcon {...testId('github-icon')}>
             <svg
                 width="16"
                 height="16"
