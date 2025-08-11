@@ -1,6 +1,6 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { AppDispatch } from '@/store';
-import { login, logout, setUserId } from '@/store/loginSlice';
+import { forceLogin, logout } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userGridSlice';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
@@ -19,8 +19,7 @@ export const useAuthInit = () => {
                     const result = await requestMe();
 
                     if (result?.success && result.userId !== undefined) {
-                        dispatch(login());
-                        dispatch(setUserId(result.userId));
+                        dispatch(forceLogin(result.userId));
                     } else {
                         // response private route not successful
                         dispatch(resetUserGrid());

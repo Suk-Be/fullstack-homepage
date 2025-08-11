@@ -8,7 +8,6 @@ const {
     mockDispatch,
     mockLoginActionCreator,
     mockLogoutActionCreator,
-    mockSetUserIdActionCreator,
     mockResetUserGridActionCreator,
     mockInitializeCookies,
     mockGetAxiosStatus,
@@ -16,9 +15,8 @@ const {
 } = vi.hoisted(() => {
     return {
         mockDispatch: vi.fn(),
-        mockLoginActionCreator: vi.fn(() => ({ type: 'login/login' })),
+        mockLoginActionCreator: vi.fn(() => ({ type: 'login/forceLogin' })),
         mockLogoutActionCreator: vi.fn(() => ({ type: 'login/logout' })),
-        mockSetUserIdActionCreator: vi.fn(() => ({ type: 'login/setUserId' })),
         mockResetUserGridActionCreator: vi.fn(() => ({ type: 'userGrid/resetUserGrid' })),
         mockInitializeCookies: vi.fn(),
         mockGetAxiosStatus: vi.fn(),
@@ -52,9 +50,8 @@ vi.mock('@/store/loginSlice', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/store/loginSlice')>();
     return {
         ...actual,
-        login: mockLoginActionCreator,
+        forceLogin: mockLoginActionCreator,
         logout: mockLogoutActionCreator,
-        setUserId: mockSetUserIdActionCreator,
     };
 });
 
@@ -62,7 +59,6 @@ vi.mock('@/store/userGridSlice', async (importOriginal) => {
     const actual = await importOriginal<typeof import('@/store/userGridSlice')>();
     return {
         ...actual,
-        userGrid: mockSetUserIdActionCreator,
         resetUserGrid: mockResetUserGridActionCreator,
     };
 });
@@ -101,10 +97,10 @@ describe('useAuthInit', () => {
             expect(mockLoginActionCreator).toHaveBeenCalledTimes(1);
             expect(mockLogoutActionCreator).not.toHaveBeenCalled();
 
-            expect(mockSetUserIdActionCreator).toHaveBeenCalledTimes(1);
+            // expect(mockSetUserIdActionCreator).toHaveBeenCalledTimes(1);
             expect(mockResetUserGridActionCreator).not.toHaveBeenCalled();
 
-            expect(mockDispatch).toHaveBeenCalledWith({ type: 'login/login' });
+            expect(mockDispatch).toHaveBeenCalledWith({ type: 'login/forceLogin' });
             expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'login/logout' });
 
             expect(mockLogRecoverableError).not.toHaveBeenCalled();
@@ -129,10 +125,9 @@ describe('useAuthInit', () => {
             expect(mockLoginActionCreator).not.toHaveBeenCalled();
             expect(mockLogoutActionCreator).toHaveBeenCalledTimes(1);
 
-            expect(mockSetUserIdActionCreator).not.toHaveBeenCalled();
             expect(mockResetUserGridActionCreator).toHaveBeenCalledTimes(1);
 
-            expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'login/login' });
+            expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'login/forceLogin' });
             expect(mockDispatch).toHaveBeenCalledWith({ type: 'login/logout' });
 
             expect(mockGetAxiosStatus).toHaveBeenCalledWith(mockAxiosError);
@@ -159,10 +154,9 @@ describe('useAuthInit', () => {
             expect(mockLoginActionCreator).not.toHaveBeenCalled();
             expect(mockLogoutActionCreator).toHaveBeenCalledTimes(1);
 
-            expect(mockSetUserIdActionCreator).not.toHaveBeenCalled();
             expect(mockResetUserGridActionCreator).toHaveBeenCalledTimes(1);
 
-            expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'login/login' });
+            expect(mockDispatch).not.toHaveBeenCalledWith({ type: 'login/forceLogin' });
             expect(mockDispatch).toHaveBeenCalledWith({ type: 'login/logout' });
 
             expect(mockLogRecoverableError).toHaveBeenCalledWith({
