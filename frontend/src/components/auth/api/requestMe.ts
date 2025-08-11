@@ -1,15 +1,10 @@
 import LaravelApiClient from '@/plugins/axios';
+import { LoginErrorResponse, LoginSuccessResponse } from '@/types/entities';
 import { User } from '@/types/Redux';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
 
-interface RequestMeResult {
-    success: boolean;
-    message: string;
-    userId?: number;
-}
-
-const requestMe = async (): Promise<RequestMeResult | undefined> => {
+const requestMe = async (): Promise<LoginSuccessResponse | LoginErrorResponse> => {
     try {
         const { data: user } = await LaravelApiClient.get<User>('/me');
         const responseObj = setResponseValidationSuccess('User daten geholt und gelogged!');

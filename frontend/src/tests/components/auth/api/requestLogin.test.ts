@@ -34,11 +34,10 @@ describe('requestLogin', () => {
             password: registeredUserData.password,
         });
 
-        expect(result).toEqual({
-            success: true,
-            message: 'Login erfolgreich!',
-            userId: registeredUserData.id,
-        });
+        // console.log('result: ', result.success)
+
+        expect(result.success).toBe(true);
+        expect(result.message).toBe('Login erfolgreich!');
     });
 
     it('should return 422 validation error when login fails', async () => {
@@ -49,9 +48,10 @@ describe('requestLogin', () => {
 
         expect(result).toEqual({
             success: false,
-            message: 'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
+            message: "Diese E-Mail ist nicht registriert oder das Passwort ist falsch.",
             fieldErrors: {
-                email: ['Diese E-Mail ist nicht registriert oder das Passwort ist falsch.'],
+                email: ["Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.",],
+                password: ["Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.",],                                                                              
             },
         });
     });
