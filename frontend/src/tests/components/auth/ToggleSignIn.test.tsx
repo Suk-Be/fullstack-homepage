@@ -1,33 +1,53 @@
 import ToggleSignIn from '@/components/auth/Toggles';
-import { renderWithProviders } from '@/tests/utils/testRenderUtils';
-import { screen } from '@testing-library/react';
+
+import loginReducer from '@/store/loginSlice';
+import userGridReducer from '@/store/userGridSlice';
+import { configureStore } from '@reduxjs/toolkit';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
 
 describe('ToggleSignIn', () => {
-    it('renders SignIn by default', () => {
-        renderWithProviders(<ToggleSignIn />);
-        // screen.debug()
-        expect(screen.getByRole('heading', { name: 'Anmelden' })).toBeInTheDocument();
-    });
+    const renderUtils = () => {
+      const user = userEvent.setup();
 
-    it('toggles to SignUp when SignIn button is clicked', async () => {
-        const user = userEvent.setup();
-        renderWithProviders(<ToggleSignIn />);
+      const store = configureStore({
+        reducer: {
+          login: loginReducer,
+          userGrid: userGridReducer,
+        },
+      });
 
-        await user.click(screen.getByTestId('button-switch-to-sign-up'));
-        expect(screen.getByRole('heading', { name: 'Registrieren' })).toBeInTheDocument();
-    });
+      render(
+        <Provider store={store}>
+          <ToggleSignIn />
+        </Provider>
+      );
 
-    it('toggles back to SignIn when SignUp button is clicked', async () => {
-        const user = userEvent.setup();
-        renderWithProviders(<ToggleSignIn />);
+      return { user };
+  };
 
-        // First toggle to SignUp
-        await user.click(screen.getByTestId('button-switch-to-sign-up'));
-        expect(screen.getByRole('heading', { name: 'Registrieren' })).toBeInTheDocument();
+  it('renders SignIn by default', () => {
+    renderUtils();
+    expect(screen.getByRole('heading', { name: 'Anmelden' })).toBeInTheDocument();
+  });
 
-        // Toggle back to SignIn
-        await user.click(screen.getByTestId('button-switch-to-sign-in'));
-        expect(screen.getByRole('heading', { name: 'Anmelden' })).toBeInTheDocument();
-    });
+  it('toggles to SignUp when SignIn button is clicked', async () => {
+    const { user } = renderUtils();
+    await user.click(screen.getByTestId('button-switch-to-sign-up'));
+    expect(screen.getByRole('heading', { name: 'Registrieren' })).toBeInTheDocument();
+  });
+
+  it('toggles back to SignIn when SignUp button is clicked', async () => {
+    const { user } = renderUtils();
+
+    // To SignUp
+    await user.click(screen.getByTestId('button-switch-to-sign-up'));
+    expect(screen.getByRole('heading', { name: 'Registrieren' })).toBeInTheDocument();
+
+    // Back to SignIn
+    await user.click(screen.getByTestId('button-switch-to-sign-in'));
+    expect(screen.getByRole('heading', { name: 'Anmelden' })).toBeInTheDocument();
+  });
 });
+
