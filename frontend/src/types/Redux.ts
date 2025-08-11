@@ -24,3 +24,10 @@ export interface GridConfig {
         paddingY: string;
     };
 }
+
+// loginSlice
+
+export interface LoginArgs {
+    email: string;
+    password: string;
+}

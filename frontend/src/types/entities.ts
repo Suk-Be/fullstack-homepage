@@ -11,15 +11,21 @@ export type Product = {
     prototypeId: number;
 };
 
-// registration form
-// fyi: Laravel returns field-specific validation errors in the errors object (for status 422)
-export type RegisterResponse =
-    | { success: true; message: string; userId?: number }
-    | { success: false; message: string; fieldErrors?: { [key: string]: string[] } };
-
 export type RegisterFormData = {
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
+};
+
+export type LoginSuccessResponse = {
+    success: true;
+    message?: string;
+    userId?: number;
+};
+
+export type LoginErrorResponse = {
+    success: false;
+    message?: string;
+    fieldErrors?: Record<string, string[]>;
 };

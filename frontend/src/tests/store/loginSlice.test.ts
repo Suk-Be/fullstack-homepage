@@ -1,55 +1,121 @@
-import loginReducer, { login, LoginState, logout, setUserId } from '@/store/loginSlice';
+import reducer, { LoginState, loginThunk } from '@/store/loginSlice';
+import { configureStore } from '@reduxjs/toolkit';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-describe('loginSlice', () => {
-    const initialState: LoginState = {
-        userId: null,
-        isLoggedIn: false,
-        isLoading: true,
-    };
+// Hoisted Mocks
+const {
+  mockRequestMe,
+  mockInitializeCookies,
+  mockPost,
+  mockResetCookiesOnResponseError,
+  mockSetResponseValidationError,
+} = vi.hoisted(() => ({
+  mockRequestMe: vi.fn(),
+  mockInitializeCookies: vi.fn(),
+  mockPost: vi.fn(),
+  mockResetCookiesOnResponseError: vi.fn(),
+  mockSetResponseValidationError: vi.fn(),
+}));
 
-    it('should return the initial state', () => {
-        expect(loginReducer(undefined, { type: '@@INIT' })).toEqual(initialState);
+// Mocks definieren
+vi.mock('@/utils/apiBaseUrl', () => ({
+  default: 'http://localhost:8000/api',
+}));
+
+vi.mock('@/utils/auth/initializeCookies', () => ({
+  default: mockInitializeCookies,
+}));
+
+vi.mock('@/plugins/axios', () => ({
+  __esModule: true,
+  default: { post: mockPost, defaults: { baseURL: 'http://localhost:8000/api' } },
+}));
+
+vi.mock('@/components/auth/api/requestMe', () => ({
+  default: mockRequestMe,
+}));
+
+vi.mock('@/utils/auth/resetCookiesOnResponseError', () => ({
+  default: mockResetCookiesOnResponseError,
+}));
+
+vi.mock('@/store/userGridSlice', () => ({
+  resetUserGrid: () => ({ type: 'userGrid/resetUserGrid' }),
+}));
+
+vi.mock('@/utils/auth/setResponseValidationError', () => ({
+  setResponseValidationError: mockSetResponseValidationError,
+}));
+
+// Store-Helper
+const makeStore = () =>
+  configureStore({
+    reducer: { login: reducer },
+  });
+
+// Tests
+describe('loginThunk', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should login successfully and update state', async () => {
+    mockInitializeCookies.mockResolvedValue(undefined);
+    mockPost.mockResolvedValue({ data: { message: 'Welcome' } });
+    mockRequestMe.mockResolvedValue({ success: true, userId: 42 });
+
+    const store = makeStore();
+
+    await store.dispatch(
+      loginThunk({ email: 'test@example.com', password: 'secret' }) as any
+    );
+
+    const state: LoginState = store.getState().login;
+    expect(mockInitializeCookies).toHaveBeenCalledTimes(1);
+    expect(mockPost).toHaveBeenCalledWith('/auth/spa/login', {
+      email: 'test@example.com',
+      password: 'secret',
+    });
+    expect(mockRequestMe).toHaveBeenCalledTimes(1);
+    expect(state.isLoggedIn).toBe(true);
+    expect(state.userId).toBe(42);
+    expect(state.isLoading).toBe(false);
+  });
+
+  it('should handle failed requestMe and set error', async () => {
+    mockInitializeCookies.mockResolvedValue(undefined);
+    mockPost.mockResolvedValue({ data: {} });
+    mockRequestMe.mockResolvedValue({ success: false });
+
+    const store = makeStore();
+
+    await store.dispatch(
+      loginThunk({ email: 'fail@example.com', password: 'wrong' }) as any
+    );
+
+    const state: LoginState = store.getState().login;
+    expect(state.isLoggedIn).toBe(false);
+    expect(state.error).toBe('Benutzer konnte nicht geladen werden');
+    expect(state.isLoading).toBe(false);
+  });
+
+  it('should handle thrown error and call resetCookiesOnResponseError', async () => {
+    const errorObj = new Error('network fail');
+    mockInitializeCookies.mockRejectedValue(errorObj);
+    mockSetResponseValidationError.mockReturnValue({
+      success: false,
+      message: 'Validation error',
     });
 
-    it('should handle login', () => {
-        const prevState: LoginState = {
-            userId: null,
-            isLoggedIn: false,
-            isLoading: true,
-        };
+    const store = makeStore();
 
-        expect(loginReducer(prevState, login())).toEqual({
-            userId: null,
-            isLoggedIn: true,
-            isLoading: false,
-        });
-    });
+    await store.dispatch(
+      loginThunk({ email: 'oops@example.com', password: 'fail' }) as any
+    );
 
-    it('should handle logout', () => {
-        const prevState: LoginState = {
-            userId: 123,
-            isLoggedIn: true,
-            isLoading: false,
-        };
-
-        expect(loginReducer(prevState, logout())).toEqual({
-            userId: 123,
-            isLoggedIn: false,
-            isLoading: false,
-        });
-    });
-
-    it('should handle setUserId', () => {
-        const prevState: LoginState = {
-            userId: null,
-            isLoggedIn: false,
-            isLoading: true,
-        };
-
-        expect(loginReducer(prevState, setUserId(42))).toEqual({
-            userId: 42,
-            isLoggedIn: false,
-            isLoading: true,
-        });
-    });
+    expect(mockResetCookiesOnResponseError).toHaveBeenCalledWith(errorObj);
+    const state: LoginState = store.getState().login;
+    expect(state.error).toBe('Validation error');
+    expect(state.isLoggedIn).toBe(false);
+  });
 });
