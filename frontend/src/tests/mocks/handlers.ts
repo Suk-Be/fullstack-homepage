@@ -76,6 +76,8 @@ export const handlers = [
 
     http.post(`${api}/auth/spa/login`, async (ctx) => {
         const body = await ctx.request.json();
+        // console.log('MSW login handler wurde aufgerufen mit body:', body);
+
         const parseResult = loginResponseSchema.safeParse(body);
 
         if (!parseResult.success) {
@@ -86,12 +88,8 @@ export const handlers = [
 
         const user = db.user.findFirst({
             where: {
-                email: {
-                    equals: email,
-                },
-                password: {
-                    equals: password,
-                },
+                email: { equals: email, },
+                password: { equals: password, },
             },
         });
 
@@ -100,7 +98,8 @@ export const handlers = [
                 {
                     message: ErrorMessages.SignIn.responseEmail,
                     errors: {
-                        email: [ErrorMessages.SignIn.responseEmail],
+                        email: ['Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.'],
+                        password: ['Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.']
                     },
                 },
                 { status: 422 },
@@ -161,20 +160,20 @@ export const handlers = [
         const body = (await request.json()) as ResetPasswordRequestBody;
 
         if (body.password !== body.password_confirmation) {
-            HttpResponse.json({
-                success: false,
-                message: ErrorMessages.ResetPassword.password,
-                errors: {
-                    password: [ErrorMessages.ResetPassword.password],
-                    password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
-                },
-            });
+          return HttpResponse.json({
+            success: false,
+            message: ErrorMessages.ResetPassword.password,
+            errors: {
+              password: [ErrorMessages.ResetPassword.password],
+              password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
+            },
+          });
         }
 
         return HttpResponse.json({
-            success: true,
-            message: SuccessMessages.ResetPassword.requestSuccess,
-            body,
+          success: true,
+          message: SuccessMessages.ResetPassword.requestSuccess,
+          body,
         });
     }),
 
