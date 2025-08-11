@@ -1,40 +1,28 @@
 import Loading from '@/components/auth/shared-components/Loading';
 import LaravelApiClient from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
-import { login, logout, setUserId } from '@/store/loginSlice';
+import { forceLogin, logout } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userGridSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Shows the loading state when Authproviders are authenticating.
- * The Authproviders use a callback route
- * @returns successful
- * user gets global state login and gets redirected to homepage
- * @returns resposne error
- * user gets error notification and gets redirected to homepage
- */
-
 const SocialiteCallbackPage = () => {
     const navigate = useNavigate();
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
-        LaravelApiClient.get('/csrf-cookie')
-            .then(() => {
-                return LaravelApiClient.get('/me');
-            })
-            .then((res) => {
-                dispatch(setUserId(res.data.id));
-                dispatch(login());
+        const handleSocialiteCallback = async () => {
+            try {
+                await LaravelApiClient.get('/csrf-cookie');
+                const res = await LaravelApiClient.get('/me');
+                dispatch(forceLogin(res.data.id));
                 navigate('/');
-            })
-            .catch((error) => {
+            } catch (error) {
                 const axiosStatus = getAxiosStatus(error);
                 logRecoverableError({
-                    context: '[Auth] Failed to get cookies:',
+                    context: '[Auth] Failed to authenticate via socialite callback',
                     error,
                     extra: { axiosStatus },
                 });
@@ -42,14 +30,13 @@ const SocialiteCallbackPage = () => {
                 dispatch(resetUserGrid());
                 dispatch(logout());
                 navigate('/');
-            });
-    }, []);
+            }
+        };
 
-    return (
-        <>
-            <Loading message="im Anmelde Prozess ..." />
-        </>
-    );
+        handleSocialiteCallback();
+    }, [dispatch, navigate]);
+
+    return <Loading message="im Anmelde Prozess ..." />;
 };
 
 export default SocialiteCallbackPage;
