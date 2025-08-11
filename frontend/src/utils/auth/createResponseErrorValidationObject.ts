@@ -7,16 +7,16 @@
  * @returns {RegisterResponse} An object that is used for form validation, e.g. email exists validation.
  */
 
-import { RegisterResponse } from '@/types/entities';
+import { LoginErrorResponse } from '@/types/entities';
 
 export const createResponseErrorValidationObject = (
     message: string,
-    defaultMessage: string,
-    fieldErrors?: { [key: string]: string[] },
-): RegisterResponse => {
+    fallbackMessage: string,
+    errors?: { [key: string]: string[] },
+): LoginErrorResponse => {
     return {
         success: false,
-        message: message || defaultMessage,
-        fieldErrors,
+        message: message || fallbackMessage,
+        fieldErrors: errors,
     };
 };

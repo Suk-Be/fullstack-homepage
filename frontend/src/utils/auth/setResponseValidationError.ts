@@ -1,4 +1,4 @@
-import { RegisterResponse } from '@/types/entities';
+import { LoginErrorResponse } from '@/types/entities';
 import { AxiosError } from 'axios';
 import { createResponseErrorValidationObject } from './createResponseErrorValidationObject';
 
@@ -11,7 +11,7 @@ export function isAxiosError(error: unknown): error is AxiosError {
     return (error as AxiosError).isAxiosError === true;
 }
 
-export const setResponseValidationError = (error: unknown): RegisterResponse => {
+export const setResponseValidationError = (error: unknown): LoginErrorResponse => {
     if (!isAxiosError(error)) {
         const message =
             error instanceof Error
