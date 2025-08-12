@@ -3,8 +3,6 @@ import { Card, SectionCenteredChild, SignInContainer } from '@/components/Contai
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import useToggle from '@/hooks/useToggle';
-import type { AppDispatch } from '@/store';
-import { login } from '@/store/loginSlice';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage'; // Ihre bestehende Funktion
 import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -20,7 +18,6 @@ import {
     Typography,
 } from '@mui/material';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import validateInputs from './validateResetPassPassword';
 
@@ -77,8 +74,6 @@ const ResetPassword = () => {
             setEmail(urlEmail);
         }
     }, [location.search]);
-
-    const dispatch: AppDispatch = useDispatch();
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         // resets
@@ -137,7 +132,7 @@ const ResetPassword = () => {
 
         if (result.success) {
             setSuccessMessage(result.message || SuccessMessages.ResetPassword.requestSuccess);
-            dispatch(login());
+
             if (import.meta.env.MODE !== 'test' || process.env.NODE_ENV !== 'test') {
                 setTimeout(() => navigate('/'), 3000);
             }

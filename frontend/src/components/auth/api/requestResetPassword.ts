@@ -24,6 +24,7 @@ const resetPassword = async (
             password_confirmation,
             token,
         });
+        console.log('response.data: ', response);
         return setResponseValidationSuccess(
             response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
         );

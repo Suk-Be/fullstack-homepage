@@ -2,7 +2,6 @@ import ResetPassword from '@/components/auth/ResetPassword';
 import * as resetPassword from '@/components/auth/api/requestResetPassword';
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
-import { login } from '@/store/loginSlice';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
@@ -115,8 +114,6 @@ describe('ForgotPassword', () => {
             expect(
                 screen.getByText(SuccessMessages.ResetPassword.requestSuccess),
             ).toBeInTheDocument();
-
-            expect(mockDispatch).toHaveBeenCalledWith(login());
         });
     });
 
