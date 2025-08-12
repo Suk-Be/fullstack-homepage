@@ -1,13 +1,13 @@
 import SignUp from '@/components/auth/SignUp';
 import requestRegister, * as requestRegisterModule from '@/components/auth/api/requestRegister';
-import { login, setUserId } from '@/store/loginSlice';
+import { forceLogin } from '@/store/loginSlice';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import userFactory from '@/tests/mocks/factories/userFactories';
 import {
-  expectErrorMessages,
-  expectNoErrorMessages,
-  switchToComponentHelper,
+    expectErrorMessages,
+    expectNoErrorMessages,
+    switchToComponentHelper,
 } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
@@ -168,12 +168,12 @@ describe('SignUp - Form', () => {
 
     it('should render a hint if the user already exists', async () => {
         const response = await requestRegister({
-          form: {
-            name: 'John Doe',
-            email: 'existing@example.com',
-            password: 'password123',
-            password_confirmation: 'password123',
-          }
+            form: {
+                name: 'John Doe',
+                email: 'existing@example.com',
+                password: 'password123',
+                password_confirmation: 'password123',
+            },
         }).catch((err) => err.response);
 
         expect(response.success).toBe(false);
@@ -224,8 +224,7 @@ describe('SignUp - Form', () => {
             expect(passwordInput).toHaveValue('');
             expect(passwordConfirmationInput).toHaveValue('');
 
-            expect(mockDispatch).toHaveBeenCalledWith(login());
-            expect(mockDispatch).toHaveBeenCalledWith(setUserId(1));
+            expect(mockDispatch).toHaveBeenCalledWith(forceLogin(1));
         });
     }, 30000);
 });

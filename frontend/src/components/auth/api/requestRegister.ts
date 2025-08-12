@@ -1,6 +1,6 @@
 import requestMe from '@/components/auth/api/requestMe';
 import LaravelApiClient from '@/plugins/axios';
-import { RegisterFormData, RegisterResponse } from '@/types/entities';
+import { LoginErrorResponse, LoginSuccessResponse, RegisterFormData } from '@/types/entities';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
@@ -11,7 +11,9 @@ interface RegisterUserParams {
     userId?: number;
 }
 
-const requestRegister = async ({ form }: RegisterUserParams): Promise<RegisterResponse> => {
+const requestRegister = async ({
+    form,
+}: RegisterUserParams): Promise<LoginSuccessResponse | LoginErrorResponse> => {
     try {
         await initializeCookies();
         const response = await LaravelApiClient.post('/auth/spa/register', form);
