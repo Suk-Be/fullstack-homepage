@@ -11,9 +11,12 @@ describe('requestMe', () => {
         const result = await requestMe();
 
         expect(result).toBeDefined();
-        expect(result?.userId).toBe(1);
-        expect(result?.success).toBe(true);
-        expect(result?.message).toMatch(/geholt/i);
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+            expect(result.userId).toBe(1);
+            expect(result.message).toMatch(/geholt/i);
+        }
     });
 
     it('should return fieldErrors and message on 422 validation error', async () => {
