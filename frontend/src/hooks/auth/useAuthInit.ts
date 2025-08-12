@@ -1,6 +1,6 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { AppDispatch } from '@/store';
-import { forceLogin, logout } from '@/store/loginSlice';
+import { forceLogin, logout, startAuth } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userGridSlice';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
@@ -12,6 +12,7 @@ export const useAuthInit = () => {
 
     useEffect(() => {
         const initAuth = async () => {
+            dispatch(startAuth());
             try {
                 await initializeCookies();
 

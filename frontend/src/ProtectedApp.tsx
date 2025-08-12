@@ -10,14 +10,13 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedApp: FC<ProtectedRouteProps> = () => {
-  const { isLoggedIn, isLoading } = useSelector((state: RootState) => state.login);
+    const { isLoggedIn, isLoading } = useSelector((state: RootState) => state.login);
 
-  if (isLoading) {
-    return <Loading message='Überprüfung der Authentifizierung ...' />; 
-  }
+    if (isLoading) {
+        return <Loading message="Überprüfung der Authentifizierung ..." />;
+    }
 
-  return isLoggedIn ? <Outlet /> : <NotLoggedInPage />;
-
+    return isLoggedIn ? <Outlet /> : <NotLoggedInPage />;
 };
 
 export default ProtectedApp;

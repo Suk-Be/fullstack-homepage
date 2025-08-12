@@ -31,7 +31,7 @@ export interface LoginState {
 const initialState: LoginState = {
     userId: null,
     isLoggedIn: false,
-    isLoading: false,
+    isLoading: true,
     error: null,
     fieldErrors: undefined,
 };
@@ -44,7 +44,7 @@ export const loginThunk = createAsyncThunk<
 >('login/loginThunk', async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
         await initializeCookies();
-        console.log('in here');
+        // console.log('in here');
 
         const response = await LaravelApiClient.post('/auth/spa/login', {
             email,
@@ -79,6 +79,9 @@ const loginSlice = createSlice({
     name: 'login',
     initialState,
     reducers: {
+        startAuth(state) {
+            state.isLoading = true;
+        },
         logout(state) {
             state.userId = null;
             state.isLoggedIn = false;
@@ -127,5 +130,5 @@ const loginSlice = createSlice({
     },
 });
 
-export const { logout, forceLogin } = loginSlice.actions;
+export const { startAuth, logout, forceLogin } = loginSlice.actions;
 export default loginSlice.reducer;
