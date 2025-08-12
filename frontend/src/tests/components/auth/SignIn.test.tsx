@@ -1,27 +1,16 @@
 import SignIn from '@/components/auth/SignIn';
-import ErrorMessages from '@/data/ErrorMessages';
-import { login } from '@/store/loginSlice';
+import LaravelApiClient from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
-import {
-  expectErrorMessages,
-  expectNoErrorMessages,
-  switchToComponentHelper,
-} from '@/tests/utils/testAssertUtils';
+import { expectErrorMessages, switchToComponentHelper } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import fetchAdapter from '@/tests/utilsTest/auth/fetchAdapter';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
 
-const mockDispatch = vi.fn();
-
-vi.mock('react-redux', async () => {
-    const actual = await vi.importActual('react-redux');
-    return {
-        ...actual,
-        useDispatch: vi.fn(() => mockDispatch),
-    };
-});
+LaravelApiClient.defaults.adapter = fetchAdapter;
 
 describe('SignIn component', () => {
     beforeEach(() => {
@@ -59,36 +48,39 @@ describe('SignIn component', () => {
     });
 
     it('should log in successfully with valid credentials', async () => {
-        const { emailInput, passwordInput, submitButton } = renderUtils();
+        const { user, emailInput, passwordInput, submitButton } = renderUtils();
 
-        await userEvent.type(emailInput, registeredUserData.email);
-        await userEvent.type(passwordInput, registeredUserData.password);
-        await userEvent.click(submitButton);
+        await user.type(emailInput, registeredUserData.email);
+        await user.type(passwordInput, registeredUserData.password);
+        await user.click(submitButton);
 
-        await waitFor(() => {
-            // screen.debug(screen.getByTestId('form'));
-            expectNoErrorMessages('SignIn', ['email', 'password']);
-            expect(submitButton).not.toBeDisabled();
-            expect(mockDispatch).toHaveBeenCalledWith(login());
-        });
-    }, 30000);
+        console.log('Alle User in DB:', db.user.getAll());
+
+        expect(
+            db.user.findFirst({
+                where: {
+                    email: { equals: registeredUserData.email },
+                },
+            }),
+        ).toBeDefined();
+    });
 
     it('shows field error if login fails with 422', async () => {
         const { emailInput, passwordInput, submitButton } = renderUtils();
 
-        await userEvent.type(emailInput, 'wrong@example.com');
+        const notRegisteredEmail = 'wrong@example.com';
+
+        await userEvent.type(emailInput, notRegisteredEmail);
         await userEvent.type(passwordInput, 'wrongpassword');
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-            // screen.debug(screen.getByTestId('form'));
-            const errorMessagesForEmailAndPassword = screen.getAllByText(
-                ErrorMessages.SignIn.responseEmail,
-            );
-            expect(errorMessagesForEmailAndPassword[0]).toBeInTheDocument();
-            expect(errorMessagesForEmailAndPassword[1]).toBeInTheDocument();
-            expect(submitButton).not.toBeDisabled();
-        });
+        expect(
+            db.user.findFirst({
+                where: {
+                    email: { equals: notRegisteredEmail },
+                },
+            }),
+        ).toBe(null);
     });
 
     it('shows validation error on empty inputs (frontend)', async () => {

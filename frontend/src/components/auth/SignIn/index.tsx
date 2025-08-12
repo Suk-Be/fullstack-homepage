@@ -1,27 +1,25 @@
 import { Card, SignInContainer } from '@/components/ContainerElements';
-import requestLogin from '@/components/auth/api/requestLogin';
 import AuthHeaderLayout from '@/components/auth/shared-components/AuthHeaderLayout';
 import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
 import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIcons';
 import useModalToggle from '@/hooks/useModalToggle';
 import useToggle from '@/hooks/useToggle';
 import { useAppDispatch } from '@/store/hooks';
-import { login, logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userGridSlice';
+import { loginThunk } from '@/store/loginSlice';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
@@ -59,12 +57,12 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
+
         setFieldErrors({
             email: { hasError: false, message: '' },
             password: { hasError: false, message: '' },
         });
 
-        // input validation
         const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
             validateSignInInputs({ email, password });
 
@@ -73,57 +71,50 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             password: { hasError: passwordError, message: passwordErrorMessage },
         });
 
-        // not submit if frontend validation has errors
         if (!isValid) {
             setIsSubmitting(false);
             return;
         }
 
-        // post form data to backend
-        const result = await requestLogin({
-            email,
-            password,
-        });
+        // 🔄 Dynamischer Import von loginThunk
+        const actionResult = await dispatch(loginThunk({ email, password }));
 
-        // clear fields on success
-        if (result.success) {
-            dispatch(login());
+        if (loginThunk.fulfilled.match(actionResult)) {
             setEmail('');
             setPassword('');
             setFieldErrors({
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
             });
-        } else {
-            // with axios errors
-            const backendRawErrors = result.errors || {};
-            const generalErrorMessage = result.message || 'Ein unbekannter Fehler ist aufgetreten.';
+        } else if (loginThunk.rejected.match(actionResult)) {
+            const payload = actionResult.payload;
 
-            const emailBackendErrorMessage = setResponseErrorMessage(
-                backendRawErrors,
+            console.log('payload:', payload);
+
+            const backendFieldErrors = payload?.fieldErrors || {};
+
+            const emailResponseError = setResponseErrorMessage(
+                backendFieldErrors,
                 'email',
-                generalErrorMessage,
+                payload?.message,
             );
 
-            const passwordBackendErrorMessage = setResponseErrorMessage(
-                backendRawErrors,
+            const passwordResponseError = setResponseErrorMessage(
+                backendFieldErrors,
                 'password',
-                generalErrorMessage,
+                payload?.message,
             );
 
-            // set field errors based on backend response
             setFieldErrors({
                 email: {
-                    hasError: !!emailBackendErrorMessage,
-                    message: emailBackendErrorMessage,
+                    hasError: !!emailResponseError,
+                    message: emailResponseError,
                 },
                 password: {
-                    hasError: !!passwordBackendErrorMessage,
-                    message: passwordBackendErrorMessage,
+                    hasError: !!passwordResponseError,
+                    message: passwordResponseError,
                 },
             });
-            dispatch(resetUserGrid());
-            dispatch(logout());
         }
 
         setIsSubmitting(false);

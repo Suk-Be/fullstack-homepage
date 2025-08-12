@@ -44,7 +44,7 @@ export const loginThunk = createAsyncThunk<
 >('login/loginThunk', async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
         await initializeCookies();
-        console.log('in here')
+        console.log('in here');
 
         const response = await LaravelApiClient.post('/auth/spa/login', {
             email,
@@ -53,28 +53,21 @@ export const loginThunk = createAsyncThunk<
 
         const meResult = await requestMe();
 
-      //   console.log(
-        //   'loginThunk sendet an:',
-        //   LaravelApiClient.defaults.baseURL + '/auth/spa/login',
-        //   'mit body:',
-        //   { email, password }
-        // );
-
-      if (meResult?.success && meResult.userId !== undefined) {
-        return {
-          success: true,
-          message: response.data.message || 'Login erfolgreich!',
-          userId: meResult.userId,
-        };
-      } else {
-        return rejectWithValue({
-          success: false,
-          message: 'Benutzer konnte nicht geladen werden',
-        });
-      }
+        if (meResult?.success && meResult.userId !== undefined) {
+            return {
+                success: true,
+                message: response.data.message || 'Login erfolgreich!',
+                userId: meResult.userId,
+            };
+        } else {
+            return rejectWithValue({
+                success: false,
+                message: 'Benutzer konnte nicht geladen werden',
+            });
+        }
     } catch (error: unknown) {
         // console.log('catch loginThunk, get here:', LaravelApiClient.defaults.baseURL + '/auth/spa/login', 'mit body:', { error });
-        
+
         dispatch(resetUserGrid());
         await resetCookiesOnResponseError(error);
         return rejectWithValue(setResponseValidationError(error));
