@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import loginReducer from './loginSlice';
-import userGridReducer from './userGridSlice';
+import UserSaveGridsReducer from './userSaveGridsSlice';
 
 export const store = configureStore({
     reducer: {
         login: loginReducer,
-        userGrid: userGridReducer,
+        userGrid: UserSaveGridsReducer,
     },
 });
 

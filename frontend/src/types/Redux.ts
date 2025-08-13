@@ -6,7 +6,7 @@ export interface User {
     email: string;
     email_verified_at?: string | null;
 }
-export interface UserGridState {
+export interface UserSaveGridsState {
     userId: User['id'] | null;
     savedGrids: {
         [layoutId: string]: GridConfig; // Normalisiertes Objekt
@@ -24,6 +24,8 @@ export interface GridConfig {
         paddingY: string;
     };
 }
+
+export type GridConfigKey = keyof GridConfig['config'];
 
 // loginSlice
 

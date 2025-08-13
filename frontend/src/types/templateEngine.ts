@@ -1,4 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { GridConfigKey } from './Redux';
 
 export type Teaser = {
     type: string;
@@ -67,5 +68,5 @@ export interface ModalProps extends DynamicGridProps {
     handleClose: () => void;
 }
 
-export type HandleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) => void;
+export type HandleChange = (key: GridConfigKey) => (e: ChangeEvent<HTMLInputElement>) => void;
 export type HandleToggle = (value: SetStateAction<boolean>) => void;

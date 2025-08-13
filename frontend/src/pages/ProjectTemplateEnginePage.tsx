@@ -7,25 +7,29 @@ import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfi
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
 import TeaserGenerateMarkup from '@/componentsTemplateEngine/teaser/GenerateMarkupTeaser';
 import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
+import { RootState } from '@/store';
+import { setUserIdForGrids, updateGrid } from '@/store/userSaveGridsSlice';
+import { GridConfigKey } from '@/types/Redux';
 import { testId } from '@/utils/testId';
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import '../ProjectTemplateEnginePage.css';
 
 const ProjectTemplateEnginePage: FC = () => {
-    const [grid, setGrid] = useState({
-        items: '1',
-        columns: '1',
-        gap: '0',
-        border: '0',
-        paddingX: '0',
-        paddingY: '0',
-    });
+    const dispatch = useDispatch();
 
-    const handleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
-        setGrid({
-            ...grid,
-            [key]: +e.target.value,
-        });
+    const userId = useSelector((state: RootState) => state.login.userId);
+    useEffect(() => {
+        if (userId) {
+            // connects userId from loginReducer with userGridReducer
+            dispatch(setUserIdForGrids(userId));
+        }
+    }, [userId, dispatch]);
+
+    const grid = useSelector((state: RootState) => state.userGrid.savedGrids['initial'].config);
+
+    const handleChange = (key: GridConfigKey) => (e: ChangeEvent<HTMLInputElement>) => {
+        dispatch(updateGrid({ layoutId: 'initial', key, value: e.target.value }));
     };
 
     const handleToggle = () => setToggled((prevToggled) => !prevToggled);
@@ -40,7 +44,8 @@ const ProjectTemplateEnginePage: FC = () => {
         padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
     };
 
-    const GridItemsArray = [...Array(grid.items).keys()];
+    const gridItems = parseInt(grid.items, 10);
+    const GridItemsArray = Array.from({ length: gridItems }, (_, index) => index + 1);
 
     return (
         <div className="flex flex-col w-full bg-black mb-[5rem]" {...testId('tempate-engine-page')}>
