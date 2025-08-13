@@ -1,7 +1,7 @@
 import routes from '@/routes';
 import type { RootState } from '@/store';
 import loginSlice from '@/store/loginSlice';
-import userGridSlice from '@/store/userGridSlice';
+import userGridSlice from '@/store/userSaveGridsSlice';
 import { server } from '@/tests/mocks/server';
 import AppThemeProvider from '@/themes/AppTheme';
 import apiBaseUrl from '@/utils/apiBaseUrl';
@@ -176,11 +176,10 @@ const renderWithProvidersDOM = (
 };
 
 export {
-  authProviderUrls,
-  navigateTo,
-  renderWithProviders,
-  renderWithProvidersDOM,
-  simluateDelay,
-  simulateError
+    authProviderUrls,
+    navigateTo,
+    renderWithProviders,
+    renderWithProvidersDOM,
+    simluateDelay,
+    simulateError,
 };
-

@@ -1,4 +1,5 @@
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
+import { initialState as userSaveGridsInitialState } from '@/store/userSaveGridsSlice';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
@@ -14,8 +15,8 @@ describe('ProjectTemplateEnginePage', () => {
                     isLoading: false,
                 },
                 userGrid: {
+                    ...userSaveGridsInitialState,
                     userId: 123,
-                    savedGrids: {},
                 },
             },
         });

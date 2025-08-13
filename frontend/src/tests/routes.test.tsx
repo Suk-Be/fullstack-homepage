@@ -5,6 +5,7 @@ import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayou
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
+import { initialState as userSaveGridsInitialState } from '@/store/userSaveGridsSlice';
 import {
     navigateTo,
     renderWithProviders,
@@ -115,8 +116,8 @@ describe('routes', () => {
                         isLoading: false,
                     },
                     userGrid: {
+                        ...userSaveGridsInitialState,
                         userId: 123,
-                        savedGrids: {},
                     },
                 },
             });

@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addGrid } from '@/store/userGridSlice';
+import { addGrid } from '@/store/userSaveGridsSlice';
 import { GridConfig } from '@/types/Redux';
 import SavedGridList from './SavedGridList';
 

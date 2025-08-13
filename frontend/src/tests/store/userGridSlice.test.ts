@@ -1,4 +1,8 @@
-import userGridReducer, { addGrid, resetUserGrid } from '@/store/userGridSlice';
+import userGridReducer, {
+    addGrid,
+    resetUserGrid,
+    initialState as userGridInitialState,
+} from '@/store/userSaveGridsSlice';
 import { UserGridState } from '@/types/Redux';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,10 +13,7 @@ vi.mock('uuid', () => ({
 }));
 
 describe('userGridSlice', () => {
-    const initialState: UserGridState = {
-        userId: null,
-        savedGrids: {},
-    };
+    const initialState: UserGridState = userGridInitialState;
 
     beforeEach(() => {
         vi.useRealTimers();

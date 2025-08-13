@@ -1,6 +1,6 @@
 import SocialiteCallbackPage from '@/pages/SocialiteCallbackPage';
 import { logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userGridSlice';
+import { resetUserGrid } from '@/store/userSaveGridsSlice';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import { waitFor } from '@testing-library/dom';
 import { describe, vi } from 'vitest';

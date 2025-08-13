@@ -2,7 +2,7 @@ import requestLogout from '@/components/auth/api/requestLogout';
 import RouterLinkWrapper from '@/components/RouterLink';
 import type { AppDispatch } from '@/store/';
 import { logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userGridSlice';
+import { resetUserGrid } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';

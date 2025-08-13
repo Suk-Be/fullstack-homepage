@@ -1,7 +1,7 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { AppDispatch } from '@/store';
 import { forceLogin, logout, startAuth } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userGridSlice';
+import { resetUserGrid } from '@/store/userSaveGridsSlice';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
