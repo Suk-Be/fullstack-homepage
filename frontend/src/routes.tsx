@@ -5,6 +5,7 @@ import ErrorPage from './pages/ErrorPage';
 import HomePage from './pages/HomePage';
 import ImprintPage from './pages/ImprintPage';
 import NotFoundPage from './pages/NotFoundPage';
+import NotLoggedInPage from './pages/NotLoggedInPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import ProjectTemplateEnginePresetsPage from './pages/ProjectTemplateEngineLayoutExamplesPage';
 import ProjectTemplateEnginePage from './pages/ProjectTemplateEnginePage';
@@ -33,6 +34,7 @@ const routes: RouteObject[] = [
                     { path: 'playground', element: <PlaygroundPage /> },
                 ],
             },
+            { path: 'not-logged-in', element: <NotLoggedInPage /> },
         ],
     },
     {

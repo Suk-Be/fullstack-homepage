@@ -1,15 +1,12 @@
-import HomePage from '@/pages/HomePage';
-import ImprintPage from '@/pages/ImprintPage';
-import PlaygroundPage from '@/pages/PlaygroundPage';
 import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
 import { initialState as userSaveGridsInitialState } from '@/store/userSaveGridsSlice';
 import {
-    navigateTo,
-    renderWithProviders,
-    renderWithProvidersDOM,
+  navigateTo,
+  renderWithProviders,
+  renderWithProvidersDOM
 } from '@/tests/utils/testRenderUtils';
 import { render, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
@@ -18,6 +15,9 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { registeredUserData } from './mocks/data';
 import { db } from './mocks/db';
+import HomePage from '@/pages/HomePage';
+import ImprintPage from '@/pages/ImprintPage';
+import PlaygroundPage from '@/pages/PlaygroundPage';
 
 describe('routes', () => {
     beforeEach(() => {
@@ -141,6 +141,23 @@ describe('routes', () => {
         });
         const heading = await screen.findByRole('heading', {
             name: /seite nicht gefunden/i,
+            level: 5,
+        });
+        expect(heading).toBeInTheDocument();
+    });
+
+    it('should render NotLoggedInPage', async () => {
+        navigateTo({
+            route: '/not-logged-in',
+            preloadedState: {
+                login: {
+                    isLoggedIn: false,
+                    isLoading: false,
+                },
+            },
+        });
+        const heading = await screen.findByRole('heading', {
+            name: /willkommen zurück/i,
             level: 5,
         });
         expect(heading).toBeInTheDocument();
