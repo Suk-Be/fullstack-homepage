@@ -14,8 +14,20 @@ export default ({ mode }: { mode: string }) => {
             react(),
         ],
         server: {
+            host: '0.0.0.0', // <- wichtig, sonst nur localhost erreichbar
+            port: 5173,
+            strictPort: true, // verhindert automatisches Hochzählen des Ports
             proxy: {
-                '/api': process.env.VITE_SERVER_BASE_URL || 'http://localhost:8000',
+                '/api': {
+                    target: process.env.VITE_SERVER_BASE_URL || 'http://localhost:8000',
+                    changeOrigin: true,
+                    secure: false,
+                },
+            },
+            watch: {
+                // Polling aktivieren, damit Hot Reload in Docker funktioniert
+                usePolling: true,
+                interval: 100,
             },
         },
     });
