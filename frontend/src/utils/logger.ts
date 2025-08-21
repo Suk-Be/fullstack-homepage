@@ -35,3 +35,17 @@ export const logRecoverableError = ({
         console.warn(`[DEV LOG] ${context}`, error, extra);
     }
 };
+
+export const logReduxState = (
+  slice: 'login' | 'userGrid',
+  state: any,
+  mode: string = import.meta.env.MODE 
+) => {
+  if (mode === 'test' || mode === 'production') return;
+
+  if (slice === 'login') {
+    console.log('🔹 login slice updated:', state);
+  } else if (slice === 'userGrid') {
+    console.log('🔹 userGrid slice updated:', state);
+  }
+};
