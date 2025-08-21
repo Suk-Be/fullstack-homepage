@@ -19,7 +19,7 @@ export interface LoginResult {
 }
 
 export interface LoginState {
-    userId: number | null;
+    userId?: number;
     isLoggedIn: boolean;
     isLoading: boolean;
     error: string | null;
@@ -27,7 +27,7 @@ export interface LoginState {
 }
 
 const initialState: LoginState = {
-    userId: null,
+    userId: undefined,
     isLoggedIn: false,
     isLoading: true,
     error: null,
@@ -42,14 +42,17 @@ export const loginThunk = createAsyncThunk<
 >('login/loginThunk', async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
         await initializeCookies();
-        // console.log('in here');
 
         const response = await LaravelApiClient.post('/auth/spa/login', {
             email,
             password,
         });
 
+        // console.log('response: ', response);
+
         const meResult = await requestMe();
+
+        // console.log('meResult: ', meResult);
 
         if (meResult?.success && meResult.userId !== undefined) {
             return {
@@ -81,7 +84,7 @@ const loginSlice = createSlice({
             state.isLoading = true;
         },
         logout(state) {
-            state.userId = null;
+            state.userId = undefined;
             state.isLoggedIn = false;
             state.isLoading = false;
             state.error = null;
@@ -110,7 +113,7 @@ const loginSlice = createSlice({
             })
             .addCase(loginThunk.fulfilled, (state, action) => {
                 if (action.payload.success) {
-                    state.userId = action.payload.userId ?? null;
+                    state.userId = action.payload.userId ?? undefined;
                     state.isLoggedIn = true;
                 }
                 state.isLoading = false;
