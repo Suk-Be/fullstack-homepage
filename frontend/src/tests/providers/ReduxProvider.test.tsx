@@ -1,11 +1,12 @@
 import ReduxProvider from '@/providers/ReduxProvider';
-import type { RootState } from '@/store';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsLoggedIn } from '@/store/selectors/loginSelectors';
 import { render, screen } from '@testing-library/react';
-import { useSelector } from 'react-redux';
 import { describe, expect, it } from 'vitest';
 
 const TestComponent = () => {
-  const isLoggedIn = useSelector((state: RootState) => state.login?.isLoggedIn);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  
   return <div data-testid="redux-test">{String(isLoggedIn)}</div>;
 };
 
