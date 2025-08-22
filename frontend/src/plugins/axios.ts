@@ -1,3 +1,6 @@
+import { store } from '@/store';
+import { logout } from '@/store/loginSlice';
+import { resetUserGrid } from '@/store/userSaveGridsSlice';
 import apiBaseUrl from '@/utils/apiBaseUrl';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import axios from 'axios';
@@ -27,31 +30,28 @@ LaravelApiClient.interceptors.request.use(
 
 LaravelApiClient.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
         const axiosStatus = getAxiosStatus(error);
 
-        if (axiosStatus === 401) {
-            logRecoverableError({
-                context: 'Access errors',
-                error,
-                extra: { axiosStatus },
-            });
-        }
+        switch (axiosStatus) {
+          case 401:
+            logRecoverableError({ context: 'Access errors', error, extra: { axiosStatus } });
+            store.dispatch(resetUserGrid());
+            store.dispatch(logout());
+            break;
 
-        if (axiosStatus === 419) {
-            logRecoverableError({
-                context: 'Token errors',
-                error,
-                extra: { axiosStatus },
-            });
-        }
+          case 419:
+            logRecoverableError({ context: 'Token errors', error, extra: { axiosStatus } });
+            break;
 
-        if (axiosStatus === 422 && error.response?.data?.errors) {
-            logRecoverableError({
-                context: 'Validation errors',
-                error,
-                extra: { axiosStatus },
-            });
+          case 422:
+            if (error.response?.data?.errors) {
+              logRecoverableError({ context: 'Validation errors', error, extra: { axiosStatus } });
+            }
+            break;
+
+          default:
+            break;
         }
 
         return Promise.reject(error);
