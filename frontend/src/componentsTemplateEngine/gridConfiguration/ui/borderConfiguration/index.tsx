@@ -6,24 +6,24 @@ import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
 
 export type Props = {
-    toggled: boolean;
+    checkBoxBorderToggled: boolean;
     handleChange: HandleChange;
     grid: GridProps;
-    handleToggle: HandleToggle;
+    handleCheckBoxBorderToggle: HandleToggle;
 };
 
-const BorderConfiguration = ({ toggled, handleChange, grid, handleToggle }: Props) => {
+const BorderConfiguration = ({ checkBoxBorderToggled, handleChange, grid, handleCheckBoxBorderToggle }: Props) => {
     return (
         <section {...testId('border-configuration')} id="border-configuration">
             <HeadlineAside children="Border" />
 
             <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
-                <StyledCheckbox checked={toggled} onChange={handleToggle} />
+                <StyledCheckbox checked={checkBoxBorderToggled} onChange={handleCheckBoxBorderToggle} />
                 <RangeSlider
                     max="3"
                     value={grid.border}
                     onChange={handleChange('border')}
-                    disabled={!toggled}
+                    disabled={!checkBoxBorderToggled}
                     placeholder="border"
                 >
                     <InputLabel children="Width: " htmlFor="border" />

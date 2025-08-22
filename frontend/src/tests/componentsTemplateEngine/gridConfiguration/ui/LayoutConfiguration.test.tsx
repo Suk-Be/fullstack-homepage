@@ -65,8 +65,8 @@ describe('LayoutConfiguration', () => {
             <LayoutConfiguration
                 grid={MockGrid}
                 handleChange={mockHandleChange}
-                toggled={true}
-                handleToggle={mockHandleToggle}
+                checkBoxBorderToggled={true}
+                handleCheckBoxBorderToggle={mockHandleToggle}
             />,
         );
 

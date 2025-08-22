@@ -7,40 +7,32 @@ import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfi
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
 import TeaserGenerateMarkup from '@/componentsTemplateEngine/teaser/GenerateMarkupTeaser';
 import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
-import { RootState } from '@/store';
-import { setUserIdForGrids, updateGrid } from '@/store/userSaveGridsSlice';
+import { useAppSelector } from '@/store/hooks';
+import { selectInitialGrid } from '@/store/selectors/userGridSelectors';
+import { updateGrid } from '@/store/userSaveGridsSlice';
 import { GridConfigKey } from '@/types/Redux';
 import { testId } from '@/utils/testId';
-import { ChangeEvent, FC, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { ChangeEvent, FC, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import '../ProjectTemplateEnginePage.css';
 
 const ProjectTemplateEnginePage: FC = () => {
     const dispatch = useDispatch();
-
-    const userId = useSelector((state: RootState) => state.login.userId);
-    useEffect(() => {
-        if (userId) {
-            // connects userId from loginReducer with userGridReducer
-            dispatch(setUserIdForGrids(userId));
-        }
-    }, [userId, dispatch]);
-
-    const grid = useSelector((state: RootState) => state.userGrid.savedGrids['initial'].config);
+    const grid = useAppSelector(selectInitialGrid);
 
     const handleChange = (key: GridConfigKey) => (e: ChangeEvent<HTMLInputElement>) => {
         dispatch(updateGrid({ layoutId: 'initial', key, value: e.target.value }));
     };
 
-    const handleToggle = () => setToggled((prevToggled) => !prevToggled);
     // grid configuration checkbox border
-    const [toggled, setToggled] = useState(false);
+    const [checkBoxBorderToggled, setCheckBoxBorderToggled] = useState(false);
+    const handleCheckBoxBorderToggle = () => setCheckBoxBorderToggled((prevToggled) => !prevToggled);
 
     const InlineStyles = {
         display: 'grid',
         gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
         gap: `${grid.gap}px`,
-        borderWidth: toggled ? `calc(${grid.border}rem/3)` : 'calc(0rem/3)',
+        borderWidth: checkBoxBorderToggled ? `calc(${grid.border}rem/3)` : 'calc(0rem/3)',
         padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
     };
 
@@ -54,8 +46,8 @@ const ProjectTemplateEnginePage: FC = () => {
                     <LayoutConfiguration
                         grid={grid}
                         handleChange={handleChange}
-                        toggled={toggled}
-                        handleToggle={handleToggle}
+                        checkBoxBorderToggled={checkBoxBorderToggled}
+                        handleCheckBoxBorderToggle={handleCheckBoxBorderToggle}
                     />
                 </AsideLeft>
 

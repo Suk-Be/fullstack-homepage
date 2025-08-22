@@ -60,10 +60,10 @@ describe('BorderConfiguration', () => {
 
             return (
                 <BorderConfiguration
-                    toggled={toggled}
+                    checkBoxBorderToggled={toggled}
                     grid={MockGrid}
                     handleChange={mockHandleChange}
-                    handleToggle={() => {
+                    handleCheckBoxBorderToggle={() => {
                         mockHandleToggle();
                         setToggled(!toggled);
                     }}

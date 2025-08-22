@@ -9,9 +9,9 @@ import HrInputs from './shared-comnponents/Divider';
 const LayoutConfiguration: FC<{
     grid: GridProps;
     handleChange: HandleChange;
-    toggled: boolean;
-    handleToggle: HandleToggle;
-}> = ({ grid, handleChange, toggled, handleToggle }) => {
+    checkBoxBorderToggled: boolean;
+    handleCheckBoxBorderToggle: HandleToggle;
+}> = ({ grid, handleChange, checkBoxBorderToggled, handleCheckBoxBorderToggle }) => {
     return (
         <>
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-8">
@@ -24,10 +24,10 @@ const LayoutConfiguration: FC<{
 
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-8">
                 <BorderConfiguration
-                    toggled={toggled}
+                    checkBoxBorderToggled={checkBoxBorderToggled}
                     handleChange={handleChange}
                     grid={grid}
-                    handleToggle={handleToggle}
+                    handleCheckBoxBorderToggle={handleCheckBoxBorderToggle}
                 />
 
                 <PaddingConfiguration handleChange={handleChange} grid={grid} />
