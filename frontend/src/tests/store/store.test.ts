@@ -1,6 +1,6 @@
 import { store } from '@/store';
 import { forceLogin, logout } from '@/store/loginSlice';
-import { addGrid, resetUserGrid, setUserIdForGrids } from '@/store/userSaveGridsSlice';
+import { addGrid, persistGridsinLocalStorage, resetUserGrid } from '@/store/userSaveGridsSlice';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Redux Store', () => {
@@ -37,7 +37,7 @@ describe('Redux Store', () => {
 
   it('should add a grid for a logged-in user', () => {
     store.dispatch(forceLogin(123));
-    store.dispatch(setUserIdForGrids(123));
+    store.dispatch(persistGridsinLocalStorage(123));
 
     store.dispatch(
       addGrid({

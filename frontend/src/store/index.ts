@@ -3,7 +3,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import loginReducer from './loginSlice';
 import userSaveGridsReducer from './userSaveGridsSlice';
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   login: loginReducer,
   userGrid: userSaveGridsReducer,
 });
