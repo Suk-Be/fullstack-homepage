@@ -1,3 +1,4 @@
+import { loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
 import { GridConfig, GridConfigKey, UserSaveGridsState } from '@/types/Redux';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,32 +31,58 @@ const userSaveGridsSlice = createSlice({
     name: 'userGrid',
     initialState,
     reducers: {
-        setUserIdForGrids(state, action: PayloadAction<number>) {
+        persistGridsinLocalStorage(state, action: PayloadAction<number>) {
             state.userId = action.payload;
+
+            const persisted = loadFromLocalStorage(action.payload);
+            if (persisted) {
+                state.savedGrids = persisted.savedGrids;
+            }
         },
         addGrid(state, action: PayloadAction<Omit<GridConfig, 'layoutId' | 'timestamp'>>) {
+            if (!state.userId) return;
+
             const newLayoutId = uuidv4();
             state.savedGrids[newLayoutId] = {
                 layoutId: newLayoutId,
                 timestamp: new Date().toISOString(),
                 ...action.payload,
             };
+
+            saveToLocalStorage(state.userId, state);
         },
         updateGrid(
             state,
             action: PayloadAction<{ layoutId: string; key: GridConfigKey; value: string }>,
         ) {
+          
+            if (!state.userId) return;
+
             const { layoutId, key, value } = action.payload;
             if (state.savedGrids[layoutId]) {
                 state.savedGrids[layoutId].config[key] = value;
                 state.savedGrids[layoutId].timestamp = new Date().toISOString();
+
+                saveToLocalStorage(state.userId, state);
             }
         },
-        resetUserGrid() {
-            return initialState;
+        // ⚡ Redux-State zurücksetzen, persistierte savedGrids bleiben im localStorage
+        resetUserGrid(state) {
+            state.userId = null;
+            state.savedGrids = { ...initialState.savedGrids };
+        },
+
+        loadUserGrids(state, action: PayloadAction<UserSaveGridsState>) {
+            state.userId = action.payload.userId;
+            state.savedGrids = action.payload.savedGrids;
+
+            if (state.userId) {
+                saveToLocalStorage(state.userId, state);
+            }
         },
     },
 });
 
-export const { setUserIdForGrids, addGrid, updateGrid, resetUserGrid } = userSaveGridsSlice.actions;
+export const { persistGridsinLocalStorage, addGrid, updateGrid, resetUserGrid, loadUserGrids } =
+    userSaveGridsSlice.actions;
 export default userSaveGridsSlice.reducer;
