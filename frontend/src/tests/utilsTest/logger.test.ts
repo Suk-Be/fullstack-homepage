@@ -83,3 +83,73 @@ describe('logReduxState', () => {
     expect(logSpy).not.toHaveBeenCalled();
   });
 });
+
+describe('logRequestState', () => {
+  const originalEnv = import.meta.env;
+
+  beforeEach(() => {
+    vi.resetModules();
+    vi.restoreAllMocks();
+    // @ts-ignore – import.meta.env is readonly
+    import.meta.env = { ...originalEnv };
+  });
+
+  afterEach(() => {
+    // @ts-ignore
+    import.meta.env = originalEnv;
+  });
+
+  it('should log to console.log in development mode', async () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const { logRequestState } = await import('@/utils/logger');
+    const userId = 123
+    const initCookiesError = {
+      error: true,
+      axiosStatus: false
+    }
+    const result = {
+      "success": true,
+      "message": "authenticated."
+    }
+    const error = {
+      "success": false,
+      "message": "authentication denied."
+    }
+
+    logRequestState('selectLoginState', userId, 'development');
+    logRequestState('initializeCookies', undefined, 'development'); // 'initializeCookies' does not have a responseType, so pass undefined as the second argument
+    logRequestState('initializeCookiesError', initCookiesError, 'development');
+    logRequestState('requestMe', result, 'development');
+    logRequestState('requestMeError', error, 'development');
+
+    expect(logSpy).toHaveBeenCalledTimes(5);
+    // selectLoginState
+    expect(logSpy).toHaveBeenCalledWith('[useAuthInit] Guard active → already logged in (userId:', userId, ')');
+    // initializeCookies
+    expect(logSpy).toHaveBeenCalledWith('[useAuthInit] Cookies initialized and throttled');
+    // initializeCookiesError
+    expect(logSpy).toHaveBeenCalledWith('[useAuthInit] Cookie init failed → logout', initCookiesError);
+    // requestMe
+    expect(logSpy).toHaveBeenCalledWith('[useAuthInit] requestMe() result:', result);
+    // requestMeError
+    expect(logSpy).toHaveBeenCalledWith('[useAuthInit] requestMe() failed → logging out', error);
+
+    logSpy.mockRestore(); // It is good practice to restore the mock after the test
+  });
+
+  it('should not log in test mode', async () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const { logRequestState } = await import('@/utils/logger');
+    const result = {
+      "success": true,
+      "message": "authenticated."
+    }
+
+    logRequestState('requestMe', result, 'test')
+
+    expect(logSpy).not.toHaveBeenCalled();
+  });
+});
+

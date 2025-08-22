@@ -49,3 +49,24 @@ export const logReduxState = (
     console.log('🔹 userGrid slice updated:', state);
   }
 };
+
+
+export const logRequestState = (
+  requestType: 'initializeCookies' | 'initializeCookiesError' | 'requestMe' | 'requestMeError' | 'selectLoginState',
+  responseType?: any,
+  mode: string = import.meta.env.MODE 
+) => {
+  if (mode === 'test' || mode === 'production') return;
+
+  if (requestType === 'initializeCookies') {
+    console.log('[useAuthInit] Cookies initialized and throttled');
+  } else if (requestType === 'initializeCookiesError') {
+    console.log('[useAuthInit] Cookie init failed → logout', responseType);
+  } else if (requestType === 'requestMe') {
+    console.log('[useAuthInit] requestMe() result:', responseType);
+  } else if (requestType === 'requestMeError') {
+    console.log('[useAuthInit] requestMe() failed → logging out', responseType);
+  } else if (requestType === 'selectLoginState') {
+    console.log('[useAuthInit] Guard active → already logged in (userId:', responseType, ')');
+  }
+};

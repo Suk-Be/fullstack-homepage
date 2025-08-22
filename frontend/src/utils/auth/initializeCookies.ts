@@ -47,9 +47,6 @@ async function initializeCookies() {
         resetIsCsrfFetchedAndResetCookies();
         await setCookies();
     }
-    if (import.meta.env.MODE === 'development') {
-        console.log('[Throttle] Skipping cookie initialization due to throttling.');
-    }
 }
 
 export default initializeCookies;
