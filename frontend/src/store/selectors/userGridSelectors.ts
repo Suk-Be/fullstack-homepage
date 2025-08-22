@@ -11,3 +11,6 @@ export const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGrids
 
     return sortCurrentToTop;
 });
+
+
+export const selectInitialGrid = (state: RootState) => state.userGrid.savedGrids['initial'].config

@@ -1,6 +1,6 @@
 import requestLogout from '@/components/auth/api/requestLogout';
 import RouterLinkWrapper from '@/components/RouterLink';
-import type { AppDispatch } from '@/store/';
+import { type AppDispatch } from '@/store/';
 import { logout } from '@/store/loginSlice';
 import { resetUserGrid } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';

@@ -1,12 +1,12 @@
 import useScroll from '@/hooks/useScroll';
-import { RootState } from '@/store/';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsLoggedIn } from '@/store/selectors/loginSelectors';
 import { testId } from '@/utils/testId';
-import { useSelector } from 'react-redux';
 import LoggedInMenu from './LoggedInMenu';
 import LoggedOutMenu from './LoggedOutMenu';
 
 const MenuNav = () => {
-    const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
+    const isLoggedIn = useAppSelector(selectIsLoggedIn);
     // is needed to make menu visible on scroll
     useScroll(isLoggedIn);
 

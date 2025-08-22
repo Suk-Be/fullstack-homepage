@@ -113,6 +113,9 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         if (result.success) {
             dispatch(forceLogin(result.userId!));
+            // UserId in der Slice setzen, damit neue Grids korrekt gespeichert werden
+            // dispatch(setUserIdForGrids(result.userId!));
+
             setForm({
                 name: '',
                 email: '',
