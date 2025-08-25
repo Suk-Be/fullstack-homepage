@@ -41,16 +41,13 @@ const userSaveGridsSlice = createSlice({
         },
         saveInitialGridAsUUID(state) {
             if (!state.userId) return;
-
             const newLayoutId = uuidv4();
             const initialConfig = state.savedGrids[initialLayoutId].config;
-
             state.savedGrids[newLayoutId] = {
                 layoutId: newLayoutId,
                 timestamp: new Date().toISOString(),
                 config: { ...initialConfig },
             };
-
             saveToLocalStorage(state.userId, state);
         },
         updateInitialGrid(
@@ -58,12 +55,10 @@ const userSaveGridsSlice = createSlice({
             action: PayloadAction<{ layoutId: string; key: GridConfigKey; value: string }>,
         ) {
             if (!state.userId) return;
-
             const { layoutId, key, value } = action.payload;
             if (state.savedGrids[layoutId]) {
                 state.savedGrids[layoutId].config[key] = value;
                 state.savedGrids[layoutId].timestamp = new Date().toISOString();
-
                 saveToLocalStorage(state.userId, state);
             }
         },

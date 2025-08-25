@@ -5,7 +5,7 @@ const SavedGridList = () => {
     const sortedGrids = useAppSelector(selectSortedGrids);
 
     return (
-        <div className="text-gray-700 mt-4">
+        <div className="text-white-700 mt-4">
             <h3 className="font-bold">Saved Grids:</h3>
             <ul className="text-sm">
                 {sortedGrids.length === 0 ? (

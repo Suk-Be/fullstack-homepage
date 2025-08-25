@@ -5,14 +5,14 @@ import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markU
 import { DynamicGridProps } from '@/types/templateEngine';
 import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import {
-    createHtmlAsTextFromPassedComponent,
-    parseStringToADomModel,
+  createHtmlAsTextFromPassedComponent,
+  parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useState } from 'react';
 
-function DialogModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
+function CreateMarkupModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
     const [isOpen, setIsOpen] = useState({
         open: false,
         text: copyButtonText.copyToClipboard,
@@ -133,4 +133,4 @@ function DialogModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
     );
 }
 
-export default DialogModal;
+export default CreateMarkupModal;

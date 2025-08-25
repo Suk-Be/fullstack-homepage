@@ -1,15 +1,15 @@
-import DialogModal from '@/componentsTemplateEngine/createGridMarkupWithModal/DialogModal';
 import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
+import CreateMarkupModal from '@/componentsTemplateEngine/modals/CreateMarkupModal';
 import { DynamicGridProps } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
 
-const TeaserGenerateMarkup = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
+const GenerateMarkupTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
     return (
         <div {...testId('teaser-generate-markup')}>
             <HeadlineAside children="Erstelle HTML" />
-            <DialogModal inlineStyles={inlineStyles} gridItemsArray={gridItemsArray} />
+            <CreateMarkupModal inlineStyles={inlineStyles} gridItemsArray={gridItemsArray} />
         </div>
     );
 };
 
-export default TeaserGenerateMarkup;
+export default GenerateMarkupTeaser;

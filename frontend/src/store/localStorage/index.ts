@@ -4,7 +4,7 @@ const localStorageKeyPrefix = 'userGrid_';
 
 export const saveToLocalStorage = (userId: number, sliceState: UserSaveGridsState) => {
     try {
-      const storage = {
+        const storage = {
             savedGrids: sliceState.savedGrids,
         };
         localStorage.setItem(localStorageKeyPrefix + userId, JSON.stringify(storage));
