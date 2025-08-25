@@ -34,7 +34,7 @@ describe('AsideRight', () => {
         expect(innerContainer).toBeInTheDocument();
 
         const expectedinnerContainerClasses =
-            'w-full h-full mx-8 lg:mx-0 grid grid-cols-2 lg:grid-cols-1 gap-8';
+            'w-full h-full mx-8 lg:mx-0 grid grid-cols-3 lg:grid-cols-1 gap-8';
         expect(innerContainer).toBeInTheDocument();
         expect(innerContainer).toHaveClass(expectedinnerContainerClasses);
         expect(innerContainer).toHaveTextContent('Testinhalt');
