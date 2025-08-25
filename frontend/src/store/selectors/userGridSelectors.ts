@@ -1,7 +1,7 @@
 import { RootState } from '@/store';
 import { createSelector } from '@reduxjs/toolkit';
 
-const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
+export const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
 
 export const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGridsMap) => {
     const savedGridsToArray = Object.values(savedGridsMap);
