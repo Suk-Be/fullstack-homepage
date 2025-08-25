@@ -1,5 +1,5 @@
 import { loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
-import { GridConfig, GridConfigKey, UserSaveGridsState } from '@/types/Redux';
+import { GridConfigKey, UserSaveGridsState } from '@/types/Redux';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -39,23 +39,24 @@ const userSaveGridsSlice = createSlice({
                 state.savedGrids = persisted.savedGrids;
             }
         },
-        addGrid(state, action: PayloadAction<Omit<GridConfig, 'layoutId' | 'timestamp'>>) {
+        saveInitialGridAsUUID(state) {
             if (!state.userId) return;
 
             const newLayoutId = uuidv4();
+            const initialConfig = state.savedGrids[initialLayoutId].config;
+
             state.savedGrids[newLayoutId] = {
                 layoutId: newLayoutId,
                 timestamp: new Date().toISOString(),
-                ...action.payload,
+                config: { ...initialConfig },
             };
 
             saveToLocalStorage(state.userId, state);
         },
-        updateGrid(
+        updateInitialGrid(
             state,
             action: PayloadAction<{ layoutId: string; key: GridConfigKey; value: string }>,
         ) {
-          
             if (!state.userId) return;
 
             const { layoutId, key, value } = action.payload;
@@ -71,7 +72,7 @@ const userSaveGridsSlice = createSlice({
             state.userId = null;
             state.savedGrids = { ...initialState.savedGrids };
         },
-
+        // not used in development
         loadUserGrids(state, action: PayloadAction<UserSaveGridsState>) {
             state.userId = action.payload.userId;
             state.savedGrids = action.payload.savedGrids;
@@ -83,6 +84,11 @@ const userSaveGridsSlice = createSlice({
     },
 });
 
-export const { persistGridsinLocalStorage, addGrid, updateGrid, resetUserGrid, loadUserGrids } =
-    userSaveGridsSlice.actions;
+export const {
+    persistGridsinLocalStorage,
+    saveInitialGridAsUUID,
+    updateInitialGrid,
+    resetUserGrid,
+    loadUserGrids,
+} = userSaveGridsSlice.actions;
 export default userSaveGridsSlice.reducer;
