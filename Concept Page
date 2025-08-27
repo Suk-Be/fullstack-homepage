@@ -1,0 +1,42 @@
+Concept Page
+- Home Page (Material ui)
+	- Steckbrief
+	- Accordion with Projects
+		- Tailwind Project
+- register / login  
+	- if logged in saves user data
+	- logout
+
+Have a look at the balsamique mocks 
+
+Webdevelopment/SOK DESIGN/01.07.2024-Visitenkarte.bmpr
+
+I implemented a custom hook to setLogin
+for this i used ReactTanStack 5 
+with get logic snippet from documentation
+but it actually posts login
+so the snippet does not fit to well
+
+Now it refetches Login th user data in a loop?
+
+- Maybe i should just fetch the old way in a useEffect hook just once
+- reading the docs might help (post)
+check
+
+MUI Components
+
+Components
+- Navbar
+- Buttons
+- SignI / SignUP
+check
+
+
+Layout
+- Box (div (default), section, article, p, img)
+- Container (centers your content horizontally)
+- Grid
+
+Unit Tests Home Page
+TDD
+- with semantics

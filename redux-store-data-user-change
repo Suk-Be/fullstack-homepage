@@ -1,0 +1,377 @@
+Unterscheidung Daten Speicherung redux vs redux persist:
+
+👉 redux-persist speichert den gesamten Root-State als JSON-Objekt
+👉 und darin jedes Slice nochmal als JSON-String,
+weil es die einfachste, universellste und stabilste Lösung ist, um State in beliebigen Storages abzulegen und wiederherzustellen.
+
+👉 redux speichert den state als JavaScript-Objekt
+
+Redux = "echter JS-Objekt-State im Speicher" 🧠,
+Redux-Persist = "serialisierte Kopie im Storage" 💾.
+
+// log in Dev Tool
+
+const getData = localStorage.getItem("persist:userGrid_2")
+const parseRoot = JSON.parse(localStorage.getItem("persist:userGrid_2"))
+const parseSavedGrids = JSON.parse(parseRoot.savedGrids);
+
+
+// oder in einer helper function
+
+function readPersist(key) {
+  const parsed = JSON.parse(localStorage.getItem(key));
+  const result = {};
+  for (const [k, v] of Object.entries(parsed)) {
+    try {
+      result[k] = JSON.parse(v); // falls noch String-JSON → parse
+    } catch {
+      result[k] = v; // sonst so lassen
+    }
+  }
+  return result;
+}
+
+readPersist("persist:userGrid_2");
+
+
+// document test@test.de
+
+// for dem login
+
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-20T16:01:14.227Z",
+      "config": {
+        "items": "1",
+        "columns": "1",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+// nach dem login
+
+{
+  "userId": 2,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:49:44.532Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "efa7fdc8-1490-4eb2-896b-04bddce7674c": {
+      "layoutId": "efa7fdc8-1490-4eb2-896b-04bddce7674c",
+      "timestamp": "2025-08-21T09:49:47.699Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+// nach dem logout
+
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:49:44.532Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "efa7fdc8-1490-4eb2-896b-04bddce7674c": {
+      "layoutId": "efa7fdc8-1490-4eb2-896b-04bddce7674c",
+      "timestamp": "2025-08-21T09:49:47.699Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+
+// login github s.jang@sokdesign.de
+
+// persist:userGrid_2: userId 2 / github
+
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:49:44.532Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "efa7fdc8-1490-4eb2-896b-04bddce7674c": {
+      "layoutId": "efa7fdc8-1490-4eb2-896b-04bddce7674c",
+      "timestamp": "2025-08-21T09:49:47.699Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+
+// persist:userGrid_3: userId 3
+
+{
+  "userId": 3,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:52:46.139Z",
+      "config": {
+        "items": "1",
+        "columns": "1",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+-> save grid changes
+
+{
+  "userId": 3,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:56:03.646Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "a21df555-001c-4586-8cd8-0d265ce50723": {
+      "layoutId": "a21df555-001c-4586-8cd8-0d265ce50723",
+      "timestamp": "2025-08-21T09:56:00.831Z",
+      "config": {
+        "items": "4",
+        "columns": "2",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "826c93df-e773-434d-ae91-5b9d6a925be9": {
+      "layoutId": "826c93df-e773-434d-ae91-5b9d6a925be9",
+      "timestamp": "2025-08-21T09:56:05.099Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+// logout
+
+// persist:userGrid_2: userId 2
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:49:44.532Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "efa7fdc8-1490-4eb2-896b-04bddce7674c": {
+      "layoutId": "efa7fdc8-1490-4eb2-896b-04bddce7674c",
+      "timestamp": "2025-08-21T09:49:47.699Z",
+      "config": {
+        "items": "4",
+        "columns": "3",
+        "gap": "0",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+// persist:userGrid_3: userId 3
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:56:03.646Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "a21df555-001c-4586-8cd8-0d265ce50723": {
+      "layoutId": "a21df555-001c-4586-8cd8-0d265ce50723",
+      "timestamp": "2025-08-21T09:56:00.831Z",
+      "config": {
+        "items": "4",
+        "columns": "2",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "826c93df-e773-434d-ae91-5b9d6a925be9": {
+      "layoutId": "826c93df-e773-434d-ae91-5b9d6a925be9",
+      "timestamp": "2025-08-21T09:56:05.099Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  },
+  "_persist": {
+    "version": -1,
+    "rehydrated": true
+  }
+}
+
+
+// redux state not localStorage
+// log: Current userGrid slice:
+{
+  "userId": null,
+  "savedGrids": {
+    "initial": {
+      "layoutId": "initial",
+      "timestamp": "2025-08-21T09:57:08.283Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "605a0268-4d0c-4794-b2ef-c0f233db23b9": {
+      "layoutId": "605a0268-4d0c-4794-b2ef-c0f233db23b9",
+      "timestamp": "2025-08-21T09:57:08.283Z",
+      "config": {
+        "items": "4",
+        "columns": "2",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    },
+    "7bacabf4-5ce5-4262-8951-29ce0b40fc66": {
+      "layoutId": "7bacabf4-5ce5-4262-8951-29ce0b40fc66",
+      "timestamp": "2025-08-21T09:57:08.283Z",
+      "config": {
+        "items": "7",
+        "columns": "4",
+        "gap": "1",
+        "border": "0",
+        "paddingX": "0",
+        "paddingY": "0"
+      }
+    }
+  }
+}
+
+
+// aktuell sind redux state
