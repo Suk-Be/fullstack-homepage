@@ -2,7 +2,7 @@ README
 
 Docker Desktop
 
-// Projektverzeichnis
+### Projektverzeichnis #
 
 project-root/
 │
@@ -23,22 +23,27 @@ project-root/
 │
 └── docker-compose.yml
 
-// run containers with docker-compose with three settings
+### run containers with docker-compose with three settings #
 
-Nur Backend + Mailpit:
+# Nur Backend + Mailpit containers:
+# im backend Verzeichnis env Variable DB_HOST umstellen
+# DB_HOST=DB_HOST=db statt DB_HOST=127.0.0.1
 docker-compose --profile backend --profile mailpit up
-npm run dev // im frontend Verzeichnis
+# frontend ohne container
+npm run dev
 
-Nur Frontend:
+# Nur frontend container:
 docker-compose --profile frontend up
-php artisan serve // im backend Verzeichnis
+# im backend Verzeichnis env Variable DB_HOST umstellen
+# DB_HOST=DB_HOST=127.0.0.1 statt DB_HOST=db
+php artisan serve 
 
-Komplett (Integration / Tests):
+# Alle container:
 docker-compose --profile backend --profile frontend --profile mailpit up
 
-// docker-compose.yml
+### docker-compose.yml #
 
-Es gibt 5 services die in containern laufen
+# Es gibt 5 services die in containern laufen und Abhängigkeiten (depends_on) haben 
 
 - app (http server)
 - db (mysql db)
@@ -46,102 +51,129 @@ Es gibt 5 services die in containern laufen
 - frontend (app ui)
 - mailpit (mail dev server)
 
-Anpassungen in der backend env (laravel für db)
+# Anpassungen in der env für laravel
 Die db erhält den Namen aus docker-compose für den db container und nicht mehr die der Maschine
-
-docker-compose.yml
-environment:
-MYSQL_ROOT_PASSWORD: root
-MYSQL_DATABASE: sanctum_cookie
-MYSQL_USER: laravel
-MYSQL_PASSWORD: secret
-
-// env
+# DB_HOST=127.0.0.1 # name der Maschine für die Entwicklung ohne docker container
 DB_CONNECTION=mysql
-
-# DB_HOST=127.0.0.1 # name der Maschine
-
-DB_HOST=db # name in docker-compose
+DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=sanctum_cookie
-
-# DB_USERNAME=root
-
 DB_USERNAME=laravel
+DB_PASSWORD=secret
 
-# DB_PASSWORD=
+# docker-compose.yml braucht der db service container Zugang zur Datenbank
+db:
+  ...
+  container_name: mysql_db
+  ...
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: sanctum_cookie
+    MYSQL_USER: laravel
+    MYSQL_PASSWORD: secret
+  ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    profiles:
+      - backend
 
+phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
+    profiles:
+      - backend
+
+
+### phpmyadmin im browser #
+
+# ui
+http://localhost:8080/
+
+# login
+DB_USERNAME=laravel
 DB_PASSWORD=secret # standard password
 
-Anpassungen im frontend viteconfig und package.json (host benennen, die Maschine wird nicht angespochen sondern der host des containers)
+### frontend viteconfig und package.json #
+host musss umbenannt werde, zuvor war der Rechner/Machine eingetrage mit 127.0.0.1. Auf 0.0.0.0 umstellen, damit container als auch machine und container ansgesprochen werden können.
 
-// vite.config
+# vite.config
 server: {
 host: '0.0.0.0', // <- wichtig, sonst nur localhost erreichbar
 port: 5173,
 strictPort: true, // verhindert automatisches Hochzählen des Ports
-// ...
+# ...
 },
 
-// Aufrufe im Browser
+### Aufrufe im Browser
 
-phpMyAdmin
+# phpMyAdmin
 http://localhost:8080/
 Für credentials, siehe env Daten:
 user: laravel
 pw: secret
 
-frontend
+# frontend
 http://localhost:5173/
 
-mailpit
+# mailpit
 http://localhost:8025/
 
-// FYI: Arbeiten mit containern
+### Cheatsheet: Interaktion mit Inhalten von containern
 
-// backend //
+# backend
 docker exec -it laravel_app php artisan config:clear
 docker exec -it laravel_app php artisan cache:clear
 docker exec -it laravel_app php artisan config:cache
 
-// mysql
+# mysql
 docker exec -it laravel_app php artisan migrate:fresh --seed
 
-// mail
+# mail
 docker exec -it laravel_app php artisan queue:work
 
-// frontend //
+# frontend 
 docker exec -it vite_frontend npm run test
 
-Erklärung des Befehls:
+# Erklärung des Befehls:
 
 - docker exec: Führt einen Befehl in einem laufenden Container aus.
 - -it: Ermöglicht die interaktive Eingabe (-i) und weist ein Pseudo-Terminal zu (-t), damit du das Passwort eingeben kannst.
 - laravel_app: Der Name deines Containers.
 - php artisan config:clear: der laravel Befehl
 
-// update containers
+### Cheatsheet: update container
 
+# alle container services neu bauen
 docker-compose up --build -d
 
-So funktioniert der Befehl 🚀
+# So funktioniert der Befehl 🚀
 up: Stellt die Dienste in deiner docker-compose.yml Datei bereit und startet sie.
 --build: Dieses Flag ist entscheidend. Es zwingt Docker Compose, die Images neu zu erstellen, bevor es die Container startet. Das stellt sicher, dass alle Änderungen, die du an den Quellcodedateien oder an deinem Dockerfile vorgenommen hast, in das neue Image übernommen werden.
 -d: Startet die Container im "Detached"-Modus, also im Hintergrund, damit dein Terminal nicht blockiert wird.
 
 Dieser Befehl stoppt automatisch die alten Container, entfernt sie und startet die neuen mit den aktualisierten Images.
 
-// remove containers
+### Cheatsheet:  remove containers
 
+# container anzeigen
 docker ps -a
 
-So funktioniert der Befehl 🚀
+# So funktioniert der Befehl 🚀
 ps: zeigt laufende container an
 -a: zeigt alle container an
 
 Dieser Befehl zeigt alle container in einer Tabelle an, man sieht id, name, beschreibung
 
-/\*\*
+# Beispiel Anzeige der container
 CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
 
 e729de77d3ec spa-backend "docker-php-entrypoi…" 15 minutes ago Up 15 minutes 0.0.0.0:8000->80/tcp, [::]:8000->80/tcp laravel_app
@@ -152,20 +184,20 @@ be6724b1effd phpmyadmin/phpmyadmin "/docker-entrypoint.…" 2 hours ago Up 15 mi
 d501e26dc198 httpd:latest "httpd-foreground" 8 hours ago Exited (0) 7 hours ago apache_server
 39e07dd16539 mysql:8.0 "docker-entrypoint.s…" 8 hours ago Exited (0) 7 hours ago mysql_server
 
-\*\*/
-
+# container erntfernen
 docker rm <id | name>
 
-So funktioniert der Befehl 🚀
+# So funktioniert der Befehl 🚀
 rm: entfernt einen container, der muss allerdings benannt sein
 <id|name>: entfernt benannten container
 
-Dieser Befehl entfernt benannnten container:
+# Beispiel: Dieser Befehl entfernt den backend container:
 docker rm e729de77d3ec
+# macht das gleiche
 docker rm laravel_app
-macht das gleiche
 
-// container mit profile ansprechen
+
+### Cheatsheet: container mit profile ansprechen felxibel ansprechen
 
 profiles:
 
@@ -173,20 +205,42 @@ profiles:
 - frontend
 - mailpit
 
-# backend profile starten
+# Beispiel backend profile starten
 
 docker-compose --profile backend --profile mailpit up -d
 
-# frontend container neu bauen
 
-# Frontend neu bauen inkl. aller Abhängigkeiten
+# Beispiel Frontend neu bauen inkl. aller Abhängigkeiten
 
 docker compose --profile backend --profile mailpit --profile frontend build frontend
 
-# Frontend starten inkl. Backend, DB und Mailpit
+# Beispiel alle container starten: frontend, backend, db, phpmyadmin und mailpit
 
 docker compose --profile backend --profile mailpit --profile frontend up -d frontend
 
-# Frontend-Logs anzeigen
+# Beispiel: alle container laufen und frontend-Logs anzeigen
 
 docker compose --profile backend --profile mailpit --profile frontend logs -f frontend
+
+
+### Cheatsheet: lokale Entwicklung react und laravel
+
+# backend - docker backend containers mit depends starten
+
+docker-compose --profile backend --profile mailpit up -d
+
+In Docker Desktop laravel_app stoppen
+die mysql db und mail pit laufen dann noch in containern
+Im Verzeichnis backend: In den laravel environment Variablen die db umstellen. Den DB_HOST auf 127.0.0.1 umstellen (Kommentar entfernen bzw. einstellen für db). Damit kann laravel die sql lesen.
+
+# laravel starten
+php artisan serve
+
+# laravel queue starten, um die mails zu verarbeiten
+php artisan queue:work
+
+# frontend 
+
+Die obigen Schritte vorausgesetzt, braucht es nur noch die laufende frontend app
+
+Im Verzeichnis frontend in der Konsole: npm run dev
