@@ -1,0 +1,38 @@
+import { selectInitialGrid, selectSavedGridsMap, selectSortedGrids } from '@/store/selectors/userGridSelectors';
+import { UserSaveGridsState } from '@/types/Redux';
+
+describe('userGridSelectors', () => {
+  const mockState = {
+    userGrid: {
+      userId: 1,
+      savedGrids: {
+        initial: {
+          layoutId: 'initial',
+          timestamp: '2025-08-25T12:00:00.000Z',
+          config: { items: '1', columns: '1', gap: '0', border: '0', paddingX: '0', paddingY: '0' },
+        },
+        grid2: {
+          layoutId: 'grid2',
+          timestamp: '2025-08-25T13:00:00.000Z',
+          config: { items: '2', columns: '2', gap: '1', border: '1', paddingX: '2', paddingY: '2' },
+        },
+      },
+    },
+  } as { userGrid: UserSaveGridsState };
+
+  it('selectSavedGridsMap returns the savedGrids object', () => {
+    const result = selectSavedGridsMap(mockState as any);
+    expect(result).toEqual(mockState.userGrid.savedGrids);
+  });
+
+  it('selectInitialGrid returns the initial grid config', () => {
+    const result = selectInitialGrid(mockState as any);
+    expect(result).toEqual(mockState.userGrid.savedGrids.initial.config);
+  });
+
+  it('selectSortedGrids returns grids sorted by timestamp descending', () => {
+    const result = selectSortedGrids(mockState as any);
+    expect(result[0].layoutId).toBe('grid2'); // neuester Grid kommt zuerst
+    expect(result[1].layoutId).toBe('initial');
+  });
+});

@@ -1,0 +1,16 @@
+import { RootState } from '@/store';
+import { createSelector } from '@reduxjs/toolkit';
+
+export const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
+
+export const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGridsMap) => {
+    const savedGridsToArray = Object.values(savedGridsMap);
+    const sortCurrentToTop = savedGridsToArray.sort((a, b) => {
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
+
+    return sortCurrentToTop;
+});
+
+
+export const selectInitialGrid = (state: RootState) => state.userGrid.savedGrids['initial'].config

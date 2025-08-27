@@ -1,0 +1,126 @@
+@theme {
+    --breakpoint-xs: 0rem;
+    --breakpoint-sm: 50rem;
+    --breakpoint-md: 64rem;
+    --breakpoint-lg: 100rem;
+    --breakpoint-xl: 120rem;
+
+    --color-green-dark: #356640;
+    --color-green: #38ff94;
+    --color-yellow: #ffc82c;
+    --color-gray-dark: #211d1d;
+    --color-gray: #777576;
+    --color-gray-light: #b0adae;
+
+    --font-sans: 'Fira Sans', sans-serif;
+    --font-serif: Eczar, serif;
+
+    --spacing-8xl: 96rem;
+    --spacing-9xl: 128rem;
+
+    --radius-4xl: 2rem;
+
+    --shadow-card: 0px_14px_34px_0px_rgba (53, 102, 64, 0.5);
+
+    --animate-waving-hand: waving-hand 2s linear infinite;
+
+    @keyframes waving-hand {
+        /* In the context of the code snippet you provided, `'0%':` is used as a keyframe
+      selector in CSS animations. */
+        '0%': {
+            transform: 'rotate(0.0deg)';
+        }
+        '10%': {
+            transform: 'rotate(14deg)';
+        }
+        '20%': {
+            transform: 'rotate(-8deg)';
+        }
+        '30%': {
+            transform: 'rotate(14deg)';
+        }
+        '40%': {
+            transform: 'rotate(-4deg)';
+        }
+        '50%': {
+            transform: 'rotate(10.0deg)';
+        }
+        '60%': {
+            transform: 'rotate(0.0deg)';
+        }
+        '100%': {
+            transform: 'rotate(0.0deg)';
+        }
+    }
+}
+
+@layer components {
+    [type='range'] {
+        margin: 0;
+        padding: 0;
+        height: 0.25em;
+        background: transparent;
+        font:
+            1em/1 arial,
+            sans-serif;
+    }
+    [type='range'],
+    [type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+    }
+    [type='range']::-webkit-slider-runnable-track {
+        box-sizing: border-box;
+        border: none;
+        height: 0.25em;
+        background: #ccc;
+    }
+    [type='range']::-moz-range-track {
+        box-sizing: border-box;
+        border: none;
+        height: 0.25em;
+        background: #ccc;
+    }
+    [type='range']::-ms-track {
+        box-sizing: border-box;
+        border: none;
+        height: 0.25em;
+        background: #ccc;
+    }
+    [type='range']::-moz-range-progress {
+        height: 0.25em;
+        background: #95a;
+    }
+    [type='range']::-ms-fill-lower {
+        height: 0.25em;
+        background: #95a;
+    }
+    [type='range']::-webkit-slider-thumb {
+        margin-top: -0.35em;
+        box-sizing: border-box;
+        border: none;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        background: #38ff94;
+    }
+    [type='range']::-moz-range-thumb {
+        box-sizing: border-box;
+        border: none;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        background: #38ff94;
+    }
+    [type='range']::-ms-thumb {
+        margin-top: 0;
+        box-sizing: border-box;
+        border: none;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        background: #38ff94;
+    }
+    [type='range']::-ms-tooltip {
+        display: none;
+    }
+}

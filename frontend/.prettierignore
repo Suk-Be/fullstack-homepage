@@ -1,0 +1,11 @@
+# Ignore all md files:
+**/*.md
+
+# Ignore double quote sensitive configurations
+vitest.config.ts
+vite.config.ts
+
+node_modules
+dist
+build
+coverage

@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ColspanningGridMarkup > matches snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="grid grid-cols-1 p-4"
+    data-testid="grid-markup-wrapper"
+  >
+    <div
+      class="bg-gray-dark text-green p-6 rounded-xl"
+    >
+      <code
+        class="block pb-4"
+        data-testid="opening-tag"
+      >
+        &lt;div class="grid grid-cols-3 xl:grid-cols-3 gap-4 px-4 py-4" data-testid="col-spannning-grid-container"&gt;
+      </code>
+      <code
+        class="block pl-4"
+        data-testid="children-tags-container"
+      >
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green-dark" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+        <div>
+          &lt;div class="w-full rounded-xl h-24 bg-green col-span-2" data-testid="grid-element"&gt;&lt;/div&gt;
+        </div>
+      </code>
+      <code
+        class="block pt-4"
+        data-testid="closing-tag"
+      >
+        &lt;/div&gt;
+      </code>
+    </div>
+  </div>
+</DocumentFragment>
+`;
