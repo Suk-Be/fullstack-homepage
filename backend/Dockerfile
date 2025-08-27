@@ -3,7 +3,7 @@ FROM php:8.2-apache
 # Apache Rewrite Modul aktivieren
 RUN a2enmod rewrite
 
-# Abhängigkeiten installieren
+# PHP Extensions & Tools
 RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
@@ -17,12 +17,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Zuerst nur composer.json + lock für Docker Build Cache
+# Optimiertes Cache-Build: zuerst composer.json + lock
 COPY composer.json composer.lock ./
-
 RUN composer install --no-scripts --no-autoloader
 
-# Dann Rest vom Projekt kopieren
+# Rest kopieren
 COPY . .
 
 RUN composer dump-autoload --optimize
