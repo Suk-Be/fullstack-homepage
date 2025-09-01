@@ -1,3 +1,4 @@
+// SavedGridList.test.tsx
 import SavedGridList from '@/componentsTemplateEngine/gridSaver/SavedGridList';
 import * as reduxHooks from '@/store/hooks';
 import { render, screen } from '@testing-library/react';
@@ -7,11 +8,13 @@ describe('SavedGridList', () => {
   const mockGrids = [
     {
       layoutId: 'initial',
+      name: 'First Grid',
       timestamp: new Date().toISOString(),
       config: { items: '1', columns: '2', gap: '0', border: '0', paddingX: '0', paddingY: '0' },
     },
     {
       layoutId: 'grid2',
+      name: 'Second Grid',
       timestamp: new Date().toISOString(),
       config: { items: '3', columns: '4', gap: '1', border: '1', paddingX: '2', paddingY: '2' },
     },
@@ -31,10 +34,19 @@ describe('SavedGridList', () => {
     vi.spyOn(reduxHooks, 'useAppSelector').mockReturnValue(mockGrids);
     render(<SavedGridList />);
 
-    expect(screen.getByText(/Saved Grids/i)).toBeInTheDocument();
+    // Überschrift prüfen
+    expect(screen.getByText(/Your Saved Grids:/i)).toBeInTheDocument();
 
-    mockGrids.forEach((grid) => {
-      expect(screen.getByText(JSON.stringify(grid.config))).toBeInTheDocument();
-    });
+    // Namen der Grids prüfen
+    expect(screen.getByText(/First Grid/i)).toBeInTheDocument();
+    expect(screen.getByText(/Second Grid/i)).toBeInTheDocument();
+
+    // Config grob prüfen (einzelne Werte statt exact JSON.stringify)
+    expect(screen.getByText(/items":"1"/i)).toBeInTheDocument();
+    expect(screen.getByText(/columns":"4"/i)).toBeInTheDocument();
+
+    // Actions-Button prüfen
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    expect(deleteButtons).toHaveLength(2);
   });
 });

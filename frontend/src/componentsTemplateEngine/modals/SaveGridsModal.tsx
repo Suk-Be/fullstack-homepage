@@ -2,7 +2,7 @@ import Button from '@/componentsTemplateEngine/buttons/Button';
 import SavedGridList from '@/componentsTemplateEngine/gridSaver/SavedGridList';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/selectors/loginSelectors';
-import { persistGridsinLocalStorage, saveInitialGridAsUUID } from '@/store/userSaveGridsSlice';
+import { getGridsFromLocalStorage, resetUserGrids, saveInitialGrid } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ function SaveGridsModal() {
     useEffect(() => {
         if (userId) {
             // connects userId from loginReducer with userGridReducer
-            dispatch(persistGridsinLocalStorage(userId));
+            dispatch(getGridsFromLocalStorage(userId));
         }
     }, [userId, dispatch]);
 
@@ -41,7 +41,16 @@ function SaveGridsModal() {
         setHasGridIsOpen(true);
         setIsButtonDisabled(true);
 
-        dispatch(saveInitialGridAsUUID());
+        dispatch(saveInitialGrid(gridName));
+
+        setGridName('');
+    };
+
+    const resetGrids = () => {
+        setHasGridIsOpen(true);
+        setIsButtonDisabled(true);
+
+        dispatch(resetUserGrids());
 
         setGridName('');
     };
@@ -71,7 +80,7 @@ function SaveGridsModal() {
                     <div className="flex min-h-full items-center justify-center p-4">
                         <DialogPanel
                             transition
-                            className="w-11/12 rounded-xl bg-gray p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+                            className="w-11/12 lg:w-8/12 rounded-xl bg-gray p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
                         >
                             {/* Close Button (X icon) */}
                             <button
@@ -135,6 +144,18 @@ function SaveGridsModal() {
                                     disabled={isButtonDisabled}
                                 >
                                     save
+                                </Button>
+
+                                  <Button
+                                    className="py-4 rounded-xl 
+                                                text-white 
+                                                bg-gray-dark
+                                                data-[hover]:bg-gray 
+                                                data-[open]:bg-gray/700"
+                                    onClick={resetGrids}
+                                    disabled={isButtonDisabled}
+                                >
+                                    reset
                                 </Button>
 
                                 <Button

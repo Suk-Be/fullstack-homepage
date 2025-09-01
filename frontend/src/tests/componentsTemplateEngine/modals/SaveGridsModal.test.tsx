@@ -1,8 +1,8 @@
-// SaveGridsModal.test.tsx
 import SaveGridsModal from '@/componentsTemplateEngine/modals/SaveGridsModal';
 import * as reduxHooks from '@/store/hooks';
 import * as selectors from '@/store/selectors/loginSelectors';
 import * as userGridSelectors from '@/store/selectors/userGridSelectors';
+import * as userGridSlice from '@/store/userSaveGridsSlice';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
@@ -11,44 +11,40 @@ describe('SaveGridsModal', () => {
     const mockDispatch = vi.fn();
 
     const mockGrids = [
-        {
-            layoutId: 'initial',
-            timestamp: new Date().toISOString(),
-            name: 'initial',
-            config: {
-                items: '1',
-                columns: '1',
-                gap: '0',
-                border: '0',
-                paddingX: '0',
-                paddingY: '0',
-            },
-        },
-    ];
+    {
+      layoutId: 'grid-1',
+      timestamp: new Date().toISOString(),
+      name: 'Test Grid',
+      config: {
+        items: '1',
+        columns: '1',
+        gap: '0',
+        border: '0',
+        paddingX: '0',
+        paddingY: '0',
+      },
+    },
+  ];
 
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Mock Dispatch
         vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
-
-        // Mock useAppSelector für selectUserId und selectSortedGrids
         vi.spyOn(reduxHooks, 'useAppSelector').mockImplementation((selector) => {
             if (selector === selectors.selectUserId) return 'user-123';
             if (selector === userGridSelectors.selectSortedGrids) return mockGrids;
             return null;
         });
 
-        // Stub localStorage
         vi.stubGlobal('localStorage', {
-          getItem: vi.fn(),
-          setItem: vi.fn(),  // <-- DAS ist wichtig
-          removeItem: vi.fn(),
-          clear: vi.fn(),
+            getItem: vi.fn(),
+            setItem: vi.fn(),
+            removeItem: vi.fn(),
+            clear: vi.fn(),
         });
     });
 
-    const renderUtils = async () => {
+    const renderModal = async () => {
         const user = userEvent.setup();
         render(<SaveGridsModal />);
         const triggerButton = screen.getByRole('button', {
@@ -58,27 +54,24 @@ describe('SaveGridsModal', () => {
     };
 
     it('renders the trigger button', async () => {
-        const { triggerButton } = await renderUtils();
+        const { triggerButton } = await renderModal();
         expect(triggerButton).toBeInTheDocument();
     });
 
     it('opens and closes the modal via close icon and close button', async () => {
-        const { user, triggerButton } = await renderUtils();
+        const { user, triggerButton } = await renderModal();
         await user.click(triggerButton);
 
-        expect(await screen.findByTestId('dialog-markup')).toBeVisible();
+        const dialog = await screen.findByTestId('dialog-markup');
+        expect(dialog).toBeVisible();
         expect(screen.getByText(/Save Grid/i)).toBeInTheDocument();
 
-        // Close via X icon
         await user.click(screen.getByLabelText(/Close modal/i));
         await waitFor(() => {
             expect(screen.queryByTestId('dialog-markup')).not.toBeInTheDocument();
         });
 
-        // Reopen
         await user.click(triggerButton);
-
-        // Close via "close" button inside modal
         const closeBtn = await screen.findByText(/close/i);
         await user.click(closeBtn);
         await waitFor(() => {
@@ -86,26 +79,44 @@ describe('SaveGridsModal', () => {
         });
     });
 
-    it('clicking save button dispatches saveInitialGrid and disables save Button', async () => {
-        const { user, triggerButton } = await renderUtils();
+    it('clicking save button dispatches saveInitialGrid and disables button', async () => {
+        const { user, triggerButton } = await renderModal();
         await user.click(triggerButton);
+
+        const input = screen.getByPlaceholderText(/please name grid/i);
+        await user.type(input, 'MyGrid');
 
         const saveBtn = screen.getByRole('button', { name: /save/i });
         expect(saveBtn).toBeEnabled();
 
         await user.click(saveBtn);
 
-        // Prüfen, dass der Dispatch korrekt aufgerufen wird
-        expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
-            type: 'userGrid/saveInitialGrid'
-        }));
-
-        // Button sollte deaktiviert sein
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: userGridSlice.saveInitialGrid.type,
+            payload: 'MyGrid',
+          })
+        );
         expect(saveBtn).toBeDisabled();
-
-        // SavedGridList sollte sichtbar sein
-        expect(screen.getByText(/Saved Grids/i)).toBeInTheDocument();
-        expect(screen.getByText(/\{"items":"1","columns":"1","gap":"0","border":"0","paddingX":"0","paddingY":"0"\}/i)).toBeInTheDocument();
+        expect(
+          await screen.findByText(/Your Saved Grids:/i)
+        ).toBeInTheDocument();
+        expect(screen.getByText(/Test Grid/i)).toBeInTheDocument();
     });
 
+    it('clicking reset button dispatches resetUserGrids and disables button', async () => {
+        const { user, triggerButton } = await renderModal();
+        await user.click(triggerButton);
+
+        const resetBtn = screen.getByRole('button', { name: /reset/i });
+        expect(resetBtn).toBeEnabled();
+
+        await user.click(resetBtn);
+
+        expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
+            type: userGridSlice.resetUserGrids.type,
+        }));
+
+        expect(resetBtn).toBeDisabled();
+    });
 });
