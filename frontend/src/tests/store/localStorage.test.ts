@@ -1,4 +1,4 @@
-import { loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
+import { clearUserGridsFromLocalStorage, loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
 import { UserSaveGridsState } from '@/types/Redux';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,6 +9,7 @@ describe('localStorage helpers', () => {
     savedGrids: {
       layout1: { 
         layoutId: 'layout1', 
+        name: 'test',
         timestamp: new Date().toISOString(),
         config: { 
           items: '2', 
@@ -68,5 +69,22 @@ describe('localStorage helpers', () => {
     const result = loadFromLocalStorage(mockUserId);
 
     expect(result).toBeNull();
+  });
+
+  it('should remove user grids from localStorage', () => {
+    clearUserGridsFromLocalStorage(mockUserId);
+
+    expect(localStorage.removeItem).toHaveBeenCalledWith(`userGrid_${mockUserId}`);
+  });
+
+  it('should handle errors in removeItem gracefully', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    (localStorage.removeItem as any).mockImplementation(() => { throw new Error('fail'); });
+
+    expect(() => clearUserGridsFromLocalStorage(mockUserId)).not.toThrow();
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed to clear user grids from localStorage',
+      expect.any(Error)
+    );
   });
 });

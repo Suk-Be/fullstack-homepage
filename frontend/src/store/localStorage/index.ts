@@ -29,3 +29,11 @@ export const loadFromLocalStorage = (userId: number): UserSaveGridsState | null 
         return null;
     }
 };
+
+export const clearUserGridsFromLocalStorage = (userId: number) => {
+  try {
+    localStorage.removeItem(localStorageKeyPrefix + userId);
+  } catch (err) {
+    console.error('Failed to clear user grids from localStorage', err);
+  }
+};
