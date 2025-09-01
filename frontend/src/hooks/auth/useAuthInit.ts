@@ -3,7 +3,7 @@ import { AppDispatch } from '@/store';
 import { useAppSelector } from '@/store/hooks';
 import { forceLogin, logout, startAuth } from '@/store/loginSlice';
 import { selectLoginState } from '@/store/selectors/loginSelectors';
-import { resetUserGrid } from '@/store/userSaveGridsSlice';
+import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError, logRequestState } from '@/utils/logger';
 import { useEffect } from 'react';
@@ -24,7 +24,7 @@ export const useAuthInit = () => {
             dispatch(startAuth());
 
             const performLogout = () => {
-                dispatch(resetUserGrid());
+                dispatch(resetUserGrids());
                 dispatch(logout());
             };
 

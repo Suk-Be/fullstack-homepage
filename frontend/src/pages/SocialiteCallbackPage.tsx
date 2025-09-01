@@ -2,7 +2,7 @@ import Loading from '@/components/auth/shared-components/Loading';
 import LaravelApiClient from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
 import { forceLogin, logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userSaveGridsSlice';
+import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -27,7 +27,7 @@ const SocialiteCallbackPage = () => {
                     extra: { axiosStatus },
                 });
 
-                dispatch(resetUserGrid());
+                dispatch(resetUserGrids());
                 dispatch(logout());
                 navigate('/');
             }

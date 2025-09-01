@@ -14,6 +14,7 @@ describe('SaveGridsModal', () => {
         {
             layoutId: 'initial',
             timestamp: new Date().toISOString(),
+            name: 'initial',
             config: {
                 items: '1',
                 columns: '1',
@@ -85,7 +86,7 @@ describe('SaveGridsModal', () => {
         });
     });
 
-    it('clicking save button dispatches saveInitialGridAsUUID and disables save Button', async () => {
+    it('clicking save button dispatches saveInitialGrid and disables save Button', async () => {
         const { user, triggerButton } = await renderUtils();
         await user.click(triggerButton);
 
@@ -96,7 +97,7 @@ describe('SaveGridsModal', () => {
 
         // Prüfen, dass der Dispatch korrekt aufgerufen wird
         expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
-            type: 'userGrid/saveInitialGridAsUUID'
+            type: 'userGrid/saveInitialGrid'
         }));
 
         // Button sollte deaktiviert sein

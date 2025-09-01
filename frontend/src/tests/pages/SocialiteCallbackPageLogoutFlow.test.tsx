@@ -1,6 +1,6 @@
 import SocialiteCallbackPage from '@/pages/SocialiteCallbackPage';
 import { logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userSaveGridsSlice';
+import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import { waitFor } from '@testing-library/dom';
 import { describe, vi } from 'vitest';
@@ -48,7 +48,7 @@ describe('SocialiteCallbackPage', () => {
         });
 
         await waitFor(() => {
-            expect(mockDispatch).toHaveBeenCalledWith(resetUserGrid());
+            expect(mockDispatch).toHaveBeenCalledWith(resetUserGrids());
             expect(mockDispatch).toHaveBeenCalledWith(logout());
             expect(mockNavigate).toHaveBeenCalledWith('/');
         });

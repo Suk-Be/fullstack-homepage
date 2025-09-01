@@ -25,7 +25,7 @@ const {
   mockInitializeCookies: vi.fn(),
   mockLoginActionCreator: vi.fn(() => ({ type: 'login/forceLogin' })),
   mockLogoutActionCreator: vi.fn(() => ({ type: 'login/logout' })),
-  mockResetUserGridActionCreator: vi.fn(() => ({ type: 'userGrid/resetUserGrid' })),
+  mockResetUserGridActionCreator: vi.fn(() => ({ type: 'userGrid/resetUserGrids' })),
 }));
 
 // ----------------------------
@@ -60,7 +60,7 @@ vi.mock('@/store/userSaveGridsSlice', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/store/userSaveGridsSlice')>();
   return {
     ...actual,
-    resetUserGrid: mockResetUserGridActionCreator,
+    resetUserGrids: mockResetUserGridActionCreator,
   };
 });
 

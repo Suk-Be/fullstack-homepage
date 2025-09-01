@@ -1,6 +1,6 @@
 import { store } from '@/store';
 import { logout } from '@/store/loginSlice';
-import { resetUserGrid } from '@/store/userSaveGridsSlice';
+import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import apiBaseUrl from '@/utils/apiBaseUrl';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import axios from 'axios';
@@ -36,7 +36,7 @@ LaravelApiClient.interceptors.response.use(
         switch (axiosStatus) {
           case 401:
             logRecoverableError({ context: 'Access errors', error, extra: { axiosStatus } });
-            store.dispatch(resetUserGrid());
+            store.dispatch(resetUserGrids());
             store.dispatch(logout());
             break;
 

@@ -3,7 +3,7 @@ import LaravelApiClient from '@/plugins/axios';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { resetUserGrid } from './userSaveGridsSlice';
+import { resetUserGrids } from './userSaveGridsSlice';
 
 import { LoginArgs, User } from '@/types/Redux';
 import { LoginErrorResponse, LoginSuccessResponse } from '@/types/entities';
@@ -69,7 +69,7 @@ export const loginThunk = createAsyncThunk<
     } catch (error: unknown) {
         // console.log('catch loginThunk, get here:', LaravelApiClient.defaults.baseURL + '/auth/spa/login', 'mit body:', { error });
 
-        dispatch(resetUserGrid());
+        dispatch(resetUserGrids());
         await resetCookiesOnResponseError(error);
         return rejectWithValue(setResponseValidationError(error));
     }

@@ -1,17 +1,17 @@
 import { store } from '@/store';
 import { forceLogin, logout } from '@/store/loginSlice';
 import {
-    persistGridsinLocalStorage,
-    resetUserGrid,
-    saveInitialGridAsUUID,
-    updateInitialGrid,
+  getGridsFromLocalStorage,
+  resetUserGrids,
+  saveInitialGrid,
+  updateGridConfig,
 } from '@/store/userSaveGridsSlice';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Redux Store', () => {
     beforeEach(() => {
         store.dispatch(logout());
-        store.dispatch(resetUserGrid());
+        store.dispatch(resetUserGrids());
     });
 
     it('should have the correct initial state', () => {
@@ -42,15 +42,15 @@ describe('Redux Store', () => {
 
     it('should add a grid for a logged-in user', () => {
         store.dispatch(forceLogin(123));
-        store.dispatch(persistGridsinLocalStorage(123));
+        store.dispatch(getGridsFromLocalStorage(123));
 
         // 1. initial Grid anpassen
-        store.dispatch(updateInitialGrid({ layoutId: 'initial', key: 'items', value: '4' }));
-        store.dispatch(updateInitialGrid({ layoutId: 'initial', key: 'columns', value: '2' }));
-        store.dispatch(updateInitialGrid({ layoutId: 'initial', key: 'gap', value: '1' }));
+        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '4' }));
+        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'columns', value: '2' }));
+        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'gap', value: '1' }));
 
-        // 2. neues Grid speichern
-        store.dispatch(saveInitialGridAsUUID());
+        // 2. neues Grid speichern, überschreibt layoutId mit uuid
+        store.dispatch(saveInitialGrid('layoutName'));
 
         const state = store.getState();
 
@@ -59,6 +59,7 @@ describe('Redux Store', () => {
 
         const savedGrids = state.userGrid.savedGrids;
         const keys = Object.keys(savedGrids);
+        // no initial
         const secondKey = keys.find((k) => k !== 'initial')!;
         const secondGrid = savedGrids[secondKey];
 
@@ -71,14 +72,14 @@ describe('Redux Store', () => {
         store.dispatch(forceLogin(123));
 
         // initial bearbeiten
-        store.dispatch(updateInitialGrid({ layoutId: 'initial', key: 'items', value: '5' }));
-        store.dispatch(updateInitialGrid({ layoutId: 'initial', key: 'columns', value: '3' }));
+        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '5' }));
+        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'columns', value: '3' }));
 
         // speichern
-        store.dispatch(saveInitialGridAsUUID());
+        store.dispatch(saveInitialGrid('layout name'));
 
         // reset
-        store.dispatch(resetUserGrid());
+        store.dispatch(resetUserGrids());
 
         const state = store.getState();
 
