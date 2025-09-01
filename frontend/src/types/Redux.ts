@@ -8,6 +8,7 @@ export interface User {
 }
 export interface UserSaveGridsState {
     userId: User['id'] | null;
+    name?: string;
     savedGrids: {
         [layoutId: string]: GridConfig; // Normalisiertes Objekt
     };
@@ -15,6 +16,7 @@ export interface UserSaveGridsState {
 export interface GridConfig {
     layoutId: string;
     timestamp: string;
+    name?: string;
     config: {
         items: string;
         columns: string;

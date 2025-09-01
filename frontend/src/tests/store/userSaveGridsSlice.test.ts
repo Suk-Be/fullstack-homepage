@@ -1,10 +1,10 @@
 import userGridReducer, {
-    loadUserGrids,
-    persistGridsinLocalStorage,
-    resetUserGrid,
-    saveInitialGridAsUUID,
-    updateInitialGrid,
-    initialState as userGridInitialState,
+  getGridsFromLocalStorage,
+  loadUserGrids,
+  resetUserGrids,
+  saveInitialGrid,
+  updateGridConfig,
+  initialState as userGridInitialState,
 } from '@/store/userSaveGridsSlice';
 import { UserSaveGridsState } from '@/types/Redux';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
@@ -20,28 +20,62 @@ vi.mock('uuid', () => ({
 vi.mock('@/store/localStorage', () => ({
     loadFromLocalStorage: vi.fn(),
     saveToLocalStorage: vi.fn(),
+    clearUserGridsFromLocalStorage: vi.fn(),
 }));
 
 describe('userSaveGridsSlice', () => {
     let initialState: UserSaveGridsState;
     let saveToLocalStorage: ReturnType<typeof vi.fn>;
     let loadFromLocalStorage: ReturnType<typeof vi.fn>;
+    let clearUserGridsFromLocalStorage: ReturnType<typeof vi.fn>;
 
     beforeEach(async () => {
         vi.clearAllMocks();
+
         const localStorageModule = await import('@/store/localStorage');
-        saveToLocalStorage = localStorageModule.saveToLocalStorage as unknown as Mock;
-        loadFromLocalStorage = localStorageModule.loadFromLocalStorage as unknown as Mock;
+        saveToLocalStorage = localStorageModule.saveToLocalStorage as Mock;
+        loadFromLocalStorage = localStorageModule.loadFromLocalStorage as Mock;
+        clearUserGridsFromLocalStorage = localStorageModule.clearUserGridsFromLocalStorage as Mock;
 
         // ✅ jedes Mal frisch klonen
-        initialState = structuredClone(userGridInitialState);
+        initialState = JSON.parse(JSON.stringify(userGridInitialState));
     });
 
     it('should return the initial state', () => {
         expect(userGridReducer(undefined, { type: '@@INIT' })).toEqual(initialState);
     });
 
-    it('should handle saveInitialGridAsNew when userId exists', () => {
+    it('should handle getGridsFromLocalStorage', () => {
+        const mockSavedState: UserSaveGridsState = {
+            userId: 1,
+            savedGrids: {
+                test123: {
+                    layoutId: 'test123',
+                    timestamp: '2023-01-01T00:00:00.000Z',
+                    config: {
+                        items: '5',
+                        columns: '5',
+                        gap: '1',
+                        border: '1',
+                        paddingX: '2',
+                        paddingY: '2',
+                    },
+                },
+            },
+        };
+
+        loadFromLocalStorage.mockReturnValue(mockSavedState);
+
+        const action = getGridsFromLocalStorage(1);
+        const result = userGridReducer(initialState, action);
+
+        expect(result.userId).toBe(1);
+        expect(result.savedGrids).toEqual(mockSavedState.savedGrids);
+        expect(loadFromLocalStorage).toHaveBeenCalledWith(1);
+    });
+
+
+    it('should handle saveInitialGrid when userId exists', () => {
         const stateWithUser: UserSaveGridsState = {
             ...initialState,
             userId: 1,
@@ -49,6 +83,7 @@ describe('userSaveGridsSlice', () => {
                 ...initialState.savedGrids,
                 initial: {
                     ...initialState.savedGrids.initial,
+                    name: 'initial',
                     config: {
                         items: '3',
                         columns: '4',
@@ -61,7 +96,7 @@ describe('userSaveGridsSlice', () => {
             },
         };
 
-        const result = userGridReducer(stateWithUser, saveInitialGridAsUUID());
+        const result = userGridReducer(stateWithUser, saveInitialGrid('first grid'));
 
         expect(Object.keys(result.savedGrids)).toContain(mockNewLayoutId);
         expect(result.savedGrids[mockNewLayoutId]).toMatchObject({
@@ -71,7 +106,7 @@ describe('userSaveGridsSlice', () => {
         expect(saveToLocalStorage).toHaveBeenCalled();
     });
 
-    it('should handle updateGrid when userId and layoutId exist', () => {
+    it('should handle updateGridConfig when userId and layoutId exist', () => {
         const stateWithUser: UserSaveGridsState = {
             ...initialState,
             userId: 1,
@@ -93,20 +128,22 @@ describe('userSaveGridsSlice', () => {
 
         const result = userGridReducer(
             stateWithUser,
-            updateInitialGrid({ layoutId: mockNewLayoutId, key: 'items', value: '99' }),
+            updateGridConfig({ layoutId: mockNewLayoutId, key: 'items', value: '99' }),
         );
 
         expect(result.savedGrids[mockNewLayoutId].config.items).toBe('99');
         expect(typeof result.savedGrids[mockNewLayoutId].timestamp).toBe('string');
+        expect(saveToLocalStorage).toHaveBeenCalled();
     });
 
-    it('should handle resetUserGrid', () => {
+    it('should handle resetUserGrids', () => {
         const modifiedState: UserSaveGridsState = {
             userId: 1,
             savedGrids: {
                 [mockNewLayoutId]: {
                     layoutId: mockNewLayoutId,
                     timestamp: '2023-01-01T00:00:00.000Z',
+                    name: 'layout save',
                     config: {
                         items: '3',
                         columns: '4',
@@ -119,9 +156,27 @@ describe('userSaveGridsSlice', () => {
             },
         };
 
-        const result = userGridReducer(modifiedState, resetUserGrid());
-        expect(result).toEqual(initialState);
+        const action = resetUserGrids(); // Action-Creator
+        const result = userGridReducer(modifiedState, action);
+
+        // Prüfen, dass savedGrids auf die initialen Keys zurückgesetzt wurde
+        const initialGridKeys = Object.keys(userGridInitialState.savedGrids);
+        expect(Object.keys(result.savedGrids)).toEqual(initialGridKeys);
+
+        const initialLayoutId = initialGridKeys[0];
+        expect(result.savedGrids[initialLayoutId].layoutId).toBe(initialLayoutId);
+        expect(result.savedGrids[initialLayoutId].config).toEqual(
+            userGridInitialState.savedGrids[initialLayoutId].config
+        );
+        expect(result.savedGrids[initialLayoutId].name).toBe(
+            userGridInitialState.savedGrids[initialLayoutId].name
+        );
+
+        // Prüfen, dass die localStorage helper aufegerufen wurden
+        expect(clearUserGridsFromLocalStorage).toHaveBeenCalledWith(1);
+        expect(saveToLocalStorage).toHaveBeenCalled();
     });
+
 
     it('should handle loadUserGrids and persist to localStorage', () => {
         const customState: UserSaveGridsState = {
@@ -146,9 +201,10 @@ describe('userSaveGridsSlice', () => {
 
         expect(result.userId).toBe(42);
         expect(result.savedGrids).toHaveProperty('abc');
+        expect(saveToLocalStorage).toHaveBeenCalled();
     });
 
-    it('should handle persistGridsinLocalStorage and load savedGrids', async () => {
+    it('should handle getGridsFromLocalStorage and load savedGrids', async () => {
         const mockSavedState: UserSaveGridsState = {
             userId: 1,
             savedGrids: {
@@ -170,9 +226,10 @@ describe('userSaveGridsSlice', () => {
         const { loadFromLocalStorage } = await import('@/store/localStorage');
         (loadFromLocalStorage as Mock).mockReturnValue(mockSavedState);
 
-        const result = userGridReducer(initialState, persistGridsinLocalStorage(1));
+        const result = userGridReducer(initialState, getGridsFromLocalStorage(1));
 
         expect(result.userId).toBe(1);
         expect(result.savedGrids).toEqual(mockSavedState.savedGrids);
+        expect(loadFromLocalStorage).toHaveBeenCalled();
     });
 });
