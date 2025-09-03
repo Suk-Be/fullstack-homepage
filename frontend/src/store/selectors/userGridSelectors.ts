@@ -3,18 +3,34 @@ import { createSelector } from '@reduxjs/toolkit';
 
 export const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
 
-export const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGridsMap) => {
+export const selectSortedGrids = createSelector(
+  selectSavedGridsMap, 
+  (savedGridsMap) => {
     const savedGridsToArray = Object.values(savedGridsMap);
     const sortCurrentToTop = savedGridsToArray.sort((a, b) => {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
 
     return sortCurrentToTop;
-});
+  }
+);
+
+export const selectInitialGrid = createSelector(
+  selectSavedGridsMap,
+  (savedGridsMap) => {
+    const initialGrid = savedGridsMap['initial'];
+
+    return initialGrid ? initialGrid.config : null;
+  }
+);
+
+export const selectGridsFromThisUser = createSelector(
+  selectSavedGridsMap,
+  (savedGridsMap) => {
+    // extrahiert die grids aus dem savedGrids Objekt und gibt sie als Einträge in einem neuen Arrays aus
+    return Object.values(savedGridsMap);
+  }
+);
 
 
-export const selectInitialGrid = (state: RootState) => state.userGrid.savedGrids['initial'].config
 
-// extrahiert die grids aus dem savedGrids Objekt und gibt sie als Einträge in einem neuen Arrays aus
-export const selectGridsFromThisUser = (state: RootState) =>
-  Object.values(state.userGrid.savedGrids);
