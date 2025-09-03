@@ -14,3 +14,7 @@ export const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGrids
 
 
 export const selectInitialGrid = (state: RootState) => state.userGrid.savedGrids['initial'].config
+
+// extrahiert die grids aus dem savedGrids Objekt und gibt sie als Einträge in einem neuen Arrays aus
+export const selectGridsFromThisUser = (state: RootState) =>
+  Object.values(state.userGrid.savedGrids);

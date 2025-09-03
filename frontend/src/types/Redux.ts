@@ -16,7 +16,7 @@ export interface UserSaveGridsState {
 export interface GridConfig {
     layoutId: string;
     timestamp: string;
-    name?: string;
+    name: string;
     config: {
         items: string;
         columns: string;

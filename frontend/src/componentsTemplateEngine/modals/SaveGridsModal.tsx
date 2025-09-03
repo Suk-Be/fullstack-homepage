@@ -1,43 +1,75 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
-import SavedGridList from '@/componentsTemplateEngine/gridSaver/SavedGridList';
+import SavedGridList from '@/componentsTemplateEngine/savedGridList';
+import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/selectors/loginSelectors';
+import { selectGridsFromThisUser } from '@/store/selectors/userGridSelectors';
 import { getGridsFromLocalStorage, resetUserGrids, saveInitialGrid } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import { useEffect, useState } from 'react';
+import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import { useEffect, useRef, useState } from 'react';
 
 function SaveGridsModal() {
-    const [isOpen, setIsOpen] = useState({
-        open: false,
-    });
+    const [isOpen, setIsOpen] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [gridName, setGridName] = useState('');
     const [hasGrid, setHasGridIsOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleOpen = () => {
-        setIsOpen({ ...isOpen, open: true });
+        setIsOpen(true);
         setIsButtonDisabled(false);
         setHasGridIsOpen(false);
+        setErrorMessage('');
     };
 
     const handleClose = () => {
-        setIsOpen({ ...isOpen, open: false });
+        setIsOpen(false);
         setIsButtonDisabled(false);
         setHasGridIsOpen(false);
     };
 
     const dispatch = useAppDispatch();
     const userId = useAppSelector(selectUserId);
+    const userGrids = useAppSelector(selectGridsFromThisUser);
 
+    // Läuft nur, wenn Modal geöffnet wird
     useEffect(() => {
-        if (userId) {
-            // connects userId from loginReducer with userGridReducer
-            dispatch(getGridsFromLocalStorage(userId));
-        }
+      if (isOpen) {
+        const t = setTimeout(() => {
+          inputRef.current?.focus();
+        }, 50); 
+        setGridName('');
+        return () => clearTimeout(t);
+      }
+    }, [isOpen]);
+
+
+    // Läuft nur, wenn sich die userId ändert
+    useEffect(() => {
+      if (userId) {
+        dispatch(getGridsFromLocalStorage(userId));
+      }
     }, [userId, dispatch]);
 
+
     const handleGrid = () => {
+        if (!gridName.trim()) {
+            setErrorMessage('Please use a recognizable name.');
+            return;
+        }
+
+        const gridNameAlreadyExists = userGrids?.some(
+            (grid) => grid.name.toLowerCase() === gridName.toLowerCase()
+        );
+
+        if (gridNameAlreadyExists) {
+            setErrorMessage(
+                `A grid with the name "${gridName}" already exists. Please choose a different name.`
+            );
+            return;
+        }
         setHasGridIsOpen(true);
         setIsButtonDisabled(true);
 
@@ -47,13 +79,14 @@ function SaveGridsModal() {
     };
 
     const resetGrids = () => {
-        setHasGridIsOpen(true);
         setIsButtonDisabled(true);
 
         dispatch(resetUserGrids());
 
         setGridName('');
+        setHasGridIsOpen(false);
     };
+
 
     return (
         <div className="flex flex-col gap-2 font-sans" {...testId('dialog-modal')}>
@@ -68,7 +101,7 @@ function SaveGridsModal() {
             </Button>
 
             <Dialog
-                open={isOpen.open}
+                open={isOpen}
                 as="div"
                 className="relative z-10 focus:outline-none"
                 onClose={handleClose}
@@ -89,20 +122,7 @@ function SaveGridsModal() {
                                 className="absolute top-4 right-4 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 rounded-full p-1 transition-colors"
                                 aria-label="Close modal"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2}
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
+                                <CloseSVG />
                             </button>
 
                             <DialogTitle as="h3" className="text-xl font-bold py-4 text-white">
@@ -110,16 +130,23 @@ function SaveGridsModal() {
                             </DialogTitle>
 
                             {!hasGrid && (
-                                <>
+                                <div className='grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4  items-center'>
                                     <input
-                                        name="full_name"
-                                        type="text"
-                                        placeholder="please name grid"
-                                        value={gridName}
-                                        onChange={(e) => setGridName(e.target.value)}
-                                        className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
+                                      ref={inputRef}
+                                      name="full_name"
+                                      type="text"
+                                      placeholder="please name grid"
+                                      value={gridName}
+                                      onChange={(e) => setGridName(e.target.value)}
+                                      onFocus={() => setErrorMessage('')}
+                                      className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
                                     />
-                                </>
+
+
+                                    {errorMessage && (
+                                        <Description className="text-green-400 text-sm mb-4">{errorMessage}</Description>
+                                    )}
+                                </div>
                             )}
 
                             {hasGrid && (
