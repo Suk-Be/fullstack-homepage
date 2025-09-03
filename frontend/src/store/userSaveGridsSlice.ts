@@ -28,17 +28,17 @@ export const initialState: UserSaveGridsState = {
 };
 
 const createInitialGrid = (
-  baseConfig: GridConfig["config"],
-  name?: string
+    baseConfig: GridConfig["config"],
+    name?: string
 ): GridConfig => {
-  const newLayoutId = uuidv4();
+    const newLayoutId = uuidv4();
 
-  return {
-    layoutId: newLayoutId,
-    timestamp: new Date().toISOString(),
-    config: { ...baseConfig },
-    name: name?.trim() || "Unnamed Grid",
-  };
+    return {
+        layoutId: newLayoutId,
+        timestamp: new Date().toISOString(),
+        config: { ...baseConfig },
+        name: name?.trim() || "Unnamed Grid",
+    };
 };
 
 const userSaveGridsSlice = createSlice({
@@ -62,8 +62,15 @@ const userSaveGridsSlice = createSlice({
             const newGrid = createInitialGrid(gridConfig, layoutName);
 
             state.savedGrids[newGrid.layoutId] = newGrid;
-
             saveToLocalStorage(state.userId, state);
+        },
+
+        deleteThisGrid(state, action: PayloadAction<string>) {
+          const layoutId = action.payload;
+          if (!state.userId) return;
+
+          delete state.savedGrids[layoutId];
+          saveToLocalStorage(state.userId, state);
         },
 
         updateGridConfig(
@@ -83,7 +90,7 @@ const userSaveGridsSlice = createSlice({
             saveToLocalStorage(state.userId, state);
         },
 
-        // helper for developing to clear all grids
+        // helper (for developing) to clear all grids //
         resetUserGrids(state) {
             if (state.userId === null || state.userId === undefined) return;
 
@@ -108,6 +115,7 @@ const userSaveGridsSlice = createSlice({
 export const {
     getGridsFromLocalStorage,
     saveInitialGrid,
+    deleteThisGrid,
     updateGridConfig,
     resetUserGrids,
     loadUserGrids,
