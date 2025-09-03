@@ -17,11 +17,7 @@ export const selectSortedGrids = createSelector(
 
 export const selectInitialGrid = createSelector(
   selectSavedGridsMap,
-  (savedGridsMap) => {
-    const initialGrid = savedGridsMap['initial'];
-
-    return initialGrid ? initialGrid.config : null;
-  }
+  (savedGridsMap) => savedGridsMap.initial.config
 );
 
 export const selectGridsFromThisUser = createSelector(
