@@ -1,4 +1,4 @@
-import { formatGridDate } from '@/componentsTemplateEngine/savedGridList/formatGridDate';
+import { formatGridDate } from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList/formatGridDate';
 import { CancelSVG, CheckSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSortedGrids } from '@/store/selectors/userGridSelectors';

@@ -1,4 +1,4 @@
-import SavedGridList from '@/componentsTemplateEngine/savedGridList';
+import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
 import * as reduxHooks from '@/store/hooks';
 import * as userGridSelectors from '@/store/selectors/userGridSelectors';
 import { deleteThisGrid } from '@/store/userSaveGridsSlice';
