@@ -1,4 +1,4 @@
-import { formatGridDate } from '@/componentsTemplateEngine/savedGridList/formatGridDate';
+import { formatGridDate } from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList/formatGridDate';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('formatGridDate', () => {

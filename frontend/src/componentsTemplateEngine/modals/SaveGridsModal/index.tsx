@@ -1,5 +1,5 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
-import SavedGridList from '@/componentsTemplateEngine/savedGridList';
+import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
 import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/selectors/loginSelectors';
@@ -56,7 +56,7 @@ function SaveGridsModal() {
 
     const handleGrid = () => {
         if (!gridName.trim()) {
-            setErrorMessage('Please use a recognizable name.');
+            setErrorMessage('Please input a recognizable name.');
             return;
         }
 
@@ -97,7 +97,7 @@ function SaveGridsModal() {
                   bg-gray text-white"
                 onClick={handleOpen}
             >
-                Meaningful names do half the work.
+                ... with a meaningful name
             </Button>
 
             <Dialog
@@ -135,7 +135,7 @@ function SaveGridsModal() {
                                       ref={inputRef}
                                       name="full_name"
                                       type="text"
-                                      placeholder="please name grid"
+                                      placeholder="name of the grid"
                                       value={gridName}
                                       onChange={(e) => setGridName(e.target.value)}
                                       onFocus={() => setErrorMessage('')}

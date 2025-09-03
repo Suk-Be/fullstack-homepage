@@ -53,7 +53,7 @@ describe('SaveGridsModal', () => {
         render(<SaveGridsModal />);
 
         const openModalButton = screen.getByRole('button', {
-            name: /Meaningful names do half the work/i,
+            name: /with a meaningful name/i,
         });
         return { user, openModalButton };
     };
@@ -109,7 +109,7 @@ describe('SaveGridsModal', () => {
           await screen.queryByText(/Your Saved Grids:/i)
         ).not.toBeInTheDocument();
 
-        const input = screen.getByPlaceholderText(/please name grid/i);
+        const input = screen.getByPlaceholderText(/name of the grid/i);
         await user.type(input, 'MyGrid');
 
         const saveBtn = screen.getByRole('button', { name: /save/i });
@@ -125,7 +125,7 @@ describe('SaveGridsModal', () => {
         );
         // after saving change in ui
         expect(saveBtn).toBeDisabled();
-        const noInput = screen.queryByPlaceholderText(/please name grid/i);
+        const noInput = screen.queryByPlaceholderText(/name of the grid/i);
         expect(noInput).not.toBeInTheDocument();
         expect(
           await screen.findByText(/Your Saved Grids:/i)
@@ -148,7 +148,7 @@ describe('SaveGridsModal', () => {
 
       expect(resetBtn).toBeDisabled();
 
-      const input = screen.getByPlaceholderText(/please name grid/i);
+      const input = screen.getByPlaceholderText(/name of the grid/i);
       expect(input).toHaveValue('');
     });
 
@@ -156,7 +156,7 @@ describe('SaveGridsModal', () => {
       const { user, openModalButton } = await renderModal();
       await user.click(openModalButton);
 
-      const input = await screen.findByPlaceholderText(/please name grid/i);
+      const input = await screen.findByPlaceholderText(/name of the grid/i);
       await waitFor(() => {
         expect(document.activeElement).toBe(input);
       });
@@ -172,7 +172,7 @@ describe('SaveGridsModal', () => {
 
       await user.click(saveBtn);
 
-      expect(await screen.findByText(/Please use a recognizable name/i)).toBeInTheDocument();
+      expect(await screen.findByText(/Please input a recognizable name/i)).toBeInTheDocument();
       expect(mockDispatch).not.toHaveBeenCalled();
     });
 
@@ -180,7 +180,7 @@ describe('SaveGridsModal', () => {
       const { user, openModalButton } = await renderModal();
       await user.click(openModalButton);
 
-      const input = screen.getByPlaceholderText(/please name grid/i);
+      const input = screen.getByPlaceholderText(/name of the grid/i);
       await user.type(input, 'Test Grid');
 
       const saveBtn = screen.getByRole('button', { name: /save/i });
@@ -202,7 +202,7 @@ describe('SaveGridsModal', () => {
 
       expect(await screen.findByText(/recognizable name/i)).toBeInTheDocument();
 
-      const input = screen.getByPlaceholderText(/please name grid/i);
+      const input = screen.getByPlaceholderText(/name of the grid/i);
       await user.click(input);
 
       await waitFor(() => {
