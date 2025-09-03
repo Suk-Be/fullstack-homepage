@@ -4,8 +4,8 @@ import { testId } from '@/utils/testId';
 
 const SaveGridsTeaser = () => {
     return (
-        <div {...testId('teaser-generate-markup')}>
-            <HeadlineAside children="Speicher Grid" />
+        <div {...testId('teaser-save-this-grid')}>
+            <HeadlineAside children="Save this Grid" />
             <SaveGridsModal />
         </div>
     );

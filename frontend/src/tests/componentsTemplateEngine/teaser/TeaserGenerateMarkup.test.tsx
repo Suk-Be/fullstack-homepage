@@ -24,6 +24,6 @@ describe('TeaserGenerateMarkup', () => {
         );
         const openButton = screen.getByRole('button', { name: /html \+ tailwind/i });
         expect(openButton).toBeInTheDocument();
-        expect(screen.getByText('Erstelle HTML')).toBeInTheDocument();
+        expect(screen.getByText('Generate HTML')).toBeInTheDocument();
     });
 });
