@@ -1,4 +1,4 @@
-import LayoutExampleTeaserVisual from '@/componentsTemplateEngine/teaser/LayoutExampleTeaserVisual';
+import LayoutExampleTeaserVisual from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser/LayoutExampleTeaserVisual';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 

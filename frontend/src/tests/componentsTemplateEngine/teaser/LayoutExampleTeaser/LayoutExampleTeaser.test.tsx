@@ -1,4 +1,4 @@
-import LayoutExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
+import LayoutExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser/LayoutExampleTeaser';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
