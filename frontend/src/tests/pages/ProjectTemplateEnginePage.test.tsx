@@ -124,13 +124,13 @@ describe('ProjectTemplateEnginePage', () => {
         expect(dynamicGridContainer.childElementCount).toBe(1);
     });
 
-    it('renders with a teaser to ProjectTemplateEngineLayoutExamplesPage and a button to generate HTML', () => {
+    it('renders with teasers: Link to Example Grids, Save this Grid and Generate HTML', () => {
         const { asideRight } = renderUtils();
 
         // within aside right
         expect(asideRight).toBeInTheDocument();
 
-        // Example Teaser
+        // Example Layout Grids
         expect(
             screen.getByRole('heading', { name: 'Layout Example Grids', level: 2 }),
         ).toBeInTheDocument();
@@ -138,11 +138,18 @@ describe('ProjectTemplateEnginePage', () => {
         const link = screen.getByRole('link', { name: /browse examples/i });
         expect(link).toHaveAttribute('href', '/template-engine/presets');
 
-        // create markup teaser
+        // Generate HTML
         expect(
-            screen.getByRole('heading', { name: 'Erstelle HTML', level: 2 }),
+            screen.getByRole('heading', { name: 'Generate HTML', level: 2 }),
         ).toBeInTheDocument();
 
         expect(screen.getByRole('button', { name: 'HTML + Tailwind' })).toBeInTheDocument();
+
+        // Save this Grid
+        expect(
+            screen.getByRole('heading', { name: 'Save this Grid', level: 2 }),
+        ).toBeInTheDocument();
+
+        expect(screen.getByRole('button', { name: /meaningful name/i })).toBeInTheDocument();
     });
 });

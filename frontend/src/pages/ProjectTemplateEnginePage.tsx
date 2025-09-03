@@ -5,7 +5,7 @@ import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigur
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
 import GenerateMarkupTeaser from '@/componentsTemplateEngine/teaser/GenerateMarkupTeaser';
-import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser';
+import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser/LayoutExampleTeaser';
 import SaveGridsTeaser from '@/componentsTemplateEngine/teaser/SaveGridsTeaser';
 import { useAppSelector } from '@/store/hooks';
 import { selectInitialGrid } from '@/store/selectors/userGridSelectors';
