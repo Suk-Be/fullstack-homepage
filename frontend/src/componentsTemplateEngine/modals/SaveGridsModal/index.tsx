@@ -37,13 +37,11 @@ function SaveGridsModal() {
     // Läuft nur, wenn Modal geöffnet wird
     useEffect(() => {
       if (isOpen) {
-        const t = setTimeout(() => {
-          inputRef.current?.focus();
-        }, 50); 
         setGridName('');
-        return () => clearTimeout(t);
+        inputRef.current?.focus();
       }
     }, [isOpen]);
+
 
 
     // Läuft nur, wenn sich die userId ändert
@@ -70,6 +68,9 @@ function SaveGridsModal() {
             );
             return;
         }
+
+        if (errorMessage) return;
+
         setHasGridIsOpen(true);
         setIsButtonDisabled(true);
 
@@ -105,6 +106,7 @@ function SaveGridsModal() {
                 as="div"
                 className="relative z-10 focus:outline-none"
                 onClose={handleClose}
+                initialFocus={inputRef}
                 {...testId('dialog-markup')}
             >
                 <DialogBackdrop className="fixed inset-0 bg-white/50 transition-opacity data-[closed]:opacity-0" />
@@ -137,14 +139,22 @@ function SaveGridsModal() {
                                       type="text"
                                       placeholder="name of the grid"
                                       value={gridName}
-                                      onChange={(e) => setGridName(e.target.value)}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        setGridName(value)
+                                        if (value.length > 30) {
+                                          setErrorMessage(`${value.length}/30 characters – the grid name is too long.`);
+                                        } else {
+                                          setErrorMessage('');
+                                        }
+                                      }}
                                       onFocus={() => setErrorMessage('')}
+                                      // maxLength={255} backend linit
                                       className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
                                     />
 
-
                                     {errorMessage && (
-                                        <Description className="text-green-400 text-sm mb-4">{errorMessage}</Description>
+                                        <Description className="text-green-400 text-sm mb-4" {...testId('grid-error')}>{errorMessage}</Description>
                                     )}
                                 </div>
                             )}

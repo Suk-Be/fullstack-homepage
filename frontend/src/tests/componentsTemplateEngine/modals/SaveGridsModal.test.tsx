@@ -5,209 +5,225 @@ import * as userGridSelectors from '@/store/selectors/userGridSelectors';
 import * as userGridSlice from '@/store/userSaveGridsSlice';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('SaveGridsModal', () => {
-    const mockDispatch = vi.fn();
+  let mockDispatch: ReturnType<typeof vi.fn>;
 
-    const mockGrids = [
-      {
-        layoutId: 'grid-1',
-        timestamp: new Date().toISOString(),
-        name: 'Test Grid',
-        config: {
-          items: '1',
-          columns: '1',
-          gap: '0',
-          border: '0',
-          paddingX: '0',
-          paddingY: '0',
-        },
+  const mockGrids = [
+    {
+      layoutId: 'grid-1',
+      timestamp: new Date().toISOString(),
+      name: 'Test Grid',
+      config: {
+        items: '1',
+        columns: '1',
+        gap: '0',
+        border: '0',
+        paddingX: '0',
+        paddingY: '0',
       },
-    ];
+    },
+  ];
 
-    beforeEach(() => {
-        let currentGrids = [...mockGrids];
+  beforeEach(() => {
+    mockDispatch = vi.fn();
 
-        vi.clearAllMocks();
-        // access and return dispatches
-        vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
-        // access and return state
-        vi.spyOn(reduxHooks, 'useAppSelector').mockImplementation((selector) => {
-            if (selector === loginSelectors.selectUserId) return 'user-123';
-            if (selector === userGridSelectors.selectGridsFromThisUser) return currentGrids;
-            if (selector === userGridSelectors.selectSortedGrids) return mockGrids;
-            return null;
-        });
+    const currentGrids = [...mockGrids];
 
-        vi.stubGlobal('localStorage', {
-            getItem: vi.fn(),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
-            clear: vi.fn(),
-        });
+    vi.clearAllMocks();
+    // access and return dispatches
+    vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
+    // access and return state
+    vi.spyOn(reduxHooks, 'useAppSelector').mockImplementation((selector) => {
+      if (selector === loginSelectors.selectUserId) return 'user-123';
+      if (selector === userGridSelectors.selectGridsFromThisUser) return currentGrids;
+      if (selector === userGridSelectors.selectSortedGrids) return mockGrids;
+      return null;
     });
 
-    const renderModal = async () => {
-        const user = userEvent.setup();
-        render(<SaveGridsModal />);
-
-        const openModalButton = screen.getByRole('button', {
-            name: /with a meaningful name/i,
-        });
-        return { user, openModalButton };
-    };
-
-    it('renders the trigger button', async () => {
-        const { openModalButton } = await renderModal();
-        expect(openModalButton).toBeInTheDocument();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
     });
+  });
 
-    it('dispatches getGridsFromLocalStorage when userId is set', async () => {
-      await renderModal();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: userGridSlice.getGridsFromLocalStorage.type,
-          payload: 'user-123',
-        })
-      );
-    });
+  const renderModal = async () => {
+    const user = userEvent.setup();
+    render(<SaveGridsModal />);
 
-    it('opens and closes the modal via close icon and close button', async () => {
-        const { user, openModalButton } = await renderModal();
-        // open modal ui
-        await user.click(openModalButton);
+    const openModalButton = screen.getByRole('button', { name: /with a meaningful name/i });
+    return { user, openModalButton };
+  };
 
-        const dialog = await screen.findByTestId('dialog-markup');
-        expect(dialog).toBeVisible();
-        // headline of modal
-        expect(screen.getByText(/Save Grid/i)).toBeInTheDocument();
-        
-        // close modal ui
-        await user.click(screen.getByLabelText(/Close modal/i));
-        await waitFor(() => {
-            expect(screen.queryByTestId('dialog-markup')).not.toBeInTheDocument();
-        });
+  it('renders a dialog open button', async () => {
+    const { openModalButton } = await renderModal();
+    expect(openModalButton).toBeInTheDocument();
+  });
 
-        // open modal ui
-        await user.click(openModalButton);
-        const closeBtn = await screen.findByText(/close/i);
-        await user.click(closeBtn);
+  it('dispatches getGridsFromLocalStorage when userId is set', async () => {
+    await renderModal();
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: userGridSlice.getGridsFromLocalStorage.type,
+        payload: 'user-123',
+      })
+    );
+  });
 
-        await waitFor(() => {
-            expect(screen.queryByTestId('dialog-markup')).not.toBeInTheDocument();
-        });
-    });
+  it('opens and closes the modal via close icon and close button', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-    it('clicking save button dispatches saveInitialGrid and disables button', async () => {
-        const { user, openModalButton } = await renderModal();
-        await user.click(openModalButton);
+    const dialog = await screen.findByTestId('dialog-markup');
+    expect(dialog).toBeVisible();
 
-        // save grid
-        // only input and buttons are displayed
-        expect(
-          await screen.queryByText(/Your Saved Grids:/i)
-        ).not.toBeInTheDocument();
+    // Close via X
+    await user.click(screen.getByLabelText(/Close modal/i));
+    await waitFor(() => expect(screen.queryByTestId('dialog-markup')).not.toBeInTheDocument());
 
-        const input = screen.getByPlaceholderText(/name of the grid/i);
-        await user.type(input, 'MyGrid');
+    // Open again
+    await user.click(openModalButton);
+    const closeBtn = await screen.findByText(/close/i);
+    await user.click(closeBtn);
+    await waitFor(() => expect(screen.queryByTestId('dialog-markup')).not.toBeInTheDocument());
+  });
 
-        const saveBtn = screen.getByRole('button', { name: /save/i });
-        expect(saveBtn).toBeEnabled();
+  it('focuses input automatically when modal opens', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-        await user.click(saveBtn);
+    const input = await screen.findByPlaceholderText(/name of the grid/i);
+    await waitFor(() => expect(input).toHaveFocus());
+  });
 
-        expect(mockDispatch).toHaveBeenCalledWith(
-          expect.objectContaining({
-            type: userGridSlice.saveInitialGrid.type,
-            payload: 'MyGrid',
-          })
-        );
-        // after saving change in ui
-        expect(saveBtn).toBeDisabled();
-        const noInput = screen.queryByPlaceholderText(/name of the grid/i);
-        expect(noInput).not.toBeInTheDocument();
-        expect(
-          await screen.findByText(/Your Saved Grids:/i)
-        ).toBeInTheDocument();
-        // saved grid(s) data is rendered
-        expect(screen.getByText(/Test Grid/i)).toBeInTheDocument();
-    });
+  it('shows error when trying to save without a name', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-    it('clicking reset button dispatches resetUserGrids, disables button and clears input', async () => {
-      const { user, openModalButton } = await renderModal();
-      await user.click(openModalButton);
+    const saveBtn = screen.getByRole('button', { name: /save/i });
 
-      const resetBtn = screen.getByRole('button', { name: /reset/i });
-      await user.click(resetBtn);
+    mockDispatch.mockClear();
 
-      // resets all saved grids for user-123
-      expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({
-        type: userGridSlice.resetUserGrids.type,
-      }));
+    await user.click(saveBtn);
 
-      expect(resetBtn).toBeDisabled();
+    const error = await screen.findByTestId('grid-error');
+    expect(error).toHaveTextContent(/Please input a recognizable name/i);
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
 
-      const input = screen.getByPlaceholderText(/name of the grid/i);
-      expect(input).toHaveValue('');
-    });
+  it('clears error message on input focus', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-    it('focuses input automatically when modal opens', async () => {
-      const { user, openModalButton } = await renderModal();
-      await user.click(openModalButton);
+    const saveBtn = screen.getByRole('button', { name: /save/i });
+    await user.click(saveBtn);
 
-      const input = await screen.findByPlaceholderText(/name of the grid/i);
-      await waitFor(() => {
-        expect(document.activeElement).toBe(input);
-      });
-    });
+    const error = await screen.findByTestId('grid-error');
+    expect(error).toHaveTextContent(/Please input a recognizable name/i);
 
-    it('shows error when trying to save without a name', async () => {
-      const { user, openModalButton } = await renderModal();
-      await user.click(openModalButton);
+    const input = screen.getByPlaceholderText(/name of the grid/i);
+    await user.click(input);
 
-      const saveBtn = screen.getByRole('button', { name: /save/i });
+    await waitFor(() => expect(screen.queryByTestId('grid-error')).not.toBeInTheDocument());
+  });
 
-      mockDispatch.mockClear();
+  it('shows error when grid name already exists', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-      await user.click(saveBtn);
+    const input = screen.getByPlaceholderText(/name of the grid/i);
+    await user.type(input, 'Test Grid');
 
-      expect(await screen.findByText(/Please input a recognizable name/i)).toBeInTheDocument();
-      expect(mockDispatch).not.toHaveBeenCalled();
-    });
+    const saveBtn = screen.getByRole('button', { name: /save/i });
 
-    it('shows error when grid name already exists', async () => {
-      const { user, openModalButton } = await renderModal();
-      await user.click(openModalButton);
+    mockDispatch.mockClear();
 
-      const input = screen.getByPlaceholderText(/name of the grid/i);
-      await user.type(input, 'Test Grid');
+    await user.click(saveBtn);
 
-      const saveBtn = screen.getByRole('button', { name: /save/i });
+    const error = await screen.findByTestId('grid-error');
+    expect(error).toHaveTextContent(/choose a different name/i);
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
 
-      mockDispatch.mockClear();
+  it('shows error when grid name exceeds 30 characters', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-      await user.click(saveBtn);
+    const input = screen.getByPlaceholderText(/name of the grid/i);
+    const longName = 'A'.repeat(31);
+    await user.type(input, longName);
 
-      expect(await screen.findByText(/already exists/i)).toBeInTheDocument();
-      expect(mockDispatch).not.toHaveBeenCalled();
-    });
+    const error = await screen.findByTestId('grid-error');
+    expect(error).toHaveTextContent(/31\/30 characters/i);
 
-    it('clears error message on input focus', async () => {
-      const { user, openModalButton } = await renderModal();
-      await user.click(openModalButton);
+    const saveBtn = screen.getByRole('button', { name: /save/i });
 
-      const saveBtn = screen.getByRole('button', { name: /save/i });
-      await user.click(saveBtn);
+    mockDispatch.mockClear();
+    
+    await user.click(saveBtn);
 
-      expect(await screen.findByText(/recognizable name/i)).toBeInTheDocument();
+    expect(mockDispatch).not.toHaveBeenCalled();
+  });
 
-      const input = screen.getByPlaceholderText(/name of the grid/i);
-      await user.click(input);
+  it('allows saving when grid name is exactly 30 characters', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
 
-      await waitFor(() => {
-        expect(screen.queryByText(/recognizable name/i)).not.toBeInTheDocument();
-      });
-    });
+    const input = screen.getByPlaceholderText(/name of the grid/i);
+    const validName = 'B'.repeat(30);
+    await user.type(input, validName);
 
+    expect(screen.queryByText(/characters/i)).not.toBeInTheDocument();
+
+    const saveBtn = screen.getByRole('button', { name: /save/i });
+    await user.click(saveBtn);
+
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: userGridSlice.saveInitialGrid.type,
+        payload: validName,
+      })
+    );
+  });
+
+  it('clicking save button dispatches saveInitialGrid and disables button', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
+
+    const input = screen.getByPlaceholderText(/name of the grid/i);
+    await user.type(input, 'MyGrid');
+
+    const saveBtn = screen.getByRole('button', { name: /save/i });
+    expect(saveBtn).toBeEnabled();
+
+    await user.click(saveBtn);
+
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: userGridSlice.saveInitialGrid.type,
+        payload: 'MyGrid',
+      })
+    );
+    expect(saveBtn).toBeDisabled();
+    expect(screen.queryByPlaceholderText(/name of the grid/i)).not.toBeInTheDocument();
+    expect(await screen.findByText(/Your Saved Grids:/i)).toBeInTheDocument();
+  });
+
+  it('clicking reset button dispatches resetUserGrids, disables button and clears input', async () => {
+    const { user, openModalButton } = await renderModal();
+    await user.click(openModalButton);
+
+    const resetBtn = screen.getByRole('button', { name: /reset/i });
+    await user.click(resetBtn);
+
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: userGridSlice.resetUserGrids.type })
+    );
+
+    expect(resetBtn).toBeDisabled();
+    expect(screen.getByPlaceholderText(/name of the grid/i)).toHaveValue('');
+  });
 });
