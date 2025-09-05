@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\Spa\AuthController;
-use App\Http\Controllers\Api\Auth\Spa\GithubController;
-use App\Http\Controllers\Api\Auth\Spa\GoogleController;
+use App\Http\Controllers\Api\Auth\SpaAuth\AuthController;
+use App\Http\Controllers\Api\Auth\SpaAuth\GithubController;
+use App\Http\Controllers\Api\Auth\SpaAuth\GoogleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Api\Grid\GridController;
 
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
@@ -13,10 +14,16 @@ use App\Exceptions\AlreadyAuthenticatedException;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-// Sanctum-protected route: user info
+
+// Sanctum-protected routes
 Route::middleware(['auth:sanctum'])->get('/me', [AuthController::class, 'me']);
 
-// Sanctum-protected route: SPA Auth routes with session support
+Route::middleware(['auth:sanctum'])->group(function () {
+    // apiResource creates CRUD-routes for GridController
+    Route::apiResource('grids', GridController::class);
+});
+
+// Sanctum-protected route: for handling SPA auth (sessions)
 Route::prefix('auth/spa')->middleware('web')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -28,7 +35,7 @@ Route::prefix('auth/spa')->middleware('web')->group(function () {
         ->name('password.update');
 });
 
-// Socialite OAuth routes (stateless, no session needed)
+// Socialite Plugin routes: connect to external Services (stateless, no session needed. Open Authorization flow (OAuth) and redirects)
 Route::prefix('auth')->group(function () {
     Route::get('/github', [GithubController::class, 'redirect']);
     Route::get('/github/callback', [GithubController::class, 'callback']);
@@ -37,7 +44,7 @@ Route::prefix('auth')->group(function () {
     Route::get('/google/callback', [GoogleController::class, 'callback']);
 });
 
-
+// Nur für lokale/test/dev Umgebungen
 if (app()->environment('local', 'testing', 'development')) {
     Route::prefix('test-errors')->group(function () { // No need for middleware('api') here, it's applied by the bootstrap/app.php's overall api group.
 

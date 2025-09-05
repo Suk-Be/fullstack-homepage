@@ -57,4 +57,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function grids()
+    {
+        return $this->hasMany(Grid::class);
+    }
+
 }
