@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth\Spa;
+namespace App\Http\Controllers\Api\Auth\SpaAuth;
 
 class GoogleController extends BaseSocialiteController
 {
