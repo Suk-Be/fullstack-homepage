@@ -15,11 +15,26 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'api/csrf-cookie'],
+    'paths' => [
+        'api/*',
+        'sanctum/csrf-cookie',
+        'me',
+        'login',          // <--- Login Route
+        'register',       // optional für Registration
+        'logout',         // optional
+        'forgot-password',
+        'reset-password',
+        // Optional: OAuth, falls Frontend direkt darauf zugreift
+        'github',
+        'github/callback',
+        'google',
+        'google/callback',
+    ],
+
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', '*')],
+    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:5173')],
 
     'allowed_origins_patterns' => [],
 

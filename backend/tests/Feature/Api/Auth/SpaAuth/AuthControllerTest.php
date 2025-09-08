@@ -9,7 +9,7 @@ use function Pest\Laravel\postJson;
 
 // 1. Register
 it('registers a new user and logs them in', function () {
-  $response = post('/api/auth/spa/register', [
+  $response = post('/register', [
     'name' => 'Test User',
     'email' => 'test@example.com',
     'password' => 'password123',
@@ -23,7 +23,7 @@ it('registers a new user and logs them in', function () {
 });
 
 it('fails to register user with invalid input', function () {
-  $response = postJson('/api/auth/spa/register', [
+  $response = postJson('/register', [
     'name' => '',
     'email' => 'not-an-email',
     'password' => '123',
@@ -37,7 +37,7 @@ it('fails to register user with invalid input', function () {
 it('rejects registration with duplicate email', function () {
   User::factory()->create(['email' => 'taken@example.com']);
 
-  $response = postJson('/api/auth/spa/register', [
+  $response = postJson('/register', [
     'name' => 'Another User',
     'email' => 'taken@example.com',
     'password' => 'password123',
@@ -54,7 +54,7 @@ it('logs in an existing user', function () {
     'password' => Hash::make('secret123'),
   ]);
 
-  $response = post('/api/auth/spa/login', [
+  $response = post('/login', [
     'email' => 'test@example.com',
     'password' => 'secret123',
   ]);
@@ -71,7 +71,7 @@ it('fails to log in with wrong credentials', function () {
     'password' => Hash::make('correct'),
   ]);
 
-  $response = postJson('/api/auth/spa/login', [
+  $response = postJson('/login', [
     'email' => 'wrong@example.com',
     'password' => 'wrong',
   ]);
@@ -81,7 +81,7 @@ it('fails to log in with wrong credentials', function () {
 });
 
 it('fails login with missing credentials', function () {
-  $response = postJson('/api/auth/spa/login', []);
+  $response = postJson('/login', []);
 
   $response->assertStatus(422);
   $response->assertInvalid(['email', 'password']);
@@ -95,7 +95,7 @@ it('logs out an authenticated user', function () {
 
   $this->actingAs($user); // session-based
 
-  $response = post('/api/auth/spa/logout');
+  $response = post('/logout');
 
   $response->assertOk();
   $response->assertJson(['message' => 'Sie haben sich erfolgreich abgemeldet.']);
@@ -108,7 +108,7 @@ it('returns the authenticated user', function () {
   $user = User::factory()->create();
   $this->actingAsSessionUser($user);
 
-  $response = get('/api/me');
+  $response = get('/me');
 
   $response->assertOk();
   $response->assertJson([
@@ -121,7 +121,7 @@ it('returns full authenticated user profile structure', function () {
   $user = User::factory()->create();
   $this->actingAsSessionUser($user);
 
-  $response = get('/api/me');
+  $response = get('/me');
 
   $response->assertOk();
   $response->assertJsonStructure([
@@ -134,7 +134,7 @@ it('returns full authenticated user profile structure', function () {
 
 // 6. Guest access denied
 it('returns 401 for unauthenticated user calling me', function () {
-  $response = $this->getJson('/api/me');
+  $response = $this->getJson('/me');
 
   $response->assertStatus(401);
 });

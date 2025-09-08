@@ -1,11 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\SpaAuth\AuthController;
-use App\Http\Controllers\Api\Auth\SpaAuth\GithubController;
-use App\Http\Controllers\Api\Auth\SpaAuth\GoogleController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Api\Grid\GridController;
 
 use Illuminate\Validation\ValidationException;
@@ -15,33 +10,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 
 
-// Sanctum-protected routes
-Route::middleware(['auth:sanctum'])->get('/me', [AuthController::class, 'me']);
-
 Route::middleware(['auth:sanctum'])->group(function () {
     // apiResource creates CRUD-routes for GridController
     Route::apiResource('grids', GridController::class);
-});
-
-// Sanctum-protected route: for handling SPA auth (sessions)
-Route::prefix('auth/spa')->middleware('web')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-
-    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
-    Route::post('/reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.update');
-});
-
-// Socialite Plugin routes: connect to external Services (stateless, no session needed. Open Authorization flow (OAuth) and redirects)
-Route::prefix('auth')->group(function () {
-    Route::get('/github', [GithubController::class, 'redirect']);
-    Route::get('/github/callback', [GithubController::class, 'callback']);
-
-    Route::get('/google', [GoogleController::class, 'redirect']);
-    Route::get('/google/callback', [GoogleController::class, 'callback']);
 });
 
 // Nur für lokale/test/dev Umgebungen
