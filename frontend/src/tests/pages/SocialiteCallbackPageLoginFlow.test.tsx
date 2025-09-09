@@ -1,5 +1,5 @@
 import SocialiteCallbackPage from '@/pages/SocialiteCallbackPage';
-import LaravelApiClient from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import { forceLogin } from '@/store/loginSlice';
 import { mockReduxLoggedInState } from '@/tests/mocks/redux';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
@@ -28,6 +28,7 @@ vi.mock('@/plugins/axios', () => ({
     default: {
         get: vi.fn(),
     },
+    BaseClient: { get: vi.fn() }
 }));
 
 describe('SocialiteCallbackPage', () => {
@@ -36,16 +37,11 @@ describe('SocialiteCallbackPage', () => {
     });
 
     it('should call login flow on success', async () => {
-      const mockedUserId = 1;
+        const mockedUserId = 1;
 
-      // Mock successful API calls
-        (LaravelApiClient.get as jest.Mock).mockImplementation((url: string) => {
-            if (url === '/csrf-cookie') {
-                return Promise.resolve({}); // just resolve, no data needed
-            }
-            if (url === '/me') {
-                return Promise.resolve({ data: { id: mockedUserId } });
-            }
+        vi.spyOn(BaseClient, 'get').mockImplementation((url: string) => {
+            if (url === '/csrf-cookie') return Promise.resolve({});
+            if (url === '/me') return Promise.resolve({ data: { id: mockedUserId } });
             return Promise.reject(new Error('Unknown url'));
         });
 
@@ -54,12 +50,12 @@ describe('SocialiteCallbackPage', () => {
             preloadedState: mockReduxLoggedInState,
         });
 
-
         expect(screen.getByText(/anmelde prozess/i)).toBeInTheDocument();
 
         await waitFor(() => {
             expect(mockDispatch).toHaveBeenCalledWith(forceLogin(mockedUserId));
             expect(mockNavigate).toHaveBeenCalledWith('/');
         });
+
     });
 });
