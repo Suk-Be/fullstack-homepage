@@ -1,11 +1,11 @@
 import {
-    borderWidthValue as gridBorderWidthValue,
-    colValue as gridColumnValue,
-    gapValue as gridGapValue,
-    paddingValues as padValues,
-} from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractedStyleRuleValue';
+  borderWidthValue as gridBorderWidthValue,
+  colValue as gridColumnValue,
+  gapValue as gridGapValue,
+  paddingValues as padValues,
+} from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
 import extractTagAttributesForStyling from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributesForStyling';
-import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/separateStyleRulesArray';
+import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
 import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
