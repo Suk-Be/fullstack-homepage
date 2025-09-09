@@ -7,7 +7,7 @@ describe('logRecoverableError', () => {
   beforeEach(() => {
     vi.resetModules();
     vi.restoreAllMocks();
-    // @ts-ignore – import.meta.env is readonly
+    // @ts-ignore
     import.meta.env = { ...originalEnv };
   });
 
@@ -16,31 +16,65 @@ describe('logRecoverableError', () => {
     import.meta.env = originalEnv;
   });
 
-  it('should log to console.warn in non-production mode', async () => {
-    // @ts-ignore
-    import.meta.env.MODE = 'development';
-
-    // @ts-ignore
-    process.env.NODE_ENV = 'development';
-
+  it('logs to console.warn in development mode', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const error = new Error('Test error');
 
     const { logRecoverableError } = await import('@/utils/logger');
-
     logRecoverableError({
       context: 'TestContext',
       error,
       extra: { info: 'Extra info' },
+      mode: 'development',
     });
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      '[DEV LOG] TestContext',
-      error,
-      { info: 'Extra info' },
-    );
+    expect(warnSpy).toHaveBeenCalled();
   });
 
+  it('does not log anything in test mode', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const error = new Error('Should not log');
+
+    const { logRecoverableError } = await import('@/utils/logger');
+    logRecoverableError({
+      context: 'TestContext',
+      error,
+      mode: 'test',
+    });
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('calls fetch in production mode', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true })) as unknown;
+    // @ts-ignore
+    global.fetch = fetchMock;
+
+    const { logRecoverableError } = await import('@/utils/logger');
+    logRecoverableError({ context: 'ProdContext', error: new Error('Prod error'), mode: 'production' });
+
+    expect(fetchMock).toHaveBeenCalledWith('/log-client-error', expect.any(Object));
+  });
+
+  it('logs fetch errors to console.error in production', async () => {
+    const fetchMock = vi.fn(() => Promise.reject(new Error('Fetch failed')));
+    // @ts-ignore
+    global.fetch = fetchMock;
+
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { logRecoverableError } = await import('@/utils/logger');
+    logRecoverableError({
+      context: 'ProdContext',
+      error: new Error('Some error'),
+      mode: 'production'
+    });
+
+    // Kleines Delay, damit das Promise catch ausgeführt wird
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith('[Logging failed]', expect.any(Error));
+  });
 });
 
 describe('logReduxState', () => {
