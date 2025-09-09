@@ -18,17 +18,17 @@ const {
 }));
 
 // Mocks definieren
-vi.mock('@/utils/apiBaseUrl', () => ({
-  default: 'http://localhost:8000/api',
-}));
+vi.mock('@/plugins/axios', () => {
+  return {
+    BaseClient: {
+      post: mockPost,
+      defaults: { baseURL: 'http://localhost:8000/api' },  // optional, falls du GET mal brauchst
+    },
+  };
+});
 
 vi.mock('@/utils/auth/initializeCookies', () => ({
   default: mockInitializeCookies,
-}));
-
-vi.mock('@/plugins/axios', () => ({
-  __esModule: true,
-  default: { post: mockPost, defaults: { baseURL: 'http://localhost:8000/api' } },
 }));
 
 vi.mock('@/components/auth/api/requestMe', () => ({
@@ -72,7 +72,7 @@ describe('loginThunk', () => {
 
     const state: LoginState = store.getState().login;
     expect(mockInitializeCookies).toHaveBeenCalledTimes(1);
-    expect(mockPost).toHaveBeenCalledWith('/auth/spa/login', {
+    expect(mockPost).toHaveBeenCalledWith('/login', {
       email: 'test@example.com',
       password: 'secret',
     });

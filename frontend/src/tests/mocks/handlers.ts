@@ -2,11 +2,12 @@ import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import { forgotPasswordResponseSchema } from '@/schemas/forgotPasswordSchema';
 import { loginResponseSchema } from '@/schemas/loginSchema';
-import apiBaseUrl from '@/utils/apiBaseUrl';
+import { apiUrl, baseUrl } from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
 import { db } from './db';
 
-const api = apiBaseUrl();
+const api = apiUrl();
+const base = baseUrl()
 
 interface ResetPasswordRequestBody {
     password: string;
@@ -29,7 +30,7 @@ export const handlers = [
         );
     }),
 
-    http.post(`${api}/auth/spa/register`, async (ctx) => {
+    http.post(`${base}/register`, async (ctx) => {
         const body = (await ctx.request.json()) as {
             email: string;
             name: string;
@@ -74,7 +75,7 @@ export const handlers = [
         );
     }),
 
-    http.post(`${api}/auth/spa/login`, async (ctx) => {
+    http.post(`${base}/login`, async (ctx) => {
         const body = await ctx.request.json();
         // console.log('MSW login handler wurde aufgerufen mit body:', body);
 
@@ -109,14 +110,14 @@ export const handlers = [
         return HttpResponse.json({ token: 'fake-token', user, status: 200 });
     }),
 
-    http.post(`${api}/auth/spa/logout`, () => {
+    http.post(`${base}/logout`, () => {
         return HttpResponse.json({
             message: 'Sie haben sich erfolgreich abgemeldet.',
             status: 200,
         });
     }),
 
-    http.post(`${api}/auth/spa/forgot-password`, async (ctx) => {
+    http.post(`${base}/forgot-password`, async (ctx) => {
         const body = (await ctx.request.json()) as { email: string };
         const parseResult = forgotPasswordResponseSchema.safeParse(body);
 
@@ -148,15 +149,50 @@ export const handlers = [
         });
     }),
 
-    http.get(`${api}/me`, () => {
-        return HttpResponse.json({
-            id: 1,
-            name: 'Mock User',
-            email: 'mock@example.com',
-        });
+    // ✅ Erfolgreicher Request
+    http.get(`${base}/me`, () =>
+      HttpResponse.json(
+        {
+          id: 1,
+          name: 'Mock User',
+          email: 'mock@example.com',
+        },
+        { status: 200 }
+      )
+    ),
+
+    // ✅ 422 Validierungsfehler
+    http.get(`${base}/me`, () =>
+      HttpResponse.json(
+        {
+          message: 'Validierungsfehler',
+          errors: { email: ['E-Mail ist ungültig.'] },
+        },
+        { status: 422 }
+      )
+    ),
+
+    // ✅ 419 CSRF Token Fehler
+    http.get(`${base}/me`, () =>
+      HttpResponse.json({}, { status: 419 })
+    ),
+
+    // ✅ 401 Unauthorized
+    http.get(`${base}/me`, () =>
+      HttpResponse.json({ message: 'Nicht eingeloggt' }, { status: 401 })
+    ),
+
+    // ✅ unbekannter Statuscode (Fallback)
+    http.get(`${base}/me`, () =>
+      HttpResponse.json({ message: 'Unbekannter Fehler' }, { status: 418 })
+    ),
+
+    // ✅ Netzwerkfehler simulieren
+    http.get(`${base}/me`, () => {
+      throw new Error('Netzwerk down');
     }),
 
-    http.post(`${api}/auth/spa/reset-password`, async ({ request }) => {
+    http.post(`${base}/reset-password`, async ({ request }) => {
         const body = (await request.json()) as ResetPasswordRequestBody;
 
         if (body.password !== body.password_confirmation) {

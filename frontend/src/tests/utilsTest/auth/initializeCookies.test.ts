@@ -1,9 +1,21 @@
-import initializeCookies, { __testOnlyReset } from '@/utils/auth/initializeCookies';
-import axios from 'axios';
 import { vi } from 'vitest';
 
+const { mockWebGet, mockApiGet } = vi.hoisted(() => ({
+  mockWebGet: vi.fn(),
+  mockApiGet: vi.fn(),
+}));
+
+vi.mock('@/plugins/axios', () => ({
+  __esModule: true, // wichtig für default Export
+  default: { get: mockApiGet, post: vi.fn() }, // default export = API Client
+  BaseClient: { get: mockWebGet, post: vi.fn() }, // benannter Export
+  ApiClient: { get: mockApiGet, post: vi.fn() }, // benannter Export
+}));
+
+import ApiClient, { BaseClient } from '@/plugins/axios';
+import initializeCookies, { __testOnlyReset } from '@/utils/auth/initializeCookies';
+
 describe('initializeCookies', () => {
-  let cookieStore: Record<string, string> = {};
   // mock last time the initializeCookies has been called
   const initialTime = new Date('2000-01-01T00:00:00Z').getTime();
 
@@ -12,34 +24,11 @@ describe('initializeCookies', () => {
     vi.setSystemTime(initialTime);
     __testOnlyReset();
 
-    cookieStore = {
-      'XSRF-TOKEN': 'abc',
-      'laravel_session': 'def',
-    };
+    const mockWebGet = BaseClient.get as unknown as ReturnType<typeof vi.fn>;
+    const mockApiGet = ApiClient.get as unknown as ReturnType<typeof vi.fn>;
 
-    // mock document.cookie 
-    Object.defineProperty(document, 'cookie', {
-      get: () => Object
-                .entries(cookieStore)
-                .map(([key, val]) =>`${key}=${val}`)
-                .join(';'),
-      set: (cookie: string) => {
-        const [pair, ...attrs] = cookie.split(';').map(s => s.trim());
-        const [key, val] = pair.split('=');
-
-        const expiresAttr = attrs.find(attr => attr.toLowerCase().startsWith('expires='));
-        if (expiresAttr) {
-          const expiresDate = new Date(expiresAttr.split('=')[1]);
-          if (expiresDate.getTime() < Date.now()) { 
-            delete cookieStore[key];
-            return;
-          }
-        }
-
-        cookieStore[key] = val;
-      },
-      configurable: true,
-    });
+    mockWebGet.mockResolvedValue({});
+    mockApiGet.mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -48,25 +37,34 @@ describe('initializeCookies', () => {
   });
 
   it('should clear cookies and call axios when enough time has passed', async () => {
-    const axiosGetSpy = vi.spyOn(axios, 'get').mockResolvedValue({}); // mock setCookies(), resetIsCsrfFetchedAndResetCookies()
-    const notEnoughTime = 3000; 
-    const enoughTime = 5001; 
+    const mockWebGet = BaseClient.get as unknown as ReturnType<typeof vi.fn>;
+    const mockApiGet = ApiClient.get as unknown as ReturnType<typeof vi.fn>;
 
     await initializeCookies();
 
-    expect(axiosGetSpy).toHaveBeenCalledWith(
-      expect.stringContaining('/api/csrf-cookie'), 
-      expect.objectContaining({}) // axiosGetSpy result
+    expect(mockWebGet).toHaveBeenCalledWith(
+      '/api/csrf-cookie',
+      expect.objectContaining({ withCredentials: true }),
     );
 
-    // axiosGetSpy can only be called every 5 Seconds (throtte time)
-    vi.setSystemTime(initialTime + notEnoughTime);
-    await initializeCookies();
-    expect(axiosGetSpy).toHaveBeenCalledTimes(1);
+    expect(mockApiGet).toHaveBeenCalledWith(
+      '/csrf-cookie',
+      expect.objectContaining({ withCredentials: true }),
+    );
 
-    // Move time out of throttle period, new call
-    vi.setSystemTime(initialTime + enoughTime);
+    const notEnoughTimePassed = 3000;
+    const enoughTimePassed = 5001;
+
+    // within throttle period
+    vi.setSystemTime(initialTime + notEnoughTimePassed);
     await initializeCookies();
-    expect(axiosGetSpy).toHaveBeenCalledTimes(2);
+    expect(mockWebGet).toHaveBeenCalledTimes(1);
+    expect(mockApiGet).toHaveBeenCalledTimes(1);
+
+    // throttle period passed, new call
+    vi.setSystemTime(initialTime + enoughTimePassed);
+    await initializeCookies();
+    expect(mockWebGet).toHaveBeenCalledTimes(2);
+    expect(mockApiGet).toHaveBeenCalledTimes(2);
   });
 });

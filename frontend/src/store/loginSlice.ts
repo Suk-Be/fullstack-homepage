@@ -1,5 +1,5 @@
 import requestMe from '@/components/auth/api/requestMe';
-import LaravelApiClient from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -43,7 +43,7 @@ export const loginThunk = createAsyncThunk<
     try {
         await initializeCookies();
 
-        const response = await LaravelApiClient.post('/auth/spa/login', {
+        const response = await BaseClient.post('/login', {
             email,
             password,
         });
@@ -67,8 +67,6 @@ export const loginThunk = createAsyncThunk<
             });
         }
     } catch (error: unknown) {
-        // console.log('catch loginThunk, get here:', LaravelApiClient.defaults.baseURL + '/auth/spa/login', 'mit body:', { error });
-
         dispatch(resetUserGrids());
         await resetCookiesOnResponseError(error);
         return rejectWithValue(setResponseValidationError(error));

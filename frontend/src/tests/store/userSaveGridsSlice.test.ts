@@ -1,4 +1,5 @@
 import userGridReducer, {
+  deleteThisGrid,
   getGridsFromLocalStorage,
   loadUserGrids,
   resetUserGrids,
@@ -48,10 +49,12 @@ describe('userSaveGridsSlice', () => {
     it('should handle getGridsFromLocalStorage', () => {
         const mockSavedState: UserSaveGridsState = {
             userId: 1,
+            name: 'layout-col',
             savedGrids: {
-                test123: {
+                layout: {
                     layoutId: 'test123',
                     timestamp: '2023-01-01T00:00:00.000Z',
+                    name: 'layout-col',
                     config: {
                         items: '5',
                         columns: '5',
@@ -106,14 +109,34 @@ describe('userSaveGridsSlice', () => {
         expect(saveToLocalStorage).toHaveBeenCalled();
     });
 
+    it('should handle deleteThisGrid with the given layoutId', () => {
+        const stateWithUser = JSON.parse(JSON.stringify(initialState));
+        stateWithUser.userId = 1;
+
+        stateWithUser.savedGrids[mockNewLayoutId] = {
+            layoutId: mockNewLayoutId,
+            timestamp: '2023-01-01T00:00:00.000Z',
+            name: 'mock grid',
+            config: { ...stateWithUser.savedGrids.initial.config },
+        };
+
+        const result = userGridReducer(stateWithUser, deleteThisGrid(mockNewLayoutId));
+
+        expect(result.savedGrids).not.toHaveProperty(mockNewLayoutId);
+        expect(result.savedGrids).toHaveProperty('initial');
+        expect(saveToLocalStorage).toHaveBeenCalled();
+    });
+
     it('should handle updateGridConfig when userId and layoutId exist', () => {
         const stateWithUser: UserSaveGridsState = {
             ...initialState,
             userId: 1,
+            name: 'layout-items',
             savedGrids: {
                 [mockNewLayoutId]: {
                     layoutId: mockNewLayoutId,
                     timestamp: '2023-01-01T00:00:00.000Z',
+                    name: 'layout-items',
                     config: {
                         items: '1',
                         columns: '1',
@@ -181,10 +204,12 @@ describe('userSaveGridsSlice', () => {
     it('should handle loadUserGrids and persist to localStorage', () => {
         const customState: UserSaveGridsState = {
             userId: 42,
+            name: 'abc',
             savedGrids: {
                 abc: {
                     layoutId: 'abc',
                     timestamp: '2023-01-01T00:00:00.000Z',
+                    name: 'abc',
                     config: {
                         items: '2',
                         columns: '2',
@@ -207,10 +232,12 @@ describe('userSaveGridsSlice', () => {
     it('should handle getGridsFromLocalStorage and load savedGrids', async () => {
         const mockSavedState: UserSaveGridsState = {
             userId: 1,
+            name: 'test123',
             savedGrids: {
                 test123: {
                     layoutId: 'test123',
                     timestamp: '2023-01-01T00:00:00.000Z',
+                    name: 'test123',
                     config: {
                         items: '5',
                         columns: '5',

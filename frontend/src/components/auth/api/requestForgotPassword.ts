@@ -1,4 +1,4 @@
-import LaravelApiClient from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
@@ -13,7 +13,7 @@ interface RequestPasswordResetResult {
 const requestForgotPassword = async (email: string): Promise<RequestPasswordResetResult> => {
     try {
         await initializeCookies();
-        const response = await LaravelApiClient.post('/auth/spa/forgot-password', { email });
+        const response = await BaseClient.post('/forgot-password', { email });
         return setResponseValidationSuccess(
             response.data.message || 'Passwort-Reset-Link wurde gesendet!',
         );

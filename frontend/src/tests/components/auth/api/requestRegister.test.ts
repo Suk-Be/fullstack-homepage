@@ -1,16 +1,25 @@
+import requestMe from '@/components/auth/api/requestMe';
 import requestRegister from '@/components/auth/api/requestRegister';
+import { BaseClient } from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
-import { describe, expect, it, vi } from 'vitest';
+import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/utils/auth/initializeCookies', () => ({
-  default: vi.fn().mockResolvedValue(undefined),
+// Mocks
+vi.mock('@/utils/auth/initializeCookies', () => ({ default: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('@/utils/auth/resetCookiesOnResponseError', () => ({ default: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('@/plugins/axios', () => ({
+  BaseClient: { post: vi.fn(), defaults: { baseURL: 'http://localhost:8000/api' } },
 }));
-vi.mock('@/utils/auth/resetCookiesOnResponseError', () => ({
-  default: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock('@/components/auth/api/requestMe', () => ({ default: vi.fn() }));
+vi.mock('@/utils/auth/setResponseValidationError', () => ({ setResponseValidationError: vi.fn() }));
+
+const mockPost = BaseClient.post as unknown as ReturnType<typeof vi.fn>;
+const mockRequestMe = requestMe as unknown as ReturnType<typeof vi.fn>;
+const mockSetResponseValidationError = setResponseValidationError as unknown as ReturnType<typeof vi.fn>;
 
 describe('requestRegister', () => {
   const validForm = {
@@ -20,7 +29,14 @@ describe('requestRegister', () => {
     password_confirmation: 'securepassword',
   };
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('registriert einen neuen Benutzer erfolgreich', async () => {
+    mockPost.mockResolvedValue({ data: { message: 'Die Registrierung hat geklappt!' } });
+    mockRequestMe.mockResolvedValue({ success: true, userId: 1 });
+
     const result = await requestRegister({ form: validForm });
 
     expect(result.success).toBe(true);
@@ -34,11 +50,14 @@ describe('requestRegister', () => {
   it('gibt einen Validierungsfehler zurück, wenn E-Mail schon existiert', async () => {
     db.user.create(registeredUserData);
 
+    mockPost.mockRejectedValue(new Error('Email exists'));
+    mockSetResponseValidationError.mockReturnValue({
+      success: false,
+      message: 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.',
+    });
+
     const result = await requestRegister({
-      form: {
-        ...validForm,
-        email: registeredUserData.email,
-      },
+      form: { ...validForm, email: registeredUserData.email },
     });
 
     expect(result.success).toBe(false);

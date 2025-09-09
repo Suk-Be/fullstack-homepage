@@ -1,5 +1,5 @@
 import SignIn from '@/components/auth/SignIn';
-import LaravelApiClient from '@/plugins/axios';
+import ApiClient from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { expectErrorMessages, switchToComponentHelper } from '@/tests/utils/testAssertUtils';
@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import fetchAdapter from '@/tests/utilsTest/auth/fetchAdapter';
 import userEvent from '@testing-library/user-event';
 
-LaravelApiClient.defaults.adapter = fetchAdapter;
+ApiClient.defaults.adapter = fetchAdapter;
 
 describe('SignIn component', () => {
     beforeEach(() => {

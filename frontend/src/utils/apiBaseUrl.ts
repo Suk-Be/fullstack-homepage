@@ -1,4 +1,4 @@
-const apiBaseUrl = (): string => {
+const apiUrl = (): string => {
     if (import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
         return 'http://localhost:8000/api';
     }
@@ -6,7 +6,7 @@ const apiBaseUrl = (): string => {
     return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 };
 
-const serverBaseUrl = (): string => {
+const baseUrl = (): string => {
     if (import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
         return 'http://localhost:8000';
     }
@@ -14,5 +14,4 @@ const serverBaseUrl = (): string => {
     return import.meta.env.VITE_SERVER_BASE_URL || 'http://localhost:8000';
 };
 
-export default apiBaseUrl;
-export { serverBaseUrl };
+export { apiUrl, baseUrl };

@@ -1,5 +1,5 @@
 import Loading from '@/components/auth/shared-components/Loading';
-import LaravelApiClient from '@/plugins/axios';
+import {BaseClient} from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
 import { forceLogin, logout } from '@/store/loginSlice';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
@@ -15,8 +15,8 @@ const SocialiteCallbackPage = () => {
     useEffect(() => {
         const handleSocialiteCallback = async () => {
             try {
-                await LaravelApiClient.get('/csrf-cookie');
-                const res = await LaravelApiClient.get('/me');
+                await BaseClient.get('/csrf-cookie');
+                const res = await BaseClient.get('/me');
                 dispatch(forceLogin(res.data.id));
                 navigate('/');
             } catch (error) {

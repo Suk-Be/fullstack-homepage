@@ -1,8 +1,15 @@
-import { __testOnlyReset, resetIsCsrfFetchedAndResetCookies, setCookies } from '@/utils/auth/initializeCookies';
-import axios from 'axios';
+vi.mock('@/plugins/axios', () => {
+  return {
+    default: { get: vi.fn() },          // ApiClient
+    BaseClient: { get: vi.fn() }, // BaseClient
+  };
+});
+
+import ApiClient, { BaseClient } from '@/plugins/axios';
+import { __testOnlyReset, fetchCsrf, resetCookies } from '@/utils/auth/initializeCookies';
 import { vi } from 'vitest';
 
-vi.mock('axios');
+
 vi.mock('@/utils/logger', () => ({
   getAxiosStatus: vi.fn(() => 'MOCK_STATUS'),
   logRecoverableError: vi.fn(),
@@ -33,7 +40,7 @@ Object.defineProperty(document, 'cookie', {
   },
 });
 
-describe('resetIsCsrfFetchedAndResetCookies', () => {
+describe('resetCookies', () => {
   it('should clear CSRF-related cookies', () => {
     document.cookie = 'XSRF-TOKEN=abc123';
     document.cookie = 'laravel_session=xyz456';
@@ -41,40 +48,42 @@ describe('resetIsCsrfFetchedAndResetCookies', () => {
     expect(document.cookie).toContain('XSRF-TOKEN=abc123');
     expect(document.cookie).toContain('laravel_session=xyz456');
 
-    resetIsCsrfFetchedAndResetCookies();
+    resetCookies();
 
     expect(document.cookie.includes('XSRF-TOKEN=')).toBe(false);
     expect(document.cookie.includes('laravel_session=')).toBe(false);
   });
 });
 
-describe('setCookies', () => {
+describe('fetchCsrf', () => {
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
     __testOnlyReset();
   });
 
-  it('should call axios.get once and set isCsrfFetched', async () => {
-    (axios.get as any).mockResolvedValueOnce({});
+  it('should call both endpoints once and set isCsrfFetched', async () => {
+    (BaseClient.get as any).mockResolvedValueOnce({});
+    (ApiClient.get as any).mockResolvedValueOnce({});
 
-    await setCookies();
-    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/api/csrf-cookie'), {
-      withCredentials: true,
-    });
+    await fetchCsrf();
 
-    // second call should not trigger axios.get again
-    await setCookies();
-    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(BaseClient.get as any).toHaveBeenCalledWith('/api/csrf-cookie', { withCredentials: true });
+    expect((ApiClient.get as any)).toHaveBeenCalledWith('/csrf-cookie', { withCredentials: true });
+
+    // second call should not trigger again
+    await fetchCsrf();
+    
+    expect(BaseClient.get as any).toHaveBeenCalledTimes(1);
+    expect((ApiClient.get as any)).toHaveBeenCalledTimes(1);
   });
 
-  it('should log error if axios.get fails', async () => {
+  it('should log error if call fails', async () => {
     const { logRecoverableError } = await import('@/utils/logger');
-    (axios.get as any).mockRejectedValueOnce(new Error('network'));
+    (BaseClient.get as any).mockRejectedValueOnce(new Error('network'));
+    (ApiClient.get as any).mockResolvedValueOnce({});
 
-    __testOnlyReset();
+    await fetchCsrf();
 
-    await setCookies();
     expect(logRecoverableError).toHaveBeenCalledWith(
       expect.objectContaining({
         context: 'Failed to fetch CSRF cookie',

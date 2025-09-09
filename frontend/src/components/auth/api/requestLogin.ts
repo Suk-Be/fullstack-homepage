@@ -1,5 +1,5 @@
 import requestMe from '@/components/auth/api/requestMe';
-import LaravelApiClient from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import { User } from '@/types/Redux';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
@@ -23,7 +23,7 @@ const requestLogin = async ({
 }): Promise<LoginResult> => {
     try {
         await initializeCookies();
-        const response = await LaravelApiClient.post('/auth/spa/login', {
+        const response = await BaseClient.post('/login', {
             email,
             password,
         });

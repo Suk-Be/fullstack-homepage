@@ -1,7 +1,7 @@
-import apiBaseUrl from './apiBaseUrl';
+import { baseUrl } from './apiBaseUrl';
 
-const api = apiBaseUrl()
+const webServer = baseUrl()
 
 export const handleSignInUp = (provider: string) => {
-    window.location.href = `${api}/auth/${provider}`;
+    window.location.href = `${webServer}/api/auth/${provider}`;
 };

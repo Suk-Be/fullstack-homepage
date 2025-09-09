@@ -1,11 +1,11 @@
 import requestLogout from '@/components/auth/api/requestLogout';
 import { server } from '@/tests/mocks/server';
-import apiBaseUrl from '@/utils/apiBaseUrl';
+import { baseUrl } from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
 import toast from 'react-hot-toast';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const api = apiBaseUrl();
+const webServer = baseUrl();
 
 vi.mock('react-hot-toast', () => {
     const mockedToast = {
@@ -18,12 +18,18 @@ vi.mock('react-hot-toast', () => {
 });
 
 describe('requestLogout', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    // ✅ Erfolgsfall
     it('should return success on valid logout', async () => {
         server.use(
-            http.post(`${api}/auth/spa/logout`, () =>
-                HttpResponse.json({
-                    message: 'Sie haben sich erfolgreich abgemeldet.',
-                }),
+            http.post(`${webServer}/logout`, () =>
+                HttpResponse.json(
+                    { message: 'Sie haben sich erfolgreich abgemeldet.' },
+                    { status: 200 }
+                )
             ),
         );
 
@@ -38,7 +44,7 @@ describe('requestLogout', () => {
 
     it('should return error response on server failure', async () => {
         server.use(
-            http.post(`${api}/auth/spa/logout`, () => {
+            http.post(`${webServer}/logout`, () => {
                 return HttpResponse.json({ message: 'Interner Fehler' }, { status: 500 });
             }),
         );

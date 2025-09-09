@@ -2,11 +2,11 @@ import requestLogin from '@/components/auth/api/requestLogin';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { server } from '@/tests/mocks/server';
-import apiBaseUrl from '@/utils/apiBaseUrl';
+import { baseUrl } from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 
-const api = apiBaseUrl();
+const webServer = baseUrl();
 
 describe('requestLogin', () => {
     beforeEach(() => {
@@ -20,7 +20,7 @@ describe('requestLogin', () => {
 
     it('should return success and userId on valid credentials', async () => {
         server.use(
-            http.get(`${api}/me`, () => {
+            http.get(`${webServer}/me`, () => {
                 return HttpResponse.json({
                     id: registeredUserData.id,
                     name: registeredUserData.name,

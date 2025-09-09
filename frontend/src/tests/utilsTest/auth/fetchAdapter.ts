@@ -33,7 +33,7 @@ function normalizeHeaders(headers: any): Record<string, string> {
  * @example SignIn
  * import fetchAdapter from '@/tests/utilsTest/auth/fetchAdapter';
  *
- * LaravelApiClient.defaults.adapter = fetchAdapter;
+ * ApiClient.defaults.adapter = fetchAdapter;
  *
  * describe('SignIn component', () => {
  *  beforeEach(() => {
