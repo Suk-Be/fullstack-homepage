@@ -122,4 +122,92 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Encryption Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is utilized by Laravel's encryption services and should be set
+    | to a random, 32 character string to ensure that all encrypted values
+    | are secure. You should do this prior to deploying the application.
+    |
+    */
+
+    'cipher' => 'AES-256-CBC',
+
+    'key' => env('APP_KEY'),
+
+    'previous_keys' => [
+        ...array_filter(
+            explode(',', env('APP_PREVIOUS_KEYS', ''))
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maintenance Mode Driver
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options determine the driver used to determine and
+    | manage Laravel's "maintenance mode" status. The "cache" driver will
+    | allow maintenance mode to be controlled across multiple machines.
+    |
+    | Supported drivers: "file", "cache"
+    |
+    */
+
+    'maintenance' => [
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Client Logging Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Dieser Abschnitt konfiguriert das Logging von Fehlern, die im Browser
+    | bzw. auf dem Client auftreten. Das Ziel ist es, Client-Fehler
+    | zentral zu sammeln, damit sie von Entwicklern eingesehen und analysiert
+    | werden können.
+    |
+    | Ablauf:
+    | 1. Das Frontend fängt Fehler ab (z.B. JS-Exceptions, API-Fehler).
+    | 2. Fehler werden per POST an den Endpoint `/api/log-client-error` gesendet.
+    | 3. Der Server prüft optional ein Secret (CLIENT_LOG_SECRET) zur Absicherung.
+    | 4. Fehler werden in einem separaten Log-Channel `client` gespeichert
+    |    unter `storage/logs/client.log`.
+    |
+    | Konfiguration:
+    | - `client_log_secret`:
+    |     Ein geheimer Schlüssel, der vom Frontend als Header gesendet wird,
+    |     um sicherzustellen, dass nur autorisierte Clients Logs posten dürfen.
+    |     Wert aus `.env`:
+    |         CLIENT_LOG_SECRET=foobar123
+    |
+    | Beispiel Header im Frontend:
+    |     'X-Client-Secret': import.meta.env.VITE_CLIENT_LOG_SECRET
+    |
+    | Log-Channel `client`:
+    | - In `config/logging.php` definiert:
+    |     'client' => [
+    |         'driver' => 'single',
+    |         'path' => storage_path('logs/client.log'),
+    |         'level' => 'info',
+    |     ],
+    |
+    | Optional kann man den Channel auf 'daily' umstellen, um
+    | die Logs automatisch nach Datum zu trennen.
+    |
+    | Sicherheit:
+    | - Throttling über Middleware 'throttle:20,1', um Spam zu verhindern.
+    | - Secret-Header (`X-Client-Secret`) schützt vor unerlaubten Zugriffen.
+    |
+    | Nutzung in Production:
+    | - Logs können per SSH (tail -f storage/logs/client.log) gelesen werden.
+    | - Für größere Anwendungen empfiehlt sich ein externes Log-Management Tool.
+    |
+    */
+    'client_log_secret' => env('CLIENT_LOG_SECRET', 'default-secret'),
 ];

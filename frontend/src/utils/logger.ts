@@ -15,7 +15,7 @@ export const logRecoverableError = ({
   context,
   error,
   extra = {},
-  mode = import.meta.env.MODE, // fallback auf runtime ENV
+  mode = import.meta.env.MODE,
 }: {
   context: string;
   error: unknown;
@@ -26,9 +26,12 @@ export const logRecoverableError = ({
 
   if (mode === 'production') {
     if (typeof window !== 'undefined') {
-      fetch('/log-client-error', {
+      fetch('/api/log-client-error', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Client-Secret': import.meta.env.VITE_CLIENT_LOG_SECRET,
+        },
         body: JSON.stringify({
           context,
           error: isAxiosError(error) ? error.toJSON() : String(error),
@@ -43,8 +46,6 @@ export const logRecoverableError = ({
     console.warn(`[DEV LOG] ${context}`, error, extra);
   }
 };
-
-
 
 export const logReduxState = (
   slice: 'login' | 'userGrid',

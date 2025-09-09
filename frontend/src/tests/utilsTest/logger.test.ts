@@ -53,7 +53,7 @@ describe('logRecoverableError', () => {
     const { logRecoverableError } = await import('@/utils/logger');
     logRecoverableError({ context: 'ProdContext', error: new Error('Prod error'), mode: 'production' });
 
-    expect(fetchMock).toHaveBeenCalledWith('/log-client-error', expect.any(Object));
+    expect(fetchMock).toHaveBeenCalledWith('/api/log-client-error', expect.any(Object));
   });
 
   it('logs fetch errors to console.error in production', async () => {
