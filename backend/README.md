@@ -1197,14 +1197,14 @@ Since github registration with github oauth registration worked, this code will 
 
 1. create an oauth service in google cloud
 2. grab client_id, client_secret and redirect from oauth service for configuration
-    - service.php
-    - env files
+    -   service.php
+    -   env files
 3. Backend refactor existing code
-    - SocialiteController to BaseSocialiteController
-    - GithubController and GoogleController extending BaseSocialiteController
-    - api.php extending routes and use new Controllers
+    -   SocialiteController to BaseSocialiteController
+    -   GithubController and GoogleController extending BaseSocialiteController
+    -   api.php extending routes and use new Controllers
 4. Frontend
-    - Refactor ClickHandler to a reuseable Click handler
+    -   Refactor ClickHandler to a reuseable Click handler
 
 ### Create an oauth service in google cloud
 
@@ -2158,4 +2158,20 @@ adjust the mail port in env to be 2025
 
 ```sh
 MAIL_PORT=2025
+```
+
+### Sql cheat sheet
+
+Beispiel users Tabelle um Spalte role erweitern. Vor der migration:
+
+```sql
+ALTER TABLE users ADD COLUMN role VARCHAR(255) DEFAULT 'user';
+```
+
+Admin Rolle vergeben
+
+```sql
+UPDATE users
+SET role = 'admin'
+WHERE email = 'test@test.de';
 ```
