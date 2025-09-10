@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Grid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
@@ -65,12 +66,62 @@ it('can update a grid', function () {
     expect($grid->fresh()->name)->toBe('Updated Name');
 });
 
-it('can delete a grid', function () {
-    $grid = Grid::factory()->for($this->user)->create();
+it('can delete a grid by its layoutId', function () {
+    $grid = Grid::factory()->for($this->user)->create([
+        'layout_id' => '123e4567-e89b-12d3-a456-426614174000',
+    ]);
 
-    $response = $this->deleteJson(route('grids.destroy', $grid));
+    $response = $this->deleteJson(route('grids.destroyByLayout', '123e4567-e89b-12d3-a456-426614174000'));
 
     $response->assertNoContent();
 
     expect(Grid::count())->toBe(0);
+});
+
+it('denies another user from deleting a grid by layoutId', function () {
+    // Angemeldeter Benutzer (nicht der Besitzer des Grids)
+    $actingUser = User::factory()->create();
+    $this->actingAs($actingUser);
+
+    // Der Benutzer, dem das Grid gehört
+    $owner = User::factory()->create();
+    $grid = Grid::factory()->for($owner)->create([
+        'layout_id' => '123e4567-e89b-12d3-a456-426614174000',
+    ]);
+
+    // Der angemeldete Benutzer versucht, das fremde Grid zu löschen
+    $response = $this->deleteJson(route('grids.destroyByLayout', '123e4567-e89b-12d3-a456-426614174000'));
+
+    // Die Anfrage sollte fehlschlagen, da die Policy den Zugriff verweigert
+    $response->assertForbidden();
+});
+
+it('denies an admin from resetting another users grids', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $this->actingAs($admin);
+
+    $otherUser = User::factory()->create();
+    Grid::factory()->count(5)->for($otherUser)->create();
+
+    $response = $this->deleteJson(route('grids.resetUserGrids', $otherUser->id));
+
+    $response->assertForbidden();
+    expect(Grid::where('user_id', $otherUser->id)->count())->toBe(5);
+});
+
+it('denies a regular user from resetting their own grids', function () {
+    Grid::factory()->count(5)->for($this->user)->create();
+
+    $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
+
+    $response->assertForbidden();
+    expect(Grid::where('user_id', $this->user->id)->count())->toBe(5);
+});
+
+it('denies a user from resetting their own grids via the resetUserGrids route', function () {
+    Grid::factory()->count(5)->for($this->user)->create();
+
+    $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
+
+    $response->assertForbidden();
 });

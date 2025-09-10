@@ -14,6 +14,9 @@ beforeEach(function () {
     $this->otherUser = new User();
     $this->otherUser->forceFill(['id' => 2]);
 
+    $this->admin = new User();
+    $this->admin->forceFill(['id' => 3, 'role' => 'admin']);
+
     $this->grid = new Grid();
     $this->grid->forceFill(['user_id' => $this->owner->id]);
 });
@@ -43,8 +46,29 @@ it('allows the owner to delete their grid', function () {
     expect($this->policy->delete($this->owner, $this->grid))->toBeTrue();
 });
 
-it('denies other users from deleting the grid', function () {
-    expect($this->policy->delete($this->otherUser, $this->grid))->toBeFalse();
+it('denies a regular user from resetting their own grids', function () {
+    expect($this->policy->reset($this->otherUser, $this->otherUser))->toBeFalse();
+});
+
+it('denies a regular user from resetting another users grids', function () {
+    expect($this->policy->reset($this->owner, $this->otherUser))->toBeFalse();
+});
+
+it('allows an admin to reset their own grids', function () {
+    $admin = new User();
+    $admin->forceFill(['id' => 1, 'role' => 'admin']);
+
+    expect($this->policy->reset($admin, $admin))->toBeTrue();
+});
+
+it('denies an admin from resetting another users grids', function () {
+    $admin = new User();
+    $admin->forceFill(['id' => 1, 'role' => 'admin']);
+
+    $otherUser = new User();
+    $otherUser->forceFill(['id' => 2]);
+
+    expect($this->policy->reset($admin, $otherUser))->toBeFalse();
 });
 
 it('denies restore and forceDelete for all users', function () {

@@ -8,8 +8,7 @@ use App\Models\User;
 class GridPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     * Jeder eingeloggte User darf seine eigenen Grids auflisten.
+     * jeder eingeloggte User darf seine eigenen Grids auflisten.
      */
     public function viewAny(User $user): bool
     {
@@ -17,7 +16,7 @@ class GridPolicy
     }
 
     /**
-     * Prüfen, ob der User dieses Grid sehen darf.
+     * nur der Besitzer darf, außer der User ist admin → dann darf er alles
      */
     public function view(User $user, Grid $grid): bool
     {
@@ -25,7 +24,7 @@ class GridPolicy
     }
 
     /**
-     * Prüfen, ob der User ein neues Grid erstellen darf.
+     * jeder eingeloggte User darf seine eigenen Grids erstellen.
      */
     public function create(User $user): bool
     {
@@ -33,7 +32,7 @@ class GridPolicy
     }
 
     /**
-     * Prüfen, ob der User dieses Grid updaten darf.
+     * nur der Besitzer darf, außer der User ist admin → dann darf er alles
      */
     public function update(User $user, Grid $grid): bool
     {
@@ -41,15 +40,29 @@ class GridPolicy
     }
 
     /**
-     * Prüfen, ob der User dieses Grid löschen darf.
+     * nur der Besitzer darf, außer der User ist admin → dann darf er alles
      */
     public function delete(User $user, Grid $grid): bool
     {
+        // Admin darf alles löschen
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        // Normale User nur eigene Grids
         return $this->isOwner($user, $grid);
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * nur admin darf das machen.
+     */
+    public function reset(User $loggedInUser, User $userToReset): bool
+    {
+        return $loggedInUser->role === 'admin' && $loggedInUser->id === $userToReset->id;
+    }
+
+    /**
+     * deaktiviert
      */
     public function restore(User $user, Grid $grid): bool
     {
@@ -57,7 +70,7 @@ class GridPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete the model.
+     * deaktiviert
      */
     public function forceDelete(User $user, Grid $grid): bool
     {

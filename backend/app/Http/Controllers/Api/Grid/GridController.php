@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Grid;
 
 use App\Http\Controllers\Controller;
 use App\Models\Grid;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -67,16 +68,34 @@ class GridController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove this specified layout config if you are the owner from storage.
      */
-    public function destroy(string $id)
+    public function destroyByLayout(string $layoutId)
     {
-        $grid = Grid::where('user_id', Auth::id())->findOrFail($id);
+        // firstOrFail() wirft eine 404, wenn es nicht existiert.
+        $grid = Grid::where('layout_id', $layoutId)->firstOrFail();
 
+        // GridPolicy check, Wenn nicht, wird eine 403 Forbidden-Antwort zurückgegeben.
         $this->authorize('delete', $grid);
 
+        // authorization pass
         $grid->delete();
 
         return response()->noContent();
     }
+
+    /**
+     * Remove savedGrids (can be many layoutIds) if you are admin from storage.
+     */
+    public function resetUserGrids(int $userId)
+    {
+        $user = User::findOrFail($userId);
+
+        $this->authorize('reset', $user);
+
+        Grid::where('user_id', $userId)->delete();
+
+        return response()->noContent();
+    }
+
 }
