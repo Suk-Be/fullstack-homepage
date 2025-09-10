@@ -71,4 +71,42 @@ class ApiTest extends TestCase
         $this->getJson('/api/test-errors/generic-exception')
             ->assertStatus(500);
     }
+
+    public function test_destroy_by_layout_route_is_accessible()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+
+        $grid = $user->grids()->create([
+            'layout_id' => '123e4567-e89b-12d3-a456-426614174000',
+            'config' => ['cols' => 10],
+            'timestamp' => now(),
+        ]);
+
+        $response = $this->deleteJson("/api/grids/by-layout/{$grid->layout_id}");
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('grids', ['id' => $grid->id]);
+    }
+
+    public function test_reset_user_grids_route_is_not_accessible_to_admin_for_other_users()
+    {
+        // Ein Admin muss angemeldet sein
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin, 'sanctum');
+
+        // Erstelle Grids für einen anderen User
+        $userToReset = User::factory()->create();
+        $userToReset->grids()->createMany([
+            ['layout_id' => '223e4567-e89b-12d3-a456-426614174000', 'config' => [], 'timestamp' => now()],
+            ['layout_id' => '323e4567-e89b-12d3-a456-426614174000', 'config' => [], 'timestamp' => now()],
+        ]);
+
+        // Der Admin versucht, die Grids des anderen Benutzers zu löschen.
+        $response = $this->deleteJson("/api/users/{$userToReset->id}/grids");
+        $response->assertStatus(403);
+
+        // Überprüfe, dass die Grids NICHT gelöscht wurden
+        $this->assertDatabaseCount('grids', 2);
+    }
 }

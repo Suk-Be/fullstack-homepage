@@ -9,10 +9,15 @@ use App\Exceptions\AlreadyAuthenticatedException;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-
 Route::middleware(['auth:sanctum'])->group(function () {
-    // apiResource creates CRUD-routes for GridController
+    // Normale REST-Routen, die haben einen Standardnamen (z.B. grids.destroy)
     Route::apiResource('grids', GridController::class);
+
+    // Grid nach layout_id löschen
+    Route::delete('grids/by-layout/{layoutId}', [GridController::class, 'destroyByLayout'])->name('grids.destroyByLayout');
+
+    // Admin: alle Grids eines Users löschen
+    Route::delete('users/{userId}/grids', [GridController::class, 'resetUserGrids'])->name('grids.resetUserGrids');
 });
 
 // Nur für lokale/test/dev Umgebungen
