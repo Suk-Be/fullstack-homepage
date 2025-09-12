@@ -43,17 +43,33 @@ const createInitialGrid = (
 };
 
 export const resetUserGridsThunk = createAsyncThunk<
-    number, 
-    number, 
+    number, // Rückgabe: userId
+    number, // Argument: userId
     {rejectValue: string}
   >(
     'userGrids/resetUserGrids',
     async (userId: number, { rejectWithValue }) => {
       try {
         await ApiClient.delete(`/users/${userId}/grids`, { withCredentials: true });
-        return userId;
+        return userId; // action.payload
       } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Fehler beim Zurücksetzen');
+        return rejectWithValue(error.response?.data?.message || `Fehler beim ${userId} Zurücksetzen`);
+      }
+    }
+);
+
+export const deleteThisGridThunk = createAsyncThunk<
+    string, // Rückgabe: layoutId
+    string, // Rückgabe: layoutId
+    {rejectValue: string}
+  >(
+    'userGrids/deleteThisGrid',
+    async (layoutId: string, { rejectWithValue }) => {
+      try {
+        await ApiClient.delete(`/grids/by-layout/${layoutId}`, { withCredentials: true });
+        return layoutId;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || `Fehler beim ${layoutId} Löschen`);
       }
     }
 );
@@ -130,12 +146,16 @@ const userSaveGridsSlice = createSlice({
     },
     extraReducers: (builder) => {
       builder.addCase(resetUserGridsThunk.fulfilled, (state, action) => {
-         // beim erfolgreichen API Call die lokale State/Aktion ausführen
         userSaveGridsSlice.caseReducers.resetUserGrids(state, { payload: action.payload, type: '' });
       });
+      builder.addCase(deleteThisGridThunk.fulfilled, (state, action) => {
+        userSaveGridsSlice.caseReducers.deleteThisGrid(state, { payload: action.payload, type: '' });
+      });
       builder.addCase(resetUserGridsThunk.rejected, (_state, action) => {
-        // Fehlerfall behandeln (UI kann alert zeigen)
         console.error('Reset fehlgeschlagen', action.payload);
+      });
+      builder.addCase(deleteThisGridThunk.rejected, (_state, action) => {
+        console.error('Löschen fehlgeschlagen', action.payload);
       });
     },
 });

@@ -2,7 +2,7 @@ import { formatGridDate } from '@/componentsTemplateEngine/modals/SaveGridsModal
 import { CancelSVG, CheckSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSortedGrids } from '@/store/selectors/userGridSelectors';
-import { deleteThisGrid } from '@/store/userSaveGridsSlice';
+import { deleteThisGridThunk } from '@/store/userSaveGridsSlice';
 import { useState } from 'react';
 
 const SavedGridList = () => {
@@ -12,6 +12,8 @@ const SavedGridList = () => {
   // States für toggle (expand Config) & delete confirm pro Grid
   const [expandedConfigsText, setExpandedConfigsText] = useState<{ [key: string]: boolean }>({});
   const [deleteConfirm, setDeleteConfirm] = useState<{ [key: string]: boolean }>({});
+  const [isDeletingMap, setIsDeletingMap] = useState<Record<string, boolean>>({});
+
 
   // Event handlers
   const toggleConfigText = (id: string) => {
@@ -26,9 +28,16 @@ const SavedGridList = () => {
     setDeleteConfirm((prev) => ({ ...prev, [id]: false }));
   };
 
-  const confirmDeleteAction = (id: string) => {
-    // Entferne Grid aus store und localStorage
-    dispatch(deleteThisGrid(id));
+  const confirmDeleteAction = async (id: string) => {
+    setIsDeletingMap((prev) => ({ ...prev, [id]: true }));
+    try {
+      await dispatch(deleteThisGridThunk(id)).unwrap();
+      alert('Grid erfolgreich gelöscht');
+    } catch (err) {
+      alert('Fehler beim Grid löschen: ' + err);
+    } finally {
+      setIsDeletingMap((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
 
@@ -94,6 +103,7 @@ const SavedGridList = () => {
                             <button
                               className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                               onClick={() => openDeleteOptions(grid.layoutId)}
+                              disabled={isDeletingMap[grid.layoutId]}
                             >
                               delete
                             </button>

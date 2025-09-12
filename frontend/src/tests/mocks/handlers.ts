@@ -8,6 +8,8 @@ import { db } from './db';
 
 const api = apiUrl();
 const base = baseUrl();
+export const userLoggedInNoAdmin = 999
+export const userLoggedAdmin = 123
 
 interface ResetPasswordRequestBody {
     password: string;
@@ -184,9 +186,8 @@ export const handlers = [
 
     http.delete(`${api}/users/:userId/grids`, ({ params }) => {
         const { userId } = params;
-        const idWithAdminRole = '123'
 
-        if (userId === idWithAdminRole) {
+        if (userId === userLoggedAdmin.toString()) {
           // response success
           return new HttpResponse(null, { status: 204 });
         }
@@ -195,6 +196,21 @@ export const handlers = [
         return HttpResponse.json(
           { message: 'Authorization Failed' },
           { status: 403 }
+        );
+    }),
+
+    http.delete(`${api}/grids/by-layout/:layoutId`, ({ params }) => {
+        const { layoutId } = params;
+
+        if (layoutId) {
+          // response success
+          return new HttpResponse(null, { status: 204 });
+        }
+
+        // otherwise
+        return HttpResponse.json(
+          { message: 'Ressource not found' },
+          { status: 404 }
         );
     }),
 

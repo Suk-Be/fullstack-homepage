@@ -1,7 +1,7 @@
 import routes from '@/routes';
 import type { RootState } from '@/store';
-import loginSlice from '@/store/loginSlice';
-import userGridSlice from '@/store/userSaveGridsSlice';
+import loginReducer from '@/store/loginSlice';
+import userSaveGridsReducer from '@/store/userSaveGridsSlice';
 import { server } from '@/tests/mocks/server';
 import AppThemeProvider from '@/themes/AppTheme';
 import { apiUrl } from '@/utils/apiBaseUrl';
@@ -43,17 +43,17 @@ const authProviderUrls = [
 ];
 
 const rootReducer = combineReducers({
-    login: loginSlice,
-    userGrid: userGridSlice,
+  login: loginReducer,
+  userGrid: userSaveGridsReducer, // <- genau wie im echten Store
 });
 
-type PreloadedState<T> = Partial<T> | {};
+type PreloadedState = Partial<RootState>;
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-    configureStore({
-        reducer: rootReducer,
-        preloadedState,
-    });
+export const setupStore = (preloadedState?: PreloadedState) =>
+  configureStore({
+    reducer: rootReducer,
+    preloadedState,
+  });
 
 /**
  * Useful for mocking navigating pages
@@ -68,7 +68,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
 
 export type PathAndReduxState = {
     route?: string;
-    preloadedState?: PreloadedState<RootState>;
+    preloadedState?: PreloadedState;
 };
 
 const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => {

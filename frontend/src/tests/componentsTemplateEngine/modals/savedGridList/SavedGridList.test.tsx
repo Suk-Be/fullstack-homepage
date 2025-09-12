@@ -1,14 +1,9 @@
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
-import * as reduxHooks from '@/store/hooks';
-import * as userGridSelectors from '@/store/selectors/userGridSelectors';
-import { deleteThisGrid } from '@/store/userSaveGridsSlice';
-import { render, screen } from '@testing-library/react';
+import { renderWithProviders } from '@/tests/utils/testRenderUtils';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
 
 describe('SavedGridList', () => {
-  const mockDispatch = vi.fn();
-
   const mockGrids = [
     {
       layoutId: 'initial',
@@ -24,28 +19,38 @@ describe('SavedGridList', () => {
     },
   ];
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(mockDispatch);
-  });
+   const renderUtils = (savedGrids: typeof mockGrids = mockGrids) => {
+    const user = userEvent.setup();
+    const userLoggedInNoAdmin = 999;
+    const preloadedState = {
+      login: {
+        userId: userLoggedInNoAdmin,
+        isLoggedIn: true,
+        isLoading: false,
+        error: null
+      },
+      userGrid: {
+        userId: userLoggedInNoAdmin,
+        savedGrids: Object.fromEntries(savedGrids.map((g) => [g.layoutId, g])),
+      },
+    };
 
-  const renderList = (grids = mockGrids) => {
-    vi.spyOn(reduxHooks, 'useAppSelector').mockImplementation((selector) => {
-      if (selector === userGridSelectors.selectSortedGrids) return grids; 
-      return [];
-    });
+    const { store } = renderWithProviders(<SavedGridList />, { preloadedState });
 
-    render(<SavedGridList />);
+    return {
+      store,
+      user
+    };
   };
 
   it('renders "No grids saved yet" when there are no grids', () => {
     // pass no grids
-    renderList([]);
+    renderUtils([]);
     expect(screen.getByText(/No grids saved yet/i)).toBeInTheDocument();
   });
 
   it('renders a list of saved grids', () => {
-    renderList();
+    renderUtils();
 
     expect(screen.getByText(/Your Saved Grids:/i)).toBeInTheDocument();
     expect(screen.getByText(/First Grid/i)).toBeInTheDocument();
@@ -59,9 +64,8 @@ describe('SavedGridList', () => {
   });
 
   it('toggles config text on click (truncate long text)', async () => {
-    renderList();
-    const user = userEvent.setup();
-
+    const {user} = renderUtils();
+    
     const configCell = screen.getByText(/items": "1"/i);
     expect(configCell).toHaveClass('truncate');
 
@@ -73,25 +77,23 @@ describe('SavedGridList', () => {
   });
 
   it('opens a confirmation dialog: confirm or cancel a delete action', async () => {
-    renderList();
-    const user = userEvent.setup();
+    const {user} = renderUtils();
 
     const deleteBtn = screen.getAllByRole('button', { name: /delete/i })[0];
     await user.click(deleteBtn);
 
-    // buttons haben title tag
     expect(screen.getByTitle(/Yes, delete/i)).toBeInTheDocument();
     expect(screen.getByTitle(/Cancel/i)).toBeInTheDocument();
 
-    // Cancel klicken
     await user.click(screen.getByTitle(/Cancel/i));
     expect(screen.queryByTitle(/Yes, delete/i)).not.toBeInTheDocument();
     expect(screen.queryByTitle(/Cancel/i)).not.toBeInTheDocument();
   });
 
   it('confirms delete and dispatches deleteThisGrid', async () => {
-    renderList();
-    const user = userEvent.setup();
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+    const { user, store } = renderUtils();
 
     const deleteBtn = screen.getAllByRole('button', { name: /delete/i })[0];
     await user.click(deleteBtn);
@@ -99,6 +101,8 @@ describe('SavedGridList', () => {
     const confirmBtn = screen.getByTitle(/Yes, delete/i);
     await user.click(confirmBtn);
 
-    expect(mockDispatch).toHaveBeenCalledWith(deleteThisGrid('initial'));
+    const state = store.getState()
+
+    expect(state.userGrid.savedGrids['initial']).toBeUndefined();
   });
 });
