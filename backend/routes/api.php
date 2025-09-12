@@ -16,7 +16,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Grid nach layout_id löschen
     Route::delete('grids/by-layout/{layoutId}', [GridController::class, 'destroyByLayout'])->name('grids.destroyByLayout');
 
-    // Admin: alle Grids eines Users löschen
+    // Admin: darf alle seine eigenen Grids löschen
     Route::delete('users/{userId}/grids', [GridController::class, 'resetUserGrids'])->name('grids.resetUserGrids');
 });
 
