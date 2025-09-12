@@ -79,14 +79,14 @@ function SaveGridsModal() {
         setGridName('');
     };
 
-    const resetGrids = () => {
+    const resetGrids = async () => {
       if (!userId) return;
 
       if (!confirm('Alle Grids dieses Users wirklich löschen?')) return;
 
       setIsButtonDisabled(true);
 
-      dispatch(resetUserGridsThunk(userId))
+      await dispatch(resetUserGridsThunk(userId))
         .unwrap()
         .then(() => {
           alert('Grids erfolgreich zurückgesetzt!');
