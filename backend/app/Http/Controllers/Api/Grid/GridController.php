@@ -90,12 +90,21 @@ class GridController extends Controller
     public function resetUserGrids(int $userId)
     {
         $user = User::findOrFail($userId);
-
         $this->authorize('reset', $user);
 
         Grid::where('user_id', $userId)->delete();
 
         return response()->noContent();
+
+        // test request
+        // $authUser = auth()->user();
+
+        // return response()->json([
+        //     'authUserId' => $authUser ? $authUser->id : null,
+        //     'authUserRole' => $authUser ? $authUser->role : null,
+        //     'requestedUserId' => $userId,
+        //     'match' => $authUser ? $authUser->id === $userId : false
+        // ]);
     }
 
 }

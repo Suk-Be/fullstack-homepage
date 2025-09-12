@@ -1,6 +1,7 @@
+import ApiClient from '@/plugins/axios';
 import { clearUserGridsFromLocalStorage, loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
 import { GridConfig, GridConfigKey, UserSaveGridsState } from '@/types/Redux';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 const initialGrid = {
@@ -40,6 +41,20 @@ const createInitialGrid = (
         name: name?.trim() || "Unnamed Grid",
     };
 };
+
+export const resetUserGridsThunk = createAsyncThunk(
+  'userGrids/resetUserGrids',
+  async (userId: number, { rejectWithValue }) => {
+    try {
+      await ApiClient.delete(`/users/${userId}/grids`, {
+        withCredentials: true, // falls Sanctum benutzt wird
+      });
+      return userId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Fehler beim Zurücksetzen');
+    }
+  }
+);
 
 const userSaveGridsSlice = createSlice({
     name: 'userGrid',
@@ -109,6 +124,17 @@ const userSaveGridsSlice = createSlice({
 
             if (state.userId) saveToLocalStorage(state.userId, state);
         },
+    },
+    extraReducers: (builder) => {
+      builder.addCase(resetUserGridsThunk.fulfilled, (state, action) => {
+        // LocalStorage + state komplett löschen
+        if (state.userId === action.payload) {
+          state.savedGrids = {};
+        }
+      });
+      builder.addCase(resetUserGridsThunk.rejected, (_, action) => {
+        console.error('Reset fehlgeschlagen', action.payload);
+      });
     },
 });
 

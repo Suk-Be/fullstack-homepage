@@ -4,7 +4,7 @@ import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId } from '@/store/selectors/loginSelectors';
 import { selectGridsFromThisUser } from '@/store/selectors/userGridSelectors';
-import { getGridsFromLocalStorage, resetUserGrids, saveInitialGrid } from '@/store/userSaveGridsSlice';
+import { getGridsFromLocalStorage, resetUserGridsThunk, saveInitialGrid } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
@@ -80,13 +80,27 @@ function SaveGridsModal() {
     };
 
     const resetGrids = () => {
-        setIsButtonDisabled(true);
+      if (!userId) return;
 
-        dispatch(resetUserGrids());
+      if (!confirm('Alle Grids dieses Users wirklich löschen?')) return;
 
-        setGridName('');
-        setHasGridIsOpen(false);
+      setIsButtonDisabled(true);
+
+      dispatch(resetUserGridsThunk(userId))
+        .unwrap()
+        .then(() => {
+          alert('Grids erfolgreich zurückgesetzt!');
+          setHasGridIsOpen(false);
+          setGridName('');
+        })
+        .catch((err) => {
+          alert('Fehler beim Reset: ' + err);
+        })
+        .finally(() => {
+          setIsButtonDisabled(false);
+        });
     };
+
 
 
     return (

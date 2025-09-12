@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Grid;
+use App\Models\User;
 use App\Policies\GridPolicy;
+use App\Policies\UserPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        User::class => UserPolicy::class,
         Grid::class => GridPolicy::class,
     ];
 

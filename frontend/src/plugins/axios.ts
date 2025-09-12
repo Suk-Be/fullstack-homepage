@@ -6,8 +6,8 @@ import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const api = apiUrl();
-const base = baseUrl();
+const api = apiUrl(); // http://localhost:8000/api
+const base = baseUrl(); // http://localhost:8000
 
 const ApiClient = axios.create({
     baseURL: api,

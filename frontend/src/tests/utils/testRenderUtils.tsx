@@ -104,16 +104,19 @@ const renderWithProviders = (
 
     // window.history.pushState({}, 'Test page', route);
 
-    return render(
-        <ReduxProvider store={store}>
-            <MemoryRouter initialEntries={[route]}>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    {ui}
-                </ThemeProvider>
-            </MemoryRouter>
-        </ReduxProvider>,
-    );
+    return {
+        store,
+        ...render(
+          <ReduxProvider store={store}>
+              <MemoryRouter initialEntries={[route]}>
+                  <ThemeProvider theme={theme}>
+                      <CssBaseline />
+                      {ui}
+                  </ThemeProvider>
+              </MemoryRouter>
+          </ReduxProvider>,
+        )
+    };
 };
 
 /**

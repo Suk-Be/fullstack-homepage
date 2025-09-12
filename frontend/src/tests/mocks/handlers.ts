@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw';
 import { db } from './db';
 
 const api = apiUrl();
-const base = baseUrl()
+const base = baseUrl();
 
 interface ResetPasswordRequestBody {
     password: string;
@@ -161,37 +161,6 @@ export const handlers = [
       )
     ),
 
-    // ✅ 422 Validierungsfehler
-    http.get(`${base}/me`, () =>
-      HttpResponse.json(
-        {
-          message: 'Validierungsfehler',
-          errors: { email: ['E-Mail ist ungültig.'] },
-        },
-        { status: 422 }
-      )
-    ),
-
-    // ✅ 419 CSRF Token Fehler
-    http.get(`${base}/me`, () =>
-      HttpResponse.json({}, { status: 419 })
-    ),
-
-    // ✅ 401 Unauthorized
-    http.get(`${base}/me`, () =>
-      HttpResponse.json({ message: 'Nicht eingeloggt' }, { status: 401 })
-    ),
-
-    // ✅ unbekannter Statuscode (Fallback)
-    http.get(`${base}/me`, () =>
-      HttpResponse.json({ message: 'Unbekannter Fehler' }, { status: 418 })
-    ),
-
-    // ✅ Netzwerkfehler simulieren
-    http.get(`${base}/me`, () => {
-      throw new Error('Netzwerk down');
-    }),
-
     http.post(`${base}/reset-password`, async ({ request }) => {
         const body = (await request.json()) as ResetPasswordRequestBody;
 
@@ -211,6 +180,22 @@ export const handlers = [
           message: SuccessMessages.ResetPassword.requestSuccess,
           body,
         });
+    }),
+
+    http.delete(`${api}/users/:userId/grids`, ({ params }) => {
+        const { userId } = params;
+        const idWithAdminRole = '123'
+
+        if (userId === idWithAdminRole) {
+          // response success
+          return new HttpResponse(null, { status: 204 });
+        }
+
+        // otherwise
+        return HttpResponse.json(
+          { message: 'Authorization Failed' },
+          { status: 403 }
+        );
     }),
 
     // fallback for catching future route mismatches during test debugging
