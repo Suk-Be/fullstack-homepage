@@ -3,6 +3,7 @@ import userGridReducer, {
   getGridsFromLocalStorage,
   loadUserGrids,
   resetUserGrids,
+  resetUserGridsThunk,
   saveInitialGrid,
   updateGridConfig,
   initialState as userGridInitialState,
@@ -179,7 +180,7 @@ describe('userSaveGridsSlice', () => {
             },
         };
 
-        const action = resetUserGrids(); // Action-Creator
+        const action = resetUserGrids(1); // Action-Creator
         const result = userGridReducer(modifiedState, action);
 
         // Prüfen, dass savedGrids auf die initialen Keys zurückgesetzt wurde
@@ -258,5 +259,25 @@ describe('userSaveGridsSlice', () => {
         expect(result.userId).toBe(1);
         expect(result.savedGrids).toEqual(mockSavedState.savedGrids);
         expect(loadFromLocalStorage).toHaveBeenCalled();
+    });
+
+     it('fulfills when userId is admin', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn();
+
+      const result = await resetUserGridsThunk(123)(dispatch, getState, undefined);
+
+      expect(result.type).toBe('userGrids/resetUserGrids/fulfilled');
+      expect(result.payload).toBe(123);
+    });
+
+    it('rejects when userId is not admin', async () => {
+      const dispatch = vi.fn();
+      const getState = vi.fn();
+
+      const result = await resetUserGridsThunk(999)(dispatch, getState, undefined);
+
+      expect(result.type).toBe('userGrids/resetUserGrids/rejected');
+      expect(result.payload).toBe('Authorization Failed');
     });
 });

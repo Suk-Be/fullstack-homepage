@@ -42,18 +42,20 @@ const createInitialGrid = (
     };
 };
 
-export const resetUserGridsThunk = createAsyncThunk(
-  'userGrids/resetUserGrids',
-  async (userId: number, { rejectWithValue }) => {
-    try {
-      await ApiClient.delete(`/users/${userId}/grids`, {
-        withCredentials: true, // falls Sanctum benutzt wird
-      });
-      return userId;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || 'Fehler beim Zurücksetzen');
+export const resetUserGridsThunk = createAsyncThunk<
+    number, 
+    number, 
+    {rejectValue: string}
+  >(
+    'userGrids/resetUserGrids',
+    async (userId: number, { rejectWithValue }) => {
+      try {
+        await ApiClient.delete(`/users/${userId}/grids`, { withCredentials: true });
+        return userId;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Fehler beim Zurücksetzen');
+      }
     }
-  }
 );
 
 const userSaveGridsSlice = createSlice({
@@ -106,14 +108,15 @@ const userSaveGridsSlice = createSlice({
         },
 
         // helper (for developing) to clear all grids //
-        resetUserGrids(state) {
-            if (state.userId === null || state.userId === undefined) return;
+        resetUserGrids(state, action: PayloadAction<number>) {
+            const userId = action.payload;
+            if (!userId) return;
 
-            clearUserGridsFromLocalStorage(state.userId);
+            clearUserGridsFromLocalStorage(userId);
 
             state.savedGrids = { ...initialState.savedGrids };
 
-            saveToLocalStorage(state.userId, state);
+            saveToLocalStorage(userId, state);
         },
 
         loadUserGrids(state, action: PayloadAction<UserSaveGridsState>) {
@@ -127,12 +130,11 @@ const userSaveGridsSlice = createSlice({
     },
     extraReducers: (builder) => {
       builder.addCase(resetUserGridsThunk.fulfilled, (state, action) => {
-        // LocalStorage + state komplett löschen
-        if (state.userId === action.payload) {
-          state.savedGrids = {};
-        }
+         // beim erfolgreichen API Call die lokale State/Aktion ausführen
+        userSaveGridsSlice.caseReducers.resetUserGrids(state, { payload: action.payload, type: '' });
       });
-      builder.addCase(resetUserGridsThunk.rejected, (_, action) => {
+      builder.addCase(resetUserGridsThunk.rejected, (_state, action) => {
+        // Fehlerfall behandeln (UI kann alert zeigen)
         console.error('Reset fehlgeschlagen', action.payload);
       });
     },
