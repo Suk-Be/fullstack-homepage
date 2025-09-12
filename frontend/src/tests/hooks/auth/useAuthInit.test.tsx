@@ -3,6 +3,7 @@
 import { useAuthInit } from '@/hooks/auth/useAuthInit';
 import loginReducer, { LoginState } from '@/store/loginSlice';
 import userSaveGridsReducer from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin } from '@/tests/mocks/handlers';
 import { UserSaveGridsState } from '@/types/Redux';
 import { configureStore, Reducer } from '@reduxjs/toolkit';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -116,7 +117,7 @@ describe('useAuthInit', () => {
     } });
 
     mockInitializeCookies.mockResolvedValue(undefined);
-    mockRequestMe.mockResolvedValue({ success: true, userId: 123 });
+    mockRequestMe.mockResolvedValue({ success: true, userId: userLoggedAdmin });
 
     renderHook(() => useAuthInit(), { 
       wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper>
@@ -125,7 +126,7 @@ describe('useAuthInit', () => {
     await waitFor(() => {
       expect(mockInitializeCookies).toHaveBeenCalled();
       expect(mockRequestMe).toHaveBeenCalled();
-      expect(mockLoginActionCreator).toHaveBeenCalledWith(123);
+      expect(mockLoginActionCreator).toHaveBeenCalledWith(userLoggedAdmin);
       expect(mockLogRecoverableError).not.toHaveBeenCalled();
     });
   });
@@ -165,7 +166,7 @@ describe('useAuthInit', () => {
   });
 
   it('should not perform API calls if already logged in', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: true, userId: 123, isLoading: false, error: null, fieldErrors: undefined } });
+    const store = makeTestStore({ login: { isLoggedIn: true, userId: userLoggedAdmin, isLoading: false, error: null, fieldErrors: undefined } });
 
     renderHook(() => useAuthInit(), { wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper> });
 

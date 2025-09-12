@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import { userLoggedAdmin } from '../mocks/handlers';
 
 describe('ProjectTemplateEnginePresetsPage', () => {
     const renderUtils = () => {
@@ -17,7 +18,7 @@ describe('ProjectTemplateEnginePresetsPage', () => {
                     isLoading: false,
                 },
                 userGrid: {
-                    userId: 123,
+                    userId: userLoggedAdmin,
                     savedGrids: {},
                 },
             },

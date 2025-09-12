@@ -1,5 +1,6 @@
 import { store } from '@/store';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { userLoggedAdmin } from '../mocks/handlers';
 
 describe('logRecoverableError', () => {
   const originalEnv = import.meta.env;
@@ -137,7 +138,7 @@ describe('logRequestState', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     const { logRequestState } = await import('@/utils/logger');
-    const userId = 123
+    const userId = userLoggedAdmin
     const initCookiesError = {
       error: true,
       axiosStatus: false

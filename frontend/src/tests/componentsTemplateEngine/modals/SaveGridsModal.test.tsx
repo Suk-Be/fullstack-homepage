@@ -1,5 +1,6 @@
 import SaveGridsModal from '@/componentsTemplateEngine/modals/SaveGridsModal';
 import type { RootState } from '@/store';
+import { userLoggedAdmin } from '@/tests/mocks/handlers';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,7 +14,7 @@ const preloadedState: Partial<RootState> = {
     error: null,
   },
   userGrid: {
-    userId: 123, // hat admin role siehe msw handler
+    userId: userLoggedAdmin, 
     savedGrids: {
       initial: {
         layoutId: 'initial',
@@ -33,9 +34,6 @@ const preloadedState: Partial<RootState> = {
 };
 
 describe('SaveGridsModal', () => {
-  const mockConfirm = vi.spyOn(window, 'confirm').mockImplementation(() => true);
-  const mockAlert = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
   beforeEach(() => {
     vi.clearAllMocks();
   });

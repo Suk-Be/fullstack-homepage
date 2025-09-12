@@ -7,11 +7,12 @@ import {
   updateGridConfig,
 } from '@/store/userSaveGridsSlice';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { userLoggedAdmin, userLoggedInNoAdmin } from '../mocks/handlers';
 
 describe('Redux Store', () => {
     beforeEach(() => {
         store.dispatch(logout());
-        store.dispatch(resetUserGrids());
+        store.dispatch(resetUserGrids(userLoggedAdmin));
     });
 
     it('should have the correct initial state', () => {
@@ -24,15 +25,15 @@ describe('Redux Store', () => {
     });
 
     it('should update login state when forceLogin is dispatched', () => {
-        store.dispatch(forceLogin(123));
+        store.dispatch(forceLogin(userLoggedInNoAdmin));
 
         const state = store.getState();
         expect(state.login.isLoggedIn).toBe(true);
-        expect(state.login.userId).toBe(123);
+        expect(state.login.userId).toBe(userLoggedInNoAdmin);
     });
 
     it('should reset login state when logout is dispatched', () => {
-        store.dispatch(forceLogin(123));
+        store.dispatch(forceLogin(userLoggedInNoAdmin));
         store.dispatch(logout());
 
         const state = store.getState();
@@ -41,8 +42,8 @@ describe('Redux Store', () => {
     });
 
     it('should add a grid for a logged-in user', () => {
-        store.dispatch(forceLogin(123));
-        store.dispatch(getGridsFromLocalStorage(123));
+        store.dispatch(forceLogin(userLoggedInNoAdmin));
+        store.dispatch(getGridsFromLocalStorage(userLoggedInNoAdmin));
 
         // 1. initial Grid anpassen
         store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '4' }));
@@ -69,7 +70,7 @@ describe('Redux Store', () => {
     });
 
     it('should reset all grids when resetUserGrid is dispatched', () => {
-        store.dispatch(forceLogin(123));
+        store.dispatch(forceLogin(userLoggedAdmin));
 
         // initial bearbeiten
         store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '5' }));
@@ -79,7 +80,7 @@ describe('Redux Store', () => {
         store.dispatch(saveInitialGrid('layout name'));
 
         // reset
-        store.dispatch(resetUserGrids());
+        store.dispatch(resetUserGrids(userLoggedAdmin));
 
         const state = store.getState();
 

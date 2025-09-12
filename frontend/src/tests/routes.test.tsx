@@ -1,3 +1,6 @@
+import HomePage from '@/pages/HomePage';
+import ImprintPage from '@/pages/ImprintPage';
+import PlaygroundPage from '@/pages/PlaygroundPage';
 import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
@@ -15,9 +18,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { registeredUserData } from './mocks/data';
 import { db } from './mocks/db';
-import HomePage from '@/pages/HomePage';
-import ImprintPage from '@/pages/ImprintPage';
-import PlaygroundPage from '@/pages/PlaygroundPage';
+import { userLoggedAdmin } from './mocks/handlers';
 
 describe('routes', () => {
     beforeEach(() => {
@@ -69,6 +70,7 @@ describe('routes', () => {
                     login: {
                         isLoggedIn: true,
                         isLoading: false,
+                        error: null
                     },
                 },
             });
@@ -117,7 +119,7 @@ describe('routes', () => {
                     },
                     userGrid: {
                         ...userSaveGridsInitialState,
-                        userId: 123,
+                        userId: userLoggedAdmin,
                     },
                 },
             });
@@ -136,6 +138,7 @@ describe('routes', () => {
                 login: {
                     isLoggedIn: true,
                     isLoading: false,
+                    error: null
                 },
             },
         });
@@ -153,6 +156,7 @@ describe('routes', () => {
                 login: {
                     isLoggedIn: false,
                     isLoading: false,
+                    error: null
                 },
             },
         });

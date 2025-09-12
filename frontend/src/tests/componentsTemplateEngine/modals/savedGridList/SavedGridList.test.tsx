@@ -1,4 +1,5 @@
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
+import { userLoggedInNoAdmin } from '@/tests/mocks/handlers';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,7 +22,7 @@ describe('SavedGridList', () => {
 
    const renderUtils = (savedGrids: typeof mockGrids = mockGrids) => {
     const user = userEvent.setup();
-    const userLoggedInNoAdmin = 999;
+    
     const preloadedState = {
       login: {
         userId: userLoggedInNoAdmin,

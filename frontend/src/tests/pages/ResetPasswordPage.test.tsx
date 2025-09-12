@@ -5,12 +5,13 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, it } from 'vitest';
+import { userLoggedAdmin } from '../mocks/handlers';
 
 describe('ResetPassWordPage', () => {
   it('should render the ResetPasswordPage', async () => {
     render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={['/reset-password?token=test123&email=test@example.com']}>
+        <MemoryRouter initialEntries={[`/reset-password?token=test${userLoggedAdmin}&email=test@example.com`]}>
           <ResetPasswordPage />
         </MemoryRouter>
       </Provider>
