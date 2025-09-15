@@ -5,9 +5,10 @@ use Illuminate\Support\Facades\Hash;
 use function Pest\Laravel\post;
 use function Pest\Laravel\get;
 use function Pest\Laravel\postJson;
+use App\Enums\UserRole;
 
 
-// 1. Register
+// Register
 it('registers a new user and logs them in', function () {
   $response = post('/register', [
     'name' => 'Test User',
@@ -47,7 +48,7 @@ it('rejects registration with duplicate email', function () {
   $response->assertStatus(422);
 });
 
-// 2. Login
+// Login
 it('logs in an existing user', function () {
   $user = User::factory()->create([
     'email' => 'test@example.com',
@@ -87,7 +88,7 @@ it('fails login with missing credentials', function () {
   $response->assertInvalid(['email', 'password']);
 });
 
-// 4. Logout
+// Logout
 it('logs out an authenticated user', function () {
   $user = User::factory()->create([
     'password' => Hash::make('password123'),
@@ -103,7 +104,7 @@ it('logs out an authenticated user', function () {
   expect(auth()->check())->toBeFalse();
 });
 
-// 5. /api/me (Sanctum protected)
+// /me (Sanctum protected)
 it('returns the authenticated user', function () {
   $user = User::factory()->create();
   $this->actingAsSessionUser($user);
@@ -124,15 +125,37 @@ it('returns full authenticated user profile structure', function () {
   $response = get('/me');
 
   $response->assertOk();
+
   $response->assertJsonStructure([
-    'id',
-    'name',
-    'email',
-    // add custom fields if needed
+        'id',
+        'name',
+        'email',
+        'role',
+  ]);
+
+  $response->assertJson([
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'role' => UserRole::User->value,
   ]);
 });
 
-// 6. Guest access denied
+it('returns the authenticated user including role', function () {
+    $user = User::factory()->admin()->create();
+    $this->actingAsSessionUser($user);
+
+    $response = get('/me');
+
+    $response->assertOk()
+        ->assertJsonFragment([
+            'email' => $user->email,
+            'role' => UserRole::Admin->value,
+        ]);
+});
+
+
+// Guest access denied
 it('returns 401 for unauthenticated user calling me', function () {
   $response = $this->getJson('/me');
 

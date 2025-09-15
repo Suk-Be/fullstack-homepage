@@ -12,16 +12,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use App\Exceptions\AlreadyAuthenticatedException;
+use App\Enums\UserRole;
 
 class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-        // If you want to prevent registration if already logged in, you'd add this:
-        // if (Auth::check()) {
-        //     throw new AlreadyAuthenticatedException();
-        // }
-
         $validated = $request->validate(
             [
                 'name' => 'required|string|max:255',
@@ -36,7 +32,8 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
+            'role' => UserRole::User,
         ]);
 
         // Logs in in the user after registration

@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use App\Enums\UserRole;
 
 class UserPolicy
 {
@@ -60,7 +61,7 @@ class UserPolicy
      */
     public function reset(User $loggedInUser, User $userToReset): bool
     {
-        return $loggedInUser->role === 'admin'
+        return $loggedInUser->role === UserRole::Admin
             && $loggedInUser->id === $userToReset->id;
     }
 

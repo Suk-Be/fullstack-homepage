@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Grid;
 use App\Models\User;
+use App\Enums\UserRole;
 
 class GridPolicy
 {
@@ -45,7 +46,7 @@ class GridPolicy
     public function delete(User $user, Grid $grid): bool
     {
         // Admin darf alles löschen
-        if ($user->role === 'admin') {
+        if ($user->role === UserRole::Admin) {
             return true;
         }
 
@@ -58,7 +59,7 @@ class GridPolicy
      */
     public function reset(User $loggedInUser, User $userToReset): bool
     {
-        return $loggedInUser->role === 'admin' && $loggedInUser->id === $userToReset->id;
+        return $loggedInUser->role === UserRole::Admin && $loggedInUser->id === $userToReset->id;
     }
 
     /**

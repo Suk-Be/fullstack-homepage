@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Enums\UserRole;
 
 class UserSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'test@test.de',
-            'role' => 'admin',
+            'role' => UserRole::Admin,
             'password' => bcrypt('test@test.de'),
         ]);
     }
