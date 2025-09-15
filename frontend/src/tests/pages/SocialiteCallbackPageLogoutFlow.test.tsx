@@ -38,19 +38,32 @@ describe('SocialiteCallbackPage', () => {
     });
 
     it('should call logout flow on failure', async () => {
-        // simulate error caling apiBaseUrl/me
         mockGet
             .mockResolvedValueOnce({}) // /csrf-cookie
             .mockRejectedValueOnce(new Error('Unauthorized')); // /me fails
 
         renderWithProvidersDOM(<SocialiteCallbackPage />, {
             route: '/auth/callback',
+            preloadedState: {
+                login: { isLoggedIn: false, userId: 42, isLoading: false, error: null }
+            },
         });
 
         await waitFor(() => {
-            expect(mockDispatch).toHaveBeenCalledWith(resetUserGrids());
+            expect(mockDispatch).toHaveBeenCalledWith(resetUserGrids(42));
             expect(mockDispatch).toHaveBeenCalledWith(logout());
             expect(mockNavigate).toHaveBeenCalledWith('/');
         });
+    });
+
+    it('should only logout when no userId is set', async () => {
+      renderWithProvidersDOM(<SocialiteCallbackPage />, {
+        preloadedState: { login: { isLoggedIn: false, userId: undefined } },
+      });
+
+      await waitFor(() => {
+        expect(mockDispatch).not.toHaveBeenCalledWith(resetUserGrids(expect.anything()));
+        expect(mockDispatch).toHaveBeenCalledWith(logout());
+      });
     });
 });

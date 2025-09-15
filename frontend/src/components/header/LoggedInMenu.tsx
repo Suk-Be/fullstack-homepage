@@ -1,7 +1,9 @@
 import requestLogout from '@/components/auth/api/requestLogout';
 import RouterLinkWrapper from '@/components/RouterLink';
 import { type AppDispatch } from '@/store/';
+import { useAppSelector } from '@/store/hooks';
 import { logout } from '@/store/loginSlice';
+import { selectLoginState } from '@/store/selectors/loginSelectors';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
@@ -10,6 +12,9 @@ import { useDispatch } from 'react-redux';
 import LinkedLogo from './LinkedLogo';
 
 export default function LoggedInMenu() {
+    const dispatch: AppDispatch = useDispatch();
+    const { userId } = useAppSelector(selectLoginState);
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -19,12 +24,13 @@ export default function LoggedInMenu() {
         setAnchorEl(null);
     };
 
-    const dispatch: AppDispatch = useDispatch();
     const handleLogout = async () => {
         const result = await requestLogout();
 
         if (result.success) {
-            dispatch(resetUserGrids());
+            if(userId){
+                dispatch(resetUserGrids(userId));
+            }
             dispatch(logout());
         }
 

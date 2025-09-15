@@ -24,7 +24,9 @@ export const useAuthInit = () => {
             dispatch(startAuth());
 
             const performLogout = () => {
-                dispatch(resetUserGrids());
+                if(userId){
+                  dispatch(resetUserGrids(userId));
+                }
                 dispatch(logout());
             };
 

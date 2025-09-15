@@ -3,7 +3,6 @@ import { BaseClient } from '@/plugins/axios';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { resetUserGrids } from './userSaveGridsSlice';
 
 import { LoginArgs, User } from '@/types/Redux';
 import { LoginErrorResponse, LoginSuccessResponse } from '@/types/entities';
@@ -39,7 +38,7 @@ export const loginThunk = createAsyncThunk<
     LoginSuccessResponse, // ✅ Erfolgstyp
     LoginArgs, // ✅ Argumenttyp
     { rejectValue: LoginErrorResponse } // ✅ Fehlertyp
->('login/loginThunk', async ({ email, password }, { dispatch, rejectWithValue }) => {
+>('login/loginThunk', async ({ email, password }, { rejectWithValue }) => {
     try {
         await initializeCookies();
 
@@ -67,7 +66,6 @@ export const loginThunk = createAsyncThunk<
             });
         }
     } catch (error: unknown) {
-        dispatch(resetUserGrids());
         await resetCookiesOnResponseError(error);
         return rejectWithValue(setResponseValidationError(error));
     }

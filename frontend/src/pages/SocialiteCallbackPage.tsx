@@ -1,7 +1,9 @@
 import Loading from '@/components/auth/shared-components/Loading';
-import {BaseClient} from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
+import { useAppSelector } from '@/store/hooks';
 import { forceLogin, logout } from '@/store/loginSlice';
+import { selectLoginState } from '@/store/selectors/loginSelectors';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { useEffect } from 'react';
@@ -11,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const SocialiteCallbackPage = () => {
     const navigate = useNavigate();
     const dispatch: AppDispatch = useDispatch();
+    const { userId } = useAppSelector(selectLoginState);
 
     useEffect(() => {
         const handleSocialiteCallback = async () => {
@@ -26,8 +29,9 @@ const SocialiteCallbackPage = () => {
                     error,
                     extra: { axiosStatus },
                 });
-
-                dispatch(resetUserGrids());
+                if(userId){
+                  dispatch(resetUserGrids(userId));
+                }
                 dispatch(logout());
                 navigate('/');
             }

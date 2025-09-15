@@ -1,5 +1,3 @@
-/// <reference types="vitest/globals" />
-
 import { useAuthInit } from '@/hooks/auth/useAuthInit';
 import loginReducer, { LoginState } from '@/store/loginSlice';
 import userSaveGridsReducer from '@/store/userSaveGridsSlice';
@@ -64,6 +62,8 @@ vi.mock('@/store/userSaveGridsSlice', async (importOriginal) => {
     resetUserGrids: mockResetUserGridActionCreator,
   };
 });
+
+
 
 // ----------------------------
 // 🔹 Test Store Setup
@@ -132,7 +132,7 @@ describe('useAuthInit', () => {
   });
 
   it('should dispatch logout, resetUserGrid and log error if initializeCookies fails', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: false, userId: undefined, isLoading: false, error: null, fieldErrors: undefined } });
+    const store = makeTestStore({ login: { isLoggedIn: false, userId: 42, isLoading: false, error: null, fieldErrors: undefined } });
 
     const mockError = new Error('Failed to initialize cookies');
     mockInitializeCookies.mockRejectedValue(mockError);
@@ -143,13 +143,13 @@ describe('useAuthInit', () => {
       expect(mockInitializeCookies).toHaveBeenCalled();
       expect(mockRequestMe).not.toHaveBeenCalled();
       expect(mockLogoutActionCreator).toHaveBeenCalled();
-      expect(mockResetUserGridActionCreator).toHaveBeenCalled();
+      expect(mockResetUserGridActionCreator).toHaveBeenCalledWith(42);
       expect(mockLogRecoverableError).toHaveBeenCalled();
     });
   });
 
   it('should dispatch logout, resetUserGrid and log error if requestMe fails', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: false, userId: undefined, isLoading: false, error: null, fieldErrors: undefined } });
+    const store = makeTestStore({ login: { isLoggedIn: false, userId: 42, isLoading: false, error: null, fieldErrors: undefined } });
 
     mockInitializeCookies.mockResolvedValue(undefined);
     mockRequestMe.mockRejectedValue(new Error('Unauthorized'));
@@ -160,7 +160,7 @@ describe('useAuthInit', () => {
       expect(mockInitializeCookies).toHaveBeenCalled();
       expect(mockRequestMe).toHaveBeenCalled();
       expect(mockLogoutActionCreator).toHaveBeenCalled();
-      expect(mockResetUserGridActionCreator).toHaveBeenCalled();
+      expect(mockResetUserGridActionCreator).toHaveBeenCalledWith(42);
       expect(mockLogRecoverableError).toHaveBeenCalled();
     });
   });

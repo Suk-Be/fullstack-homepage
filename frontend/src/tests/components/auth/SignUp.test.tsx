@@ -5,9 +5,9 @@ import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import userFactory from '@/tests/mocks/factories/userFactories';
 import {
-    expectErrorMessages,
-    expectNoErrorMessages,
-    switchToComponentHelper,
+  expectErrorMessages,
+  expectNoErrorMessages,
+  switchToComponentHelper,
 } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
