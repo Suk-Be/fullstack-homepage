@@ -124,7 +124,7 @@ class UserPolicyTest extends TestCase
 
         // PHPUnit-Mock-Objekte brauchen eine Anweisung, wie sie auf Eigenschaftszugriffe
         // reagieren sollen. Hier wird ein Callback verwendet.
-        $this->mockUserProperties($loggedInUser, ['id' => 1, 'role' => 'c']);
+        $this->mockUserProperties($loggedInUser, ['id' => 1, 'role' => 'admin']);
         $this->mockUserProperties($userToReset, ['id' => 1]);
 
         // Führe den Policy-Test aus.
