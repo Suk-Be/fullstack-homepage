@@ -78,7 +78,6 @@ class GridController extends Controller
         // GridPolicy check, Wenn nicht, wird eine 403 Forbidden-Antwort zurückgegeben.
         $this->authorize('delete', $grid);
 
-        // authorization pass
         $grid->delete();
 
         return response()->noContent();
@@ -95,16 +94,6 @@ class GridController extends Controller
         Grid::where('user_id', $userId)->delete();
 
         return response()->noContent();
-
-        // test request
-        // $authUser = auth()->user();
-
-        // return response()->json([
-        //     'authUserId' => $authUser ? $authUser->id : null,
-        //     'authUserRole' => $authUser ? $authUser->role : null,
-        //     'requestedUserId' => $userId,
-        //     'match' => $authUser ? $authUser->id === $userId : false
-        // ]);
     }
 
 }
