@@ -1,11 +1,12 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { AppDispatch } from '@/store';
 import { useAppSelector } from '@/store/hooks';
-import { forceLogin, logout, startAuth } from '@/store/loginSlice';
+import { logout, startAuth } from '@/store/loginSlice';
 import { selectLoginState } from '@/store/selectors/loginSelectors';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import { getAxiosStatus, logRecoverableError, logRequestState } from '@/utils/logger';
+import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -16,7 +17,7 @@ export const useAuthInit = () => {
     useEffect(() => {
         // 🔹 Guard: nur starten, wenn kein Login aktiv ist
         if (isLoggedIn && userId) {
-            logRequestState('selectLoginState', userId)
+            logRequestState('selectLoginState', userId);
             return;
         }
 
@@ -24,27 +25,27 @@ export const useAuthInit = () => {
             dispatch(startAuth());
 
             const performLogout = () => {
-                if(userId){
-                  dispatch(resetUserGrids(userId));
+                if (userId) {
+                    dispatch(resetUserGrids(userId));
                 }
                 dispatch(logout());
             };
 
             try {
                 await initializeCookies();
-                logRequestState('initializeCookies')
+                logRequestState('initializeCookies');
 
                 try {
                     const result = await requestMe();
-                    logRequestState('requestMe', result)
+                    logRequestState('requestMe', result);
 
                     if (result?.success && result.userId !== undefined) {
-                        dispatch(forceLogin(result.userId));
+                        dispatchForceLogin(dispatch, result.userId, result.role!);
                     } else {
                         performLogout();
                     }
                 } catch (error) {
-                    logRequestState('requestMeError', error)
+                    logRequestState('requestMeError', error);
                     logRecoverableError({ context: '[Auth] No active session found:', error });
                     performLogout();
                 }
@@ -55,7 +56,7 @@ export const useAuthInit = () => {
                     error,
                     extra: { axiosStatus },
                 });
-                logRequestState('initializeCookiesError', { error, axiosStatus })
+                logRequestState('initializeCookiesError', { error, axiosStatus });
                 performLogout();
             }
         };

@@ -1,180 +1,148 @@
+import requestMe from '@/components/auth/api/requestMe';
 import { useAuthInit } from '@/hooks/auth/useAuthInit';
-import loginReducer, { LoginState } from '@/store/loginSlice';
-import userSaveGridsReducer from '@/store/userSaveGridsSlice';
-import { userLoggedAdmin } from '@/tests/mocks/handlers';
-import { UserSaveGridsState } from '@/types/Redux';
-import { configureStore, Reducer } from '@reduxjs/toolkit';
-import { renderHook, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { logout } from '@/store/loginSlice';
+import { resetUserGrids } from '@/store/userSaveGridsSlice';
+import { userLoggedInNoAdmin } from '@/tests/mocks/handlers';
+import { authTestStates } from '@/tests/utils/authTestStates';
+import { renderHookWithProviders } from '@/tests/utils/testRenderUtils';
+import initializeCookies from '@/utils/auth/initializeCookies';
+import * as dispatchHelper from '@/utils/redux/dispatchHelper';
+import { waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ----------------------------
-// 🔹 Hoisted Mocks
+// 🔹 Module Mocks
 // ----------------------------
-const {
-  mockLogRecoverableError,
-  mockRequestMe,
-  mockInitializeCookies,
-  mockLoginActionCreator,
-  mockLogoutActionCreator,
-  mockResetUserGridActionCreator,
-} = vi.hoisted(() => ({
-  mockLogRecoverableError: vi.fn(),
-  mockRequestMe: vi.fn(),
-  mockInitializeCookies: vi.fn(),
-  mockLoginActionCreator: vi.fn(() => ({ type: 'login/forceLogin' })),
-  mockLogoutActionCreator: vi.fn(() => ({ type: 'login/logout' })),
-  mockResetUserGridActionCreator: vi.fn(() => ({ type: 'userGrid/resetUserGrids' })),
-}));
-
-// ----------------------------
-// 🔹 Vitest Module Mocks
-// ----------------------------
-vi.mock('@/components/auth/api/requestMe', () => ({
-  default: mockRequestMe,
-}));
-
-vi.mock('@/utils/auth/initializeCookies', () => ({
-  default: mockInitializeCookies,
-}));
-
-vi.mock('@/utils/logger', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/utils/logger')>();
-  return {
-    ...actual,
-    logRecoverableError: mockLogRecoverableError,
-  };
-});
+vi.mock('@/components/auth/api/requestMe');
+vi.mock('@/utils/auth/initializeCookies');
 
 vi.mock('@/store/loginSlice', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/store/loginSlice')>();
-  return {
-    ...actual,
-    forceLogin: mockLoginActionCreator,
-    logout: mockLogoutActionCreator,
-  };
+    const actual = await importOriginal<typeof import('@/store/loginSlice')>();
+    return {
+        ...actual,
+        forceLogin: vi.fn((payload) => ({ type: 'login/forceLogin', ...payload })),
+        logout: vi.fn(() => ({ type: 'login/logout' })),
+        startAuth: vi.fn(() => ({ type: 'login/startAuth' })),
+    };
 });
 
 vi.mock('@/store/userSaveGridsSlice', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/store/userSaveGridsSlice')>();
-  return {
-    ...actual,
-    resetUserGrids: mockResetUserGridActionCreator,
-  };
+    const actual = await importOriginal<typeof import('@/store/userSaveGridsSlice')>();
+    return {
+        ...actual,
+        resetUserGrids: vi.fn((userId: number) => ({
+            type: 'userGrid/resetUserGrids',
+            payload: userId,
+        })),
+    };
 });
 
+vi.mock('@/utils/redux/dispatchHelper', () => ({
+    dispatchForceLogin: vi.fn((dispatch, id, role) => {
+        dispatch({ type: 'login/forceLogin', userId: id, role });
+    }),
+}));
 
+vi.mock(import('@/utils/logger'), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        logRecoverableError: vi.fn(),
+        logReduxState: vi.fn(),
+        logRequestState: vi.fn(),
+    };
+});
 
-// ----------------------------
-// 🔹 Test Store Setup
-// ----------------------------
-const defaultLoginState: LoginState = {
-  userId: undefined,
-  isLoggedIn: false,
-  isLoading: false,
-  error: null,
-  fieldErrors: undefined,
-};
+// Zugriff auf die gemockten Funktionen
+const mockDispatch = vi.fn();
+const mockedRequestMe = vi.mocked(requestMe);
+const mockedInitializeCookies = vi.mocked(initializeCookies);
+const mockedDispatchForceLogin = vi.mocked(dispatchHelper.dispatchForceLogin);
+const mockedResetUserGrids = vi.mocked(resetUserGrids);
+const mockedLogout = vi.mocked(logout);
 
-const defaultUserGridState: UserSaveGridsState = {
-  userId: null,
-  savedGrids: {},
-};
+vi.mock('react-redux', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('react-redux')>();
+    return { ...actual, useDispatch: () => mockDispatch };
+});
 
-const makeTestStore = (
-  overrides?: Partial<{ login: LoginState; userSaveGrids: UserSaveGridsState }>
-) =>
-  configureStore({
-    reducer: {
-      login: loginReducer as Reducer<LoginState | undefined>,
-      userSaveGrids: userSaveGridsReducer as Reducer<UserSaveGridsState | undefined>,
-    },
-    preloadedState: {
-      login: { ...defaultLoginState, ...overrides?.login },
-      userSaveGrids: { ...defaultUserGridState, ...overrides?.userSaveGrids },
-    },
-  });
-
-// ----------------------------
-// 🔹 Tests
-// ----------------------------
 describe('useAuthInit', () => {
-  const Wrapper = ({ children, store }: { children: React.ReactNode; store: ReturnType<typeof makeTestStore> }) => (
-    <Provider store={store}>{children}</Provider>
-  );
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('should initialize cookies, request user data, and dispatch login on success', async () => {
-    const store = makeTestStore({ login: { 
-      userId: undefined,
-      isLoggedIn: false,    
-      isLoading: true,
-      error: null,
-      fieldErrors: undefined, 
-    } });
-
-    mockInitializeCookies.mockResolvedValue(undefined);
-    mockRequestMe.mockResolvedValue({ success: true, userId: userLoggedAdmin });
-
-    renderHook(() => useAuthInit(), { 
-      wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper>
+    beforeEach(() => {
+        vi.clearAllMocks();
     });
 
-    await waitFor(() => {
-      expect(mockInitializeCookies).toHaveBeenCalled();
-      expect(mockRequestMe).toHaveBeenCalled();
-      expect(mockLoginActionCreator).toHaveBeenCalledWith(userLoggedAdmin);
-      expect(mockLogRecoverableError).not.toHaveBeenCalled();
+    it('initializes cookies, requests user data, and dispatches login on success', async () => {
+        mockedInitializeCookies.mockResolvedValue(undefined);
+        mockedRequestMe.mockResolvedValue({
+            success: true,
+            userId: userLoggedInNoAdmin,
+            role: 'user',
+        });
+
+        renderHookWithProviders(() => useAuthInit(), { preloadedState: authTestStates.null });
+
+        await waitFor(() => {
+            expect(mockedInitializeCookies).toHaveBeenCalled();
+            expect(mockedRequestMe).toHaveBeenCalled();
+            expect(mockedDispatchForceLogin).toHaveBeenCalledWith(
+                expect.any(Function),
+                userLoggedInNoAdmin,
+                'user',
+            );
+        });
     });
-  });
 
-  it('should dispatch logout, resetUserGrid and log error if initializeCookies fails', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: false, userId: 42, isLoading: false, error: null, fieldErrors: undefined } });
+    it('dispatches logout + resetUserGrid if initializeCookies fails', async () => {
+        mockedInitializeCookies.mockRejectedValue(new Error('Cookie failure'));
 
-    const mockError = new Error('Failed to initialize cookies');
-    mockInitializeCookies.mockRejectedValue(mockError);
+        // 🔹 Act: Hook rendern mit "nicht eingeloggtem" Zustand,
+        // damit der Guard initAuth() ausführt
+        renderHookWithProviders(() => useAuthInit(), {
+            preloadedState: {
+                login: {
+                    isLoggedIn: false,
+                    userId: userLoggedInNoAdmin,
+                    role: 'user',
+                    isLoading: false,
+                    error: null,
+                    fieldErrors: undefined,
+                },
+                userGrid: authTestStates.user.userGrid,
+            },
+        });
 
-    renderHook(() => useAuthInit(), { wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper> });
-
-    await waitFor(() => {
-      expect(mockInitializeCookies).toHaveBeenCalled();
-      expect(mockRequestMe).not.toHaveBeenCalled();
-      expect(mockLogoutActionCreator).toHaveBeenCalled();
-      expect(mockResetUserGridActionCreator).toHaveBeenCalledWith(42);
-      expect(mockLogRecoverableError).toHaveBeenCalled();
+        await waitFor(() => {
+            expect(mockedInitializeCookies).toHaveBeenCalled();
+            expect(mockedRequestMe).not.toHaveBeenCalled();
+            expect(mockDispatch).toHaveBeenCalledWith(mockedResetUserGrids(userLoggedInNoAdmin));
+            expect(mockDispatch).toHaveBeenCalledWith(mockedLogout());
+        });
     });
-  });
 
-  it('should dispatch logout, resetUserGrid and log error if requestMe fails', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: false, userId: 42, isLoading: false, error: null, fieldErrors: undefined } });
+    it('does nothing if already logged in (admin)', async () => {
+        mockedInitializeCookies.mockResolvedValue(undefined);
+        renderHookWithProviders(() => useAuthInit(), {
+            preloadedState: {
+                login: {
+                    isLoggedIn: true,
+                    userId: userLoggedInNoAdmin,
+                    role: 'user',
+                    isLoading: false,
+                    error: null,
+                    fieldErrors: undefined,
+                },
+                userGrid: authTestStates.user.userGrid,
+            },
+        });
 
-    mockInitializeCookies.mockResolvedValue(undefined);
-    mockRequestMe.mockRejectedValue(new Error('Unauthorized'));
-
-    renderHook(() => useAuthInit(), { wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper> });
-
-    await waitFor(() => {
-      expect(mockInitializeCookies).toHaveBeenCalled();
-      expect(mockRequestMe).toHaveBeenCalled();
-      expect(mockLogoutActionCreator).toHaveBeenCalled();
-      expect(mockResetUserGridActionCreator).toHaveBeenCalledWith(42);
-      expect(mockLogRecoverableError).toHaveBeenCalled();
+        await waitFor(() => {
+            expect(mockedInitializeCookies).not.toHaveBeenCalled();
+            expect(mockedRequestMe).not.toHaveBeenCalled();
+            expect(mockedDispatchForceLogin).not.toHaveBeenCalled();
+            expect(mockDispatch).not.toHaveBeenCalledWith(
+                mockedResetUserGrids(userLoggedInNoAdmin),
+            );
+            expect(mockDispatch).not.toHaveBeenCalledWith(mockedLogout());
+        });
     });
-  });
-
-  it('should not perform API calls if already logged in', async () => {
-    const store = makeTestStore({ login: { isLoggedIn: true, userId: userLoggedAdmin, isLoading: false, error: null, fieldErrors: undefined } });
-
-    renderHook(() => useAuthInit(), { wrapper: ({ children }) => <Wrapper store={store}>{children}</Wrapper> });
-
-    await waitFor(() => {
-      expect(mockInitializeCookies).not.toHaveBeenCalled();
-      expect(mockRequestMe).not.toHaveBeenCalled();
-      expect(mockLogoutActionCreator).not.toHaveBeenCalled();
-      expect(mockResetUserGridActionCreator).not.toHaveBeenCalled();
-    });
-  });
 });
