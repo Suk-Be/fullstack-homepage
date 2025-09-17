@@ -8,7 +8,7 @@ import { apiUrl } from '@/utils/apiBaseUrl';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
+import { render, renderHook } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
 import React, { ReactNode } from 'react';
@@ -43,17 +43,17 @@ const authProviderUrls = [
 ];
 
 const rootReducer = combineReducers({
-  login: loginReducer,
-  userGrid: userSaveGridsReducer, // <- genau wie im echten Store
+    login: loginReducer,
+    userGrid: userSaveGridsReducer, // <- genau wie im echten Store
 });
 
 type PreloadedState = Partial<RootState>;
 
 export const setupStore = (preloadedState?: PreloadedState) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
+    configureStore({
+        reducer: rootReducer,
+        preloadedState,
+    });
 
 /**
  * Useful for mocking navigating pages
@@ -107,15 +107,15 @@ const renderWithProviders = (
     return {
         store,
         ...render(
-          <ReduxProvider store={store}>
-              <MemoryRouter initialEntries={[route]}>
-                  <ThemeProvider theme={theme}>
-                      <CssBaseline />
-                      {ui}
-                  </ThemeProvider>
-              </MemoryRouter>
-          </ReduxProvider>,
-        )
+            <ReduxProvider store={store}>
+                <MemoryRouter initialEntries={[route]}>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        {ui}
+                    </ThemeProvider>
+                </MemoryRouter>
+            </ReduxProvider>,
+        ),
     };
 };
 
@@ -178,12 +178,32 @@ const renderWithProvidersDOM = (
     };
 };
 
-export {
-  authProviderUrls,
-  navigateTo,
-  renderWithProviders,
-  renderWithProvidersDOM,
-  simluateDelay,
-  simulateError
+const renderHookWithProviders = <T,>(
+    hook: () => T,
+    { preloadedState }: { preloadedState?: Partial<RootState> } = {},
+) => {
+    const store = setupStore(preloadedState);
+
+    const Wrapper = ({ children }: { children: React.ReactNode }) => (
+        <ReduxProvider store={store}>
+            <MemoryRouter>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    {children}
+                </ThemeProvider>
+            </MemoryRouter>
+        </ReduxProvider>
+    );
+
+    return renderHook(hook, { wrapper: Wrapper });
 };
 
+export {
+    authProviderUrls,
+    navigateTo,
+    renderHookWithProviders,
+    renderWithProviders,
+    renderWithProvidersDOM,
+    simluateDelay,
+    simulateError,
+};
