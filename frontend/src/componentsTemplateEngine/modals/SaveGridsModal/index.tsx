@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, selectUserRole } from '@/store/selectors/loginSelectors';
 import { selectGridsFromThisUser } from '@/store/selectors/userGridSelectors';
 import {
+    fetchUserGridsThunk,
     getGridsFromLocalStorage,
     resetUserGridsThunk,
     saveInitialGrid,
@@ -53,6 +54,21 @@ function SaveGridsModal() {
             dispatch(getGridsFromLocalStorage(userId));
         }
     }, [userId, dispatch]);
+
+    const handleShowGrids = async () => {
+        if (!userId) return;
+
+        setIsButtonDisabled(true);
+
+        try {
+            await dispatch(fetchUserGridsThunk(userId)).unwrap();
+            setHasGridIsOpen(true); // SavedGridList wird angezeigt
+        } catch (err) {
+            alert('Fehler beim Laden der Grids: ' + err);
+        } finally {
+            setIsButtonDisabled(false);
+        }
+    };
 
     const handleGrid = () => {
         if (!gridName.trim()) {
@@ -202,6 +218,14 @@ function SaveGridsModal() {
                                     disabled={isButtonDisabled}
                                 >
                                     save
+                                </Button>
+
+                                <Button
+                                    className="py-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                                    onClick={handleShowGrids}
+                                    disabled={isButtonDisabled}
+                                >
+                                    Show Grids
                                 </Button>
 
                                 {userRole === 'admin' && (

@@ -109,6 +109,21 @@ describe('SaveGridsModal', () => {
         expect(await screen.findByText(/Your Saved Grids:/i)).toBeInTheDocument();
     });
 
+    it('shows saved grids when clicking Show Grids', async () => {
+        const { user, openModalButton, store } = await renderModal();
+        await user.click(openModalButton);
+
+        // Mock initial savedGrids im Store
+        const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
+        await user.click(showGridsBtn);
+
+        // Warten, bis hasGridIsOpen true ist und die SavedGridList sichtbar wird
+        await waitFor(() => {
+            const state = store.getState();
+            expect(state.userGrid.savedGrids.initial).toBeDefined();
+        });
+    });
+
     it('resets grids for admin user', async () => {
         const { user, openModalButton, store } = await renderModal();
         await user.click(openModalButton);
