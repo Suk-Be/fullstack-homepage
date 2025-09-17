@@ -3,7 +3,6 @@
 use App\Models\User;
 use App\Models\Grid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
@@ -14,21 +13,22 @@ beforeEach(function () {
 });
 
 it('returns a list of grids for the authenticated user', function () {
-    Grid::factory()->count(3)->for($this->user)->create();
+    $grids = Grid::factory()->count(3)->for($this->user)->create();
 
     $response = $this->getJson(route('grids.index'));
 
     $response->assertOk()
         ->assertJsonCount(3, 'data');
 
-    $returnedIds = collect($response->json('data'))->pluck('id')->all();
-    $expectedIds = Grid::where('user_id', $this->user->id)->pluck('id')->all();
-    expect($returnedIds)->toMatchArray($expectedIds);
+    // Prüfe, dass layoutId im Response enthalten ist
+    $layoutIds = collect($response->json('data'))->pluck('layoutId')->all();
+    $expectedIds = $grids->pluck('layout_id')->all();
+    expect($layoutIds)->toMatchArray($expectedIds);
 });
 
 it('can create a new grid', function () {
     $payload = [
-        'layout_id' => (string) Str::uuid(),
+        'layoutId' => (string) Str::uuid(),
         'name' => 'My Test Grid',
         'config' => ['columns' => 3],
         'timestamp' => now()->toISOString(),
@@ -39,6 +39,7 @@ it('can create a new grid', function () {
     $response->assertCreated()
         ->assertJsonFragment([
             'name' => 'My Test Grid',
+            'layoutId' => $payload['layoutId'],
         ]);
 
     expect(Grid::count())->toBe(1);
@@ -48,7 +49,7 @@ it('validates required fields when creating a grid', function () {
     $response = $this->postJson(route('grids.store'), []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['layout_id', 'config', 'timestamp']);
+        ->assertJsonValidationErrors(['layoutId', 'config', 'timestamp']);
 });
 
 it('can update a grid', function () {
@@ -56,16 +57,12 @@ it('can update a grid', function () {
         'name' => 'Old Name',
     ]);
 
-    $payload = [
-        'name' => 'Updated Name',
-    ];
+    $payload = ['name' => 'Updated Name'];
 
     $response = $this->putJson(route('grids.update', $grid), $payload);
 
     $response->assertOk()
-        ->assertJsonFragment([
-            'name' => 'Updated Name',
-        ]);
+        ->assertJsonFragment(['name' => 'Updated Name']);
 
     expect($grid->fresh()->name)->toBe('Updated Name');
 });
@@ -78,26 +75,27 @@ it('can delete a grid by its layoutId', function () {
     $response = $this->deleteJson(route('grids.destroyByLayout', '123e4567-e89b-12d3-a456-426614174000'));
 
     $response->assertNoContent();
-
     expect(Grid::count())->toBe(0);
 });
 
 it('denies another user from deleting a grid by layoutId', function () {
-    // Angemeldeter Benutzer (nicht der Besitzer des Grids)
-    $actingUser = User::factory()->create();
-    $this->actingAs($actingUser);
-
-    // Der Benutzer, dem das Grid gehört
     $owner = User::factory()->create();
     $grid = Grid::factory()->for($owner)->create([
         'layout_id' => '123e4567-e89b-12d3-a456-426614174000',
     ]);
 
-    // Der angemeldete Benutzer versucht, das fremde Grid zu löschen
-    $response = $this->deleteJson(route('grids.destroyByLayout', '123e4567-e89b-12d3-a456-426614174000'));
+    $this->actingAs(User::factory()->create());
 
-    // Die Anfrage sollte fehlschlagen, da die Policy den Zugriff verweigert
+    $response = $this->deleteJson(route('grids.destroyByLayout', $grid->layout_id));
     $response->assertForbidden();
+});
+
+it('denies a regular user from resetting their own grids', function () {
+    Grid::factory()->count(5)->for($this->user)->create();
+
+    $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
+    $response->assertForbidden();
+    expect(Grid::where('user_id', $this->user->id)->count())->toBe(5);
 });
 
 it('denies an admin from resetting another users grids', function () {
@@ -108,51 +106,28 @@ it('denies an admin from resetting another users grids', function () {
     Grid::factory()->count(5)->for($otherUser)->create();
 
     $response = $this->deleteJson(route('grids.resetUserGrids', $otherUser->id));
-
     $response->assertForbidden();
     expect(Grid::where('user_id', $otherUser->id)->count())->toBe(5);
 });
 
-it('denies a regular user from resetting their own grids', function () {
-    Grid::factory()->count(5)->for($this->user)->create();
-
-    $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
-
-    $response->assertForbidden();
-    expect(Grid::where('user_id', $this->user->id)->count())->toBe(5);
-});
-
-it('denies a user from resetting their own grids via the resetUserGrids route', function () {
-    Grid::factory()->count(5)->for($this->user)->create();
-
-    $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
-
-    $response->assertForbidden();
-});
-
 it('returns only the authenticated users own grids via myGrids', function () {
-    // Grids für den angemeldeten User
     $ownGrids = Grid::factory()->count(3)->for($this->user)->create();
-
-    // Grids für einen anderen User
     $otherUser = User::factory()->create();
     Grid::factory()->count(2)->for($otherUser)->create();
 
-    $response = $this->getJson('/api/user/grids'); // deine Route für myGrids
+    $response = $this->getJson(route('grids.index')); // myGrids Route
 
     $response->assertOk()
-        ->assertJsonCount(3, 'data'); // Resource Collection packt Items in "data"
+        ->assertJsonCount(3, 'data');
 
-    // Prüfen, dass die IDs nur zu den eigenen Grids gehören
-    $ids = collect($response->json('data'))->pluck('id')->all();
-    expect($ids)->toMatchArray($ownGrids->pluck('id')->all());
+    $layoutIds = collect($response->json('data'))->pluck('layoutId')->all();
+    $expectedIds = $ownGrids->pluck('layout_id')->all();
+    expect($layoutIds)->toMatchArray($expectedIds);
 });
 
-it('denies access to myGrids if not authenticated', function () {
-    // Logout, um sicherzustellen, dass kein User angemeldet ist
+it('denies access to grids if not authenticated', function () {
     auth()->logout();
 
-    $response = $this->getJson('/api/user/grids');
-
+    $response = $this->getJson(route('grids.index'));
     $response->assertUnauthorized();
 });

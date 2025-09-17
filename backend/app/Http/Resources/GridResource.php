@@ -15,13 +15,13 @@ class GridResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'layout_id' => $this->layout_id,
-            'config' => $this->config,
+            'id'        => $this->id,
+            'name'      => $this->name,
+            'layoutId'  => $this->layout_id, // hier schon camelCase!
+            'config'    => $this->config,
             'timestamp' => $this->timestamp,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

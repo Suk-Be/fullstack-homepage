@@ -25,13 +25,15 @@ class GridSeeder extends Seeder
                 ['email' => $data['email']],
                 [
                     'name' => $data['name'],
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make('test@test.de'),
                 ]
             );
 
             Grid::factory()->count(3)->create([
                 'user_id' => $user->id,
-            ]);
+            ])->each(function ($grid, $index) use ($user) {
+                $grid->update(['name' => "grid_{$user->id}_{$index}"]);
+            });
         }
     }
 }

@@ -9,53 +9,68 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\GridResource;
 
-
 class GridController extends Controller
 {
     /**
-     * Display Grid as JSON resource latest entries first
+     * Display the authenticated user's grids as JSON, keyed by layoutId,
+     * with the latest entries first.
      */
     public function index()
     {
-        return GridResource::collection(Auth::user()->grids()->latest()->get());
+        $grids = Auth::user()->grids()->latest()->get();
+        $resources = GridResource::collection($grids)->resolve();
+
+        $mapped = collect($resources)->mapWithKeys(fn($grid) => [$grid['layoutId'] => $grid]);
+
+        return response()->json(['data' => $mapped]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new grid for the authenticated user.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'layout_id' => 'required|uuid',
+            'layoutId' => 'required|uuid',
             'name' => 'nullable|string|max:255',
             'config' => 'required|array',
             'timestamp' => 'required|date',
         ]);
 
-        $grid = Auth::user()->grids()->create($validated);
+        $gridData = [
+            'layout_id' => $validated['layoutId'], // DB-Feld
+            'name' => $validated['name'] ?? null,
+            'config' => $validated['config'],
+            'timestamp' => $validated['timestamp'],
+        ];
 
-        return response()->json($grid, 201);
+        $grid = Auth::user()->grids()->create($gridData);
+
+        return response()->json(new GridResource($grid), 201);
     }
 
+
     /**
-     * Display the specified resource.
+     * Show a specific grid belonging to the authenticated user.
      */
     public function show(string $id)
     {
         $grid = Grid::where('user_id', Auth::id())->findOrFail($id);
-
         $this->authorize('view', $grid);
 
-        return response()->json($grid);
+        $resource = (new GridResource($grid))->resolve();
+        $resource['layoutId'] = $resource['layout_id'];
+        unset($resource['layout_id']);
+
+        return response()->json($resource);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a specific grid belonging to the authenticated user.
      */
     public function update(Request $request, string $id)
     {
         $grid = Grid::where('user_id', Auth::id())->findOrFail($id);
-
         $this->authorize('update', $grid);
 
         $validated = $request->validate([
@@ -66,27 +81,25 @@ class GridController extends Controller
 
         $grid->update($validated);
 
-        return response()->json($grid);
+        $resource = (new GridResource($grid))->resolve();
+
+        return response()->json($resource);
     }
 
     /**
-     * Remove this specified layout config if you are the owner from storage.
+     * Delete a grid by its layoutId, if owned by the authenticated user.
      */
     public function destroyByLayout(string $layoutId)
     {
-        // firstOrFail() wirft eine 404, wenn es nicht existiert.
         $grid = Grid::where('layout_id', $layoutId)->firstOrFail();
-
-        // GridPolicy check, Wenn nicht, wird eine 403 Forbidden-Antwort zurückgegeben.
         $this->authorize('delete', $grid);
 
         $grid->delete();
-
         return response()->noContent();
     }
 
     /**
-     * Remove savedGrids (can be many layoutIds) if you are admin from storage.
+     * Reset all grids for a specific user (admin only).
      */
     public function resetUserGrids(int $userId)
     {
@@ -94,7 +107,6 @@ class GridController extends Controller
         $this->authorize('reset', $user);
 
         Grid::where('user_id', $userId)->delete();
-
         return response()->noContent();
     }
 }
