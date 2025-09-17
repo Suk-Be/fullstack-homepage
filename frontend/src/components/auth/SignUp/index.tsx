@@ -5,20 +5,21 @@ import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIco
 import { ParagraphHP } from '@/components/TextElements';
 import useToggle from '@/hooks/useToggle';
 import { AppDispatch } from '@/store';
-import { forceLogin, logout } from '@/store/loginSlice';
+import { logout } from '@/store/loginSlice';
 import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
+import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
 import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
+    Typography,
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -112,7 +113,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         });
 
         if (result.success) {
-            dispatch(forceLogin(result.userId!));
+            dispatchForceLogin(dispatch, result.userId!, result.role!);
             // UserId in der Slice setzen, damit neue Grids korrekt gespeichert werden
             // dispatch(setUserIdForGrids(result.userId!));
 

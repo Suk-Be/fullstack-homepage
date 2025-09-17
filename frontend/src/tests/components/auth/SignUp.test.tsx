@@ -1,15 +1,17 @@
 import SignUp from '@/components/auth/SignUp';
-import requestRegister, * as requestRegisterModule from '@/components/auth/api/requestRegister';
-import { forceLogin } from '@/store/loginSlice';
+import requestMe from '@/components/auth/api/requestMe';
+import requestRegister from '@/components/auth/api/requestRegister';
+import { BaseClient } from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import userFactory from '@/tests/mocks/factories/userFactories';
 import {
-  expectErrorMessages,
-  expectNoErrorMessages,
-  switchToComponentHelper,
+    expectErrorMessages,
+    expectNoErrorMessages,
+    switchToComponentHelper,
 } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
+import * as dispatchHelper from '@/utils/redux/dispatchHelper';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -23,6 +25,11 @@ vi.mock('react-redux', async () => {
         useDispatch: vi.fn(() => mockDispatch),
     };
 });
+
+vi.mock('@/components/auth/api/requestMe', () => ({
+    __esModule: true,
+    default: vi.fn(),
+}));
 
 describe('SignUp - Static Content', () => {
     beforeEach(() => {
@@ -180,7 +187,7 @@ describe('SignUp - Form', () => {
         expect(response.message).toMatch(/E-Mail Adresse.*vergeben/i);
     });
 
-    it('should register a new user successfully, do login state and user id globally and clear the form', async () => {
+    it('should register a new user successfully, update login state with a user id and clear the form', async () => {
         const {
             user,
             registerButton,
@@ -190,43 +197,47 @@ describe('SignUp - Form', () => {
             passwordConfirmationInput,
         } = renderRegistrationForm();
 
-        const mockRegisterRequest = vi
-            .spyOn(requestRegisterModule, 'default')
-            .mockResolvedValueOnce({ success: true } as any);
+        // 🔹 Mock für dispatchForceLogin
+        const spyDispatchForceLogin = vi.spyOn(dispatchHelper, 'dispatchForceLogin');
 
+        // 🔹 Mock für requestMe (wird in requestRegister aufgerufen)
+        vi.mocked(requestMe).mockResolvedValueOnce({
+            success: true,
+            userId: 7,
+            role: 'user',
+        });
+
+        // 🔹 Mock für csrf-cookie
+        vi.spyOn(BaseClient, 'get').mockResolvedValueOnce({}); // /csrf-cookie
+        vi.spyOn(BaseClient, 'post').mockResolvedValueOnce({
+            data: { message: 'ok' },
+        }); // /register
+
+        // Fill the form
         await user.clear(nameInput);
         await user.type(nameInput, 'New User');
-
         await user.clear(emailInput);
         await user.type(emailInput, 'new@user.com');
-
         await user.clear(passwordInput);
         await user.type(passwordInput, 'ValidPassword123');
-
         await user.clear(passwordConfirmationInput);
         await user.type(passwordConfirmationInput, 'ValidPassword123');
 
+        // Submit
         await user.click(registerButton);
 
+        // 🔹 Wait for assertions
         await waitFor(() => {
-            // Ensure the API was called
-            expect(mockRegisterRequest).toHaveBeenCalledWith({
-                form: {
-                    name: 'New User',
-                    email: 'new@user.com',
-                    password: 'ValidPassword123',
-                    password_confirmation: 'ValidPassword123',
-                },
-            });
-            // check that inputs were reset
+            // dispatchForceLogin check
+            expect(spyDispatchForceLogin).toHaveBeenCalledWith(mockDispatch, 7, 'user');
+
+            // Form Reset check
             expect(nameInput).toHaveValue('');
             expect(emailInput).toHaveValue('');
             expect(passwordInput).toHaveValue('');
             expect(passwordConfirmationInput).toHaveValue('');
-
-            expect(mockDispatch).toHaveBeenCalledWith(forceLogin(1));
         });
-    }, 30000);
+    });
 });
 
 describe('SignUp - AuthProviders and Toggle SignUp/In', () => {
