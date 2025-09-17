@@ -2,9 +2,13 @@ import Button from '@/componentsTemplateEngine/buttons/Button';
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
 import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectUserId } from '@/store/selectors/loginSelectors';
+import { selectUserId, selectUserRole } from '@/store/selectors/loginSelectors';
 import { selectGridsFromThisUser } from '@/store/selectors/userGridSelectors';
-import { getGridsFromLocalStorage, resetUserGridsThunk, saveInitialGrid } from '@/store/userSaveGridsSlice';
+import {
+    getGridsFromLocalStorage,
+    resetUserGridsThunk,
+    saveInitialGrid,
+} from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
@@ -32,25 +36,23 @@ function SaveGridsModal() {
 
     const dispatch = useAppDispatch();
     const userId = useAppSelector(selectUserId);
+    const userRole = useAppSelector(selectUserRole);
     const userGrids = useAppSelector(selectGridsFromThisUser);
 
     // Läuft nur, wenn Modal geöffnet wird
     useEffect(() => {
-      if (isOpen) {
-        setGridName('');
-        inputRef.current?.focus();
-      }
+        if (isOpen) {
+            setGridName('');
+            inputRef.current?.focus();
+        }
     }, [isOpen]);
-
-
 
     // Läuft nur, wenn sich die userId ändert
     useEffect(() => {
-      if (userId) {
-        dispatch(getGridsFromLocalStorage(userId));
-      }
+        if (userId) {
+            dispatch(getGridsFromLocalStorage(userId));
+        }
     }, [userId, dispatch]);
-
 
     const handleGrid = () => {
         if (!gridName.trim()) {
@@ -59,12 +61,12 @@ function SaveGridsModal() {
         }
 
         const gridNameAlreadyExists = userGrids?.some(
-            (grid) => grid.name.toLowerCase() === gridName.toLowerCase()
+            (grid) => grid.name.toLowerCase() === gridName.toLowerCase(),
         );
 
         if (gridNameAlreadyExists) {
             setErrorMessage(
-                `A grid with the name "${gridName}" already exists. Please choose a different name.`
+                `A grid with the name "${gridName}" already exists. Please choose a different name.`,
             );
             return;
         }
@@ -80,28 +82,26 @@ function SaveGridsModal() {
     };
 
     const resetGrids = async () => {
-      if (!userId) return;
+        if (!userId) return;
 
-      if (!confirm('Alle Grids dieses Users wirklich löschen?')) return;
+        if (!confirm('Alle Grids dieses Users wirklich löschen?')) return;
 
-      setIsButtonDisabled(true);
+        setIsButtonDisabled(true);
 
-      await dispatch(resetUserGridsThunk(userId))
-        .unwrap()
-        .then(() => {
-          alert('Grids erfolgreich zurückgesetzt!');
-          setHasGridIsOpen(false);
-          setGridName('');
-        })
-        .catch((err) => {
-          alert('Fehler beim Reset: ' + err);
-        })
-        .finally(() => {
-          setIsButtonDisabled(false);
-        });
+        await dispatch(resetUserGridsThunk(userId))
+            .unwrap()
+            .then(() => {
+                alert('Grids erfolgreich zurückgesetzt!');
+                setHasGridIsOpen(false);
+                setGridName('');
+            })
+            .catch((err) => {
+                alert('Fehler beim Reset: ' + err);
+            })
+            .finally(() => {
+                setIsButtonDisabled(false);
+            });
     };
-
-
 
     return (
         <div className="flex flex-col gap-2 font-sans" {...testId('dialog-modal')}>
@@ -146,29 +146,36 @@ function SaveGridsModal() {
                             </DialogTitle>
 
                             {!hasGrid && (
-                                <div className='grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4  items-center'>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4  items-center">
                                     <input
-                                      ref={inputRef}
-                                      name="full_name"
-                                      type="text"
-                                      placeholder="name of the grid"
-                                      value={gridName}
-                                      onChange={(e) => {
-                                        const value = e.target.value;
-                                        setGridName(value)
-                                        if (value.length > 30) {
-                                          setErrorMessage(`${value.length}/30 characters – the grid name is too long.`);
-                                        } else {
-                                          setErrorMessage('');
-                                        }
-                                      }}
-                                      onFocus={() => setErrorMessage('')}
-                                      // maxLength={255} backend linit
-                                      className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
+                                        ref={inputRef}
+                                        name="full_name"
+                                        type="text"
+                                        placeholder="name of the grid"
+                                        value={gridName}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            setGridName(value);
+                                            if (value.length > 30) {
+                                                setErrorMessage(
+                                                    `${value.length}/30 characters – the grid name is too long.`,
+                                                );
+                                            } else {
+                                                setErrorMessage('');
+                                            }
+                                        }}
+                                        onFocus={() => setErrorMessage('')}
+                                        // maxLength={255} backend linit
+                                        className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
                                     />
 
                                     {errorMessage && (
-                                        <Description className="text-green-400 text-sm mb-4" {...testId('grid-error')}>{errorMessage}</Description>
+                                        <Description
+                                            className="text-green-400 text-sm mb-4"
+                                            {...testId('grid-error')}
+                                        >
+                                            {errorMessage}
+                                        </Description>
                                     )}
                                 </div>
                             )}
@@ -197,21 +204,24 @@ function SaveGridsModal() {
                                     save
                                 </Button>
 
-                                  <Button
-                                    className="py-4 rounded-xl 
-                                                text-white 
-                                                bg-gray-dark
-                                                data-[hover]:bg-gray 
-                                                data-[open]:bg-gray/700"
-                                    onClick={resetGrids}
-                                    disabled={isButtonDisabled}
-                                >
-                                    reset
-                                </Button>
+                                {userRole === 'admin' && (
+                                    <Button
+                                        className="py-4 rounded-xl 
+                                                  text-white 
+                                                  bg-gray-dark
+                                                  data-[hover]:bg-gray 
+                                                  data-[open]:bg-gray/700"
+                                        onClick={resetGrids}
+                                        disabled={isButtonDisabled}
+                                    >
+                                        reset
+                                    </Button>
+                                )}
 
                                 <Button
                                     className="py-4 rounded-xl bg-white text-gray-light"
                                     onClick={handleClose}
+                                    {...testId('close')}
                                 >
                                     close
                                 </Button>
