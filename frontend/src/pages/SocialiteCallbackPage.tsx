@@ -2,10 +2,11 @@ import Loading from '@/components/auth/shared-components/Loading';
 import { BaseClient } from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
 import { useAppSelector } from '@/store/hooks';
-import { forceLogin, logout } from '@/store/loginSlice';
+import { logout } from '@/store/loginSlice';
 import { selectLoginState } from '@/store/selectors/loginSelectors';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
+import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +21,7 @@ const SocialiteCallbackPage = () => {
             try {
                 await BaseClient.get('/csrf-cookie');
                 const res = await BaseClient.get('/me');
-                dispatch(forceLogin(res.data.id));
+                dispatchForceLogin(dispatch, res.data.id, res.data.role);
                 navigate('/');
             } catch (error) {
                 const axiosStatus = getAxiosStatus(error);
@@ -29,8 +30,8 @@ const SocialiteCallbackPage = () => {
                     error,
                     extra: { axiosStatus },
                 });
-                if(userId){
-                  dispatch(resetUserGrids(userId));
+                if (userId) {
+                    dispatch(resetUserGrids(userId));
                 }
                 dispatch(logout());
                 navigate('/');

@@ -45,7 +45,7 @@ describe('SocialiteCallbackPage', () => {
         renderWithProvidersDOM(<SocialiteCallbackPage />, {
             route: '/auth/callback',
             preloadedState: {
-                login: { isLoggedIn: false, userId: 42, isLoading: false, error: null }
+                login: { isLoggedIn: false, userId: 42, isLoading: false, error: null },
             },
         });
 
@@ -57,13 +57,13 @@ describe('SocialiteCallbackPage', () => {
     });
 
     it('should only logout when no userId is set', async () => {
-      renderWithProvidersDOM(<SocialiteCallbackPage />, {
-        preloadedState: { login: { isLoggedIn: false, userId: undefined } },
-      });
+        renderWithProvidersDOM(<SocialiteCallbackPage />, {
+            preloadedState: { login: { isLoggedIn: false, userId: undefined } },
+        });
 
-      await waitFor(() => {
-        expect(mockDispatch).not.toHaveBeenCalledWith(resetUserGrids(expect.anything()));
-        expect(mockDispatch).toHaveBeenCalledWith(logout());
-      });
+        await waitFor(() => {
+            expect(mockDispatch).not.toHaveBeenCalledWith(resetUserGrids(expect.anything()));
+            expect(mockDispatch).toHaveBeenCalledWith(logout());
+        });
     });
 });
