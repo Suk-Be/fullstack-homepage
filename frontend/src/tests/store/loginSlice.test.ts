@@ -1,6 +1,7 @@
 import reducer, { LoginState, loginThunk } from '@/store/loginSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { userLoggedInNoAdmin } from '../mocks/handlers';
 
 // Hoisted Mocks
 const {
@@ -62,7 +63,7 @@ describe('loginThunk', () => {
   it('should login successfully and update state', async () => {
     mockInitializeCookies.mockResolvedValue(undefined);
     mockPost.mockResolvedValue({ data: { message: 'Welcome' } });
-    mockRequestMe.mockResolvedValue({ success: true, userId: 42 });
+    mockRequestMe.mockResolvedValue({ success: true, userId: 42, role: userLoggedInNoAdmin });
 
     const store = makeStore();
 

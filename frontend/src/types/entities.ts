@@ -20,8 +20,9 @@ export type RegisterFormData = {
 
 export type LoginSuccessResponse = {
     success: true;
-    message?: string;
-    userId?: number;
+    message?: string | undefined;
+    userId: number;
+    role: "admin" | "user";
 };
 
 export type LoginErrorResponse = {

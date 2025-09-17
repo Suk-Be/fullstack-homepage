@@ -1,11 +1,12 @@
 export type PreloadedState<T> = Partial<T> | {};
 
 export interface User {
-    id: number;
-    name: string;
-    email: string;
-    email_verified_at?: string | null;
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';  // nur vom Backend
 }
+
 export interface UserSaveGridsState {
     userId: User['id'] | null;
     name?: string;
@@ -34,4 +35,9 @@ export type GridConfigKey = keyof GridConfig['config'];
 export interface LoginArgs {
     email: string;
     password: string;
+}
+
+export interface UserResponseSuccess {
+    userId: number | undefined;
+    role: 'user' | 'admin';
 }

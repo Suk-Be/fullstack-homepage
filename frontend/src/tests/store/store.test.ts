@@ -25,7 +25,7 @@ describe('Redux Store', () => {
     });
 
     it('should update login state when forceLogin is dispatched', () => {
-        store.dispatch(forceLogin(userLoggedInNoAdmin));
+        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
 
         const state = store.getState();
         expect(state.login.isLoggedIn).toBe(true);
@@ -33,7 +33,7 @@ describe('Redux Store', () => {
     });
 
     it('should reset login state when logout is dispatched', () => {
-        store.dispatch(forceLogin(userLoggedInNoAdmin));
+        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
         store.dispatch(logout());
 
         const state = store.getState();
@@ -42,7 +42,7 @@ describe('Redux Store', () => {
     });
 
     it('should add a grid for a logged-in user', () => {
-        store.dispatch(forceLogin(userLoggedInNoAdmin));
+        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
         store.dispatch(getGridsFromLocalStorage(userLoggedInNoAdmin));
 
         // 1. initial Grid anpassen
@@ -70,7 +70,7 @@ describe('Redux Store', () => {
     });
 
     it('should reset all grids when resetUserGrid is dispatched', () => {
-        store.dispatch(forceLogin(userLoggedAdmin));
+        store.dispatch(forceLogin({userId: userLoggedAdmin, role: 'admin'}));
 
         // initial bearbeiten
         store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '5' }));

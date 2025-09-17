@@ -23,6 +23,7 @@ export interface LoginState {
     isLoading: boolean;
     error: string | null;
     fieldErrors?: Record<string, string[]>;
+    role?: 'admin' | 'user' | null;
 }
 
 const initialState: LoginState = {
@@ -31,6 +32,7 @@ const initialState: LoginState = {
     isLoading: true,
     error: null,
     fieldErrors: undefined,
+    role: null
 };
 
 // ---------- AsyncThunk ----------
@@ -53,11 +55,12 @@ export const loginThunk = createAsyncThunk<
 
         // console.log('meResult: ', meResult);
 
-        if (meResult?.success && meResult.userId !== undefined) {
+        if (meResult?.success && meResult.userId !== undefined && meResult.role) {
             return {
                 success: true,
                 message: response.data.message || 'Login erfolgreich!',
                 userId: meResult.userId,
+                role: meResult.role
             };
         } else {
             return rejectWithValue({
@@ -86,12 +89,13 @@ const loginSlice = createSlice({
             state.error = null;
             state.fieldErrors = undefined;
         },
-        forceLogin(state, action: PayloadAction<number>) {
-            state.userId = action.payload;
+        forceLogin(state, action: PayloadAction<{ userId: number, role: 'admin' | 'user' | null }>) {
+            state.userId = action.payload.userId;
             state.isLoggedIn = true;
             state.isLoading = false;
             state.error = null;
             state.fieldErrors = undefined;
+            state.role = action.payload.role;
         },
         login(state) {
             state.isLoggedIn = true;
@@ -110,6 +114,7 @@ const loginSlice = createSlice({
             .addCase(loginThunk.fulfilled, (state, action) => {
                 if (action.payload.success) {
                     state.userId = action.payload.userId ?? undefined;
+                    state.role = action.payload.role ?? null; 
                     state.isLoggedIn = true;
                 }
                 state.isLoading = false;
