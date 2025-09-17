@@ -7,15 +7,17 @@ use App\Models\Grid;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\GridResource;
+
 
 class GridController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display Grid as JSON resource latest entries first
      */
     public function index()
     {
-        return Auth::user()->grids()->get();
+        return GridResource::collection(Auth::user()->grids()->latest()->get());
     }
 
     /**
@@ -95,5 +97,4 @@ class GridController extends Controller
 
         return response()->noContent();
     }
-
 }

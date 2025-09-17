@@ -13,6 +13,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Normale REST-Routen, die haben einen Standardnamen (z.B. grids.destroy)
     Route::apiResource('grids', GridController::class);
 
+    Route::get('/user/grids', [GridController::class, 'index']);
+
     // Grid nach layout_id löschen
     Route::delete('grids/by-layout/{layoutId}', [GridController::class, 'destroyByLayout'])->name('grids.destroyByLayout');
 

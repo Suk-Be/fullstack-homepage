@@ -19,7 +19,11 @@ it('returns a list of grids for the authenticated user', function () {
     $response = $this->getJson(route('grids.index'));
 
     $response->assertOk()
-        ->assertJsonCount(3);
+        ->assertJsonCount(3, 'data');
+
+    $returnedIds = collect($response->json('data'))->pluck('id')->all();
+    $expectedIds = Grid::where('user_id', $this->user->id)->pluck('id')->all();
+    expect($returnedIds)->toMatchArray($expectedIds);
 });
 
 it('can create a new grid', function () {
@@ -124,4 +128,31 @@ it('denies a user from resetting their own grids via the resetUserGrids route', 
     $response = $this->deleteJson(route('grids.resetUserGrids', $this->user->id));
 
     $response->assertForbidden();
+});
+
+it('returns only the authenticated users own grids via myGrids', function () {
+    // Grids für den angemeldeten User
+    $ownGrids = Grid::factory()->count(3)->for($this->user)->create();
+
+    // Grids für einen anderen User
+    $otherUser = User::factory()->create();
+    Grid::factory()->count(2)->for($otherUser)->create();
+
+    $response = $this->getJson('/api/user/grids'); // deine Route für myGrids
+
+    $response->assertOk()
+        ->assertJsonCount(3, 'data'); // Resource Collection packt Items in "data"
+
+    // Prüfen, dass die IDs nur zu den eigenen Grids gehören
+    $ids = collect($response->json('data'))->pluck('id')->all();
+    expect($ids)->toMatchArray($ownGrids->pluck('id')->all());
+});
+
+it('denies access to myGrids if not authenticated', function () {
+    // Logout, um sicherzustellen, dass kein User angemeldet ist
+    auth()->logout();
+
+    $response = $this->getJson('/api/user/grids');
+
+    $response->assertUnauthorized();
 });
