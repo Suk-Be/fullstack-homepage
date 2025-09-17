@@ -3,6 +3,7 @@ import requestRegister from '@/components/auth/api/requestRegister';
 import { BaseClient } from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
+import { userLoggedAdmin } from '@/tests/mocks/handlers';
 import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
@@ -35,14 +36,14 @@ describe('requestRegister', () => {
 
   it('registriert einen neuen Benutzer erfolgreich', async () => {
     mockPost.mockResolvedValue({ data: { message: 'Die Registrierung hat geklappt!' } });
-    mockRequestMe.mockResolvedValue({ success: true, userId: 1 });
+    mockRequestMe.mockResolvedValue({ success: true, userId: userLoggedAdmin, role: 'admin' });
 
     const result = await requestRegister({ form: validForm });
 
     expect(result.success).toBe(true);
     expect(result.message).toBe('Die Registrierung hat geklappt!');
     if (result.success) {
-      expect(result.userId).toBe(1);
+      expect(result.userId).toBe(userLoggedAdmin);
     }
     expect(initializeCookies).toHaveBeenCalled();
   });

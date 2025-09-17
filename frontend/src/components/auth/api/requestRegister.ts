@@ -16,20 +16,24 @@ const requestRegister = async ({
 }: RegisterUserParams): Promise<LoginSuccessResponse | LoginErrorResponse> => {
     try {
         await initializeCookies();
-        const response = await BaseClient.post('/register', form);
+        const formDataPost = await BaseClient.post('/register', form);
 
         let userId: number | undefined = undefined;
+        let role: 'admin' | 'user' | undefined = undefined;
+
         const meResult = await requestMe();
-        if (meResult?.success && meResult.userId !== undefined) {
+        if (meResult?.success && meResult.userId !== undefined && meResult.role !== undefined) {
             userId = meResult.userId;
+            role = meResult.role;
         }
 
         return {
             ...setResponseValidationSuccess(
-                response.data.message || 'Die Registrierung hat geklappt!',
+                formDataPost.data.message || 'Die Registrierung hat geklappt!',
             ),
             userId,
-        };
+            role,
+        } as LoginErrorResponse;
     } catch (error: any) {
         // on 419 or 422
         await resetCookiesOnResponseError(error);

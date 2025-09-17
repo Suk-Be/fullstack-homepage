@@ -12,6 +12,7 @@ const requestMe = async (): Promise<LoginSuccessResponse | LoginErrorResponse> =
         return {
             ...responseObj,
             userId: user.id,
+            role: user.role,
         };
     } catch (error: unknown) {
         return setResponseValidationError(error);

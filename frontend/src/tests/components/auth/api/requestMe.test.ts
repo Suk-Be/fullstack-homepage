@@ -1,6 +1,6 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { BaseClient } from '@/plugins/axios';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('requestMe', () => {
     it('should fetch user data and return userId when successful', async () => {
@@ -11,6 +11,7 @@ describe('requestMe', () => {
 
         if (result.success) {
             expect(result.userId).toBe(1);
+            expect(result.role).toBe('user');
             expect(result.message).toMatch(/geholt/i);
         }
     });
@@ -23,6 +24,6 @@ describe('requestMe', () => {
 
         expect(result).toBeDefined();
         expect(result.success).toBe(false);
-        expect(result.message).toMatch(/error|network/i); 
+        expect(result.message).toMatch(/error|network/i);
     });
 });

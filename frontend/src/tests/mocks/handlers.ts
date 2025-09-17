@@ -8,8 +8,8 @@ import { db } from './db';
 
 const api = apiUrl();
 const base = baseUrl();
-export const userLoggedInNoAdmin = 999
-export const userLoggedAdmin = 123
+export const userLoggedInNoAdmin = 999;
+export const userLoggedAdmin = 123;
 
 interface ResetPasswordRequestBody {
     password: string;
@@ -41,24 +41,24 @@ export const handlers = [
         };
 
         const existingUser = db.user.findFirst({
-          where: {
-              email: {
-                  equals: body.email,
-              },
-          },
+            where: {
+                email: {
+                    equals: body.email,
+                },
+            },
         });
 
         if (existingUser) {
-          return HttpResponse.json(
-            {
-                message: ErrorMessages.SignUp.responseEmail,
-                fieldErrors: {
-                    email: [ErrorMessages.SignUp.responseEmail],
+            return HttpResponse.json(
+                {
+                    message: ErrorMessages.SignUp.responseEmail,
+                    fieldErrors: {
+                        email: [ErrorMessages.SignUp.responseEmail],
+                    },
                 },
-            },
-            { status: 422 },
-        );
-    }
+                { status: 422 },
+            );
+        }
 
         // ansonsten User erstellen
         db.user.create({
@@ -91,8 +91,8 @@ export const handlers = [
 
         const user = db.user.findFirst({
             where: {
-                email: { equals: email, },
-                password: { equals: password, },
+                email: { equals: email },
+                password: { equals: password },
             },
         });
 
@@ -101,8 +101,12 @@ export const handlers = [
                 {
                     message: ErrorMessages.SignIn.responseEmail,
                     errors: {
-                        email: ['Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.'],
-                        password: ['Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.']
+                        email: [
+                            'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
+                        ],
+                        password: [
+                            'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
+                        ],
                     },
                 },
                 { status: 422 },
@@ -153,34 +157,35 @@ export const handlers = [
 
     // ✅ Erfolgreicher Request
     http.get(`${base}/me`, () =>
-      HttpResponse.json(
-        {
-          id: 1,
-          name: 'Mock User',
-          email: 'mock@example.com',
-        },
-        { status: 200 }
-      )
+        HttpResponse.json(
+            {
+                id: 1,
+                name: 'Mock User',
+                email: 'mock@example.com',
+                role: 'user',
+            },
+            { status: 200 },
+        ),
     ),
 
     http.post(`${base}/reset-password`, async ({ request }) => {
         const body = (await request.json()) as ResetPasswordRequestBody;
 
         if (body.password !== body.password_confirmation) {
-          return HttpResponse.json({
-            success: false,
-            message: ErrorMessages.ResetPassword.password,
-            errors: {
-              password: [ErrorMessages.ResetPassword.password],
-              password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
-            },
-          });
+            return HttpResponse.json({
+                success: false,
+                message: ErrorMessages.ResetPassword.password,
+                errors: {
+                    password: [ErrorMessages.ResetPassword.password],
+                    password_confirmation: [ErrorMessages.ResetPassword.password_confirmation],
+                },
+            });
         }
 
         return HttpResponse.json({
-          success: true,
-          message: SuccessMessages.ResetPassword.requestSuccess,
-          body,
+            success: true,
+            message: SuccessMessages.ResetPassword.requestSuccess,
+            body,
         });
     }),
 
@@ -188,30 +193,24 @@ export const handlers = [
         const { userId } = params;
 
         if (userId === userLoggedAdmin.toString()) {
-          // response success
-          return new HttpResponse(null, { status: 204 });
+            // response success
+            return new HttpResponse(null, { status: 204 });
         }
 
         // otherwise
-        return HttpResponse.json(
-          { message: 'Authorization Failed' },
-          { status: 403 }
-        );
+        return HttpResponse.json({ message: 'Authorization Failed' }, { status: 403 });
     }),
 
     http.delete(`${api}/grids/by-layout/:layoutId`, ({ params }) => {
         const { layoutId } = params;
 
         if (layoutId) {
-          // response success
-          return new HttpResponse(null, { status: 204 });
+            // response success
+            return new HttpResponse(null, { status: 204 });
         }
 
         // otherwise
-        return HttpResponse.json(
-          { message: 'Ressource not found' },
-          { status: 404 }
-        );
+        return HttpResponse.json({ message: 'Ressource not found' }, { status: 404 });
     }),
 
     // fallback for catching future route mismatches during test debugging
