@@ -2,6 +2,7 @@ import * as requestLogoutModule from '@/components/auth/api/requestLogout';
 import LoggedInMenu from '@/components/header/LoggedInMenu';
 import { HPProps } from '@/data/HomePage';
 import { logout } from '@/store/loginSlice';
+import { mockLoggedInUserState } from '@/tests/mocks/redux';
 import type { PathAndReduxState } from '@/tests/utils/testRenderUtils';
 import { navigateTo, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
@@ -19,6 +20,11 @@ vi.mock('react-redux', async () => {
 });
 
 describe('LoggedInMenu', () => {
+    const routeAndLoggedUserState = {
+        route: '/',
+        preloadedState: mockLoggedInUserState,
+    };
+
     const renderUtilsComponent = () => {
         renderWithProviders(<LoggedInMenu />, {
             route: '/',
@@ -118,10 +124,7 @@ describe('LoggedInMenu', () => {
             default: (props: any) => <a {...props} />,
         }));
 
-        const { user, homepageLink } = renderUtilsPage({
-            route: '/',
-            preloadedState: { login: { isLoggedIn: true } },
-        });
+        const { user, homepageLink } = renderUtilsPage(routeAndLoggedUserState);
 
         await user.click(homepageLink);
 
@@ -130,10 +133,7 @@ describe('LoggedInMenu', () => {
     });
 
     it('should get Playground Page route when clicked in menu', async () => {
-        const { user, openButton } = renderUtilsPage({
-            route: '/',
-            preloadedState: { login: { isLoggedIn: true } },
-        });
+        const { user, openButton } = renderUtilsPage(routeAndLoggedUserState);
 
         await user.click(openButton);
 
@@ -144,10 +144,7 @@ describe('LoggedInMenu', () => {
     });
 
     it('should logout a logged in user and change login state to isLoggedIn to false', async () => {
-        const { user, openButton } = renderUtilsPage({
-            route: '/',
-            preloadedState: { login: { isLoggedIn: true } },
-        });
+        const { user, openButton } = renderUtilsPage(routeAndLoggedUserState);
 
         // SpyOn
         const mockLogoutRequest = vi.spyOn(requestLogoutModule, 'default');

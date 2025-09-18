@@ -1,6 +1,6 @@
 import Layout from '@/pages/Layout';
 import type { RootState } from '@/store';
-import { mockReduxLoggedInState, mockReduxLoggedOutState } from '@/tests/mocks/redux';
+import { mockLogInState, mockLogInStateFalse } from '@/tests/mocks/redux';
 import { setupStore } from '@/tests/utils/testRenderUtils';
 import { PreloadedState } from '@/types/Redux';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -54,26 +54,26 @@ describe('LayoutPage', () => {
     };
 
     it('renders a header (MenuNav component) if logged in', async () => {
-        const { header } = renderUtil('/', mockReduxLoggedInState);
+        const { header } = renderUtil('/', mockLogInState);
 
         expect(header).toBeInTheDocument();
     });
 
     it('renders a header (MenuNav component) if logged out', async () => {
-        const { header } = renderUtil('/', mockReduxLoggedOutState);
+        const { header } = renderUtil('/', mockLogInStateFalse);
 
         expect(header).toBeInTheDocument();
     });
 
     it('should render a main and a footer', () => {
-        const { main, footer } = renderUtil('/', mockReduxLoggedInState);
+        const { main, footer } = renderUtil('/', mockLogInState);
 
         expect(main).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 
     it('renders and a mounted toast container', () => {
-        renderUtil('/', mockReduxLoggedInState);
+        renderUtil('/', mockLogInState);
 
         expect(document.getElementById('_rht_toaster')).toBeInTheDocument();
     });
@@ -92,7 +92,7 @@ describe('LayoutPage', () => {
             link: '/datenschutz',
         },
     ])('shows cookie banner on $page if cookies not', async ({ link }) => {
-        renderUtil(link, mockReduxLoggedOutState);
+        renderUtil(link, mockLogInStateFalse);
 
         const banner = await screen.findByText(/diese website verwendet cookies/i);
         expect(banner).toBeVisible();
@@ -112,7 +112,7 @@ describe('LayoutPage', () => {
             link: '/datenschutz',
         },
     ])('hides cookie banner on $page and after accepting', async ({ link }) => {
-        const { user } = renderUtil(link, mockReduxLoggedOutState);
+        const { user } = renderUtil(link, mockLogInStateFalse);
 
         const button = await screen.findByRole('button', { name: /ok/i });
         await user.click(button);
@@ -140,7 +140,7 @@ describe('LayoutPage', () => {
         },
     ])('does not show banner if cookies were already accepted', ({ link }) => {
         localStorage.setItem('cookiesAccepted', 'true');
-        renderUtil(link, mockReduxLoggedOutState);
+        renderUtil(link, mockLogInStateFalse);
 
         const banner = screen.queryByText(/diese website verwendet cookies/i);
         expect(banner).not.toBeVisible();

@@ -1,18 +1,12 @@
 import { HPProps } from '@/data/HomePage';
+import { mockGuestUser } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 describe('HomePage', () => {
-    const renderUtil = (
-        preloadedState = {
-            login: {
-                isloggedIn: false,
-                isLoading: false,
-            },
-        },
-    ) => {
+    const renderUtil = (preloadedState = mockGuestUser) => {
         const user = userEvent.setup();
         navigateTo({
             route: '/',

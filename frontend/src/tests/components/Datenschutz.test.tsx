@@ -1,3 +1,4 @@
+import { mockLoggedInUserState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -9,7 +10,7 @@ describe('Datenschutz', () => {
 
         navigateTo({
             route: '/datenschutz',
-            preloadedState: { login: { isLoggedIn: true } },
+            preloadedState: mockLoggedInUserState,
         });
 
         const linkImprintPage = screen.getByTestId('link-datenschutz-impressum-page');

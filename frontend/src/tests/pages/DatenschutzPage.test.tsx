@@ -1,4 +1,4 @@
-import { mockReduxLoggedInState } from '@/tests/mocks/redux';
+import { mockLogInState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
@@ -7,7 +7,7 @@ describe('DatenschutzPage', () => {
     it('should render the Datenschutz Page', async () => {
         navigateTo({
             route: '/datenschutz',
-            preloadedState: mockReduxLoggedInState,
+            preloadedState: mockLogInState,
         });
 
         const heading = screen.getByRole('heading', { name: /Datenschutzerklärung/i });

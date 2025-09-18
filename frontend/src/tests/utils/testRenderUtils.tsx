@@ -126,7 +126,7 @@ const renderWithProviders = (
   it('should render the SocialiteCallbackPage', async () => {
     renderWithProvidersReactRouterDOM(<SocialiteCallbackPage />, {
       route: '/auth/callback',
-      preloadedState: mockReduxLoggedInState,
+      preloadedState: mockLogInState,
     });
 
     expect(screen.getByText(/logging in/i)).toBeInTheDocument();

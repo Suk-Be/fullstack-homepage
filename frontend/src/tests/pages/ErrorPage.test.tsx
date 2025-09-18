@@ -1,3 +1,4 @@
+import { mockLogInState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import * as ReactRouter from 'react-router';
@@ -32,9 +33,7 @@ describe('ErrorPage', () => {
 
         navigateTo({
             route: '/i-am-not-a-route',
-            preloadedState: {
-                login: { isLoggedIn: true, isLoading: false },
-            },
+            preloadedState: mockLogInState,
         });
 
         expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
@@ -48,9 +47,7 @@ describe('ErrorPage', () => {
 
         navigateTo({
             route: '/i-am-not-a-route',
-            preloadedState: {
-                login: { isLoggedIn: true, isLoading: false },
-            },
+            preloadedState: mockLogInState,
         });
 
         expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
@@ -64,9 +61,7 @@ describe('ErrorPage', () => {
 
         navigateTo({
             route: '/i-am-not-a-route',
-            preloadedState: {
-                login: { isLoggedIn: true, isLoading: false },
-            },
+            preloadedState: mockLogInState,
         });
 
         expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
@@ -86,9 +81,7 @@ describe('ErrorPage', () => {
 
         navigateTo({
             route: '/i-am-not-a-route',
-            preloadedState: {
-                login: { isLoggedIn: true, isLoading: false },
-            },
+            preloadedState: mockLogInState,
         });
 
         expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();

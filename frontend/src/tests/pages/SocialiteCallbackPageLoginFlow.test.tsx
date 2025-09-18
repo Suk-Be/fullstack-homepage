@@ -1,6 +1,6 @@
 import SocialiteCallbackPage from '@/pages/SocialiteCallbackPage';
 import { BaseClient } from '@/plugins/axios';
-import { mockReduxLoggedInState } from '@/tests/mocks/redux';
+import { mockLogInState } from '@/tests/mocks/redux';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import * as dispatchHelper from '@/utils/redux/dispatchHelper';
 import { screen, waitFor } from '@testing-library/dom';
@@ -50,7 +50,7 @@ describe('SocialiteCallbackPage', () => {
 
         renderWithProvidersDOM(<SocialiteCallbackPage />, {
             route: '/auth/callback',
-            preloadedState: mockReduxLoggedInState,
+            preloadedState: mockLogInState,
         });
 
         expect(screen.getByText(/anmelde prozess/i)).toBeInTheDocument();
