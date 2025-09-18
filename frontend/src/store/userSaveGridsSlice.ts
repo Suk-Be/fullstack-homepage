@@ -27,7 +27,7 @@ export const initialState: UserSaveGridsState = {
             layoutId: initialLayoutId,
             timestamp: new Date().toISOString(),
             config: { ...initialGrid },
-            name: initialName, 
+            name: initialName,
         },
     },
 };
@@ -42,6 +42,22 @@ const createInitialGrid = (baseConfig: GridConfig['config'], name?: string): Gri
         name: name?.trim() || 'Unnamed Grid',
     };
 };
+
+// fetchUserGridsThunk
+export const fetchUserGridsThunk = createAsyncThunk<
+    Record<string, GridConfig>, // Rückgabe vom Backend: keyed Object
+    number, // userId als Argument
+    { rejectValue: string }
+>('userGrids/fetchUserGrids', async (_userId, { rejectWithValue }) => {
+    console.log('👉 fetchUserGridsThunk gestartet mit userId', _userId);
+    try {
+        const response = await ApiClient.get('/user/grids', { withCredentials: true });
+        // payload ist jetzt ein Object keyed by layoutId
+        return response.data.data;
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Fehler beim Laden der Grids');
+    }
+});
 
 export const resetUserGridsThunk = createAsyncThunk<
     number, // Rückgabe: userId
@@ -148,17 +164,37 @@ const userSaveGridsSlice = createSlice({
                 type: '',
             });
         });
+        builder.addCase(resetUserGridsThunk.rejected, (_state, action) => {
+            console.error('Reset fehlgeschlagen', action.payload);
+        });
+
         builder.addCase(deleteThisGridThunk.fulfilled, (state, action) => {
             userSaveGridsSlice.caseReducers.deleteThisGrid(state, {
                 payload: action.payload,
                 type: '',
             });
         });
-        builder.addCase(resetUserGridsThunk.rejected, (_state, action) => {
-            console.error('Reset fehlgeschlagen', action.payload);
-        });
         builder.addCase(deleteThisGridThunk.rejected, (_state, action) => {
             console.error('Löschen fehlgeschlagen', action.payload);
+        });
+
+        builder.addCase(fetchUserGridsThunk.fulfilled, (state, action) => {
+            if (!state.userId) return;
+
+            // Behalte den 'initial' Eintrag
+            const initialGridEntry = state.savedGrids.initial;
+
+            // action.payload ist Object keyed by layoutId
+            state.savedGrids = {
+                initial: initialGridEntry, // behalten
+                ...action.payload, // Backend Grids hinzufügen
+            };
+
+            saveToLocalStorage(state.userId, state);
+        });
+
+        builder.addCase(fetchUserGridsThunk.rejected, (_state, action) => {
+            console.error('Fetch grids fehlgeschlagen', action.payload);
         });
     },
 });

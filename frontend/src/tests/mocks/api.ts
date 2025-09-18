@@ -5,17 +5,53 @@ import { ResetPasswordRequestBody } from './handlers';
 // http response mocks
 
 const mockBackendGrids = {
-    'uuid-1': {
-        layoutId: 'uuid-1',
-        timestamp: '2025-09-17T12:00:00.000Z',
-        name: 'backendGrid1',
-        config: { items: '2', columns: '2', gap: '1', border: '0', paddingX: '0', paddingY: '0' },
+    '04257982-d7a8-3a99-913d-31b4a3b270ed': {
+        id: 1,
+        name: 'grid_1_0',
+        layoutId: '04257982-d7a8-3a99-913d-31b4a3b270ed',
+        config: {
+            gap: 15,
+            items: 1,
+            border: 1,
+            columns: 2,
+            paddingX: 15,
+            paddingY: 5,
+        },
+        timestamp: '2025-09-17T15:51:49.000000Z',
+        createdAt: '2025-09-17T15:51:49.000000Z',
+        updatedAt: '2025-09-17T15:51:49.000000Z',
     },
-    'uuid-2': {
-        layoutId: 'uuid-2',
-        timestamp: '2025-09-17T12:05:00.000Z',
-        name: 'backendGrid2',
-        config: { items: '3', columns: '3', gap: '2', border: '1', paddingX: '1', paddingY: '1' },
+    'c3ac2aaa-9fc9-3492-8de4-2c6a9753a5e8': {
+        id: 2,
+        name: 'grid_1_1',
+        layoutId: 'c3ac2aaa-9fc9-3492-8de4-2c6a9753a5e8',
+        config: {
+            gap: 1,
+            items: 7,
+            border: 4,
+            columns: 3,
+            paddingX: 14,
+            paddingY: 0,
+        },
+        timestamp: '2025-09-17T15:51:49.000000Z',
+        createdAt: '2025-09-17T15:51:49.000000Z',
+        updatedAt: '2025-09-17T15:51:49.000000Z',
+    },
+    '57614111-2166-3b30-9f72-1d4f09cd81cb': {
+        id: 3,
+        name: 'grid_1_2',
+        layoutId: '57614111-2166-3b30-9f72-1d4f09cd81cb',
+        config: {
+            gap: 13,
+            items: 5,
+            border: 2,
+            columns: 5,
+            paddingX: 7,
+            paddingY: 7,
+        },
+        timestamp: '2025-09-17T15:51:49.000000Z',
+        createdAt: '2025-09-17T15:51:49.000000Z',
+        updatedAt: '2025-09-17T15:51:49.000000Z',
     },
 };
 
