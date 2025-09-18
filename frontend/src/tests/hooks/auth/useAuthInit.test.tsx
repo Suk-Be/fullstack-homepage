@@ -2,7 +2,7 @@ import requestMe from '@/components/auth/api/requestMe';
 import { useAuthInit } from '@/hooks/auth/useAuthInit';
 import { logout } from '@/store/loginSlice';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
-import { userLoggedInNoAdmin } from '@/tests/mocks/handlers';
+import { userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { authTestStates } from '@/tests/utils/authTestStates';
 import { renderHookWithProviders } from '@/tests/utils/testRenderUtils';
 import initializeCookies from '@/utils/auth/initializeCookies';

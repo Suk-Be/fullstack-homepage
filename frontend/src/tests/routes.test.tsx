@@ -6,19 +6,19 @@ import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import { store } from '@/store';
 import { initialState as userSaveGridsInitialState } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin } from '@/tests/mocks/api';
+import { registeredUserData } from '@/tests/mocks/data';
+import { db } from '@/tests/mocks/db';
 import {
-  navigateTo,
-  renderWithProviders,
-  renderWithProvidersDOM
+    navigateTo,
+    renderWithProviders,
+    renderWithProvidersDOM,
 } from '@/tests/utils/testRenderUtils';
 import { render, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
-import { registeredUserData } from './mocks/data';
-import { db } from './mocks/db';
-import { userLoggedAdmin } from './mocks/handlers';
 
 describe('routes', () => {
     beforeEach(() => {
@@ -70,7 +70,7 @@ describe('routes', () => {
                     login: {
                         isLoggedIn: true,
                         isLoading: false,
-                        error: null
+                        error: null,
                     },
                 },
             });
@@ -138,7 +138,7 @@ describe('routes', () => {
                 login: {
                     isLoggedIn: true,
                     isLoading: false,
-                    error: null
+                    error: null,
                 },
             },
         });
@@ -156,7 +156,7 @@ describe('routes', () => {
                 login: {
                     isLoggedIn: false,
                     isLoading: false,
-                    error: null
+                    error: null,
                 },
             },
         });

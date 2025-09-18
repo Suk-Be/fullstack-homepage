@@ -1,6 +1,6 @@
 import SaveGridsModal from '@/componentsTemplateEngine/modals/SaveGridsModal';
 import type { RootState } from '@/store';
-import { userLoggedAdmin } from '@/tests/mocks/handlers';
+import { userLoggedAdmin } from '@/tests/mocks/api';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

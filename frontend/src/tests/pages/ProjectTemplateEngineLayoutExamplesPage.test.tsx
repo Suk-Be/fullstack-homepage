@@ -1,10 +1,10 @@
 import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
+import { userLoggedAdmin } from '@/tests/mocks/api';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { userLoggedAdmin } from '../mocks/handlers';
 
 describe('ProjectTemplateEnginePresetsPage', () => {
     const renderUtils = () => {

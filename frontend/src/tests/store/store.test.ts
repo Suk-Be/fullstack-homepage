@@ -1,13 +1,13 @@
 import { store } from '@/store';
 import { forceLogin, logout } from '@/store/loginSlice';
 import {
-  getGridsFromLocalStorage,
-  resetUserGrids,
-  saveInitialGrid,
-  updateGridConfig,
+    getGridsFromLocalStorage,
+    resetUserGrids,
+    saveInitialGrid,
+    updateGridConfig,
 } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin, userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { userLoggedAdmin, userLoggedInNoAdmin } from '../mocks/handlers';
 
 describe('Redux Store', () => {
     beforeEach(() => {
@@ -25,7 +25,7 @@ describe('Redux Store', () => {
     });
 
     it('should update login state when forceLogin is dispatched', () => {
-        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
+        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
 
         const state = store.getState();
         expect(state.login.isLoggedIn).toBe(true);
@@ -33,7 +33,7 @@ describe('Redux Store', () => {
     });
 
     it('should reset login state when logout is dispatched', () => {
-        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
+        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
         store.dispatch(logout());
 
         const state = store.getState();
@@ -42,7 +42,7 @@ describe('Redux Store', () => {
     });
 
     it('should add a grid for a logged-in user', () => {
-        store.dispatch(forceLogin({userId: userLoggedInNoAdmin, role: 'user'}));
+        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
         store.dispatch(getGridsFromLocalStorage(userLoggedInNoAdmin));
 
         // 1. initial Grid anpassen
@@ -70,7 +70,7 @@ describe('Redux Store', () => {
     });
 
     it('should reset all grids when resetUserGrid is dispatched', () => {
-        store.dispatch(forceLogin({userId: userLoggedAdmin, role: 'admin'}));
+        store.dispatch(forceLogin({ userId: userLoggedAdmin, role: 'admin' }));
 
         // initial bearbeiten
         store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '5' }));

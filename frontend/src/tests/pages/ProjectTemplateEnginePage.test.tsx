@@ -1,10 +1,10 @@
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import { initialState as userSaveGridsInitialState } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin } from '@/tests/mocks/api';
 import { renderWithProvidersDOM } from '@/tests/utils/testRenderUtils';
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { userLoggedAdmin } from '../mocks/handlers';
 
 describe('ProjectTemplateEnginePage', () => {
     const renderUtils = () => {

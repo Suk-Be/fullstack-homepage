@@ -1,5 +1,5 @@
 import { LoginState } from '@/store/loginSlice';
-import { userLoggedAdmin, userLoggedInNoAdmin } from '@/tests/mocks/handlers';
+import { userLoggedAdmin, userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { UserSaveGridsState } from '@/types/Redux';
 
 const loginBase: LoginState = {
