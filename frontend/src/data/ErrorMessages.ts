@@ -19,7 +19,7 @@ const responseErrorMessages = {
         token: responseTokenErrors.token,
     },
     forgotPassword: {
-        responseEmail: 'Diese E-Mail ist nicht registriert.',
+        responseEmail: 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.',
     },
 };
 const ErrorMessages = {
