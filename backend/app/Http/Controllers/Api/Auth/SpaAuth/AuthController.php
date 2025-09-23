@@ -12,10 +12,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use App\Exceptions\AlreadyAuthenticatedException;
+use App\Traits\ApiResponses;
 use App\Enums\UserRole;
 
 class AuthController extends Controller
 {
+    use ApiResponses;
+
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -36,11 +39,11 @@ class AuthController extends Controller
             'role' => UserRole::User,
         ]);
 
-        // Logs in in the user after registration
-        Auth::login($user);
+        Auth::login($user); // login user
 
-        return response()->json(new UserResource($user));
+        return $this->success(['user' => new UserResource($user)], 'Sie haben sich erfolgreich registriert.');
     }
+    
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -48,35 +51,31 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // REGENERATE SESSION ID
-
-            return response()->json([
-                'message' => 'Sie haben sich erfolgreich angemeldet.',
-                'user' => new UserResource(Auth::user())
+        if (!Auth::attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => 'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
             ]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => 'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
-        ]);
+        $request->session()->regenerate(); // regenerate SESSION ID
+
+        return $this->success( ['user' => new UserResource(Auth::user())], 'Sie haben sich erfolgreich angemeldet.');
 
     }
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::logout(); // For session-based authentication
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json([
-            'message' => 'Sie haben sich erfolgreich abgemeldet.'
-        ]);
+        return $this->success([], 'Sie haben sich erfolgreich abgemeldet.');
     }
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json(new UserResource($request->user()));
+        return $this->success(['user' => new UserResource($request->user())]);
     }
+
 }
