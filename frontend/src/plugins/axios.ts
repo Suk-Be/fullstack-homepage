@@ -62,7 +62,11 @@ ApiClient.interceptors.response.use(
 
             case 422:
                 if (error.response?.data?.errors) {
-                    logRecoverableError({ context: 'Validation errors', error, extra: { axiosStatus } });
+                    logRecoverableError({
+                        context: 'Validation errors',
+                        error,
+                        extra: { axiosStatus },
+                    });
                 }
                 break;
 
@@ -76,4 +80,3 @@ ApiClient.interceptors.response.use(
 
 export default ApiClient;
 export { BaseClient };
-
