@@ -32,7 +32,7 @@ const initialState: LoginState = {
     isLoading: true,
     error: null,
     fieldErrors: undefined,
-    role: null
+    role: null,
 };
 
 // ---------- AsyncThunk ----------
@@ -60,7 +60,7 @@ export const loginThunk = createAsyncThunk<
                 success: true,
                 message: response.data.message || 'Login erfolgreich!',
                 userId: meResult.userId,
-                role: meResult.role
+                role: meResult.role,
             };
         } else {
             return rejectWithValue({
@@ -89,7 +89,10 @@ const loginSlice = createSlice({
             state.error = null;
             state.fieldErrors = undefined;
         },
-        forceLogin(state, action: PayloadAction<{ userId: number, role: 'admin' | 'user' | null }>) {
+        forceLogin(
+            state,
+            action: PayloadAction<{ userId: number; role: 'admin' | 'user' | null }>,
+        ) {
             state.userId = action.payload.userId;
             state.isLoggedIn = true;
             state.isLoading = false;
@@ -114,7 +117,7 @@ const loginSlice = createSlice({
             .addCase(loginThunk.fulfilled, (state, action) => {
                 if (action.payload.success) {
                     state.userId = action.payload.userId ?? undefined;
-                    state.role = action.payload.role ?? null; 
+                    state.role = action.payload.role ?? null;
                     state.isLoggedIn = true;
                 }
                 state.isLoading = false;
