@@ -1,14 +1,21 @@
-import ApiClient from '@/plugins/axios';
 import {
     clearUserGridsFromLocalStorage,
     loadFromLocalStorage,
     saveToLocalStorage,
 } from '@/store/localStorage';
+import {
+    deleteThisGridThunk,
+    fetchUserGridsThunk,
+    resetUserGridsThunk,
+    saveUserGridThunk,
+} from '@/store/thunks/userSaveGridsThunks';
 import { GridConfig, GridConfigKey, UserSaveGridsState } from '@/types/Redux';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-const initialGrid = {
+export const initialLayoutId = 'initialLayoutId' as const;
+export const initialName = 'initialName';
+export const initialGridConfig = {
     items: '1',
     columns: '1',
     gap: '0',
@@ -17,22 +24,19 @@ const initialGrid = {
     paddingY: '0',
 };
 
-const initialLayoutId = 'initial';
-const initialName = initialLayoutId;
-
-export const initialState: UserSaveGridsState = {
+const initialState: UserSaveGridsState = {
     userId: null,
     savedGrids: {
         [initialLayoutId]: {
             layoutId: initialLayoutId,
             timestamp: new Date().toISOString(),
-            config: { ...initialGrid },
+            config: { ...initialGridConfig },
             name: initialName,
         },
     },
 };
 
-const createInitialGrid = (baseConfig: GridConfig['config'], name?: string): GridConfig => {
+const createGrid = (baseConfig: GridConfig['config'], name?: string): GridConfig => {
     const newLayoutId = uuidv4();
 
     return {
@@ -42,50 +46,6 @@ const createInitialGrid = (baseConfig: GridConfig['config'], name?: string): Gri
         name: name?.trim() || 'Unnamed Grid',
     };
 };
-
-// fetchUserGridsThunk
-export const fetchUserGridsThunk = createAsyncThunk<
-    Record<string, GridConfig>, // Rückgabe vom Backend: keyed Object
-    number, // userId als Argument
-    { rejectValue: string }
->('userGrids/fetchUserGrids', async (_userId, { rejectWithValue }) => {
-    console.log('👉 fetchUserGridsThunk gestartet mit userId', _userId);
-    try {
-        const response = await ApiClient.get('/user/grids', { withCredentials: true });
-        // payload ist jetzt ein Object keyed by layoutId
-        return response.data.data;
-    } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Fehler beim Laden der Grids');
-    }
-});
-
-export const resetUserGridsThunk = createAsyncThunk<
-    number, // Rückgabe: userId
-    number, // Argument: userId
-    { rejectValue: string }
->('userGrids/resetUserGrids', async (userId: number, { rejectWithValue }) => {
-    try {
-        await ApiClient.delete(`/users/${userId}/grids`, { withCredentials: true });
-        return userId; // action.payload
-    } catch (error: any) {
-        return rejectWithValue(
-            error.response?.data?.message || `Fehler beim ${userId} Zurücksetzen`,
-        );
-    }
-});
-
-export const deleteThisGridThunk = createAsyncThunk<
-    string, // Rückgabe: layoutId
-    string, // Rückgabe: layoutId
-    { rejectValue: string }
->('userGrids/deleteThisGrid', async (layoutId: string, { rejectWithValue }) => {
-    try {
-        await ApiClient.delete(`/grids/by-layout/${layoutId}`, { withCredentials: true });
-        return layoutId;
-    } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || `Fehler beim ${layoutId} Löschen`);
-    }
-});
 
 const userSaveGridsSlice = createSlice({
     name: 'userGrid',
@@ -100,14 +60,14 @@ const userSaveGridsSlice = createSlice({
             }
         },
 
-        saveInitialGrid(state, action: PayloadAction<string>) {
+        saveGrid(state, action: PayloadAction<string>) {
             if (state.userId === null || state.userId === undefined) return;
 
-            const gridConfig = state.savedGrids[initialLayoutId]?.config ?? { ...initialGrid };
+            const gridConfig = state.savedGrids[initialLayoutId].config;
             const layoutName = action.payload;
-            const newGrid = createInitialGrid(gridConfig, layoutName);
-
+            const newGrid = createGrid(gridConfig, layoutName);
             state.savedGrids[newGrid.layoutId] = newGrid;
+
             saveToLocalStorage(state.userId, state);
         },
 
@@ -158,6 +118,7 @@ const userSaveGridsSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
+        // reset(all)Grids
         builder.addCase(resetUserGridsThunk.fulfilled, (state, action) => {
             userSaveGridsSlice.caseReducers.resetUserGrids(state, {
                 payload: action.payload,
@@ -168,6 +129,7 @@ const userSaveGridsSlice = createSlice({
             console.error('Reset fehlgeschlagen', action.payload);
         });
 
+        // reset(this)Grid
         builder.addCase(deleteThisGridThunk.fulfilled, (state, action) => {
             userSaveGridsSlice.caseReducers.deleteThisGrid(state, {
                 payload: action.payload,
@@ -178,15 +140,18 @@ const userSaveGridsSlice = createSlice({
             console.error('Löschen fehlgeschlagen', action.payload);
         });
 
+        // fetchGrids
         builder.addCase(fetchUserGridsThunk.fulfilled, (state, action) => {
             if (!state.userId) return;
 
-            // Behalte den 'initial' Eintrag
-            const initialGridEntry = state.savedGrids.initial;
+            // todo hier müssen alle grids erhalten bleiben
+
+            // Behalte das grid 'initialLayoutId'
+            const initialGridEntry = state.savedGrids.initialLayoutId;
 
             // action.payload ist Object keyed by layoutId
             state.savedGrids = {
-                initial: initialGridEntry, // behalten
+                initialLayoutId: initialGridEntry, // behalten
                 ...action.payload, // Backend Grids hinzufügen
             };
 
@@ -196,15 +161,31 @@ const userSaveGridsSlice = createSlice({
         builder.addCase(fetchUserGridsThunk.rejected, (_state, action) => {
             console.error('Fetch grids fehlgeschlagen', action.payload);
         });
+
+        // save(this)Grid
+        builder.addCase(saveUserGridThunk.fulfilled, (state, action) => {
+            if (!state.userId) return;
+
+            const grid = action.payload;
+
+            state.savedGrids[action.payload.layoutId] = grid;
+
+            saveToLocalStorage(state.userId, state);
+        });
+
+        builder.addCase(saveUserGridThunk.rejected, (_state, action) => {
+            console.error('Grid speichern fehlgeschlagen:', action.payload);
+        });
     },
 });
 
 export const {
     getGridsFromLocalStorage,
-    saveInitialGrid,
+    saveGrid,
     deleteThisGrid,
     updateGridConfig,
     resetUserGrids,
     loadUserGrids,
 } = userSaveGridsSlice.actions;
+export { createGrid, initialState };
 export default userSaveGridsSlice.reducer;

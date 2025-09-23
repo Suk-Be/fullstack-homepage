@@ -1,17 +1,17 @@
 export type PreloadedState<T> = Partial<T> | {};
 
 export interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: 'admin' | 'user';  // nur vom Backend
+    id: number;
+    name: string;
+    email: string;
+    role: 'admin' | 'user'; // nur vom Backend
 }
 
 export interface UserSaveGridsState {
     userId: User['id'] | null;
     name?: string;
     savedGrids: {
-        [layoutId: string]: GridConfig; // Normalisiertes Objekt
+        [initialLayoutId: string]: GridConfig; // Normalisiertes Objekt
     };
 }
 export interface GridConfig {

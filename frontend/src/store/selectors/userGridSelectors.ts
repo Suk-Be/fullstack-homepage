@@ -1,32 +1,38 @@
 import { RootState } from '@/store';
+import { initialGridConfig, initialLayoutId } from '@/store/userSaveGridsSlice';
 import { createSelector } from '@reduxjs/toolkit';
 
-export const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
+const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
+console.log('selectSavedGridsMap', selectSavedGridsMap);
 
-export const selectSortedGrids = createSelector(
-  selectSavedGridsMap, 
-  (savedGridsMap) => {
+const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGridsMap) => {
     const savedGridsToArray = Object.values(savedGridsMap);
-    const sortCurrentToTop = savedGridsToArray.sort((a, b) => {
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-    });
 
-    return sortCurrentToTop;
-  }
+    // filtere "initialLayoutId" raus
+    const withoutInitial = savedGridsToArray.filter((grid) => grid.layoutId !== 'initialLayoutId');
+
+    // sortiere nach timestamp (neueste oben)
+    return withoutInitial.sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+});
+
+const selectInitialGrid = createSelector(
+    selectSavedGridsMap,
+    (savedGridsMap) => savedGridsMap[initialLayoutId].config,
 );
 
-export const selectInitialGrid = createSelector(
-  selectSavedGridsMap,
-  (savedGridsMap) => savedGridsMap.initial.config
+const selectNewGrid = createSelector(
+    selectSavedGridsMap,
+    (savedGridsMap) => savedGridsMap[initialLayoutId]?.config ?? { ...initialGridConfig },
 );
 
-export const selectGridsFromThisUser = createSelector(
-  selectSavedGridsMap,
-  (savedGridsMap) => {
-    // extrahiert die grids aus dem savedGrids Objekt und gibt sie als Einträge in einem neuen Arrays aus
-    return Object.values(savedGridsMap);
-  }
-);
+const selectGridsFromThisUser = (state: RootState) => state.userGrid.savedGrids;
 
-
-
+export {
+    selectGridsFromThisUser,
+    selectInitialGrid,
+    selectNewGrid,
+    selectSavedGridsMap,
+    selectSortedGrids,
+};

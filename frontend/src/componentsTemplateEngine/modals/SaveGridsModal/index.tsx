@@ -3,13 +3,19 @@ import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/save
 import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, selectUserRole } from '@/store/selectors/loginSelectors';
-import { selectGridsFromThisUser } from '@/store/selectors/userGridSelectors';
+import { selectGridsFromThisUser, selectNewGrid } from '@/store/selectors/userGridSelectors';
 import {
     fetchUserGridsThunk,
-    getGridsFromLocalStorage,
     resetUserGridsThunk,
-    saveInitialGrid,
+    saveUserGridThunk,
+} from '@/store/thunks/userSaveGridsThunks';
+import {
+    createGrid,
+    getGridsFromLocalStorage,
+    initialGridConfig,
+    initialLayoutId,
 } from '@/store/userSaveGridsSlice';
+import { GridConfig, GridConfigKey } from '@/types/Redux';
 import { testId } from '@/utils/testId';
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
@@ -38,9 +44,10 @@ function SaveGridsModal() {
     const dispatch = useAppDispatch();
     const userId = useAppSelector(selectUserId);
     const userRole = useAppSelector(selectUserRole);
-    const userGrids = useAppSelector(selectGridsFromThisUser);
+    const savedGrids = useAppSelector(selectGridsFromThisUser); // GridConfig[]
+    const gridConfig = useAppSelector(selectNewGrid);
 
-    // Läuft nur, wenn Modal geöffnet wird
+    // sideffects
     useEffect(() => {
         if (isOpen) {
             setGridName('');
@@ -48,63 +55,131 @@ function SaveGridsModal() {
         }
     }, [isOpen]);
 
-    // Läuft nur, wenn sich die userId ändert
     useEffect(() => {
         if (userId) {
             dispatch(getGridsFromLocalStorage(userId));
         }
     }, [userId, dispatch]);
 
+    // helpers
+    const hasValidUser = (): boolean => {
+        if (!userId) {
+            setErrorMessage('User not logged in.');
+            return false;
+        }
+        return true;
+    };
+
+    const isNameUnique = (name: string): boolean => {
+        if (!name.trim()) {
+            setErrorMessage('Please input a recognizable name.');
+            return false;
+        }
+
+        // create array from objects and filter
+        const already = Object.values(savedGrids).some((g) => {
+            if (!g || !g.name) return false; // Schutz
+            return g.name.toLowerCase() === name.trim().toLowerCase();
+        });
+
+        if (already) {
+            setErrorMessage(
+                `A grid with the name "${name}" already exists. Please choose a different name.`,
+            );
+            return false;
+        }
+
+        return true;
+    };
+
+    // isConfigUnique
+    const CONFIG_KEYS: GridConfigKey[] = [
+        'items',
+        'columns',
+        'gap',
+        'border',
+        'paddingX',
+        'paddingY',
+    ];
+
+    const isConfigEqual = (a: GridConfig['config'], b: GridConfig['config']): boolean => {
+        if (!a || !b) {
+            console.warn('isConfigEqual called with invalid configs:', { a, b });
+            return false;
+        }
+
+        return CONFIG_KEYS.every((k) => {
+            const valA = a[k];
+            const valB = b[k];
+
+            if (valA === undefined || valB === undefined) {
+                console.warn('Missing key in config', { key: k, valA, valB, a, b });
+            }
+
+            return String(valA) === String(valB);
+        });
+    };
+
+    const isConfigUnique = (): boolean => {
+        const baseConfig = savedGrids[initialLayoutId]?.config ?? initialGridConfig;
+
+        const exists = Object.entries(savedGrids)
+            .filter(([key]) => key !== initialLayoutId)
+            .some(([, grid]) => isConfigEqual(grid.config, baseConfig));
+
+        if (exists) {
+            setErrorMessage('A grid with the same configuration already exists.');
+            return false;
+        }
+
+        return true;
+    };
+
+    // handler
     const handleShowGrids = async () => {
-        if (!userId) return;
+        if (!hasValidUser()) return;
 
         setIsButtonDisabled(true);
 
         try {
-            await dispatch(fetchUserGridsThunk(userId)).unwrap();
+            await dispatch(fetchUserGridsThunk(userId!)).unwrap();
             setHasGridIsOpen(true); // SavedGridList wird angezeigt
         } catch (err) {
             alert('Fehler beim Laden der Grids: ' + err);
         } finally {
             setIsButtonDisabled(false);
         }
+
+        setIsButtonDisabled(true);
     };
 
-    const handleGrid = () => {
-        if (!gridName.trim()) {
-            setErrorMessage('Please input a recognizable name.');
-            return;
-        }
-
-        const gridNameAlreadyExists = userGrids?.some(
-            (grid) => grid.name.toLowerCase() === gridName.toLowerCase(),
-        );
-
-        if (gridNameAlreadyExists) {
-            setErrorMessage(
-                `A grid with the name "${gridName}" already exists. Please choose a different name.`,
-            );
-            return;
-        }
-
-        if (errorMessage) return;
+    const handleSaveGrid = async () => {
+        if (!hasValidUser()) return;
+        if (!isNameUnique(gridName)) return;
+        if (!isConfigUnique()) return;
 
         setHasGridIsOpen(true);
         setIsButtonDisabled(true);
 
-        dispatch(saveInitialGrid(gridName));
-
-        setGridName('');
+        const newGrid = createGrid(gridConfig, gridName);
+        try {
+            await dispatch(saveUserGridThunk(newGrid)).unwrap();
+            setGridName('');
+        } catch (err: any) {
+            alert('Fehler beim Speichern: ' + err);
+        } finally {
+            setIsButtonDisabled(true);
+        }
     };
 
-    const resetGrids = async () => {
-        if (!userId) return;
+    const handleResetGrids = async () => {
+        if (!hasValidUser()) return;
 
         if (!confirm('Alle Grids dieses Users wirklich löschen?')) return;
 
         setIsButtonDisabled(true);
 
-        await dispatch(resetUserGridsThunk(userId))
+        await dispatch(resetUserGridsThunk(userId!))
             .unwrap()
             .then(() => {
                 alert('Grids erfolgreich zurückgesetzt!');
@@ -115,7 +190,7 @@ function SaveGridsModal() {
                 alert('Fehler beim Reset: ' + err);
             })
             .finally(() => {
-                setIsButtonDisabled(false);
+                setIsButtonDisabled(true);
             });
     };
 
@@ -214,7 +289,7 @@ function SaveGridsModal() {
                                                 bg-gray-dark
                                                 data-[hover]:bg-gray 
                                                 data-[open]:bg-gray/700"
-                                    onClick={handleGrid}
+                                    onClick={handleSaveGrid}
                                     disabled={isButtonDisabled}
                                 >
                                     save
@@ -235,7 +310,7 @@ function SaveGridsModal() {
                                                   bg-gray-dark
                                                   data-[hover]:bg-gray 
                                                   data-[open]:bg-gray/700"
-                                        onClick={resetGrids}
+                                        onClick={handleResetGrids}
                                         disabled={isButtonDisabled}
                                     >
                                         reset
