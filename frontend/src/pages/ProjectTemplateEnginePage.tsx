@@ -9,7 +9,7 @@ import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser
 import SaveGridsTeaser from '@/componentsTemplateEngine/teaser/SaveGridsTeaser';
 import { useAppSelector } from '@/store/hooks';
 import { selectInitialGrid } from '@/store/selectors/userGridSelectors';
-import { updateGridConfig } from '@/store/userSaveGridsSlice';
+import { initialLayoutId, updateGridConfig } from '@/store/userSaveGridsSlice';
 import { GridConfigKey } from '@/types/Redux';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
@@ -21,7 +21,7 @@ const ProjectTemplateEnginePage: FC = () => {
     const grid = useAppSelector(selectInitialGrid);
 
     const handleChange = (key: GridConfigKey) => (e: ChangeEvent<HTMLInputElement>) => {
-        dispatch(updateGridConfig({ layoutId: 'initial', key, value: e.target.value }));
+        dispatch(updateGridConfig({ layoutId: initialLayoutId, key, value: e.target.value }));
     };
 
     // grid configuration checkbox border
