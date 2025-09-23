@@ -1,9 +1,9 @@
 import type { RootState } from '@/store';
 import loginReducer from '@/store/loginSlice';
-import { initialState } from '@/store/userSaveGridsSlice';
+import { initialGridConfig, initialLayoutId, initialName } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin, userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { PreloadedState, UserSaveGridsState } from '@/types/Redux';
 import { vi } from 'vitest';
-import { userLoggedAdmin, userLoggedInNoAdmin } from './api';
 
 const mockLogInState: PreloadedState<RootState> = {
     login: {
@@ -19,12 +19,30 @@ const mockLogInStateFalse: PreloadedState<RootState> = {
     },
 };
 
-const mockStateWithUserId1: UserSaveGridsState = {
-    userId: 1,
+const mockNewLayoutId = 'mock-uuid-1234';
+vi.mock('uuid', () => ({
+    v4: () => mockNewLayoutId,
+}));
+
+const mockInitialState: UserSaveGridsState = {
+    userId: null,
+    savedGrids: {
+        [initialLayoutId]: {
+            layoutId: initialLayoutId,
+            timestamp: '2023-01-01T00:00:00.000Z',
+            config: { ...initialGridConfig },
+            name: initialName,
+        },
+    },
+};
+
+const mockStateWithAdmin: UserSaveGridsState = {
+    ...mockInitialState,
+    userId: userLoggedAdmin,
     name: 'layout-col',
     savedGrids: {
-        initial: {
-            layoutId: '1',
+        initialLayoutId: {
+            layoutId: initialLayoutId,
             timestamp: '2023-01-01T00:00:00.000Z',
             name: 'initial',
             config: {
@@ -52,14 +70,9 @@ const mockStateWithUserId1: UserSaveGridsState = {
     },
 };
 
-const mockNewLayoutId = 'mock-uuid-1234';
-vi.mock('uuid', () => ({
-    v4: () => mockNewLayoutId,
-}));
-
-const mockUPDATEStateWithUserId1: UserSaveGridsState = {
-    ...initialState,
-    userId: 1,
+const mockUPDATEStateWithAdmin: UserSaveGridsState = {
+    ...mockInitialState,
+    userId: userLoggedAdmin,
     name: 'layout-items',
     savedGrids: {
         [mockNewLayoutId]: {
@@ -67,8 +80,8 @@ const mockUPDATEStateWithUserId1: UserSaveGridsState = {
             timestamp: '2023-01-01T00:00:00.000Z',
             name: 'layout-items',
             config: {
-                items: '1',
-                columns: '1',
+                items: '2',
+                columns: '2',
                 gap: '0',
                 border: '0',
                 paddingX: '0',
@@ -78,7 +91,7 @@ const mockUPDATEStateWithUserId1: UserSaveGridsState = {
     },
 };
 
-const mockLoggedInAdminState = {
+const mockLoggedInAdminState: Partial<RootState> = {
     login: {
         isLoggedIn: true,
         isLoading: false,
@@ -86,7 +99,7 @@ const mockLoggedInAdminState = {
         role: 'admin' as const,
     },
     userGrid: {
-        ...initialState,
+        ...mockInitialState,
         userId: userLoggedAdmin,
     },
 };
@@ -99,7 +112,7 @@ const mockLoggedInUserState = {
         role: 'user' as const,
     },
     userGrid: {
-        ...initialState,
+        ...mockInitialState,
         userId: userLoggedInNoAdmin,
     },
 };
@@ -112,31 +125,40 @@ const mockGuestUserState = {
         role: null,
     },
     userGrid: {
-        userId: null,
-        savedGrids: {
-            initial: {
-                layoutId: 'initial',
-                timestamp: '2025-09-18T11:29:54.894Z',
-                config: {
-                    items: '1',
-                    columns: '1',
-                    gap: '0',
-                    border: '0',
-                    paddingX: '0',
-                    paddingY: '0',
-                },
-                name: 'initial',
-            },
-        },
+        ...mockInitialState,
     },
 };
 
+const mockGridReturnedFromBackend = {
+    layoutId: 'mock-uuid-1234',
+    timestamp: new Date().toISOString(),
+    name: 'MyGrid',
+    config: {
+        items: '1',
+        columns: '1',
+        gap: '0',
+        border: '0',
+        paddingX: '0',
+        paddingY: '0',
+    },
+};
+
+const mockLoginStateAdminAction = {
+    userId: userLoggedAdmin,
+    role: 'admin' as const,
+};
+
+const mockSaveGridAction = 'MyTestGrid';
+
 export {
+    mockGridReturnedFromBackend,
     mockGuestUserState,
     mockLoggedInAdminState,
     mockLoggedInUserState,
     mockLogInState,
+    mockLoginStateAdminAction,
     mockLogInStateFalse,
-    mockStateWithUserId1,
-    mockUPDATEStateWithUserId1,
+    mockSaveGridAction,
+    mockStateWithAdmin,
+    mockUPDATEStateWithAdmin,
 };

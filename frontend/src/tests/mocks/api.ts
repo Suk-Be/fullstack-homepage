@@ -2,6 +2,11 @@ import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import { ResetPasswordRequestBody } from './handlers';
 
+// user id mocks
+
+const userLoggedInNoAdmin = 999;
+const userLoggedAdmin = 123;
+
 // http response mocks
 
 const mockBackendGrids = {
@@ -57,7 +62,7 @@ const mockBackendGrids = {
 
 const mockSignUpSuccess = (name: string, email: string) => {
     return {
-        id: 1,
+        id: userLoggedAdmin,
         name: name,
         email: email,
         message: 'Die Registrierung hat geklappt!',
@@ -72,7 +77,7 @@ const mockSignupUserAlreadyExists = {
 };
 
 const mockMe = {
-    id: 1,
+    id: userLoggedInNoAdmin,
     name: 'Mock User',
     email: 'mock@example.com',
     role: 'user',
@@ -131,11 +136,6 @@ const mockPasswordReset = (body: ResetPasswordRequestBody) => {
         body,
     };
 };
-
-// user id mocks
-
-const userLoggedInNoAdmin = 999;
-const userLoggedAdmin = 123;
 
 export {
     mockBackendGrids,

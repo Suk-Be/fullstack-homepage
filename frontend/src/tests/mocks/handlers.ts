@@ -145,7 +145,7 @@ export const handlers = [
 
     // get own grids
     http.get(`${api}/user/grids`, () => {
-        return HttpResponse.json({ data: mockBackendGrids }, { status: 200 });
+        return HttpResponse.json({ data: mockBackendGrids }, { status: 201 });
     }),
 
     // fallback for catching future route mismatches during test debugging
