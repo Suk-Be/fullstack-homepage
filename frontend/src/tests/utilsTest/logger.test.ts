@@ -107,8 +107,8 @@ describe('logReduxState', () => {
         logReduxState('userGrid', state.userGrid, 'development');
 
         expect(logSpy).toHaveBeenCalledTimes(2);
-        expect(logSpy).toHaveBeenCalledWith('🔹 login slice updated:', state.login);
-        expect(logSpy).toHaveBeenCalledWith('🔹 userGrid slice updated:', state.userGrid);
+        expect(logSpy).toHaveBeenCalledWith('[Redux login] updated:', state.login);
+        expect(logSpy).toHaveBeenCalledWith('[Redux userGrid] updated:', state.userGrid);
     });
 
     it('should not log in test mode', async () => {
