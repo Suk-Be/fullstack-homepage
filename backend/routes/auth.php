@@ -12,11 +12,9 @@ use Illuminate\Support\Facades\Route;
 // Auth-Formulare, Registration/Login/Logout
 Route::middleware(['web'])->group(function () {
     Route::post('/register', [AuthController::class, 'register'])
-        ->middleware('guest')
         ->name('register');
 
     Route::post('/login', [AuthController::class, 'login'])
-        ->middleware('guest')
         ->name('login');
 
     Route::post('/logout', [AuthController::class, 'logout'])
