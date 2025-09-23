@@ -1,91 +1,44 @@
-import { store } from '@/store';
-import { forceLogin, logout } from '@/store/loginSlice';
-import {
-    getGridsFromLocalStorage,
-    resetUserGrids,
-    saveInitialGrid,
-    updateGridConfig,
-} from '@/store/userSaveGridsSlice';
-import { userLoggedAdmin, userLoggedInNoAdmin } from '@/tests/mocks/api';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { store, subscribeLogging } from '@/store';
+import { forceLogin } from '@/store/loginSlice';
+import { initialName, saveGrid } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin } from '@/tests/mocks/api';
+import { mockLoginStateAdminAction, mockSaveGridAction } from '@/tests/mocks/redux';
+import * as logger from '@/utils/logger';
+import { vi } from 'vitest';
 
-describe('Redux Store', () => {
-    beforeEach(() => {
-        store.dispatch(logout());
-        store.dispatch(resetUserGrids(userLoggedAdmin));
+vi.spyOn(logger, 'logReduxState');
+subscribeLogging();
+
+describe('store', () => {
+    it('updates login state via rootReducer', () => {
+        store.dispatch(forceLogin(mockLoginStateAdminAction));
+
+        const state = store.getState().login;
+        expect(state.isLoggedIn).toBe(true);
+        expect(state.role).toBe('admin');
     });
 
-    it('should have the correct initial state', () => {
-        const state = store.getState();
-        expect(state.login.isLoggedIn).toBe(false);
-        expect(state.login.userId).toBeUndefined();
+    it('updates userGrid state via rootReducer', () => {
+        store.dispatch({
+            type: 'login/forceLogin',
+            payload: { userId: userLoggedAdmin, role: 'admin' as const },
+        });
 
-        expect(Object.keys(state.userGrid.savedGrids)).toHaveLength(1);
-        expect(state.userGrid.savedGrids.initial.layoutId).toBe('initial');
+        store.dispatch(saveGrid(mockSaveGridAction));
+
+        const state = store.getState().userGrid;
+        const newGrid = Object.values(state.savedGrids).find((g) => g.name === initialName);
+
+        expect(newGrid).toBeDefined();
+        expect(newGrid?.name).toBe(initialName);
     });
 
-    it('should update login state when forceLogin is dispatched', () => {
-        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
+    it('calls logReduxState on state change', () => {
+        store.dispatch(forceLogin(mockLoginStateAdminAction));
 
-        const state = store.getState();
-        expect(state.login.isLoggedIn).toBe(true);
-        expect(state.login.userId).toBe(userLoggedInNoAdmin);
-    });
-
-    it('should reset login state when logout is dispatched', () => {
-        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
-        store.dispatch(logout());
-
-        const state = store.getState();
-        expect(state.login.isLoggedIn).toBe(false);
-        expect(state.login.userId).toBeUndefined();
-    });
-
-    it('should add a grid for a logged-in user', () => {
-        store.dispatch(forceLogin({ userId: userLoggedInNoAdmin, role: 'user' }));
-        store.dispatch(getGridsFromLocalStorage(userLoggedInNoAdmin));
-
-        // 1. initial Grid anpassen
-        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '4' }));
-        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'columns', value: '2' }));
-        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'gap', value: '1' }));
-
-        // 2. neues Grid speichern, überschreibt layoutId mit uuid
-        store.dispatch(saveInitialGrid('layoutName'));
-
-        const state = store.getState();
-
-        // initial + neues Grid = 2
-        expect(Object.keys(state.userGrid.savedGrids)).toHaveLength(2);
-
-        const savedGrids = state.userGrid.savedGrids;
-        const keys = Object.keys(savedGrids);
-        // no initial
-        const secondKey = keys.find((k) => k !== 'initial')!;
-        const secondGrid = savedGrids[secondKey];
-
-        expect(secondGrid.config.items).toBe('4');
-        expect(secondGrid.config.columns).toBe('2');
-        expect(secondGrid.config.gap).toBe('1');
-    });
-
-    it('should reset all grids when resetUserGrid is dispatched', () => {
-        store.dispatch(forceLogin({ userId: userLoggedAdmin, role: 'admin' }));
-
-        // initial bearbeiten
-        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'items', value: '5' }));
-        store.dispatch(updateGridConfig({ layoutId: 'initial', key: 'columns', value: '3' }));
-
-        // speichern
-        store.dispatch(saveInitialGrid('layout name'));
-
-        // reset
-        store.dispatch(resetUserGrids(userLoggedAdmin));
-
-        const state = store.getState();
-
-        // nur noch das initial-Grid übrig
-        expect(Object.keys(state.userGrid.savedGrids)).toHaveLength(1);
-        expect(state.userGrid.savedGrids).toHaveProperty('initial');
+        expect(logger.logReduxState).toHaveBeenCalledWith(
+            'login',
+            expect.objectContaining({ isLoggedIn: true }),
+        );
     });
 });
