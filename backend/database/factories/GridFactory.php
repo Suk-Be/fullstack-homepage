@@ -14,6 +14,7 @@ class GridFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory(),
             'layout_id' => $this->faker->uuid(),
             'name' => $this->faker->words(3, true),
             'config' => [
@@ -25,7 +26,6 @@ class GridFactory extends Factory
                 'paddingY' => $this->faker->numberBetween(0, 20),
             ],
             'timestamp' => now(),
-            'user_id' => User::factory(),
         ];
     }
 }
