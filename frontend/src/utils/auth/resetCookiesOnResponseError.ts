@@ -15,7 +15,7 @@ const resetCookiesOnResponseError = async (error: unknown): Promise<void> => {
 
     if (axiosStatus === 419 || axiosStatus === 422) {
         logRecoverableError({
-            context: 'reset cookies on response error',
+            context: '[Auth] reset cookies on response error',
             error,
             extra: { axiosStatus },
         });
