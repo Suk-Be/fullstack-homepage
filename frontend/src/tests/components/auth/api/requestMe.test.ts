@@ -1,16 +1,22 @@
 import requestMe from '@/components/auth/api/requestMe';
 import { BaseClient } from '@/plugins/axios';
+import { mockMe, userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('requestMe', () => {
     it('should fetch user data and return userId when successful', async () => {
+        vi.spyOn(BaseClient, 'get').mockResolvedValue({
+            data: {
+                data: { user: mockMe },
+            },
+        });
         const result = await requestMe();
 
         expect(result).toBeDefined();
         expect(result.success).toBe(true);
 
         if (result.success) {
-            expect(result.userId).toBe(1);
+            expect(result.userId).toBe(userLoggedInNoAdmin);
             expect(result.role).toBe('user');
             expect(result.message).toMatch(/geholt/i);
         }
