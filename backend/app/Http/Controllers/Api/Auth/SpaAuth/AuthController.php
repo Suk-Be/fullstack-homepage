@@ -25,7 +25,7 @@ class AuthController extends Controller
             [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed', // <-- erwartet password_confirmation
+                'password' => 'required|string|min:8|confirmed',
             ],
             [
                 'email.unique' => 'Die E-Mail Adresse ist bereits vergeben. Bitte nutzen Sie eine andere.',
@@ -39,11 +39,11 @@ class AuthController extends Controller
             'role' => UserRole::User,
         ]);
 
-        Auth::login($user); // login user
+        Auth::login($user);
 
         return $this->success(['user' => new UserResource($user)], 'Sie haben sich erfolgreich registriert.');
     }
-    
+
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -57,7 +57,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $request->session()->regenerate(); // regenerate SESSION ID
+        $request->session()->regenerate();
 
         return $this->success( ['user' => new UserResource(Auth::user())], 'Sie haben sich erfolgreich angemeldet.');
 

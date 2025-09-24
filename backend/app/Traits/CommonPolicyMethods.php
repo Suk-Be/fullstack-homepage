@@ -12,9 +12,6 @@ trait CommonPolicyMethods
         return $user->role === UserRole::Admin;
     }
 
-    /**
-     * Prüft, ob der User Besitzer eines Modells ist.
-     */
     protected function isOwner(User $user, $model, string $ownerColumn = 'user_id'): bool
     {
         if ($model instanceof User) {

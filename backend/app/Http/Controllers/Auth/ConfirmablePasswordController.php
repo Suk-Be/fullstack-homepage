@@ -10,11 +10,6 @@ use Illuminate\Validation\ValidationException;
 
 class ConfirmablePasswordController extends Controller
 {
-    /**
-     * Confirm the user's password.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
