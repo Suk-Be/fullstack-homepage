@@ -37,6 +37,15 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+    * automatic type casting
+    */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => UserRole::class,
+    ];
+
+    /**
      * Send the password reset notification.
      *
      * @param  string  $token
@@ -52,14 +61,14 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'role' => UserRole::class,
-        ];
-    }
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'email_verified_at' => 'datetime',
+    //         'password' => 'hashed',
+    //         'role' => UserRole::class,
+    //     ];
+    // }
 
     public function grids()
     {

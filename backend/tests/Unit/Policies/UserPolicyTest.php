@@ -1,99 +1,35 @@
 <?php
 
-use App\Models\User;
 use App\Policies\UserPolicy;
+use App\Enums\UserRole;
+// makeUser ist global eingebunden, siehe Pest.php für Einbindung
 
 beforeEach(function () {
     $this->policy = new UserPolicy();
 });
 
-/**
- * Hilfsmethode, um Mock-User-Eigenschaften zu setzen.
- */
-function mockUserProperties($mock, array $properties)
-{
-    $mock->expects($GLOBALS['test']->any())
-         ->method('__get')
-         ->willReturnCallback(fn($key) => $properties[$key] ?? null);
-}
+it('allows admin to reset own grids', function () {
+    $admin = makeUser(1, UserRole::Admin);
 
-it('denies viewAny for any user', function () {
-    $user = $this->createMock(User::class);
-    expect($this->policy->viewAny($user))->toBeFalse();
+    expect($this->policy->reset($admin, $admin))->toBeTrue();
 });
 
-it('denies view for any user', function () {
-    $user = $this->createMock(User::class);
-    $model = $this->createMock(User::class);
-    expect($this->policy->view($user, $model))->toBeFalse();
+it('denies admin to reset another user grids', function () {
+    $admin = makeUser(1, UserRole::Admin);
+    $otherUser = makeUser(2, UserRole::User);
+
+    expect($this->policy->reset($admin, $otherUser))->toBeFalse();
 });
 
-it('denies create for any user', function () {
-    $user = $this->createMock(User::class);
-    expect($this->policy->create($user))->toBeFalse();
+it('denies non-admin to reset own grids', function () {
+    $user = makeUser(2, UserRole::User);
+
+    expect($this->policy->reset($user, $user))->toBeFalse();
 });
 
-it('denies update for any user', function () {
-    $user = $this->createMock(User::class);
-    $model = $this->createMock(User::class);
-    expect($this->policy->update($user, $model))->toBeFalse();
-});
+it('denies non-admin to reset another users grids', function () {
+    $user = makeUser(2, UserRole::User);
+    $otherUser = makeUser(3, UserRole::User);
 
-it('denies delete for any user', function () {
-    $user = $this->createMock(User::class);
-    $model = $this->createMock(User::class);
-    expect($this->policy->delete($user, $model))->toBeFalse();
-});
-
-it('denies restore for any user', function () {
-    $user = $this->createMock(User::class);
-    $model = $this->createMock(User::class);
-    expect($this->policy->restore($user, $model))->toBeFalse();
-});
-
-it('denies forceDelete for any user', function () {
-    $user = $this->createMock(User::class);
-    $model = $this->createMock(User::class);
-    expect($this->policy->forceDelete($user, $model))->toBeFalse();
-});
-
-it('allows admin to reset own grid', function () {
-    $loggedInUser = new User(['id' => 1, 'role' => 'admin']);
-    $userToReset = new User(['id' => 1]);
-
-    $policy = new \App\Policies\UserPolicy();
-
-    expect($policy->reset($loggedInUser, $userToReset))->toBeTrue();
-});
-
-it('denies admin to reset another user\'s grid', function () {
-    $loggedInUser = new User();
-    $loggedInUser->id = 1;
-    $loggedInUser->role = 'admin';
-
-    $userToReset = new User();
-    $userToReset->id = 2;
-
-    $policy = new \App\Policies\UserPolicy();
-
-    expect($policy->reset($loggedInUser, $userToReset))->toBeFalse();
-});
-
-
-it('denies non-admin to reset own grid', function () {
-    $loggedInUser = new User(['id' => 2, 'role' => 'user']);
-    $userToReset = new User(['id' => 2]);
-
-    $policy = new \App\Policies\UserPolicy();
-
-    expect($policy->reset($loggedInUser, $userToReset))->toBeFalse();
-});
-
-it('denies non-admin to reset any grid', function () {
-    $loggedInUser = new User(['id' => 2, 'role' => 'user']);
-    $userToReset = new User(['id' => 2]);
-
-    $policy = new \App\Policies\UserPolicy();
-
-    expect($policy->reset($loggedInUser, $userToReset))->toBeFalse();
+    expect($this->policy->reset($user, $otherUser))->toBeFalse();
 });

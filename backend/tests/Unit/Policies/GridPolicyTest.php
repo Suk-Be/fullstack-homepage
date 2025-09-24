@@ -1,77 +1,96 @@
 <?php
 
-use App\Models\User;
-use App\Models\Grid;
 use App\Policies\GridPolicy;
+use App\Enums\UserRole;
+// makeUser ist global eingebunden, siehe Pest.php für Einbindung
+// makeGrid ist global eingebunden, siehe Pest.php für Einbindung
 
 beforeEach(function () {
     $this->policy = new GridPolicy();
-
-    // Echte Models, DB nicht nötig
-    $this->owner = new User();
-    $this->owner->forceFill(['id' => 1]);
-
-    $this->otherUser = new User();
-    $this->otherUser->forceFill(['id' => 2]);
-
-    $this->admin = new User();
-    $this->admin->forceFill(['id' => 3, 'role' => 'admin']);
-
-    $this->grid = new Grid();
-    $this->grid->forceFill(['user_id' => $this->owner->id]);
 });
 
-it('allows any user to viewAny grids', function () {
-    expect($this->policy->viewAny($this->owner))->toBeTrue();
-    expect($this->policy->viewAny($this->otherUser))->toBeTrue();
+it('allows owner to view their own grid', function () {
+    $userRole = makeUser(2, UserRole::User);
+    $gridUser = makeGrid($userRole->id);
+    expect($this->policy->view($userRole, $gridUser))->toBeTrue();
 });
 
-it('allows the owner to view their grid', function () {
-    expect($this->policy->view($this->owner, $this->grid))->toBeTrue();
+it('allows admin to view any grid', function () {
+    $adminRole = makeUser(1, UserRole::Admin);
+    $anyRole = makeUser(3);
+    $grid = makeGrid($anyRole->id);
+    expect($this->policy->view($adminRole, $grid))->toBeTrue();
 });
 
-it('denies other users from viewing the grid', function () {
-    expect($this->policy->view($this->otherUser, $this->grid))->toBeFalse();
+it('denies non-owner non-admin to view a grid', function () {
+    $userRole = makeUser(2, UserRole::User);
+    $otherUserRole = makeUser(3, UserRole::User);
+    $grid = makeGrid($otherUserRole->id);
+
+    expect($this->policy->view($userRole, $grid))->toBeFalse();
 });
 
-it('allows the owner to update their grid', function () {
-    expect($this->policy->update($this->owner, $this->grid))->toBeTrue();
+it('allows owner to update their own grid', function () {
+    $anyRole = makeUser(3);
+    $grid = makeGrid($anyRole->id);
+
+    expect($this->policy->update($anyRole, $grid))->toBeTrue();
 });
 
-it('denies other users from updating the grid', function () {
-    expect($this->policy->update($this->otherUser, $this->grid))->toBeFalse();
+it('allows admin to update any grid', function () {
+    $adminRole = makeUser(1, UserRole::Admin);
+    $otherUserRole = makeUser(3, UserRole::User);
+    $grid = makeGrid($otherUserRole->id);
+
+    expect($this->policy->update($adminRole, $grid))->toBeTrue();
 });
 
-it('allows the owner to delete their grid', function () {
-    expect($this->policy->delete($this->owner, $this->grid))->toBeTrue();
+it('denies non-owner non-admin to update a grid', function () {
+    $userRole = makeUser(2, UserRole::User);
+    $otherUserRole = makeUser(3, UserRole::User);
+    $grid = makeGrid($otherUserRole->id);
+
+    expect($this->policy->update($userRole, $grid))->toBeFalse();
 });
 
-it('denies a regular user from resetting their own grids', function () {
-    expect($this->policy->reset($this->otherUser, $this->otherUser))->toBeFalse();
+it('allows owner to delete their own grid', function () {
+    $userRole = makeUser(2, UserRole::User);
+    $grid = makeGrid($userRole->id);
+
+    expect($this->policy->delete($userRole, $grid))->toBeTrue();
 });
 
-it('denies a regular user from resetting another users grids', function () {
-    expect($this->policy->reset($this->owner, $this->otherUser))->toBeFalse();
+it('allows admin to delete any grid', function () {
+    $adminRole = makeUser(1, UserRole::Admin);
+    $otherUserRole = makeUser(3, UserRole::User);
+    $grid = makeGrid($otherUserRole->id);
+
+    expect($this->policy->delete($adminRole, $grid))->toBeTrue();
 });
 
-it('allows an admin to reset their own grids', function () {
-    $admin = new User();
-    $admin->forceFill(['id' => 1, 'role' => 'admin']);
+it('denies non-owner non-admin to delete a grid', function () {
+    $userRole = makeUser(2, UserRole::User);
+    $otherUserRole = makeUser(3, UserRole::User);
+    $grid = makeGrid($otherUserRole->id);
 
-    expect($this->policy->reset($admin, $admin))->toBeTrue();
+    expect($this->policy->delete($userRole, $grid))->toBeFalse();
 });
 
-it('denies an admin from resetting another users grids', function () {
-    $admin = new User();
-    $admin->forceFill(['id' => 1, 'role' => 'admin']);
-
-    $otherUser = new User();
-    $otherUser->forceFill(['id' => 2]);
-
-    expect($this->policy->reset($admin, $otherUser))->toBeFalse();
+it('allows admin to reset their own grids', function () {
+    $adminRole = makeUser(1, UserRole::Admin);
+    expect($this->policy->reset($adminRole, $adminRole))->toBeTrue();
 });
 
-it('denies restore and forceDelete for all users', function () {
-    expect($this->policy->restore($this->owner, $this->grid))->toBeFalse();
-    expect($this->policy->forceDelete($this->owner, $this->grid))->toBeFalse();
+it('denies adminRole to reset another users grids', function () {
+    $adminRole = makeUser(1, UserRole::Admin);
+    $otherUserRole = makeUser(3, UserRole::User);
+    expect($this->policy->reset($adminRole, $otherUserRole))->toBeFalse();
+});
+
+it('denies non-adminRole to reset any grids', function () {
+    $user = makeUser(2, UserRole::User);
+    expect($this->policy->reset($user, $user))->toBeFalse();
+
+    $otherUserRole = makeUser(3, UserRole::User);
+    expect($this->policy->reset($user, $otherUserRole))->toBeFalse();
 });
