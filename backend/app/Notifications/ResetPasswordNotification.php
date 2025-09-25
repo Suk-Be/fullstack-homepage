@@ -38,7 +38,7 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
 
 
         return (new MailMessage)
-            ->subject(Lang::get('Passwort zurücksetzen Benachrichtigung'))
+            ->subject(Lang::get('Passwort zurücksetzen'))
             ->line(Lang::get('Sie erhalten diese E-Mail, weil wir eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten haben.'))
             ->action(Lang::get('Passwort zurücksetzen'), $frontendUrl) // Verwenden Sie Ihre Frontend-URL hier!
             ->line(Lang::get('Dieser Passwort-Reset-Link läuft in :count Minuten ab.', ['count' => config('auth.passwords.' . config('auth.defaults.passwords') . '.expire')]))
