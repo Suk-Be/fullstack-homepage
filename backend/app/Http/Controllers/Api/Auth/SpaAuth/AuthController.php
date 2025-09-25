@@ -65,13 +65,18 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::logout();
+        $user = $request->user();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Session-Invaliderung (für Web Guard)
+        $request->session()?->invalidate();
+        $request->session()?->regenerateToken();
 
-        return $this->success([], 'Sie haben sich erfolgreich abgemeldet.');
+        return response()->json([
+            'message' => 'Sie haben sich erfolgreich abgemeldet.'
+        ]);
     }
+
+
 
     public function me(Request $request): JsonResponse
     {

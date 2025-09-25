@@ -7,8 +7,11 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\postJson;
 use App\Enums\UserRole;
 
+// assertUserResponseStructure ist global eingebunden, siehe Pest.php
 
+// -------------------------------------------------
 // Register
+// -------------------------------------------------
 it('registers a new user and logs them in', function () {
     $response = post('/register', [
         'name' => 'Test User',
@@ -18,19 +21,9 @@ it('registers a new user and logs them in', function () {
     ]);
 
     $response->assertOk();
-    $response->assertJsonStructure([
-        'status',
-        'data' => [
-            'user' => [
-                'id',
-                'name',
-                'email',
-                'role',
-            ],
-        ],
-        'message',
-    ]);
+    assertUserResponseStructure($response);
 
+    // Prüft, dass der Benutzer nach Registrierung eingeloggt ist
     expect(auth()->check())->toBeTrue();
 });
 
@@ -59,29 +52,25 @@ it('rejects registration with duplicate email', function () {
     $response->assertStatus(422);
 });
 
+// -------------------------------------------------
 // Login
+// -------------------------------------------------
 it('logs in an existing user', function () {
-    $user = User::factory()->create([
-        'email' => 'test@example.com',
-        'password' => Hash::make('secret123'),
-    ]);
+    createUserWithPassword('secret123', ['email' => 'test@example.com']);
 
     $response = post('/login', [
         'email' => 'test@example.com',
         'password' => 'secret123',
     ]);
 
-    $response->assertOk();
-    $response->assertJson(['message' => 'Sie haben sich erfolgreich angemeldet.']);
+    $response->assertOk()
+             ->assertJson(['message' => 'Sie haben sich erfolgreich angemeldet.']);
 
     expect(auth()->check())->toBeTrue();
 });
 
 it('fails to log in with wrong credentials', function () {
-    User::factory()->create([
-        'email' => 'wrong@example.com',
-        'password' => Hash::make('correct'),
-    ]);
+    createUserWithPassword('correct', ['email' => 'wrong@example.com']);
 
     $response = postJson('/login', [
         'email' => 'wrong@example.com',
@@ -90,57 +79,56 @@ it('fails to log in with wrong credentials', function () {
 
     $response->assertInvalid('email');
     expect(auth()->check())->toBeFalse();
-    });
+});
 
-    it('fails login with missing credentials', function () {
+it('fails login with missing credentials', function () {
     $response = postJson('/login', []);
 
     $response->assertStatus(422);
     $response->assertInvalid(['email', 'password']);
 });
 
+// -------------------------------------------------
 // Logout
+// -------------------------------------------------
 it('logs out an authenticated user', function () {
-    $user = User::factory()->create([
-        'password' => Hash::make('password123'),
-    ]);
+    $user = createUserWithPassword('password123');
+    loginUser($user);
 
-    $this->actingAs($user); // session-based
+    $this->post('/logout')
+         ->assertOk()
+         ->assertJson([
+             'message' => 'Sie haben sich erfolgreich abgemeldet.'
+         ]);
 
-    $response = post('/logout');
-
-    $response->assertOk();
-    $response->assertJson(['message' => 'Sie haben sich erfolgreich abgemeldet.']);
-
-    expect(auth()->check())->toBeFalse();
+    expect(session()->has('login_web'))->toBeFalse();
 });
 
-// /me (Sanctum protected)
+// -------------------------------------------------
+// /me Route (Session-authenticated user)
+// -------------------------------------------------
 it('returns the authenticated user', function () {
-    $user = User::factory()->create();
-    $this->actingAsSessionUser($user);
+    $user = loginUser();
 
     $response = get('/me');
 
-    $response->assertOk();
-    $response->assertJson([
-        'data' => [
-            'user' => [
-                'id' => $user->id,
-                'email' => $user->email,
-            ]
-        ]
-    ]);
+    $response->assertOk()
+             ->assertJson([
+                 'data' => [
+                     'user' => [
+                         'id' => $user->id,
+                         'email' => $user->email,
+                     ]
+                 ]
+             ]);
 });
 
 it('returns full authenticated user profile structure', function () {
-    $user = User::factory()->create();
-    $this->actingAsSessionUser($user);
+    $user = loginUser();
 
     $response = get('/me');
 
     $response->assertOk();
-
     $response->assertJsonStructure([
         'data' => [
             'user' => [
@@ -167,21 +155,22 @@ it('returns full authenticated user profile structure', function () {
 });
 
 it('returns the authenticated user including role', function () {
-    $user = User::factory()->admin()->create();
-    $this->actingAsSessionUser($user);
+    $user = createUser(['role' => UserRole::Admin]);
+    loginUser($user);
 
     $response = get('/me');
 
     $response->assertOk()
-        ->assertJsonFragment([
-            'email' => $user->email,
-            'role' => UserRole::Admin->value,
-        ]);
+             ->assertJsonFragment([
+                 'email' => $user->email,
+                 'role' => UserRole::Admin->value,
+             ]);
 });
 
-
+// -------------------------------------------------
 // Guest access denied
-it('returns 401 for unauthenticated user calling me', function () {
+// -------------------------------------------------
+it('returns 401 for unauthenticated user calling /me', function () {
     $response = $this->getJson('/me');
 
     $response->assertStatus(401);
