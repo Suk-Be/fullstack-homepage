@@ -9,6 +9,7 @@ use App\Exceptions\AlreadyAuthenticatedException;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+// FYI: web session token, keine api token
 Route::middleware(['auth:sanctum'])->group(function () {
     // Normale REST-Routen, die haben einen Standardnamen (z.B. grids.destroy)
     Route::apiResource('grids', GridController::class);
