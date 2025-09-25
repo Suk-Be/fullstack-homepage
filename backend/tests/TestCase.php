@@ -4,6 +4,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
 abstract class TestCase extends BaseTestCase
@@ -18,7 +19,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function actingAsSanctumUser($user = null)
     {
-        $user = $user ?? \App\Models\User::factory()->create();
+        $user = $user ?? User::factory()->create();
 
         Sanctum::actingAs($user);
 
@@ -33,7 +34,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function actingAsSessionUser($user = null)
     {
-        $user = $user ?? \App\Models\User::factory()->create();
+        $user = $user ?? User::factory()->create();
 
         $this->actingAs($user);
 
