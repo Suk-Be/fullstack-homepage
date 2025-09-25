@@ -48,4 +48,9 @@ function something()
     // ..
 }
 
-require_once __DIR__ . '/Helpers/TestHelpers.php';
+require_once __DIR__ . '/Helpers/Models.php';
+require_once __DIR__ . '/Helpers/Auth.php';
+require_once __DIR__ . '/Helpers/Grid.php';
+require_once __DIR__ . '/Helpers/Assertions.php';
+require_once __DIR__ . '/Helpers/Routes.php';
+require_once __DIR__ . '/Helpers/ExternalServices.php';
