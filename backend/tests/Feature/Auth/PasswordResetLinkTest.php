@@ -4,15 +4,12 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-
-uses(RefreshDatabase::class);
 
 test('reset password link can be requested', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = createUser();
 
     $response = $this->withMiddleware()
         ->post(route('password.email'), [
@@ -27,23 +24,24 @@ test('reset password link can be requested', function () {
 test('password can be reset with valid token', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = createUser();
+    $password = 'password';
 
+    // Trigger password reset email
     $this->post(route('password.email'), ['email' => $user->email]);
 
     Notification::assertSentTo(
         $user,
         ResetPasswordNotification::class,
-        function ($notification) use ($user) {
+        function ($notification) use ($user, $password) {
             $response = $this->post(route('password.update'), [
                 'token' => $notification->token,
                 'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
+                'password' => $password,
+                'password_confirmation' => $password,
             ]);
 
             $response->assertStatus(200);
-
             return true;
         }
     );

@@ -2,45 +2,37 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Http\Controllers\Auth\NewPasswordController;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
-uses(RefreshDatabase::class);
-
 it('can reset a password with a valid token and email', function () {
     Event::fake();
 
-    $user = User::factory()->create([
-        'email' => 'test@example.com',
-    ]);
+    $user = createUser(['email' => 'test@example.com']);
+    $newPassword = 'new-password';
 
     // Simulate the user requesting a password reset
     Password::shouldReceive('reset')
         ->once()
         ->andReturn(Password::PASSWORD_RESET)
-        ->withArgs(function ($credentials, $callback) use ($user) {
-            $callback($user);
-            return true;
-        });
+        ->withArgs(fn($credentials, $callback) => $callback($user) || true);
 
     $response = $this->withoutMiddleware()->postJson('/reset-password', [
         'token' => 'valid-reset-token',
-        'email' => 'test@example.com',
-        'password' => 'new-password',
-        'password_confirmation' => 'new-password',
+        'email' => $user->email,
+        'password' => $newPassword,
+        'password_confirmation' => $newPassword,
     ]);
 
-    $response->assertOk();
-    $response->assertJson(['status' => __('passwords.reset')]);
+    $response->assertOk()
+        ->assertJson(['status' => __('passwords.reset')]);
 
     $user->refresh();
-    expect(Hash::check('new-password', $user->password))->toBeTrue();
+    expect(Hash::check($newPassword, $user->password))->toBeTrue();
     expect(Auth::check())->toBeTrue();
     expect(Auth::user()->is($user))->toBeTrue();
 
@@ -52,15 +44,16 @@ it('fails to reset password with an invalid token or email', function () {
         ->once()
         ->andReturn(Password::INVALID_TOKEN);
 
+    $user = createUser();
     $response = $this->withoutMiddleware()->postJson('/reset-password', [
         'token' => 'invalid-token',
-        'email' => 'nonexistent@example.com',
+        'email' => $user->email,
         'password' => 'new-password',
         'password_confirmation' => 'new-password',
     ]);
 
-    $response->assertStatus(422);
-    $response->assertJsonValidationErrors(['email']);
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['email']);
 });
 
 it('requires a token for password reset', function () {
