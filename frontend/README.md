@@ -57,12 +57,12 @@ VITE_API_BASE_URL=http://localhost:8000/api
 frontend/
  ├─ src/
  │   ├─ components/                 # UI-Komponenten Homepage
-        ├─ auth/                    # UI-Komponenten für Authentifizierung
-            ├─ api/                 # Auth API Calls
+ │   │     └─ auth/                 # UI-Komponenten für Authentifizierung
+ │   │          └─ api/             # Auth API Calls
  │   ├─ componentsTemplateEngine/   # Komponenten Template-Engine
-         ├─ gridConfiguration/      # dynamisches Layout Grid
-            ├─ markup/              # Markup Generator für das Layout Grid
-            ├─ ui/                  # Input Slider zur Dynamisierung des Layout Grids
+ │   │     └─ gridConfiguration/    # dynamisches Layout Grid
+ │   │          ├─ markup/          # Markup Generator für das Layout Grid
+ │   │          └─ ui/              # Input Slider zur Dynamisierung des Layout Grids
  │   ├─ data/                       # Statische Daten
  │   ├─ hooks/                      # wiederverwendbare react hooks
  │   ├─ pages/                      # Seiten

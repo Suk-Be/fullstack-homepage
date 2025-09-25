@@ -5,7 +5,7 @@
 -   **Core:** PHP 8.2+, Laravel 12
 -   **Security & Auth:** Laravel Sanctum (Session-/Token-Auth), Laravel Socialite (Google & GitHub Login)
 -   **Dev Tools:** Laravel Sail (Docker), Laravel Pint (Code Style), Laravel Tinker (CLI), Laravel Pail (Logging), Breeze (Starter-Kit)
--   **Testing:** Pest (mit Laravel Plugin), Faker, Mockery
+-   **Testing:** Pest (mit Laravel Plugin, auf PHPUnit basierend), Faker, Mockery
 -   **DB:** MySQL, SQLite (lokal für Testing)
 
 👉 Alle Dependencies findest du in der [`composer.json`](./composer.json).
@@ -27,8 +27,8 @@ cp .env.example .env
 # Application Key generieren
 php artisan key:generate
 
-# Migrationen ausführen (erstellt Tabellen)
-php artisan migrate
+# Migrationen ausführen (erstellt Tabellen mit Test Daten)
+php artisan migrate --seed
 
 # Development Server starten
 php artisan serve
@@ -44,11 +44,11 @@ php artisan test
 ## Scripts
 
 ```bash
-- `php artisan serve` → Development-Server starten
-- `php artisan migrate:fresh --seed` → Datenbank zurücksetzen und Seeder ausführen
-- `php artisan queue:work` → Queue Worker starten (für lokales testen von emails mit mailpit)
-- `php artisan test` → Tests ausführen (Pest/PHPUnit)
-- `php artisan tinker` → CLI für interaktive DB-Checks
+- `php artisan serve` → Startet den Development-Server
+- `php artisan migrate:fresh --seed` → Setzt die DB zurück und führt Seed-Daten aus
+- `php artisan queue:work` → Startet den Queue Worker (z.B. für Mail-Handling)
+- `php artisan test` → Führt Unit & Feature Tests aus (Pest/PHPUnit)
+- `php artisan tinker` → Interaktive Konsole für DB-Checks & Debugging
 ```
 
 ---
@@ -74,22 +74,29 @@ DB_CONNECTION=mysql
 
 ```bash
 backend/
- ├─ app/                   # Business Logic (Models, Controllers, Services)
- │   ├─ Http/              # Controller & Middleware
- │   ├─ Models/            # Eloquent Models
- │   └─ ...
- ├─ bootstrap/             # App Bootstrap
- ├─ config/                # Konfigurationen
+ ├─ app/
+ │   ├─ Http/
+ │   │    ├─ Controllers/
+ │   │    │     ├─ Api/
+ │   │    │     │   ├─ Auth/SpaAuth/  # AuthController
+ │   │    │     │   └─ Grid/          # GridController
+ │   │    │     └─ Auth               # Authorization token
+ │   │    └─ Resources/               # Grid & User JSON
+ │   ├─ Models/                       # Eloquent Models
+ │   ├─ Notifications/                # Reset password emails
+ │   ├─ Policies/                     # User & Grid Policies
+ │   ├─ Providers/                    # App Provider & Auth Provider
+ │   └─ Traits/                       # ApiResponses, CommonPolicyMethods
+ ├─ bootstrap/                        # App Bootstrap: Sanctum stateful API, EnsureEmailIsVerified
+ ├─ config/                           # sanctum, cors, mail, session, queue, services, providers
  ├─ database/
- │   ├─ factories/         # Testdaten Factories
- │   ├─ migrations/        # Tabellen-Migrationen
- │   └─ seeders/           # Seed-Daten
- ├─ public/                # Public Root (index.php)
- ├─ resources/             # Views, Blade Templates, lang Files
- ├─ routes/                # API & Web Routes
- ├─ storage/               # Logs, Cache, Uploads
- ├─ tests/                 # Tests (Pest)
- └─ artisan                # Artisan CLI
+ │   ├─ factories/                    # Grid, User Testdaten Factories
+ │   ├─ migrations/                   # Tabellen-Migrationen
+ │   └─ seeders/                      # Seed-Daten für Grid & User mit unterschiedlichen Rollen
+ ├─ public/                           # Public Root (index.php)
+ ├─ routes/                           # API & Web Routes
+ ├─ storage/                          # Logs, Cache, Uploads
+ └─ tests/                            # Tests (Pest), Feature, Unit und Helpers
 
 ```
 
