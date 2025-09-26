@@ -6,7 +6,7 @@ const MainContainer = ({ children }: PropsWithChildren) => {
         <div
             className="
             flex-1 flex md:gap-2 
-            md:p-4 pt-[6rem] lg:pt-[8rem] lg:p-10 
+            pt-[4rem] md:pt-[6rem] lg:pt-[8rem] lg:p-10 
             flex-col lg:flex-row 
             full 
             bg-white text-gray-700"
