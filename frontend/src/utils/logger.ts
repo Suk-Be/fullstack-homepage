@@ -49,6 +49,7 @@ export const logRecoverableError = ({
 
 export const logReduxState = (
     slice: 'login' | 'userGrid',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state: any,
     mode: string = import.meta.env.MODE,
 ) => {
@@ -68,6 +69,7 @@ export const logRequestState = (
         | 'requestMe'
         | 'requestMeError'
         | 'selectLoginState',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     responseType?: any,
     mode: string = import.meta.env.MODE,
 ) => {

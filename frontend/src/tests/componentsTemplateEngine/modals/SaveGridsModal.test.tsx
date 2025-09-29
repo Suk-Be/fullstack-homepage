@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Partial Mock für die Store-Selectoren
 const mockSaveUserGridThunk = vi.fn();
 vi.mock('@/store/thunks/userGridThunks', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveUserGridThunk: (...args: any[]) => mockSaveUserGridThunk(...args),
 }));
 

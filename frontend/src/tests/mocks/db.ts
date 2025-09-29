@@ -9,5 +9,5 @@ export const db = factory({
         password_confirmation: String,
     },
 });
-
-export type User = typeof db.user.create extends (...args: any) => infer R ? R : never
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type User = typeof db.user.create extends (...args: any) => infer R ? R : never;

@@ -23,6 +23,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
     const actual = await importOriginal<typeof import('react-router-dom')>();
     return {
         ...actual,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Navigate: (props: any) => {
             mockNavigate(props.to);
             return null; // Don't render anything when Navigate is called

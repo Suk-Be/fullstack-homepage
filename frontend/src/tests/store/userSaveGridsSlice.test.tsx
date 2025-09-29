@@ -220,6 +220,7 @@ describe('userSaveGridsSlice', () => {
     });
 
     it('selectGridsFromThisUser returns the savedGrids object', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = selectGridsFromThisUser(mockLoggedInUserState as any);
 
         expect(typeof result).toBe('object');

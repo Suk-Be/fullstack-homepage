@@ -1,8 +1,8 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { GridConfigKey } from './Redux';
 
-export type Teaser = {
-    type: string;
+export interface Teaser {
+    interface: string;
     id: number;
     attributes: {
         title: string;
@@ -13,18 +13,18 @@ export type Teaser = {
     link?: string;
 };
 
-export type Welcome = {
+export interface Welcome {
     data: Teaser[];
 };
 
-export type User = {
+export interface User {
     id: number;
     name: string;
     email: string;
     email_verified_at: string;
 };
 
-export type GridProps = {
+export interface GridProps  {
     items: string;
     columns: string;
     gap: string;
@@ -40,7 +40,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     };
 };
 
-export type DynamicGridProps = {
+export interface DynamicGridProps  {
     inlineStyles: {
         display: string;
         gridTemplateColumns: string;

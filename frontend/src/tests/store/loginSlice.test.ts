@@ -1,7 +1,7 @@
 import reducer, { LoginState, loginThunk } from '@/store/loginSlice';
+import { userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { configureStore } from '@reduxjs/toolkit';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { userLoggedInNoAdmin } from '@/tests/mocks/api';
 
 // Hoisted Mocks
 const {
@@ -67,6 +67,7 @@ describe('loginThunk', () => {
 
         const store = makeStore();
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await store.dispatch(loginThunk({ email: 'test@example.com', password: 'secret' }) as any);
 
         const state: LoginState = store.getState().login;
@@ -88,6 +89,7 @@ describe('loginThunk', () => {
 
         const store = makeStore();
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await store.dispatch(loginThunk({ email: 'fail@example.com', password: 'wrong' }) as any);
 
         const state: LoginState = store.getState().login;
@@ -106,6 +108,7 @@ describe('loginThunk', () => {
 
         const store = makeStore();
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await store.dispatch(loginThunk({ email: 'oops@example.com', password: 'fail' }) as any);
 
         expect(mockResetCookiesOnResponseError).toHaveBeenCalledWith(errorObj);

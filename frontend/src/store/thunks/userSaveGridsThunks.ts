@@ -1,7 +1,21 @@
 import ApiClient from '@/plugins/axios';
 import { GridConfig } from '@/types/Redux';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
 import { RootState } from '..';
+
+function handleAxiosError(error: unknown, fallback: string) {
+    let message = fallback;
+
+    if ((error as AxiosError<{ message: string }>).isAxiosError) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        if (axiosError.response?.data?.message) {
+            message = axiosError.response.data.message;
+        }
+    }
+
+    return message;
+}
 
 const fetchUserGridsThunk = createAsyncThunk<
     Record<string, GridConfig>, // Rückgabe vom Backend: keyed Object
@@ -13,8 +27,8 @@ const fetchUserGridsThunk = createAsyncThunk<
         const response = await ApiClient.get('/user/grids', { withCredentials: true });
         // payload ist jetzt ein Object keyed by layoutId
         return response.data.data;
-    } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Fehler beim Laden der Grids');
+    } catch (error: unknown) {
+        return rejectWithValue(handleAxiosError(error, 'Fehler beim Laden der Grids'));
     }
 });
 
@@ -41,11 +55,12 @@ const saveUserGridThunk = createAsyncThunk<
         );
 
         return response.data.data as GridConfig; // GridResource vom Backend
-    } catch (err: any) {
-        return rejectWithValue(err.response?.data?.message || 'Fehler beim Speichern des Grids');
+    } catch (error: unknown) {
+        return rejectWithValue(handleAxiosError(error, 'Fehler beim Speichern der Grids'));
     }
 });
 
+/* This code block defines a Redux thunk function named `resetUserGridsThunk`. */
 const resetUserGridsThunk = createAsyncThunk<
     number, // Rückgabe: userId
     number, // Argument: userId
@@ -54,10 +69,8 @@ const resetUserGridsThunk = createAsyncThunk<
     try {
         await ApiClient.delete(`/users/${userId}/grids`, { withCredentials: true });
         return userId; // action.payload
-    } catch (error: any) {
-        return rejectWithValue(
-            error.response?.data?.message || `Fehler beim ${userId} Zurücksetzen`,
-        );
+    } catch (error: unknown) {
+        return rejectWithValue(handleAxiosError(error, `Fehler beim ${userId} Zurücksetzen`));
     }
 });
 
@@ -71,8 +84,8 @@ const deleteThisGridThunk = createAsyncThunk<
             withCredentials: true,
         });
         return layoutId;
-    } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || `Fehler beim ${layoutId} Löschen`);
+    } catch (error: unknown) {
+        return rejectWithValue(handleAxiosError(error, `Fehler beim ${layoutId} Löschen`));
     }
 });
 

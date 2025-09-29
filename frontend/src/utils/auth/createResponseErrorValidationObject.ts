@@ -12,7 +12,7 @@ import { LoginErrorResponse } from '@/types/entities';
 export const createResponseErrorValidationObject = (
     message: string,
     fallbackMessage: string,
-    errors?: { [key: string]: string[] },
+    errors?: Record<string, string[]>,
 ): LoginErrorResponse => {
     return {
         success: false,

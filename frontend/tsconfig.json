@@ -40,6 +40,9 @@
     "src",
     "tests"
   ],
+  "exclude": [
+    "**/*.d.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -1,6 +1,6 @@
 import tranlateInlineStyleValuesToTailwindValues from './translateInlineStyleValuesToTailwindValues';
 
-let styleType = {
+const styleType = {
     isGridCol: false,
     isGap: false,
     isBorder: false,

@@ -1,7 +1,9 @@
 import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
-type Component = ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
+type Component =
+    | ReactElement<unknown, string | JSXElementConstructor<unknown>>
+    | Iterable<ReactNode>;
 /**
  * Helper function for the ParentTag Component to transpile and merge TagAttributes
  *

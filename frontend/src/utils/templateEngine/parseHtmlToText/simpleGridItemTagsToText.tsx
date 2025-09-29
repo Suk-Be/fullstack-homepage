@@ -18,7 +18,7 @@ const domSimpleGrid = parseStringToADomModel(
 ).body.firstChild?.childNodes;
 
 const simpleGridItemTagsToText: string[] = Array.from(domSimpleGrid ?? []).map((elem) => {
-    let gridItem = document.createElement('div');
+    const gridItem = document.createElement('div');
     gridItem.appendChild(elem);
     // console.log('simpleGridItemTagsToText: ', gridItem.appendChild(elem))
     // logs: <div class="w-full rounded-xl h-24 bg-gray-light"></div>

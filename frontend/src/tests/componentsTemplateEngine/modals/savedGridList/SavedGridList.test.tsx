@@ -107,6 +107,7 @@ describe('SavedGridList', () => {
     });
 
     it('confirms delete and dispatches deleteThisGrid', async () => {
+        // eslint-disable-next-line  @typescript-eslint/no-empty-function
         vi.spyOn(window, 'alert').mockImplementation(() => {});
 
         const { user, store } = renderUtils();

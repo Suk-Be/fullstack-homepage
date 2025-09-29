@@ -4,10 +4,10 @@ import { GridProps, HandleChange } from '@/types/templateEngine';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 
-type Props = {
+interface Props {
     handleChange: HandleChange;
     grid: GridProps;
-};
+}
 
 vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/GridConfiguration', () => ({
     __esModule: true,
@@ -21,6 +21,7 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/GridConfiguration', () 
 
 vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/GapConfiguration', () => ({
     __esModule: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     default: ({ handleChange, grid }: any) => (
         <div data-testid="gap-configuration">
             <input onChange={handleChange('items')} />
@@ -31,6 +32,7 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/GapConfiguration', () =
 
 vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration', () => ({
     __esModule: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     default: ({ handleChange, grid, toggled, handleToggle }: any) => (
         <div data-testid="border-configuration">
             <input type="checkbox" checked={toggled} onChange={handleToggle} />
@@ -42,6 +44,7 @@ vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration', (
 
 vi.mock('@/componentsTemplateEngine/gridConfiguration/ui/PaddingConfiguration', () => ({
     __esModule: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     default: ({ handleChange, grid }: any) => (
         <div data-testid="padding-configuration">
             <input onChange={handleChange('border')} />

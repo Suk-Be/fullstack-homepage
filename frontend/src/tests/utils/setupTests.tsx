@@ -1,5 +1,6 @@
 import { db } from '@/tests/mocks/db';
 import { server } from '@/tests/mocks/server';
+import type { LinkProps } from '@mui/material/Link';
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { mockAnimationsApi } from 'jsdom-testing-mocks';
@@ -21,7 +22,7 @@ beforeAll(() => {
     vi.mock('@mui/material/Link', () => {
         return {
             __esModule: true,
-            default: ({ children, ...props }: any) => (
+            default: ({ children, ...props }: LinkProps) => (
                 <a {...props} data-testid="mui-link">
                     {children}
                 </a>

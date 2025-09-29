@@ -27,7 +27,9 @@ describe('userSaveGridsThunks', () => {
         delete: ReturnType<typeof vi.fn>;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let dispatch: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let getState: any;
 
     beforeEach(() => {

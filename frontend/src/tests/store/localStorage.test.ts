@@ -1,90 +1,101 @@
-import { clearUserGridsFromLocalStorage, loadFromLocalStorage, saveToLocalStorage } from '@/store/localStorage';
+import {
+    clearUserGridsFromLocalStorage,
+    loadFromLocalStorage,
+    saveToLocalStorage,
+} from '@/store/localStorage';
 import { UserSaveGridsState } from '@/types/Redux';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('localStorage helpers', () => {
-  const mockUserId = 1;
-  const mockState: UserSaveGridsState = {
-    userId: mockUserId,
-    savedGrids: {
-      layout1: { 
-        layoutId: 'layout1', 
-        name: 'test',
-        timestamp: new Date().toISOString(),
-        config: { 
-          items: '2', 
-          columns: '3', 
-          gap: '1', 
-          border: '1', 
-          paddingX: '2', 
-          paddingY: '2' 
-        } 
-      },
-    },
-  };
+    const mockUserId = 1;
+    const mockState: UserSaveGridsState = {
+        userId: mockUserId,
+        savedGrids: {
+            layout1: {
+                layoutId: 'layout1',
+                name: 'test',
+                timestamp: new Date().toISOString(),
+                config: {
+                    items: '2',
+                    columns: '3',
+                    gap: '1',
+                    border: '1',
+                    paddingX: '2',
+                    paddingY: '2',
+                },
+            },
+        },
+    };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // localStorage mocken
-    vi.stubGlobal('localStorage', {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-      clear: vi.fn(),
+    beforeEach(() => {
+        vi.clearAllMocks();
+        // localStorage mocken
+        vi.stubGlobal('localStorage', {
+            getItem: vi.fn(),
+            setItem: vi.fn(),
+            removeItem: vi.fn(),
+            clear: vi.fn(),
+        });
     });
-  });
 
-  it('should save grids to localStorage', () => {
-    saveToLocalStorage(mockUserId, mockState);
+    it('should save grids to localStorage', () => {
+        saveToLocalStorage(mockUserId, mockState);
 
-    expect(localStorage.setItem).toHaveBeenCalledWith(
-      `userGrid_${mockUserId}`,
-      JSON.stringify({ savedGrids: mockState.savedGrids })
-    );
-  });
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+            `userGrid_${mockUserId}`,
+            JSON.stringify({ savedGrids: mockState.savedGrids }),
+        );
+    });
 
-  it('should load grids from localStorage', () => {
-    const storedValue = JSON.stringify({ savedGrids: mockState.savedGrids });
-    (localStorage.getItem as any).mockReturnValue(storedValue);
+    it('should load grids from localStorage', () => {
+        const storedValue = JSON.stringify({ savedGrids: mockState.savedGrids });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (localStorage.getItem as any).mockReturnValue(storedValue);
 
-    const result = loadFromLocalStorage(mockUserId);
+        const result = loadFromLocalStorage(mockUserId);
 
-    expect(localStorage.getItem).toHaveBeenCalledWith(`userGrid_${mockUserId}`);
-    expect(result).toEqual(mockState);
-  });
+        expect(localStorage.getItem).toHaveBeenCalledWith(`userGrid_${mockUserId}`);
+        expect(result).toEqual(mockState);
+    });
 
-  it('should return null if no data in localStorage', () => {
-    (localStorage.getItem as any).mockReturnValue(null);
+    it('should return null if no data in localStorage', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (localStorage.getItem as any).mockReturnValue(null);
 
-    const result = loadFromLocalStorage(mockUserId);
+        const result = loadFromLocalStorage(mockUserId);
 
-    expect(result).toBeNull();
-  });
+        expect(result).toBeNull();
+    });
 
-  it('should handle invalid JSON in localStorage gracefully', () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    
-    (localStorage.getItem as any).mockReturnValue('invalid json');
+    it('should handle invalid JSON in localStorage gracefully', () => {
+        // eslint-disable-next-line  @typescript-eslint/no-empty-function
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (localStorage.getItem as any).mockReturnValue('invalid json');
 
-    const result = loadFromLocalStorage(mockUserId);
+        const result = loadFromLocalStorage(mockUserId);
 
-    expect(result).toBeNull();
-  });
+        expect(result).toBeNull();
+    });
 
-  it('should remove user grids from localStorage', () => {
-    clearUserGridsFromLocalStorage(mockUserId);
+    it('should remove user grids from localStorage', () => {
+        clearUserGridsFromLocalStorage(mockUserId);
 
-    expect(localStorage.removeItem).toHaveBeenCalledWith(`userGrid_${mockUserId}`);
-  });
+        expect(localStorage.removeItem).toHaveBeenCalledWith(`userGrid_${mockUserId}`);
+    });
 
-  it('should handle errors in removeItem gracefully', () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    (localStorage.removeItem as any).mockImplementation(() => { throw new Error('fail'); });
+    it('should handle errors in removeItem gracefully', () => {
+        // eslint-disable-next-line  @typescript-eslint/no-empty-function
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (localStorage.removeItem as any).mockImplementation(() => {
+            throw new Error('fail');
+        });
 
-    expect(() => clearUserGridsFromLocalStorage(mockUserId)).not.toThrow();
-    expect(console.error).toHaveBeenCalledWith(
-      'Failed to clear user grids from localStorage',
-      expect.any(Error)
-    );
-  });
+        expect(() => clearUserGridsFromLocalStorage(mockUserId)).not.toThrow();
+        expect(console.error).toHaveBeenCalledWith(
+            'Failed to clear user grids from localStorage',
+            expect.any(Error),
+        );
+    });
 });

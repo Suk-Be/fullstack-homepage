@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeHeaders(headers: any): Record<string, string> {
     if (!headers) return {};
 

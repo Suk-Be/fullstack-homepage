@@ -15,7 +15,7 @@ const tranlateInlineStyleValuesToTailwindValues = (
     // rule controller
     const findRule = (rule: string) =>
         InlineStyleRulesArray?.find((item: string | string[]) => item.includes(rule));
-    let rule = findRule(styleRule);
+    const rule = findRule(styleRule);
 
     if (styleType.isGridCol && rule !== undefined) {
         /**

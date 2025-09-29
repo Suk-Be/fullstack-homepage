@@ -66,10 +66,10 @@ export const setupStore = (preloadedState?: PreloadedState) =>
  * renders HomePage with login status (isLoggedIn: true)
  */
 
-export type PathAndReduxState = {
+export interface PathAndReduxState {
     route?: string;
     preloadedState?: PreloadedState;
-};
+}
 
 const navigateTo = ({ route = '/', preloadedState = {} }: PathAndReduxState) => {
     const store = setupStore(preloadedState);

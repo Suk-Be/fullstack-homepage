@@ -1,7 +1,7 @@
 import RowspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/RowspanningGrid';
 import {
-  createHtmlAsTextFromPassedComponent,
-  parseStringToADomModel,
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
@@ -17,7 +17,7 @@ const domRowSpanningGrid = parseStringToADomModel(
 ).body.firstChild?.childNodes;
 
 const rowSpanningGridItemTagsToText: string[] = Array.from(domRowSpanningGrid ?? []).map((elem) => {
-    let gridItem = document.createElement('div');
+    const gridItem = document.createElement('div');
     gridItem.appendChild(elem);
     // console.log('gridItem ', gridItem)
     return gridItem?.innerHTML;

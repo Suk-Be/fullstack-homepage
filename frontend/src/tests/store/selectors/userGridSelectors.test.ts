@@ -42,23 +42,27 @@ describe('userGridSelectors', () => {
     } as { userGrid: UserSaveGridsState };
 
     it('selectSavedGridsMap returns all savedGrids', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = selectSavedGridsMap(mockState as any);
         expect(result).toEqual(mockState.userGrid.savedGrids);
     });
 
     it('selectInitialGrid returns only the initial grid config', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = selectInitialGrid(mockState as any);
 
         expect(result).toEqual(mockState.userGrid.savedGrids.initialLayoutId.config);
     });
 
     it('selectSortedGrids returns grids sorted by timestamp descending', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = selectSortedGrids(mockState as any);
         expect(result[0].layoutId).toBe('grid2'); // neuester Grid kommt zuerst
         expect(result[1].layoutId).toBe('initial');
     });
 
     it('selectGridsFromThisUser returns the grids (object keys of savedGrids) in a new array', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = selectGridsFromThisUser(mockState as any);
 
         expect(typeof result).toBe('object');

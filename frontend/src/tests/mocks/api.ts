@@ -1,5 +1,6 @@
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
+import { AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { ResetPasswordRequestBody } from './handlers';
 
 // user id mocks
@@ -137,6 +138,22 @@ const mockPasswordReset = (body: ResetPasswordRequestBody) => {
     };
 };
 
+const mockConfig: InternalAxiosRequestConfig = {
+    url: '',
+    method: 'get',
+    headers: new AxiosHeaders(),
+    params: {},
+    baseURL: '',
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockResponse: AxiosResponse<unknown, any> = {
+    data: {},
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: mockConfig,
+};
+
 export {
     mockBackendGrids,
     mockFailedLoginData,
@@ -147,6 +164,7 @@ export {
     mockNotMatchingEmailForForgotPassword,
     mockNotMatchingPasswordReset,
     mockPasswordReset,
+    mockResponse,
     mockSignUpSuccess,
     mockSignupUserAlreadyExists,
     userLoggedAdmin,

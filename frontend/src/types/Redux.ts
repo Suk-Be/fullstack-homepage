@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 export type PreloadedState<T> = Partial<T> | {};
 
 export interface User {
@@ -10,9 +11,7 @@ export interface User {
 export interface UserSaveGridsState {
     userId: User['id'] | null;
     name?: string;
-    savedGrids: {
-        [initialLayoutId: string]: GridConfig; // Normalisiertes Objekt
-    };
+    savedGrids: Record<string, GridConfig>;
 }
 export interface GridConfig {
     layoutId: string;

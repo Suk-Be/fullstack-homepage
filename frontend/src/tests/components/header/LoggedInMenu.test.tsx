@@ -121,6 +121,7 @@ describe('LoggedInMenu', () => {
 
     it('should call Home Page route when the logo is clicked', async () => {
         vi.mock('../../../components/RouterLink', () => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             default: (props: any) => <a {...props} />,
         }));
 

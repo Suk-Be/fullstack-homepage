@@ -4,7 +4,7 @@ import { createResponseErrorValidationObject } from './createResponseErrorValida
 
 export interface ApiErrorData {
     message?: string;
-    errors?: { [key: string]: string[] };
+    errors?: Record<string, string[]>;
 }
 
 export function isAxiosError(error: unknown): error is AxiosError {

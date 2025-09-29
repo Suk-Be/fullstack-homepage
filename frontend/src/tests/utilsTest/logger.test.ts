@@ -1,6 +1,7 @@
 import { store } from '@/store';
 import { userLoggedAdmin } from '@/tests//mocks/api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mockLoginStateAdmin } from '../mocks/redux';
 
 describe('logRecoverableError', () => {
     const originalEnv = import.meta.env;
@@ -8,16 +9,17 @@ describe('logRecoverableError', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.restoreAllMocks();
-        // @ts-ignore
+        // @ts-expect-error: import.meta.env wird für Tests überschrieben
         import.meta.env = { ...originalEnv };
     });
 
     afterEach(() => {
-        // @ts-ignore
+        // @ts-expect-error: import.meta.env wird für Tests überschrieben
         import.meta.env = originalEnv;
     });
 
     it('logs to console.warn in development mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const error = new Error('Test error');
 
@@ -33,6 +35,7 @@ describe('logRecoverableError', () => {
     });
 
     it('does not log anything in test mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const error = new Error('Should not log');
 
@@ -48,7 +51,7 @@ describe('logRecoverableError', () => {
 
     it('calls fetch in production mode', async () => {
         const fetchMock = vi.fn(() => Promise.resolve({ ok: true })) as unknown;
-        // @ts-ignore
+        // @ts-expect-error only needed for local testing
         global.fetch = fetchMock;
 
         const { logRecoverableError } = await import('@/utils/logger');
@@ -63,9 +66,9 @@ describe('logRecoverableError', () => {
 
     it('logs fetch errors to console.error in production', async () => {
         const fetchMock = vi.fn(() => Promise.reject(new Error('Fetch failed')));
-        // @ts-ignore
         global.fetch = fetchMock;
 
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
         const { logRecoverableError } = await import('@/utils/logger');
@@ -88,16 +91,17 @@ describe('logReduxState', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.restoreAllMocks();
-        // @ts-ignore – import.meta.env is readonly
+        // @ts-expect-error – import.meta.env is readonly
         import.meta.env = { ...originalEnv };
     });
 
     afterEach(() => {
-        // @ts-ignore
+        // @ts-expect-error - cleanup
         import.meta.env = originalEnv;
     });
 
     it('should log to console.log in development mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         const { logReduxState } = await import('@/utils/logger');
@@ -112,6 +116,7 @@ describe('logReduxState', () => {
     });
 
     it('should not log in test mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         const { logReduxState } = await import('@/utils/logger');
@@ -129,16 +134,17 @@ describe('logRequestState', () => {
     beforeEach(() => {
         vi.resetModules();
         vi.restoreAllMocks();
-        // @ts-ignore – import.meta.env is readonly
+        // @ts-expect-error – import.meta.env is readonly
         import.meta.env = { ...originalEnv };
     });
 
     afterEach(() => {
-        // @ts-ignore
+        // @ts-expect-error -only for local testing
         import.meta.env = originalEnv;
     });
 
     it('should log to console.log in development mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         const { logRequestState } = await import('@/utils/logger');
@@ -156,7 +162,7 @@ describe('logRequestState', () => {
             message: 'authentication denied.',
         };
 
-        logRequestState('selectLoginState', userId, 'development');
+        logRequestState('selectLoginState', mockLoginStateAdmin, 'development');
         logRequestState('initializeCookies', undefined, 'development'); // 'initializeCookies' does not have a responseType, so pass undefined as the second argument
         logRequestState('initializeCookiesError', initCookiesError, 'development');
         logRequestState('requestMe', result, 'development');
@@ -188,6 +194,7 @@ describe('logRequestState', () => {
     });
 
     it('should not log in test mode', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         const { logRequestState } = await import('@/utils/logger');

@@ -17,7 +17,7 @@ import { navigateTo } from './testRenderUtils';
  */
 const expectErrorMessages = <T extends 'SignUp' | 'SignIn'>(
     formType: T,
-    fields: Array<keyof (typeof ErrorMessages)[T]>,
+    fields: (keyof (typeof ErrorMessages)[T])[],
 ) => {
     fields.forEach((field) => {
         expect(screen.getByText(ErrorMessages[formType][field] as string)).toBeInTheDocument();
@@ -37,7 +37,7 @@ const expectErrorMessages = <T extends 'SignUp' | 'SignIn'>(
  */
 const expectNoErrorMessages = <T extends 'SignUp' | 'SignIn'>(
     formType: T,
-    fields: Array<keyof (typeof ErrorMessages)[T]>,
+    fields: (keyof (typeof ErrorMessages)[T])[],
 ) => {
     fields.forEach((field) => {
         expect(

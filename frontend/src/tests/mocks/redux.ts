@@ -117,6 +117,20 @@ const mockLoggedInUserState = {
     },
 };
 
+const mockLoginStateFulFilled = {
+    isLoggedIn: true,
+    isLoading: false,
+    error: null,
+    role: 'user' as const,
+};
+
+const mockLoginStatePending = {
+    isLoggedIn: false,
+    isLoading: true,
+    error: null,
+    role: null,
+};
+
 const mockGuestUserState = {
     login: {
         isLoggedIn: false,
@@ -148,6 +162,13 @@ const mockLoginStateAdminAction = {
     role: 'admin' as const,
 };
 
+const mockLoginStateAdmin = {
+    isLoggedIn: true,
+    isLoading: true,
+    error: null,
+    role: 'admin',
+};
+
 const mockSaveGridAction = 'MyTestGrid';
 
 export {
@@ -156,8 +177,11 @@ export {
     mockLoggedInAdminState,
     mockLoggedInUserState,
     mockLogInState,
+    mockLoginStateAdmin,
     mockLoginStateAdminAction,
     mockLogInStateFalse,
+    mockLoginStateFulFilled,
+    mockLoginStatePending,
     mockSaveGridAction,
     mockStateWithAdmin,
     mockUPDATEStateWithAdmin,

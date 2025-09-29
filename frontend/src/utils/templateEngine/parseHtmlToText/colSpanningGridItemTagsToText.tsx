@@ -1,7 +1,7 @@
 import ColspanningGrid from '@/componentsTemplateEngine/presetRenderExamples/grids/ColspanningGrid';
 import {
-  createHtmlAsTextFromPassedComponent,
-  parseStringToADomModel,
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText/index';
 
 /**
@@ -17,7 +17,7 @@ const domColumnSpanningGrid = parseStringToADomModel(
 ).body.firstChild?.childNodes;
 
 const colSpanningGridItemTagsToText = Array.from(domColumnSpanningGrid ?? []).map((elem) => {
-    let tmp = document.createElement('div');
+    const tmp = document.createElement('div');
     tmp.appendChild(elem);
     return tmp?.innerHTML;
 });

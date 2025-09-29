@@ -1,4 +1,4 @@
-type Props = {
+export interface Props {
     data: {
         id: number;
         type: 'profile' | 'offer' | 'teaser';
@@ -17,8 +17,6 @@ type Props = {
     };
 };
 
-type HP = {
+export interface HP {
     data: [Props];
 };
-
-export type { HP, Props };

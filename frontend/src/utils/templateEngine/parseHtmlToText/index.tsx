@@ -18,7 +18,7 @@ export type ReactComponentLike =
           | bigint
           | boolean
           | ReactPortal
-          | ReactElement<unknown, string | JSXElementConstructor<any>>
+          | ReactElement<unknown, string | JSXElementConstructor<unknown>>
           | Iterable<ReactNode>
           | null
           | undefined
@@ -51,7 +51,7 @@ const parseStringToADomModel = (componentToHtmlText: string) =>
  * @returns a string with two tags (opening and closing)
  */
 const toTextParentNode = (
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>,
+    Component: ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode>,
 ) => {
     const parentNode = parseStringToADomModel(createHtmlAsTextFromPassedComponent(Component)).body
         .firstChild;
@@ -68,7 +68,7 @@ const toTextParentNode = (
  * example: toTextOpeningTag(<SimpleGrid className="gap-4" />);
  */
 const toTextOpeningTagFrom = (
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>,
+    Component: ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode>,
 ) => {
     const parentNodeText = toTextParentNode(Component);
     if (typeof parentNodeText === 'string') {
@@ -86,7 +86,7 @@ const toTextOpeningTagFrom = (
  * example: toTextClosingTagFrom(<SimpleGrid className="gap-4" />);
  */
 const toTextClosingTagFrom = (
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>,
+    Component: ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode>,
 ) => {
     const parentNodeText = toTextParentNode(Component);
     if (typeof parentNodeText === 'string') {

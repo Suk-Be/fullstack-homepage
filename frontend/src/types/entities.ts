@@ -1,32 +1,32 @@
-export type Prototype = {
+export interface Protointerface {
     id: number;
     name: string;
-};
+}
 
-// products of prototype pages
-export type Product = {
+// products of protointerface pages
+export interface Product {
     id: number;
     name: string;
     price: number;
-    prototypeId: number;
-};
+    protointerfaceId: number;
+}
 
-export type RegisterFormData = {
+export interface RegisterFormData {
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
-};
+}
 
-export type LoginSuccessResponse = {
+export interface LoginSuccessResponse {
     success: true;
     message?: string | undefined;
     userId: number;
-    role: "admin" | "user";
-};
+    role: 'admin' | 'user';
+}
 
-export type LoginErrorResponse = {
+export interface LoginErrorResponse {
     success: false;
     message?: string;
     fieldErrors?: Record<string, string[]>;
-};
+}

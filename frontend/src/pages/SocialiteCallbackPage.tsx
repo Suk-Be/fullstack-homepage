@@ -39,7 +39,7 @@ const SocialiteCallbackPage = () => {
         };
 
         handleSocialiteCallback();
-    }, [dispatch, navigate]);
+    }, [dispatch, navigate, userId]);
 
     return <Loading message="im Anmelde Prozess ..." />;
 };

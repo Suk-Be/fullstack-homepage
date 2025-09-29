@@ -12,7 +12,7 @@ import { setResponseValidationError } from '@/utils/auth/setResponseValidationEr
 export interface LoginResult {
     success: boolean;
     message?: string;
-    errors?: { [key: string]: string[] };
+    errors?: Record<string, string[]>;
     user?: User;
     userId?: number;
 }

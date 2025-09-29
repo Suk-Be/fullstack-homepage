@@ -19,10 +19,7 @@
  * // msg === "E-Mail ist ungültig"
  */
 
-const setResponseErrorMessage = (
-    errors: { [key: string]: string[] },
-    field: string,
-    fallback: string = '',
-) => (Array.isArray(errors[field]) && errors[field].length > 0 ? errors[field][0] : fallback);
+const setResponseErrorMessage = (errors: Record<string, string[]>, field: string, fallback = '') =>
+    Array.isArray(errors[field]) && errors[field].length > 0 ? errors[field][0] : fallback;
 
 export default setResponseErrorMessage;

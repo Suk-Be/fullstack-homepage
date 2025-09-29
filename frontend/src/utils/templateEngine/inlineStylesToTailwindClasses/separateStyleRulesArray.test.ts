@@ -1,4 +1,4 @@
-import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/separateStyleRulesArray';
+import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
 import { describe, expect, it } from 'vitest';
 
 describe('separateStyleRulesArray', () => {

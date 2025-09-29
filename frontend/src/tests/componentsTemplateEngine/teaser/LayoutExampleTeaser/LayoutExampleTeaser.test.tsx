@@ -11,6 +11,7 @@ vi.mock('./LayoutExampleTeaser', () => ({
 
 vi.mock('@/componentsTemplateEngine/buttons/Button', () => ({
     __esModule: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     default: ({ children, className }: any) => (
         <button data-testid="button-example-teaser" className={className}>
             {children}
