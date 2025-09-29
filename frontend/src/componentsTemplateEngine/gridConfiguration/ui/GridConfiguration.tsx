@@ -4,15 +4,15 @@ import { testId } from '@/utils/testId';
 import HeadlineAside from './shared-comnponents/HeadlineAside';
 import RangeSlider from './shared-comnponents/RangeSlider';
 
-type Props = {
+interface Props {
     handleChange: HandleChange;
     grid: GridProps;
-};
+}
 
 const GridConfiguration = ({ handleChange, grid }: Props) => {
     return (
         <section {...testId('grid-configuration')}>
-            <HeadlineAside children="Layout" />
+            <HeadlineAside>Layout</HeadlineAside>
             <RangeSlider
                 min="1"
                 max="10"
@@ -20,7 +20,7 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
                 onChange={handleChange('columns')}
                 placeholder="columns"
             >
-                <InputLabel children="Columns: " />
+                <InputLabel>Columns: </InputLabel>
             </RangeSlider>
             <RangeSlider
                 max="30"
@@ -28,7 +28,7 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
                 onChange={handleChange('items')}
                 placeholder="items"
             >
-                <InputLabel children="Items: " />
+                <InputLabel>Items: </InputLabel>
             </RangeSlider>
         </section>
     );

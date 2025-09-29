@@ -103,9 +103,10 @@ export default function AccordionExpandIcon() {
 
                         <ParagraphHP>
                             todo Logik: Wenn man als github angebmeldet ist ist hier nur der Link
-                            zum Repository zu sehen. Sonst nur der Button "Anmelden mit Github" der
-                            hat die gleiche Funktionalität mit callback und redirect auf die gleiche
-                            Seite. Ein toast mit Hinweis auf den Link oder ähnliches wäre gut.
+                            zum Repository zu sehen. Sonst nur der Button &quot;Anmelden mit
+                            Github&quot; der hat die gleiche Funktionalität mit callback und
+                            redirect auf die gleiche Seite. Ein toast mit Hinweis auf den Link oder
+                            ähnliches wäre gut.
                         </ParagraphHP>
 
                         <ParagraphHP sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

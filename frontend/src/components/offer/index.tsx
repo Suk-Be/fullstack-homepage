@@ -5,7 +5,7 @@ import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import NumberedList from './List';
 
-type Props = {
+interface Props {
     offer: [
         {
             id: number;
@@ -30,11 +30,11 @@ type Props = {
             ];
         };
     };
-};
+}
 
 const OfferHP = ({ offer, teaser }: Props) => {
     const sanitizedData0 = DOMPurify.sanitize(offer[0].attributes.description);
-    /* @ts-ignore*/
+    /* @ts-expect-error dom string purified */
     const sanitizedData1 = DOMPurify.sanitize(offer[1].attributes.description);
     return (
         <>
@@ -85,7 +85,7 @@ const OfferHP = ({ offer, teaser }: Props) => {
                     color="rgba(53,102,64, 1)"
                     {...testId('offer-headline-02')}
                 >
-                    {/* @ts-ignore*/}
+                    {/* @ts-expect-error possibly undefined */}
                     {offer[1].attributes.title!}
                 </HeadlineHP>
                 <ParagraphHP {...testId('offer-content-02')}>{parse(sanitizedData1)}</ParagraphHP>

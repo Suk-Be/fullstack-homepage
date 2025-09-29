@@ -1,9 +1,9 @@
 import { testId } from '@/utils/testId';
 import { FC } from 'react';
 
-type ChlidrenTagsProps = {
+interface ChlidrenTagsProps {
     arr: string[];
-};
+}
 
 const ChildrenTags: FC<ChlidrenTagsProps> = ({ arr }: ChlidrenTagsProps) => {
     return (

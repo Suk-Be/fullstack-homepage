@@ -20,14 +20,14 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-type Props = {
+interface Props {
     list: [
         {
             number: number;
             text: string;
         },
     ];
-};
+}
 
 const NumberedList = ({ list }: Props) => {
     const List = list.map((item) => (

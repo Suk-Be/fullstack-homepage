@@ -165,7 +165,7 @@ function SaveGridsModal() {
         try {
             await dispatch(saveUserGridThunk(newGrid)).unwrap();
             setGridName('');
-        } catch (err: any) {
+        } catch (err: unknown) {
             alert('Fehler beim Speichern: ' + err);
         } finally {
             setIsButtonDisabled(true);

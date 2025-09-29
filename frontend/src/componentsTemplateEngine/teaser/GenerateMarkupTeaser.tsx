@@ -6,7 +6,7 @@ import { testId } from '@/utils/testId';
 const GenerateMarkupTeaser = ({ inlineStyles, gridItemsArray }: DynamicGridProps) => {
     return (
         <div {...testId('teaser-generate-markup')}>
-            <HeadlineAside children="Generate HTML" />
+            <HeadlineAside>Generate HTML</HeadlineAside>
             <CreateMarkupModal inlineStyles={inlineStyles} gridItemsArray={gridItemsArray} />
         </div>
     );

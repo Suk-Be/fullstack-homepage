@@ -26,26 +26,26 @@ import { useDispatch } from 'react-redux';
 import requestRegister from '../api/requestRegister';
 import validateInputs from './validateSignUpInputs';
 
-type ErrorState = {
+interface ErrorState {
     hasError: boolean;
     message: string;
-};
+}
 
-type FrontendErrorsState = {
+interface FrontendErrorsState {
     name: ErrorState;
     email: ErrorState;
     password: ErrorState;
     password_confirmation: ErrorState;
-};
+}
 
 type FrontendField = keyof FrontendErrorsState;
 
-type RegisterFormData = {
+interface RegisterFormData {
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
-};
+}
 
 type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
 
@@ -160,6 +160,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             [field]: { hasError: false, message: '' },
         }));
         setErrors((prev) => {
+            // eslint-disable-next-line  @typescript-eslint/no-unused-vars
             const { [field]: _ignored, ...rest } = prev;
             return rest;
         });

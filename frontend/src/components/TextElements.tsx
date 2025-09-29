@@ -1,4 +1,4 @@
-import { Typography, useTheme } from '@mui/material';
+import { SxProps, Theme, Typography, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { PropsWithChildren } from 'react';
 
@@ -157,8 +157,6 @@ const HeadlineHP = ({
         </Typography>
     );
 };
-
-import { SxProps, Theme } from '@mui/material';
 
 interface ParagraphHPProps extends PropsWithChildren {
     marginTop?: string;

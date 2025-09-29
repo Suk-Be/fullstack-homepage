@@ -2,7 +2,7 @@ import { HeadlineSignInUp } from '@/components/TextElements';
 import { testId } from '@/utils/testId';
 import { Grid, Link, Typography } from '@mui/material';
 
-type AuthHeaderLayoutProps = {
+interface AuthHeaderLayoutProps {
     title: string;
     onToggleAuth: () => void;
     textBeforeLink?: string;
@@ -11,7 +11,7 @@ type AuthHeaderLayoutProps = {
         title: string;
         link: string;
     };
-};
+}
 
 const AuthHeaderLayout = ({
     title,

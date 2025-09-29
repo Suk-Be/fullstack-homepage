@@ -1,8 +1,8 @@
 import {
-  borderWidthValue as gridBorderWidthValue,
-  colValue as gridColumnValue,
-  gapValue as gridGapValue,
-  paddingValues as padValues,
+    borderWidthValue as gridBorderWidthValue,
+    colValue as gridColumnValue,
+    gapValue as gridGapValue,
+    paddingValues as padValues,
 } from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
 import extractTagAttributesForStyling from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributesForStyling';
 import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
@@ -10,10 +10,10 @@ import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
-type DynamicTagProps = {
+interface DynamicTagProps {
     isDynamicInlineStyle?: boolean;
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
-};
+    Component: ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode>;
+}
 
 const OpeningTagWithTranspiledTailwindClasses: FC<DynamicTagProps> = ({
     isDynamicInlineStyle = false,

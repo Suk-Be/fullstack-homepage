@@ -4,11 +4,11 @@ import { testId } from '@/utils/testId';
 import Headline from './Headline';
 import SimpleGrid from './grids/SimpleGrid';
 
-type SimpleGridPresetProps = {
+interface SimpleGridPresetProps {
     heading: string;
     layoutGapConfig: 'gap-4' | 'gap-2';
     testID: string;
-};
+}
 
 const SimpleGridGapPreset = ({ heading, layoutGapConfig, testID }: SimpleGridPresetProps) => {
     const RenderGrid = () => {

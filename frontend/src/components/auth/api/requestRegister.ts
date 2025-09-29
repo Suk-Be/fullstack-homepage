@@ -34,7 +34,7 @@ const requestRegister = async ({
             userId,
             role,
         } as LoginErrorResponse;
-    } catch (error: any) {
+    } catch (error: unknown) {
         // on 419 or 422
         await resetCookiesOnResponseError(error);
         return setResponseValidationError(error);

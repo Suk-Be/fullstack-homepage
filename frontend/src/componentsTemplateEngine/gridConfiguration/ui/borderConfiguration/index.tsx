@@ -5,20 +5,28 @@ import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/shared-
 import { GridProps, HandleChange, HandleToggle } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
 
-export type Props = {
+export interface Props {
     checkBoxBorderToggled: boolean;
     handleChange: HandleChange;
     grid: GridProps;
     handleCheckBoxBorderToggle: HandleToggle;
-};
+}
 
-const BorderConfiguration = ({ checkBoxBorderToggled, handleChange, grid, handleCheckBoxBorderToggle }: Props) => {
+const BorderConfiguration = ({
+    checkBoxBorderToggled,
+    handleChange,
+    grid,
+    handleCheckBoxBorderToggle,
+}: Props) => {
     return (
         <section {...testId('border-configuration')} id="border-configuration">
-            <HeadlineAside children="Border" />
+            <HeadlineAside>Border</HeadlineAside>
 
             <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
-                <StyledCheckbox checked={checkBoxBorderToggled} onChange={handleCheckBoxBorderToggle} />
+                <StyledCheckbox
+                    checked={checkBoxBorderToggled}
+                    onChange={handleCheckBoxBorderToggle}
+                />
                 <RangeSlider
                     max="3"
                     value={grid.border}
@@ -26,7 +34,7 @@ const BorderConfiguration = ({ checkBoxBorderToggled, handleChange, grid, handle
                     disabled={!checkBoxBorderToggled}
                     placeholder="border"
                 >
-                    <InputLabel children="Width: " htmlFor="border" />
+                    <InputLabel htmlFor="border">Width: </InputLabel>
                 </RangeSlider>
                 Unit: rem/3
             </div>

@@ -15,7 +15,7 @@ import {
 import OpeningTagWithTranspiledTailwindClasses from './OpeningTagWithTranspiledTailwindClasses';
 
 interface LayoutDivProps extends ComponentPropsWithoutRef<'div'> {
-    Component: ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode>;
+    Component: ReactElement<unknown, string | JSXElementConstructor<unknown>> | Iterable<ReactNode>;
 }
 
 const CreateGridMarkup: FC<LayoutDivProps> = ({ Component }) => {
@@ -23,7 +23,7 @@ const CreateGridMarkup: FC<LayoutDivProps> = ({ Component }) => {
         .body.firstChild?.childNodes;
 
     const createInnerHtmlElements = Array.from(domDynamicGrid ?? []).map((elem) => {
-        let div = document.createElement('div');
+        const div = document.createElement('div');
         div.appendChild(elem);
         return div?.innerHTML;
     });

@@ -19,14 +19,14 @@ interface ForgotPasswordProps {
     handleClose: () => void;
 }
 
-type FieldError = {
+interface FieldError {
     hasError: boolean;
     message: string;
-};
+}
 
-type InputErrorState = {
+interface InputErrorState {
     email: FieldError;
-};
+}
 
 export default function ForgotPassword({ open, handleClose }: ForgotPasswordProps) {
     // inputs

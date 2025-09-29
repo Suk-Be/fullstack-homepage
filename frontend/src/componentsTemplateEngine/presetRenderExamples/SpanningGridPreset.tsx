@@ -8,11 +8,11 @@ import Headline from './Headline';
 
 type LayoutColSpanConfigValue = 'col-span-2';
 
-type SpanningGridPresetProps = {
+interface SpanningGridPresetProps {
     heading: string;
     layoutColSpanConfig?: LayoutColSpanConfigValue;
     testID: string;
-};
+}
 
 const ColSpanGrid = ({
     layoutColSpanConfig,

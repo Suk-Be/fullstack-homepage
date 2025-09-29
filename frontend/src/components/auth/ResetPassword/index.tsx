@@ -21,15 +21,15 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Angenommen, Sie verwenden React Router
 import validateInputs from './validateResetPassPassword';
 
-type FieldError = {
+interface FieldError {
     hasError: boolean;
     message: string;
-};
+}
 
-type FormErrors = {
+interface FormErrors {
     password: FieldError;
     password_confirmation: FieldError;
-};
+}
 
 const ResetPassword = () => {
     // url related

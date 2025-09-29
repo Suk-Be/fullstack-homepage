@@ -29,9 +29,7 @@ const ErrorPage = () => {
             }
             return (
                 <NotFound
-                    errorMessage={
-                        `JS Error: ${(error as Error).message}` || 'An unexpected error occurred.'
-                    }
+                    errorMessage={`JS Error: ${(error as Error).message ?? 'An unexpected error occurred.'}`}
                 />
             );
         }

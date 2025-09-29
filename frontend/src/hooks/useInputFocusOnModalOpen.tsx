@@ -10,7 +10,7 @@ import { RefObject, useEffect, useRef } from 'react';
  */
 const useInputFocusOnModalOpen = <T extends HTMLElement>(
     condition: boolean,
-    delay: number = 100,
+    delay = 100,
 ): RefObject<T | null> => {
     const elementRef = useRef<T>(null);
 

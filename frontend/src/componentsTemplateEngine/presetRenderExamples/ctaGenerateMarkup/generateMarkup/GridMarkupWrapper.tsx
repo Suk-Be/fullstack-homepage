@@ -7,7 +7,7 @@ import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement } from 'react';
 import { twMerge } from 'tailwind-merge'; // Assuming you have twMerge
 
-type MarkupComponent = ReactElement<any, string | JSXElementConstructor<any>>;
+type MarkupComponent = ReactElement<unknown, string | JSXElementConstructor<unknown>>;
 
 interface GridMarkupWrapperProps {
     markupComponent: MarkupComponent;

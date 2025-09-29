@@ -7,7 +7,7 @@ import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidation
 interface ResetPasswordResult {
     success: boolean;
     message?: string;
-    errors?: { [key: string]: string[] };
+    errors?: Record<string, string[]>;
 }
 
 const resetPassword = async (
@@ -28,7 +28,7 @@ const resetPassword = async (
         return setResponseValidationSuccess(
             response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         // on 419 or 422
         await resetCookiesOnResponseError(error);
         return setResponseValidationError(error);

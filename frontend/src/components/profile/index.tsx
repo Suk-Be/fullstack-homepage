@@ -6,7 +6,7 @@ import parse from 'html-react-parser';
 import ProfilePic from './ProfilePicture';
 import RibbonLayout from './Ribbon';
 
-type Props = {
+interface Props {
     profile: {
         id: number;
         type: 'profile';
@@ -16,7 +16,7 @@ type Props = {
             image: string;
         };
     };
-};
+}
 
 const ProfileHP = ({ profile }: Props) => {
     const sanitizedData = DOMPurify.sanitize(profile.attributes.description);

@@ -9,7 +9,7 @@ import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidation
 interface LoginResult {
     success: boolean;
     message?: string;
-    errors?: { [key: string]: string[] };
+    errors?: Record<string, string[]>;
     user?: User;
     userId?: number;
 }

@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 const gridItemsAmount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-const makeGridItems = (array: Array<number>) => (layoutGapConfig: string) =>
+const makeGridItems = (array: number[]) => (layoutGapConfig: string) =>
     array.map((i) => {
         return <GridElement key={i.toString()} className={layoutGapConfig} />;
     });

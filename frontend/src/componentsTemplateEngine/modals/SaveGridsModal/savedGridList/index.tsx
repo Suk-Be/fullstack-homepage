@@ -11,8 +11,8 @@ const SavedGridList = () => {
     const dispatch = useAppDispatch();
 
     // States für toggle (expand Config) & delete confirm pro Grid
-    const [expandedConfigsText, setExpandedConfigsText] = useState<{ [key: string]: boolean }>({});
-    const [deleteConfirm, setDeleteConfirm] = useState<{ [key: string]: boolean }>({});
+    const [expandedConfigsText, setExpandedConfigsText] = useState<Record<string, boolean>>({});
+    const [deleteConfirm, setDeleteConfirm] = useState<Record<string, boolean>>({});
     const [isDeletingMap, setIsDeletingMap] = useState<Record<string, boolean>>({});
 
     // Event handlers

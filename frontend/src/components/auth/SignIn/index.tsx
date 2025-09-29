@@ -12,29 +12,29 @@ import { testId } from '@/utils/testId';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
+    Box,
+    Button,
+    Divider,
+    FormControl,
+    FormLabel,
+    IconButton,
+    InputAdornment,
+    TextField,
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import ForgotPassword from './ForgotPassword';
 import { validateSignInInputs } from './validateSignInInputs';
 
-type FieldError = {
+interface FieldError {
     hasError: boolean;
     message: string;
-};
+}
 
-type ErrorState = {
+interface ErrorState {
     email: FieldError;
     password: FieldError;
-};
+}
 
 const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
     // input field states
@@ -93,7 +93,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             //     const userId = actionResult.payload.userId;
             //     dispatch(setUserIdForGrids(userId));
             // }
-            
         } else if (loginThunk.rejected.match(actionResult)) {
             const payload = actionResult.payload;
 

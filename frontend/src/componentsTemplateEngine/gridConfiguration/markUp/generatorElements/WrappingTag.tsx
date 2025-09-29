@@ -3,14 +3,14 @@ import { testId } from '@/utils/testId';
 import { FC, JSXElementConstructor, ReactElement, ReactNode } from 'react';
 
 type ComponentProps =
-    | ReactElement<unknown, string | JSXElementConstructor<any>>
+    | ReactElement<unknown, string | JSXElementConstructor<unknown>>
     | Iterable<ReactNode>;
 
-type WrappingTagProps = {
+interface WrappingTagProps {
     isOpeningTag?: boolean;
     isClosingTag?: boolean;
     component: ComponentProps;
-};
+}
 
 const WrappingTag: FC<WrappingTagProps> = ({
     isOpeningTag = false,

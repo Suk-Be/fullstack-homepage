@@ -5,7 +5,7 @@ import { testId } from '@/utils/testId';
 const SaveGridsTeaser = () => {
     return (
         <div {...testId('teaser-save-this-grid')}>
-            <HeadlineAside children="Save this Grid" />
+            <HeadlineAside>Save this Grid</HeadlineAside>
             <SaveGridsModal />
         </div>
     );

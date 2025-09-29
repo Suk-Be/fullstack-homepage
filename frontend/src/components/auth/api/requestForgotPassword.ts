@@ -7,7 +7,7 @@ import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidation
 interface RequestPasswordResetResult {
     success: boolean;
     message?: string;
-    errors?: { [key: string]: string[] };
+    errors?: Record<string, string[]>;
 }
 
 const requestForgotPassword = async (email: string): Promise<RequestPasswordResetResult> => {
@@ -17,7 +17,7 @@ const requestForgotPassword = async (email: string): Promise<RequestPasswordRese
         return setResponseValidationSuccess(
             response.data.message || 'Passwort-Reset-Link wurde gesendet!',
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         // on 419 or 422
         await resetCookiesOnResponseError(error);
         return setResponseValidationError(error);

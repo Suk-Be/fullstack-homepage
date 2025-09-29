@@ -71,6 +71,17 @@ export default tseslint.config(
         },
     },
 
+    // Fix für .d.ts Dateien
+    {
+        files: ['src/**/*.d.ts'],
+        languageOptions: {
+            parser: tseslint.parser,
+            parserOptions: {
+                project: null,
+            },
+        },
+    },
+
     // --- Markdown Linting nur für .md ---
     {
         files: ['**/*.md'],
