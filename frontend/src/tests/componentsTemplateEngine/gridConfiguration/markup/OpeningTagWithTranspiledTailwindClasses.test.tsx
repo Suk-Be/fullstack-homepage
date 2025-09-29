@@ -3,9 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, Mock, vi } from 'vitest';
 
 // Mocke alle internen Abhängigkeiten der Komponente
-import * as styleValueExtractors from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractedStyleRuleValue';
+import {
+    borderWidthValue,
+    colValue,
+    gapValue,
+    paddingValues,
+} from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
+import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/SeparateStyleRulesArray';
 import extractTagAttributesForStyling from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractTagAttributesForStyling';
-import separateStyleRulesArray from '@/utils/templateEngine/inlineStylesToTailwindClasses/separateStyleRulesArray';
 import { toTextOpeningTagFrom } from '@/utils/templateEngine/parseHtmlToText';
 
 // Mock-Implementierung der Abhängigkeiten
@@ -35,10 +40,10 @@ describe('OpeningTagWithTranspiledTailwindClasses', () => {
     const mockedExtractTagAttributes = extractTagAttributesForStyling as Mock;
     const mockedSeparateStyleRulesArray = separateStyleRulesArray as Mock;
     const mockedToTextOpeningTagFrom = toTextOpeningTagFrom as Mock;
-    const mockedGridColumnValue = styleValueExtractors.colValue as Mock;
-    const mockedGridGapValue = styleValueExtractors.gapValue as Mock;
-    const mockedGridBorderWidthValue = styleValueExtractors.borderWidthValue as Mock;
-    const mockedPadValues = styleValueExtractors.paddingValues as Mock;
+    const mockedGridColumnValue = colValue as Mock;
+    const mockedGridGapValue = gapValue as Mock;
+    const mockedGridBorderWidthValue = borderWidthValue as Mock;
+    const mockedPadValues = paddingValues as Mock;
 
     beforeEach(() => {
         vi.clearAllMocks();

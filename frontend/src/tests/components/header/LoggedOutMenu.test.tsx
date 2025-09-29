@@ -1,4 +1,5 @@
 import LoggedOutMenu from '@/components/header/LoggedOutMenu';
+import { mockLogInState } from '@/tests/mocks/redux';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,7 +9,7 @@ describe('LoggedOutMenu', () => {
     const renderUtils = () => {
         renderWithProviders(<LoggedOutMenu />, {
             route: '/',
-            preloadedState: { login: { isLoggedIn: true } },
+            preloadedState: mockLogInState,
         });
 
         const user = userEvent.setup();

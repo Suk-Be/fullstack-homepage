@@ -1,3 +1,4 @@
+import { mockLoggedInAdminState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,7 +7,7 @@ describe('AccordionTeaser', () => {
     const renderUtils = () => {
         const user = userEvent.setup();
 
-        navigateTo({ route: '/', preloadedState: { login: { isLoggedIn: true } } });
+        navigateTo({ route: '/', preloadedState: mockLoggedInAdminState });
 
         const accordion = screen.getByTestId('accordion');
         const projekte = screen.getByTestId('accordion-projekte');

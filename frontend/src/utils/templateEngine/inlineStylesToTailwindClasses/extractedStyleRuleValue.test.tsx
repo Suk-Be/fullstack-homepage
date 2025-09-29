@@ -3,7 +3,7 @@ import {
     colValue,
     gapValue,
     paddingValues,
-} from '@/utils/templateEngine/inlineStylesToTailwindClasses/extractedStyleRuleValue';
+} from '@/utils/templateEngine/inlineStylesToTailwindClasses/ExtractedStyleRuleValue';
 import tranlateInlineStyleValuesToTailwindValues from '@/utils/templateEngine/inlineStylesToTailwindClasses/translateInlineStyleValuesToTailwindValues';
 import { describe, expect, it, Mock, vi } from 'vitest';
 

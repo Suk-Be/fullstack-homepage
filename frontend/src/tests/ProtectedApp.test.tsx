@@ -1,6 +1,7 @@
 import ProtectedApp from '@/ProtectedApp';
 import { screen, waitFor } from '@testing-library/react'; // Assuming your login slice is here
 import { vi } from 'vitest';
+import { mockLoginStateFulFilled, mockLoginStatePending } from './mocks/redux';
 import { renderWithProviders, renderWithProvidersDOM } from './utils/testRenderUtils';
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
@@ -38,7 +39,7 @@ describe('ProtectedApp', () => {
         renderWithProviders(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: false, isLoading: true },
+                login: mockLoginStatePending,
             },
         });
 
@@ -50,7 +51,7 @@ describe('ProtectedApp', () => {
         renderWithProviders(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: false, isLoading: false },
+                login: mockLoginStatePending,
             },
         });
 
@@ -65,7 +66,7 @@ describe('ProtectedApp', () => {
         const { history } = renderWithProvidersDOM(<ProtectedApp />, {
             route: '/template-engine',
             preloadedState: {
-                login: { isLoggedIn: true, isLoading: false },
+                login: mockLoginStateFulFilled,
             },
         });
 

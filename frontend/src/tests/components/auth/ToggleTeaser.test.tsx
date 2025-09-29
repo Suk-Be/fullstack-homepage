@@ -1,4 +1,5 @@
 import ToggleTeaser from '@/components/auth';
+import { mockLoggedInAdminState } from '@/tests/mocks/redux';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 
@@ -9,8 +10,7 @@ describe('ToggleTeaser', () => {
     });
 
     it('renders to Accordion if logged in', async () => {
-        const loggedInState = { login: { isLoggedIn: true } };
-        renderWithProviders(<ToggleTeaser />, { preloadedState: loggedInState });
+        renderWithProviders(<ToggleTeaser />, { preloadedState: mockLoggedInAdminState });
 
         expect(screen.getByText('Template Engine')).toBeInTheDocument();
     });
