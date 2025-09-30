@@ -1,9 +1,9 @@
+import LoggedInMenu from '@/components/header/LoggedInMenu';
+import LoggedOutMenu from '@/components/header/LoggedOutMenu';
 import useScroll from '@/hooks/useScroll';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/selectors/loginSelectors';
 import { testId } from '@/utils/testId';
-import LoggedInMenu from './LoggedInMenu';
-import LoggedOutMenu from './LoggedOutMenu';
 
 const MenuNav = () => {
     const isLoggedIn = useAppSelector(selectIsLoggedIn);
