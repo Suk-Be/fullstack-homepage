@@ -82,6 +82,13 @@ export default tseslint.config(
         },
     },
 
+    {
+        files: ['**/node_modules/**/*.d.ts'],
+        rules: {
+            'import/no-duplicates': 'off',
+        },
+    },
+
     // --- Markdown Linting nur für .md ---
     {
         files: ['**/*.md'],
