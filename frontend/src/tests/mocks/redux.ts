@@ -131,10 +131,17 @@ const mockLoginStatePending = {
     role: null,
 };
 
+const mockLoginStateFulFilledGuest = {
+    isLoggedIn: false,
+    isLoading: false,
+    error: null,
+    role: null,
+};
+
 const mockGuestUserState = {
     login: {
         isLoggedIn: false,
-        isLoading: true,
+        isLoading: false,
         error: null,
         role: null,
     },
@@ -181,6 +188,7 @@ export {
     mockLoginStateAdminAction,
     mockLogInStateFalse,
     mockLoginStateFulFilled,
+    mockLoginStateFulFilledGuest,
     mockLoginStatePending,
     mockSaveGridAction,
     mockStateWithAdmin,
