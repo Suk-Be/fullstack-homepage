@@ -1,8 +1,14 @@
 import { mockLogInState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
+import { ComponentProps } from 'react';
 import * as ReactRouter from 'react-router';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 vi.mock('react-router', async () => {
     const actual = await vi.importActual<typeof ReactRouter>('react-router');

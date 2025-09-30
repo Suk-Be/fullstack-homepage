@@ -1,12 +1,22 @@
 import ProtectedApp from '@/ProtectedApp';
-import { screen, waitFor } from '@testing-library/react'; // Assuming your login slice is here
-import { vi } from 'vitest';
 import {
     mockLoginStateFulFilled,
     mockLoginStateFulFilledGuest,
     mockLoginStatePending,
-} from './mocks/redux';
-import { renderWithProviders, renderWithProvidersDOM } from './utils/testRenderUtils';
+} from '@/tests/mocks/redux';
+import {
+    navigateTo,
+    renderWithProviders,
+    renderWithProvidersDOM,
+} from '@/tests/utils/testRenderUtils';
+import { screen, waitFor } from '@testing-library/react'; // Assuming your login slice is here
+import { ComponentProps } from 'react';
+import { vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 const { mockDispatch, mockNavigate } = vi.hoisted(() => {
     return {
@@ -53,7 +63,7 @@ describe('ProtectedApp', () => {
 
     // logic for setting login state can be found in useAuthInit.ts which used by provider auth initializer
     it('should redirect to a Not Logged In Page (if not logged in and not active session cookie is found)', async () => {
-        renderWithProviders(<ProtectedApp />, {
+        navigateTo({
             route: '/template-engine',
             preloadedState: {
                 login: mockLoginStateFulFilledGuest,

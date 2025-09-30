@@ -2,6 +2,13 @@ import { mockLoggedInAdminState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ComponentProps } from 'react';
+import { vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('AccordionTeaser', () => {
     const renderUtils = () => {

@@ -5,9 +5,15 @@ import { setupStore } from '@/tests/utils/testRenderUtils';
 import { PreloadedState } from '@/types/Redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ComponentProps } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('LayoutPage', () => {
     beforeEach(() => {

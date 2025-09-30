@@ -1,5 +1,5 @@
 import { store } from '@/store';
-import { userLoggedAdmin } from '@/tests//mocks/api';
+import { logRequestState } from '@/utils/logger';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockLoginStateAdmin } from '../mocks/redux';
 
@@ -143,36 +143,30 @@ describe('logRequestState', () => {
         import.meta.env = originalEnv;
     });
 
-    it('should log to console.log in development mode', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+    it('should log to console.log in development mode', () => {
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-        const { logRequestState } = await import('@/utils/logger');
-        const userId = userLoggedAdmin;
-        const initCookiesError = {
-            error: true,
-            axiosStatus: false,
-        };
-        const result = {
-            success: true,
-            message: 'authenticated.',
-        };
-        const error = {
-            success: false,
-            message: 'authentication denied.',
-        };
+        const initCookiesError = { error: true, axiosStatus: false };
+        const result = { success: true, message: 'authenticated.' };
+        const error = { success: false, message: 'authentication denied.' };
 
+        // selectLoginState → Übergabe so, wie die Funktion es erwartet (responseType = mockLoginStateAdmin)
         logRequestState('selectLoginState', mockLoginStateAdmin, 'development');
-        logRequestState('initializeCookies', undefined, 'development'); // 'initializeCookies' does not have a responseType, so pass undefined as the second argument
+        // initializeCookies → kein responseType
+        logRequestState('initializeCookies', undefined, 'development');
+        // initializeCookiesError
         logRequestState('initializeCookiesError', initCookiesError, 'development');
+        // requestMe
         logRequestState('requestMe', result, 'development');
+        // requestMeError
         logRequestState('requestMeError', error, 'development');
 
         expect(logSpy).toHaveBeenCalledTimes(5);
+
         // selectLoginState
         expect(logSpy).toHaveBeenCalledWith(
             '[useAuthInit] Guard active → already logged in (userId:',
-            userId,
+            mockLoginStateAdmin,
             ')',
         );
         // initializeCookies
@@ -190,7 +184,7 @@ describe('logRequestState', () => {
             error,
         );
 
-        logSpy.mockRestore(); // It is good practice to restore the mock after the test
+        logSpy.mockRestore();
     });
 
     it('should not log in test mode', async () => {

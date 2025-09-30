@@ -4,7 +4,13 @@ import { mockLogInState } from '@/tests/mocks/redux';
 import { navigateTo, PathAndReduxState, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('BasicMenu', () => {
     beforeEach(() => {
@@ -12,12 +18,10 @@ describe('BasicMenu', () => {
         vi.clearAllMocks();
     });
 
-    const HPLoginState = (): PathAndReduxState => {
-        return {
-            route: '/',
-            preloadedState: mockLogInState,
-        };
-    };
+    const HPLoginState = (): PathAndReduxState => ({
+        route: '/',
+        preloadedState: mockLogInState,
+    });
 
     const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {
         navigateTo({ route, preloadedState });
@@ -27,12 +31,7 @@ describe('BasicMenu', () => {
         const impressumLink = screen.getByTestId('link-impressum-page');
         const avatarLink = screen.queryByTestId('button-open-menu');
 
-        return {
-            logoLink,
-            impressumLink,
-            avatarLink,
-            user,
-        };
+        return { logoLink, impressumLink, avatarLink, user };
     };
 
     it('should call Home Page route when the logo is clicked (logged in)', async () => {
@@ -43,51 +42,49 @@ describe('BasicMenu', () => {
         expect(heading).toBeInTheDocument();
     });
 
-    it('should render a header with Logo and an Avatar if user is (logged in)', () => {
+    it('should render a header with Logo and an Avatar if user is logged in', () => {
         const { logoLink, avatarLink } = renderUtils(HPLoginState());
 
         expect(logoLink).toBeInTheDocument();
         expect(avatarLink).toBeInTheDocument();
     });
 
-    it.each([
-        { link: screen.queryByRole('link', { name: 'Template Engine' }) },
-        { link: screen.queryByRole('link', { name: 'Template Engine Layout Examples' }) },
-        { link: screen.queryByRole('link', { name: /playgroundpage/i }) },
-        { link: screen.queryByRole('link', { name: /logout/i }) },
-    ])(
-        'should have a hidden MainMenu that opens when avatar is clicked (logged in)',
-        async ({ link }) => {
-            const { avatarLink, user } = renderUtils(HPLoginState());
+    it('should open hidden MainMenu when avatar is clicked (logged in)', async () => {
+        const { avatarLink, user } = renderUtils(HPLoginState());
+        expect(avatarLink).toBeInTheDocument();
 
-            expect(link).not.toBeInTheDocument();
-
-            expect(avatarLink).toBeInTheDocument();
-            await user.click(avatarLink!);
-
-            expect(screen.queryByRole('link', { name: 'Template Engine' })).toBeInTheDocument();
-            expect(
-                screen.queryByRole('link', { name: 'Template Engine Layout Examples' }),
-            ).toBeInTheDocument();
-            expect(screen.queryByRole('link', { name: /playgroundpage/i })).toBeInTheDocument();
-            expect(screen.queryByRole('link', { name: /logout/i })).toBeInTheDocument();
-        },
-    );
-
-    it('should hide menu when a link inside the menu is clicked (logged in)', async () => {
-        const { user, avatarLink } = renderUtils(HPLoginState());
+        // Vorher sind die Menü-Links nicht sichtbar
+        expect(screen.queryByRole('link', { name: 'Template Engine' })).not.toBeInTheDocument();
 
         await user.click(avatarLink!);
+
+        // Nach Klick sind alle Menü-Links sichtbar
+        expect(screen.getByRole('link', { name: 'Template Engine' })).toBeInTheDocument();
+        expect(
+            screen.getByRole('link', { name: 'Template Engine Layout Examples' }),
+        ).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /playgroundpage/i })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /logout/i })).toBeInTheDocument();
+    });
+
+    it('should hide menu when a link inside the menu is clicked (logged in)', async () => {
+        const { avatarLink, user } = renderUtils(HPLoginState());
+        await user.click(avatarLink!);
+
         const playgroundPageLink = screen.getByRole('link', { name: /playgroundpage/i });
         expect(playgroundPageLink).toBeInTheDocument();
 
         await user.click(playgroundPageLink);
-        const missingPlaygroundPageLink = screen.queryByRole('link', { name: /playgroundpage/i });
-        expect(missingPlaygroundPageLink).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /playgroundpage/i })).not.toBeInTheDocument();
     });
 
-    it('should render a header with a Logo and no Avatar if user is (not logged in)', () => {
-        const { logoLink, avatarLink } = renderUtils(HPLoginState());
+    it('should render a header with a Logo and no Avatar if user is not logged in', () => {
+        const { logoLink, avatarLink } = renderUtils({
+            route: '/',
+            preloadedState: {
+                login: { isLoggedIn: false, isLoading: false, error: null },
+            },
+        });
 
         expect(logoLink).toBeInTheDocument();
         expect(avatarLink).not.toBeInTheDocument();
@@ -95,19 +92,21 @@ describe('BasicMenu', () => {
 });
 
 describe('Toggle Basic Menu', () => {
-    it('renders the logged-in main menu if logged in', async () => {
+    it('renders the logged-in main menu if logged in', () => {
         renderWithProviders(<MenuNav />, {
             route: '/',
             preloadedState: mockLogInState,
         });
 
-        expect(screen.queryByTestId('button-open-menu')).toBeInTheDocument();
+        expect(screen.getByTestId('button-open-menu')).toBeInTheDocument();
     });
 
-    it('does render the logged-out main menu if logged out', async () => {
+    it('renders the logged-out main menu if logged out', () => {
         renderWithProviders(<MenuNav />, {
             route: '/',
-            preloadedState: mockLogInState,
+            preloadedState: {
+                login: { isLoggedIn: false, isLoading: false, error: null },
+            },
         });
 
         const openButton = screen.queryByTestId('button-open-menu');

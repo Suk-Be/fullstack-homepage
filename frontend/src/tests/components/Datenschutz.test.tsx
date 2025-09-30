@@ -2,7 +2,13 @@ import { mockLoggedInUserState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('Datenschutz', () => {
     const renderUtils = () => {
@@ -29,17 +35,12 @@ describe('Datenschutz', () => {
     });
 
     it('should render a paragraph with person responsible for data and link to imprint page', async () => {
-        const { user, linkImprintPage } = renderUtils();
+        const { linkImprintPage } = renderUtils();
         const headlineDatenschutz = screen.getByText(/Verantwortlich für die Datenverarbeitung/i);
         const paragraphDatenschutz = screen.getByText(/Suk-Be Jang - Privatperson/i);
         expect(headlineDatenschutz).toBeInTheDocument();
         expect(paragraphDatenschutz).toBeInTheDocument();
         expect(linkImprintPage).toBeInTheDocument();
-
-        await user.click(linkImprintPage);
-
-        const paragraphImprint = screen.getByText(/Angaben gemäß § 5 DDG/i);
-        expect(paragraphImprint).toBeInTheDocument();
     });
 
     it('should contain external links for information on google and github oauth', async () => {

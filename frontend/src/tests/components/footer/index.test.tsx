@@ -2,7 +2,14 @@ import Footer from '@/components/footer';
 import { PathAndReduxState, renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
+
 
 describe('Footer', () => {
     const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {

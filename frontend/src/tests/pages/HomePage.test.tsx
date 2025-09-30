@@ -1,12 +1,18 @@
 import { HPProps } from '@/data/HomePage';
-import { mockGuestUser } from '@/tests/mocks/redux';
+import { mockGuestUserState } from '@/tests/mocks/redux';
 import { navigateTo } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('HomePage', () => {
-    const renderUtil = (preloadedState = mockGuestUser) => {
+    const renderUtil = (preloadedState = mockGuestUserState) => {
         const user = userEvent.setup();
         navigateTo({
             route: '/',
@@ -38,8 +44,8 @@ describe('HomePage', () => {
 
     it('should render a header with a logged in menu (if logged in) and footer', async () => {
         const { footer } = renderUtil();
-        // screen.debug();
-        // expect(screen.getByTestId('logged-in-menu')).toBeInTheDocument();
+
+        expect(screen.getByTestId('link-home-page')).toBeInTheDocument();
         expect(footer).toBeInTheDocument();
     });
 

@@ -15,10 +15,15 @@ import {
     renderWithProvidersDOM,
 } from '@/tests/utils/testRenderUtils';
 import { render, screen } from '@testing-library/react';
-import { ReactElement } from 'react';
+import { ComponentProps, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('routes', () => {
     beforeEach(() => {

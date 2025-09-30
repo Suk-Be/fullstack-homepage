@@ -3,7 +3,13 @@ import { mockLogInState } from '@/tests/mocks/redux';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe } from 'vitest';
+import { ComponentProps } from 'react';
+import { describe, vi } from 'vitest';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 describe('LoggedOutMenu', () => {
     const renderUtils = () => {

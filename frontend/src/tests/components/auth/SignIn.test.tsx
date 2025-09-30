@@ -9,6 +9,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import fetchAdapter from '@/tests/utilsTest/auth/fetchAdapter';
 import userEvent from '@testing-library/user-event';
+import { ComponentProps } from 'react';
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 ApiClient.defaults.adapter = fetchAdapter;
 

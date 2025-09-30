@@ -14,9 +14,15 @@ import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderU
 import * as dispatchHelper from '@/utils/redux/dispatchHelper';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ComponentProps } from 'react';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockDispatch = vi.fn();
+
+vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/components/RouterLink', () => ({
+    default: (props: ComponentProps<'a'>) => <a {...props} />,
+}));
 
 vi.mock('react-redux', async () => {
     const actual = await vi.importActual('react-redux');
