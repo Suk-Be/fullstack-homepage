@@ -8,13 +8,13 @@ import { apiUrl } from '@/utils/apiBaseUrl';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { render, renderHook } from '@testing-library/react';
+import { render, renderHook, RenderHookOptions, RenderHookResult } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
 import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
-import { Router } from 'react-router-dom';
+import { MemoryRouter as MemoryRouterDom, Router } from 'react-router-dom';
 
 const simluateDelay = (endpoint: string) =>
     server.use(
@@ -44,7 +44,7 @@ const authProviderUrls = [
 
 const rootReducer = combineReducers({
     login: loginReducer,
-    userGrid: userSaveGridsReducer, // <- genau wie im echten Store
+    userGrid: userSaveGridsReducer,
 });
 
 type PreloadedState = Partial<RootState>;
@@ -178,24 +178,36 @@ const renderWithProvidersDOM = (
     };
 };
 
-const renderHookWithProviders = <T,>(
-    hook: () => T,
-    { preloadedState }: { preloadedState?: Partial<RootState> } = {},
-) => {
-    const store = setupStore(preloadedState);
-
-    const Wrapper = ({ children }: { children: React.ReactNode }) => (
+const renderHookWithProviders = <
+    Result,
+    Props extends Record<string, unknown> = {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
+>(
+    hook: (props: Props) => Result,
+    {
+        preloadedState,
+        route = '/',
+        initialProps,
+        store = setupStore(preloadedState),
+        ...options
+    }: {
+        preloadedState?: Partial<RootState>;
+        route?: string;
+        initialProps?: Props;
+        store?: ReturnType<typeof setupStore>;
+    } & Omit<RenderHookOptions<Props>, 'wrapper'> = {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
+): RenderHookResult<Result, Props> => {
+    const Wrapper = ({ children }: { children: ReactNode }) => (
         <ReduxProvider store={store}>
-            <MemoryRouter>
+            <MemoryRouterDom initialEntries={[route]}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     {children}
                 </ThemeProvider>
-            </MemoryRouter>
+            </MemoryRouterDom>
         </ReduxProvider>
     );
 
-    return renderHook(hook, { wrapper: Wrapper });
+    return renderHook(hook, { wrapper: Wrapper, initialProps, ...options });
 };
 
 export {
