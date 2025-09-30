@@ -13,8 +13,8 @@ import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
 import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router';
-import { MemoryRouter as MemoryRouterDom, Router } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router';
+import { MemoryRouter, Router } from 'react-router-dom';
 
 const simluateDelay = (endpoint: string) =>
     server.use(
@@ -198,12 +198,12 @@ const renderHookWithProviders = <
 ): RenderHookResult<Result, Props> => {
     const Wrapper = ({ children }: { children: ReactNode }) => (
         <ReduxProvider store={store}>
-            <MemoryRouterDom initialEntries={[route]}>
+            <MemoryRouter initialEntries={[route]}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     {children}
                 </ThemeProvider>
-            </MemoryRouterDom>
+            </MemoryRouter>
         </ReduxProvider>
     );
 
