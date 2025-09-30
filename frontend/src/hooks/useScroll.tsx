@@ -1,19 +1,10 @@
-import { useEffect, useRef  } from 'react';
+import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
-/**
- * Hook to make the header appear and disappear
- * @html
- * header tag - header component used in LayoutPage for every page
- * @css classes needed for hook behavior
- * in App.css
- * .trigger-menu-wrapper
- * .scroll-down .trigger-menu-wrapper
- * .scroll-up .trigger-menu-wrapper
- * .scroll-up:not(.menu-open) .trigger-menu-wrapper
- */
+const URL_SEGMENT_TO_CHECK = '/template-engine';
 
 const throttle = (func: () => void, limit: number) => {
-    let inThrottle: boolean;
+    let inThrottle = false;
     return () => {
         if (!inThrottle) {
             func();
@@ -25,6 +16,8 @@ const throttle = (func: () => void, limit: number) => {
 
 const useScroll = (isEnabled: boolean) => {
     const lastScroll = useRef(0);
+    const { pathname: rawPath } = useLocation();
+    const pathname = rawPath.replace(/\/$/, ''); // normalize trailing slash
 
     useEffect(() => {
         if (!isEnabled) return;
@@ -33,11 +26,20 @@ const useScroll = (isEnabled: boolean) => {
         const scrollUp = 'scroll-up';
         const scrollDown = 'scroll-down';
 
+        const isTemplateEnginePage = pathname === URL_SEGMENT_TO_CHECK;
+
         const handleScroll = () => {
-            const currentScroll = window.pageYOffset;
+            if (window.location.pathname.replace(/\/$/, '') === URL_SEGMENT_TO_CHECK) {
+                body.classList.remove(scrollDown);
+                if (!body.classList.contains(scrollUp)) body.classList.add(scrollUp);
+                return;
+            }
+
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
 
             if (currentScroll <= 0) {
                 body.classList.remove(scrollUp);
+                lastScroll.current = 0;
                 return;
             }
 
@@ -52,14 +54,29 @@ const useScroll = (isEnabled: boolean) => {
             lastScroll.current = currentScroll;
         };
 
-        const throttledScroll = throttle(handleScroll, 200);
+        const throttled = throttle(handleScroll, 200);
 
-        window.addEventListener('scroll', throttledScroll);
+        // Initialisieren: setze lastScroll auf aktuellen Scroll, damit sofortige Navigations-„Sprünge“
+        // nicht als Scroll-Richtung interpretiert werden
+        lastScroll.current = window.pageYOffset || 0;
+
+        // Wenn wir auf der Template-Engine-Root sind, erzwinge scroll-up sofort.
+        if (isTemplateEnginePage) {
+            body.classList.remove(scrollDown);
+            if (!body.classList.contains(scrollUp)) body.classList.add(scrollUp);
+        } else {
+            // sonst initial Handler laufen lassen, damit Klassen beim Seitenwechsel korrekt sind
+            handleScroll();
+        }
+
+        window.addEventListener('scroll', throttled, { passive: true });
 
         return () => {
-            window.removeEventListener('scroll', throttledScroll);
+            window.removeEventListener('scroll', throttled);
+            // wir *entfernen hier nicht* die Klassen, damit der nächste Effekt (bei Navigation)
+            // die Klassen sauber setzen kann; alternativ könntest du hier cleanup machen, wenn gewünscht.
         };
-    }, [isEnabled]);
+    }, [isEnabled, pathname]);
 };
 
 export default useScroll;
