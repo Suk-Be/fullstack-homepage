@@ -144,6 +144,7 @@ describe('logRequestState', () => {
     });
 
     it('should log to console.log in development mode', () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         const initCookiesError = { error: true, axiosStatus: false };
