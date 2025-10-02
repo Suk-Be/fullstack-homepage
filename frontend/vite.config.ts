@@ -14,7 +14,7 @@ export default ({ mode }: { mode: string }) => {
             react(),
         ],
         server: {
-            host: '0.0.0.0', // <- wichtig, sonst nur localhost erreichbar
+            host: '0.0.0.0', // wichtig, sonst nur localhost erreichbar
             port: 5173,
             strictPort: true, // verhindert automatisches Hochzählen des Ports
             proxy: {
