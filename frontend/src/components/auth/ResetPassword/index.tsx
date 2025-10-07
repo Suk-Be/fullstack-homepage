@@ -1,4 +1,4 @@
-import resetPassword from '@/components/auth/api/requestResetPassword';
+import resetPassword from '@/components/auth/requests/requestResetPassword';
 import { Card, SectionCenteredChild, SignInContainer } from '@/components/ContainerElements';
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
