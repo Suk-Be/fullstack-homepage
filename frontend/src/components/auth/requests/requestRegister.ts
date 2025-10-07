@@ -1,4 +1,4 @@
-import requestMe from '@/components/auth/api/requestMe';
+import requestMe from '@/components/auth/requests/requestMe';
 import { BaseClient } from '@/plugins/axios';
 import { LoginErrorResponse, LoginSuccessResponse, RegisterFormData } from '@/types/entities';
 import initializeCookies from '@/utils/auth/initializeCookies';

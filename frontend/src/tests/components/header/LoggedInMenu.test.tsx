@@ -1,4 +1,4 @@
-import * as requestLogoutModule from '@/components/auth/api/requestLogout';
+import * as requestLogoutModule from '@/components/auth/requests/requestLogout';
 import LoggedInMenu from '@/components/header/LoggedInMenu';
 import { HPProps } from '@/data/HomePage';
 import { logout } from '@/store/loginSlice';

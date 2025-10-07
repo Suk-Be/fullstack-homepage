@@ -1,5 +1,5 @@
-import requestMe from '@/components/auth/api/requestMe';
-import requestRegister from '@/components/auth/api/requestRegister';
+import requestMe from '@/components/auth/requests/requestMe';
+import requestRegister from '@/components/auth/requests/requestRegister';
 import { BaseClient } from '@/plugins/axios';
 import { userLoggedAdmin } from '@/tests/mocks/api';
 import { registeredUserData } from '@/tests/mocks/data';

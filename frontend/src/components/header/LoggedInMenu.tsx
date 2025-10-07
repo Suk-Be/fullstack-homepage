@@ -1,4 +1,4 @@
-import requestLogout from '@/components/auth/api/requestLogout';
+import requestLogout from '@/components/auth/requests/requestLogout';
 import RouterLinkWrapper from '@/components/RouterLink';
 import { type AppDispatch } from '@/store/';
 import { useAppSelector } from '@/store/hooks';
@@ -28,7 +28,7 @@ export default function LoggedInMenu() {
         const result = await requestLogout();
 
         if (result.success) {
-            if(userId){
+            if (userId) {
                 dispatch(resetUserGrids(userId));
             }
             dispatch(logout());

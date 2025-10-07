@@ -1,4 +1,4 @@
-import requestForgotPassword from '@/components/auth/api/requestForgotPassword';
+import requestForgotPassword from '@/components/auth/requests/requestForgotPassword';
 import SuccessMessages from '@/data/SuccessMessages';
 import useInputFocusOnModalOpen from '@/hooks/useInputFocusOnModalOpen';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';

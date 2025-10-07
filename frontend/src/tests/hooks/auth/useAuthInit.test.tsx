@@ -1,4 +1,4 @@
-import requestMe from '@/components/auth/api/requestMe';
+import requestMe from '@/components/auth/requests/requestMe';
 import { useAuthInit } from '@/hooks/auth/useAuthInit';
 import { logout } from '@/store/loginSlice';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';

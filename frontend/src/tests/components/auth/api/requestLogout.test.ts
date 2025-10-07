@@ -1,4 +1,4 @@
-import requestLogout from '@/components/auth/api/requestLogout';
+import requestLogout from '@/components/auth/requests/requestLogout';
 import { server } from '@/tests/mocks/server';
 import { baseUrl } from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
@@ -28,8 +28,8 @@ describe('requestLogout', () => {
             http.post(`${webServer}/logout`, () =>
                 HttpResponse.json(
                     { message: 'Sie haben sich erfolgreich abgemeldet.' },
-                    { status: 200 }
-                )
+                    { status: 200 },
+                ),
             ),
         );
 

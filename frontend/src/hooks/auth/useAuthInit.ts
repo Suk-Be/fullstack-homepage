@@ -1,4 +1,4 @@
-import requestMe from '@/components/auth/api/requestMe';
+import requestMe from '@/components/auth/requests/requestMe';
 import { AppDispatch } from '@/store';
 import { useAppSelector } from '@/store/hooks';
 import { logout, startAuth } from '@/store/loginSlice';

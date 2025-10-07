@@ -1,4 +1,4 @@
-import requestLogin from '@/components/auth/api/requestLogin';
+import requestLogin from '@/components/auth/requests/requestLogin';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { server } from '@/tests/mocks/server';
@@ -48,10 +48,12 @@ describe('requestLogin', () => {
 
         expect(result).toEqual({
             success: false,
-            message: "Diese E-Mail ist nicht registriert oder das Passwort ist falsch.",
+            message: 'Diese E-Mail ist nicht registriert oder das Passwort ist falsch.',
             fieldErrors: {
-                email: ["Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.",],
-                password: ["Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.",],                                                                              
+                email: ['Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.'],
+                password: [
+                    'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein.',
+                ],
             },
         });
     });

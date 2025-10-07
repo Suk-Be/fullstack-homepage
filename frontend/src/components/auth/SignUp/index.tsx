@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import requestRegister from '../api/requestRegister';
+import requestRegister from '../requests/requestRegister';
 import validateInputs from './validateSignUpInputs';
 
 interface ErrorState {

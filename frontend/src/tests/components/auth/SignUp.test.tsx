@@ -1,6 +1,6 @@
 import SignUp from '@/components/auth/SignUp';
-import requestMe from '@/components/auth/api/requestMe';
-import requestRegister from '@/components/auth/api/requestRegister';
+import requestMe from '@/components/auth/requests/requestMe';
+import requestRegister from '@/components/auth/requests/requestRegister';
 import { BaseClient } from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
