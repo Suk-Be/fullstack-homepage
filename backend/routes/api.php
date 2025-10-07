@@ -10,18 +10,49 @@ use App\Models\User;
 use Illuminate\Http\Request;
 
 // FYI: web session token, keine api token
-Route::middleware(['auth:sanctum'])->group(function () {
-    // Normale REST-Routen, die haben einen Standardnamen (z.B. grids.destroy)
+
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Grids – Standard REST API (nach ID)
+    |--------------------------------------------------------------------------
+    | /api/v1/grids → GET, POST
+    | /api/v1/grids/{grid} → GET, PATCH, DELETE
+    |--------------------------------------------------------------------------
+    */
     Route::apiResource('grids', GridController::class);
 
-    Route::get('/user/grids', [GridController::class, 'index']);
+    /*
+    |--------------------------------------------------------------------------
+    | Grids – Zugriff & Aktionen nach layoutId
+    |--------------------------------------------------------------------------
+    | Hier liegt der Unterschied: Zugriff erfolgt über layoutId statt id.
+    | Zukunftssicher, da weitere Subrouten (config, permissions, etc.)
+    | sauber unterhalb von /layout/{layoutId} angehängt werden können.
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('grids/layout')->group(function () {
+        Route::patch('{layoutId}', [GridController::class, 'updateByLayout'])
+            ->name('grids.layout.update');
+        Route::delete('{layoutId}', [GridController::class, 'destroyByLayout'])
+            ->name('grids.layout.destroy');
+    });
 
-    // Grid nach layout_id löschen
-    Route::delete('grids/by-layout/{layoutId}', [GridController::class, 'destroyByLayout'])->name('grids.destroyByLayout');
+    /*
+    |--------------------------------------------------------------------------
+    | Benutzerbezogene Grid-Operationen
+    |--------------------------------------------------------------------------
+    */
+    // Alle Grids des authentifizierten Users abrufen
+    Route::get('user/grids', [GridController::class, 'index'])
+        ->name('user.grids.index');
 
-    // Admin: darf alle seine eigenen Grids löschen
-    Route::delete('users/{userId}/grids', [GridController::class, 'resetUserGrids'])->name('grids.resetUserGrids');
+    // Admin darf alle eigenen Grids zurücksetzen
+    Route::delete('users/{userId}/grids', [GridController::class, 'resetUserGrids'])
+        ->name('grids.user.reset');
 });
+
 
 // Nur für lokale/test/dev Umgebungen
 if (app()->environment('local', 'testing', 'development')) {
