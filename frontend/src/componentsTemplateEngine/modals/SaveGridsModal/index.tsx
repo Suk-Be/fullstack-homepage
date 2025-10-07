@@ -1,5 +1,6 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
+import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/shared/IsGridNameUnique';
 import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, selectUserRole } from '@/store/selectors/loginSelectors';
@@ -70,28 +71,6 @@ function SaveGridsModal() {
         return true;
     };
 
-    const isNameUnique = (name: string): boolean => {
-        if (!name.trim()) {
-            setErrorMessage('Please input a recognizable name.');
-            return false;
-        }
-
-        // create array from objects and filter
-        const already = Object.values(savedGrids).some((g) => {
-            if (!g || !g.name) return false; // Schutz
-            return g.name.toLowerCase() === name.trim().toLowerCase();
-        });
-
-        if (already) {
-            setErrorMessage(
-                `A grid with the name "${name}" already exists. Please choose a different name.`,
-            );
-            return false;
-        }
-
-        return true;
-    };
-
     // isConfigUnique
     const CONFIG_KEYS: GridConfigKey[] = [
         'items',
@@ -155,7 +134,8 @@ function SaveGridsModal() {
 
     const handleSaveGrid = async () => {
         if (!hasValidUser()) return;
-        if (!isNameUnique(gridName)) return;
+        const isUniqueName = isGridNameUnique(gridName, savedGrids, setErrorMessage);
+        if (!isUniqueName) return;
         if (!isConfigUnique()) return;
 
         setHasGridIsOpen(true);
