@@ -6,6 +6,7 @@ import {
 import {
     deleteThisGridThunk,
     fetchUserGridsThunk,
+    renameThisGridThunk,
     resetUserGridsThunk,
     saveUserGridThunk,
 } from '@/store/thunks/userSaveGridsThunks';
@@ -69,6 +70,22 @@ const userSaveGridsSlice = createSlice({
             state.savedGrids[newGrid.layoutId] = newGrid;
 
             saveToLocalStorage(state.userId, state);
+        },
+
+        applySavedGridToInitial(state, action: PayloadAction<string>) {
+            const sourceLayoutId = action.payload;
+            const sourceGrid = state.savedGrids[sourceLayoutId];
+            const targetGrid = state.savedGrids[initialLayoutId];
+
+            if (!sourceGrid || !targetGrid) return;
+
+            targetGrid.config = { ...sourceGrid.config };
+
+            targetGrid.timestamp = new Date().toISOString();
+
+            if (state.userId) {
+                saveToLocalStorage(state.userId, state);
+            }
         },
 
         deleteThisGrid(state, action: PayloadAction<string>) {
@@ -140,6 +157,21 @@ const userSaveGridsSlice = createSlice({
             console.error('Löschen fehlgeschlagen', action.payload);
         });
 
+        // rename(this)Grid
+        builder.addCase(renameThisGridThunk.fulfilled, (state, action) => {
+            const { layoutId, newName } = action.payload;
+            if (state.savedGrids[layoutId]) {
+                state.savedGrids[layoutId].name = newName;
+                if (state.userId) {
+                    saveToLocalStorage(state.userId, state);
+                }
+            }
+        });
+
+        builder.addCase(renameThisGridThunk.rejected, (_state, action) => {
+            console.error('Rename failed:', action.payload);
+        });
+
         // fetchGrids
         builder.addCase(fetchUserGridsThunk.fulfilled, (state, action) => {
             if (!state.userId) return;
@@ -182,6 +214,7 @@ const userSaveGridsSlice = createSlice({
 export const {
     getGridsFromLocalStorage,
     saveGrid,
+    applySavedGridToInitial,
     deleteThisGrid,
     updateGridConfig,
     resetUserGrids,
