@@ -167,7 +167,6 @@ const userSaveGridsSlice = createSlice({
                 }
             }
         });
-
         builder.addCase(renameThisGridThunk.rejected, (_state, action) => {
             console.error('Rename failed:', action.payload);
         });
