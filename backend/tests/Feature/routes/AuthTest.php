@@ -70,6 +70,6 @@ it('password reset routes are accessible', function () {
 // OAuth redirects
 // -------------------------------------------------
 it('redirects correctly for GitHub and Google OAuth', function () {
-    $this->get('/api/auth/github')->assertRedirectContains('github.com/login/oauth');
-    $this->get('/api/auth/google')->assertRedirect();
+    $this->get('/auth/github')->assertRedirectContains('github.com/login/oauth');
+    $this->get('/auth/google')->assertRedirect();
 });
