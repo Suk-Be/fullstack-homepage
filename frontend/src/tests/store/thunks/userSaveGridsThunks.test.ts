@@ -12,6 +12,7 @@ vi.mock('@/plugins/axios', () => ({
 
 // 2️⃣ Dann die Thunks importieren
 import ApiClient from '@/plugins/axios';
+import { apiEndpoints } from '@/store/thunks/apiEndpoints';
 import {
     deleteThisGridThunk,
     fetchUserGridsThunk,
@@ -90,8 +91,8 @@ describe('userSaveGridsThunks', () => {
 
     it('resetUserGridsThunk resolves with userId', async () => {
         mockedApiClient.delete.mockResolvedValue({});
-
-        const result = await resetUserGridsThunk(123)(dispatch, getState, undefined);
+        const adminId = 123;
+        const result = await resetUserGridsThunk(adminId)(dispatch, getState, undefined);
 
         expect(mockedApiClient.delete).toHaveBeenCalledWith('/users/123/grids', {
             withCredentials: true,
@@ -100,12 +101,16 @@ describe('userSaveGridsThunks', () => {
     });
     it('deleteThisGridThunk resolves with layoutId', async () => {
         mockedApiClient.delete.mockResolvedValue({});
+        const gridLayoutId = 'grid1';
 
-        const result = await deleteThisGridThunk('grid1')(dispatch, getState, undefined);
+        const result = await deleteThisGridThunk(gridLayoutId)(dispatch, getState, undefined);
 
-        expect(mockedApiClient.delete).toHaveBeenCalledWith('/grids/by-layout/grid1', {
-            withCredentials: true,
-        });
+        expect(mockedApiClient.delete).toHaveBeenCalledWith(
+            apiEndpoints.gridByLayout(gridLayoutId),
+            {
+                withCredentials: true,
+            },
+        );
         expect(result.payload).toBe('grid1');
     });
 });

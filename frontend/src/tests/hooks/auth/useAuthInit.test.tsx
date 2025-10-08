@@ -13,7 +13,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // ----------------------------
 // 🔹 Module Mocks
 // ----------------------------
-vi.mock('@/components/auth/api/requestMe');
+vi.mock('@/components/auth/requests/requestMe');
 vi.mock('@/utils/auth/initializeCookies');
 
 vi.mock('@/store/loginSlice', async (importOriginal) => {

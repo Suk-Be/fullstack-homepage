@@ -211,7 +211,7 @@ const SavedGridList = () => {
                                         <button
                                             className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                                             onClick={() => confirmApplyAction(grid.layoutId)}
-                                            title="Yes, delete"
+                                            title="Yes, apply"
                                         >
                                             apply layout
                                         </button>

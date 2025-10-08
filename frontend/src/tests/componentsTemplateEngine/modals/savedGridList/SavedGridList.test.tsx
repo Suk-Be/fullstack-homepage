@@ -1,9 +1,12 @@
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
+import ApiClient from '@/plugins/axios';
 import { userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
+
+vi.spyOn(ApiClient, 'delete').mockResolvedValueOnce({ data: {} });
 
 describe('SavedGridList', () => {
     const mockGrids = [
@@ -106,20 +109,30 @@ describe('SavedGridList', () => {
         expect(screen.queryByTitle(/Cancel/i)).not.toBeInTheDocument();
     });
 
-    it('confirms delete and dispatches deleteThisGrid', async () => {
-        // eslint-disable-next-line  @typescript-eslint/no-empty-function
-        vi.spyOn(window, 'alert').mockImplementation(() => {});
-
+    it('confirms delete and dispatches deleteThisGrid for a deletable grid', async () => {
         const { user, store } = renderUtils();
 
-        const deleteBtn = screen.getAllByRole('button', { name: /delete/i })[0];
+        vi.spyOn(ApiClient, 'delete').mockResolvedValueOnce({ data: {} });
+
+        const nameOfTheGrid = 'Second Grid';
+
+        const deleteBtn = screen
+            .getAllByRole('button', { name: /delete/i })
+            .find((btn) => btn.closest('tr')?.textContent?.includes(nameOfTheGrid));
+        if (!deleteBtn) throw new Error('Delete button not found');
+
         await user.click(deleteBtn);
 
         const confirmBtn = screen.getByTitle(/Yes, delete/i);
         await user.click(confirmBtn);
 
-        const state = store.getState();
+        await waitFor(() => {
+            const state = store.getState();
+            const deletedGrid = state.userGrid.savedGrids['grid2'];
+            const availableGrid = state.userGrid.savedGrids['initial'];
 
-        expect(state.userGrid.savedGrids['initial']).toBeUndefined();
+            expect(deletedGrid).toBeUndefined();
+            expect(availableGrid).toBeDefined();
+        });
     });
 });

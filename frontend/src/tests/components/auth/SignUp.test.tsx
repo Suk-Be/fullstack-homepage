@@ -32,7 +32,7 @@ vi.mock('react-redux', async () => {
     };
 });
 
-vi.mock('@/components/auth/api/requestMe', () => ({
+vi.mock('@/components/auth/requests/requestMe', () => ({
     __esModule: true,
     default: vi.fn(),
 }));

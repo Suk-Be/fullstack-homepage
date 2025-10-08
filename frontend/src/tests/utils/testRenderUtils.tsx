@@ -4,7 +4,7 @@ import loginReducer from '@/store/loginSlice';
 import userSaveGridsReducer from '@/store/userSaveGridsSlice';
 import { server } from '@/tests/mocks/server';
 import AppThemeProvider from '@/themes/AppTheme';
-import { apiUrl } from '@/utils/apiBaseUrl';
+import { apiUrl, baseUrl } from '@/utils/apiBaseUrl';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -34,11 +34,11 @@ const simulateError = (endpoint: string) =>
 const authProviderUrls = [
     {
         provider: 'GitHub',
-        uri: `${apiUrl()}/auth/github`,
+        uri: `${baseUrl()}/auth/github`,
     },
     {
         provider: 'Google',
-        uri: `${apiUrl()}/auth/google`,
+        uri: `${baseUrl()}/auth/google`,
     },
 ];
 

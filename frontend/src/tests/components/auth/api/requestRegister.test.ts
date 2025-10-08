@@ -19,7 +19,7 @@ vi.mock('@/utils/auth/resetCookiesOnResponseError', () => ({
 vi.mock('@/plugins/axios', () => ({
     BaseClient: { post: vi.fn(), defaults: { baseURL: 'http://localhost:8000/api' } },
 }));
-vi.mock('@/components/auth/api/requestMe', () => ({ default: vi.fn() }));
+vi.mock('@/components/auth/requests/requestMe', () => ({ default: vi.fn() }));
 vi.mock('@/utils/auth/setResponseValidationError', () => ({ setResponseValidationError: vi.fn() }));
 
 const mockPost = BaseClient.post as unknown as ReturnType<typeof vi.fn>;

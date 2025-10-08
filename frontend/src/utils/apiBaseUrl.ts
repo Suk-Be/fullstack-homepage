@@ -4,7 +4,7 @@ const apiUrl = (): string => {
         return 'http://localhost:8000/api/v1';
     }
 
-    const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+    const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
     // --- Stelle sicher, dass /v1 angehängt wird ---
     return base.endsWith('/v1') ? base : `${base}/v1`;
