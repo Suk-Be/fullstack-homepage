@@ -44,7 +44,7 @@ Route::middleware(['web', 'auth:sanctum'])->get('/me', [AuthController::class, '
 
 // OAuth-Routen (stateless, optional web wenn Session nötig)
 Route::middleware(['web'])
-    ->prefix('api/auth')
+    ->prefix('auth')
     ->group(function () {
         Route::get('/github', [GithubController::class, 'redirect']);
         Route::get('/github/callback', [GithubController::class, 'callback']);
