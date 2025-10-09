@@ -16,11 +16,13 @@ describe('DatenschutzPage', () => {
             preloadedState: mockLogInState,
         });
 
-        const heading = screen.getByRole('heading', { name: /Datenschutzerklärung/i });
+        const heading = await screen.findByRole('heading', { name: /Datenschutzerklärung/i });
 
         expect(heading).toBeInTheDocument();
-        const headlineDatenschutz = screen.getByText(/Verantwortlich für die Datenverarbeitung/i);
-        const paragraphDatenschutz = screen.getByText(/Suk-Be Jang - Privatperson/i);
+        const headlineDatenschutz = await screen.findByText(
+            /Verantwortlich für die Datenverarbeitung/i,
+        );
+        const paragraphDatenschutz = await screen.findByText(/Suk-Be Jang - Privatperson/i);
         expect(headlineDatenschutz).toBeInTheDocument();
         expect(paragraphDatenschutz).toBeInTheDocument();
     });

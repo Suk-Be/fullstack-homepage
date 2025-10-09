@@ -100,7 +100,7 @@ describe('LoggedInMenu', () => {
         // opened Menu
         await waitFor(() => {
             const closeButton = screen.getByTestId('button-close-menu');
-            const playgroundLink = screen.getByRole('link', { name: /playground/i });
+
             const templateEngineLink = screen.queryByRole('link', { name: 'Template Engine' });
             const templateEnginePresetsLink = screen.queryByRole('link', {
                 name: 'Template Engine Layout Examples',
@@ -108,7 +108,6 @@ describe('LoggedInMenu', () => {
             const logoutLink = screen.getByRole('link', { name: /logout/i });
 
             expect(closeButton).toBeInTheDocument();
-            expect(playgroundLink).toBeInTheDocument();
             expect(templateEngineLink).toBeInTheDocument();
             expect(templateEnginePresetsLink).toBeInTheDocument();
             expect(logoutLink).toBeInTheDocument();
@@ -135,19 +134,8 @@ describe('LoggedInMenu', () => {
 
         await user.click(homepageLink);
 
-        const heading = screen.getByText(HPProps.data[0].attributes.title);
+        const heading = await screen.findByText(HPProps.data[0].attributes.title);
         expect(heading).toBeInTheDocument();
-    });
-
-    it('should get Playground Page route when clicked in menu', async () => {
-        const { user, openButton } = renderUtilsPage(routeAndLoggedUserState);
-
-        await user.click(openButton);
-
-        await waitFor(() => {
-            const playgroundLink = screen.getByRole('link', { name: /playground/i });
-            expect(playgroundLink).toBeInTheDocument();
-        });
     });
 
     it('should logout a logged in user and change login state to isLoggedIn to false', async () => {

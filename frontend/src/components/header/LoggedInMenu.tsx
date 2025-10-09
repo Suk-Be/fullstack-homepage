@@ -122,11 +122,6 @@ export default function LoggedInMenu() {
                     disableScrollLock
                 >
                     <MenuItem onClick={handleClose}>
-                        <MuiLink component={RouterLinkWrapper} href="/playground">
-                            PlaygroundPage
-                        </MuiLink>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
                         <MuiLink component={RouterLinkWrapper} href="/template-engine">
                             Template Engine
                         </MuiLink>

@@ -52,9 +52,9 @@ describe('HomePage', () => {
     it('should render a profile section', async () => {
         const { profile } = renderUtil();
 
-        const profilePic = screen.getByAltText(/suk-be jang/i);
-        const subtitle = screen.getByRole('heading', { name: profile.attributes.title });
-        const profileText = screen.getByText(/Als Frontend Entwickler sehe ich mich/i);
+        const profilePic = await screen.findByAltText(/suk-be jang/i);
+        const subtitle = await screen.findByRole('heading', { name: profile.attributes.title });
+        const profileText = await screen.findByText(/Als Frontend Entwickler sehe ich mich/i);
 
         expect(profilePic).toBeInTheDocument();
         expect(subtitle).toBeInTheDocument();
@@ -64,8 +64,8 @@ describe('HomePage', () => {
     it('should render a teaser section', async () => {
         const { teaser } = renderUtil();
 
-        const title = screen.getByRole('heading', { name: teaser.attributes.title });
-        const subtitle = screen.getByText('Konzeption und Weiterentwicklung');
+        const title = await screen.findByRole('heading', { name: teaser.attributes.title });
+        const subtitle = await screen.findByText('Konzeption und Weiterentwicklung');
         const teaserList = teaser.attributes.list;
         const teaserAmount = teaserList?.length;
 
@@ -82,10 +82,10 @@ describe('HomePage', () => {
     it('should render an offer frontend entwicklung section', async () => {
         const { offer } = renderUtil();
 
-        const headline1 = screen.getByTestId('offer-headline-01');
-        const paragraph1 = screen.getByTestId('offer-content-01');
-        const headline2 = screen.getByTestId('offer-headline-02');
-        const paragraph2 = screen.getByTestId('offer-content-02');
+        const headline1 = await screen.findByTestId('offer-headline-01');
+        const paragraph1 = await screen.findByTestId('offer-content-01');
+        const headline2 = await screen.findByTestId('offer-headline-02');
+        const paragraph2 = await screen.findByTestId('offer-content-02');
 
         expect(headline1).toHaveTextContent(offer[0].attributes.title);
         expect(paragraph1).toHaveTextContent(

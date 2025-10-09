@@ -1,50 +1,57 @@
+// src/routes.tsx
+import App from '@/App';
+import Loading from '@/components/auth/shared-components/Loading';
+import ProtectedApp from '@/ProtectedApp';
+import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router';
-import App from './App';
-import DatenschutzPage from './pages/DatenschutzPage';
-import ErrorPage from './pages/ErrorPage';
-import HomePage from './pages/HomePage';
-import ImprintPage from './pages/ImprintPage';
-import NotFoundPage from './pages/NotFoundPage';
-import NotLoggedInPage from './pages/NotLoggedInPage';
-import PlaygroundPage from './pages/PlaygroundPage';
-import ProjectTemplateEnginePresetsPage from './pages/ProjectTemplateEngineLayoutExamplesPage';
-import ProjectTemplateEnginePage from './pages/ProjectTemplateEnginePage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import SocialiteCallbackPage from './pages/SocialiteCallbackPage';
-import ProtectedApp from './ProtectedApp';
 
+// Dynamische Imports aller Seiten im /pages Ordner
+const pages = import.meta.glob('./pages/*.tsx');
+
+// Helper zum Lazy-Load einer Page
+const lazyPage = (path: string, message?: string) => {
+    const loader = pages[`./pages/${path}.tsx`];
+    if (!loader) throw new Error(`Page not found: ${path}`);
+    const Component = lazy(loader as () => Promise<{ default: React.ComponentType<any> }>);
+    return (
+        <Suspense fallback={<Loading message={message ?? 'Lade Seite ...'} />}>
+            <Component />
+        </Suspense>
+    );
+};
+
+// --- Routen-Hierarchie ---
 const routes: RouteObject[] = [
     {
         path: '/',
-        element: <App />,
-        errorElement: <ErrorPage />,
+        element: <App />, // enthält Layout mit <Outlet />
+        errorElement: lazyPage('ErrorPage', 'Fehlerseite wird geladen ...'),
         children: [
-            { index: true, element: <HomePage /> },
-            { path: 'impressum', element: <ImprintPage /> },
-            { path: 'datenschutz', element: <DatenschutzPage /> },
-            { path: 'reset-password', element: <ResetPasswordPage /> },
+            { index: true, element: lazyPage('HomePage', 'Startseite wird geladen ...') },
+            { path: 'impressum', element: lazyPage('ImprintPage') },
+            { path: 'datenschutz', element: lazyPage('DatenschutzPage') },
+            { path: 'reset-password', element: lazyPage('ResetPasswordPage') },
             {
-                element: <ProtectedApp />,
+                element: <ProtectedApp />, // Auth-Check hier
                 children: [
-                    { path: 'template-engine', element: <ProjectTemplateEnginePage /> },
+                    { path: 'template-engine', element: lazyPage('ProjectTemplateEnginePage') },
                     {
                         path: 'template-engine/presets',
-                        element: <ProjectTemplateEnginePresetsPage />,
+                        element: lazyPage('ProjectTemplateEngineLayoutExamplesPage'),
                     },
-                    { path: 'playground', element: <PlaygroundPage /> },
                 ],
             },
-            { path: 'not-logged-in', element: <NotLoggedInPage /> },
+            { path: 'not-logged-in', element: lazyPage('NotLoggedInPage') },
         ],
     },
     {
-        // http://localhost:5173/auth/callback
+        // z. B. http://localhost:5173/auth/callback
         path: '/auth/callback',
-        element: <SocialiteCallbackPage />,
+        element: lazyPage('SocialiteCallbackPage'),
     },
     {
         path: '*',
-        element: <NotFoundPage />,
+        element: lazyPage('NotFoundPage'),
     },
 ];
 

@@ -30,7 +30,7 @@ beforeEach(() => {
 });
 
 describe('ErrorPage', () => {
-    it('renders router error with errorMessage in development mode', () => {
+    it('renders router error with errorMessage in development mode', async () => {
         (ReactRouter.useRouteError as Mock).mockReturnValue({
             status: 404,
             statusText: 'Not Found',
@@ -42,12 +42,12 @@ describe('ErrorPage', () => {
             preloadedState: mockLogInState,
         });
 
-        expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Seite nicht gefunden/i)).toBeInTheDocument();
         // todo not testable it renders the NotFoundPage beacause of router mechancis
         // expect(screen.getByText(/Router Status: 404 - Not Found/i)).toBeInTheDocument();
     });
 
-    it('renders JS error with errorMessage in development mode', () => {
+    it('renders JS error with errorMessage in development mode', async () => {
         (ReactRouter.useRouteError as Mock).mockReturnValue(new Error('Unexpected failure'));
         (ReactRouter.isRouteErrorResponse as unknown as Mock).mockReturnValue(false);
 
@@ -56,12 +56,12 @@ describe('ErrorPage', () => {
             preloadedState: mockLogInState,
         });
 
-        expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Seite nicht gefunden/i)).toBeInTheDocument();
         // todo not testable it renders the NotFoundPage beacause of router mechancis
         // expect(screen.getByText(/JS Error: Unexpected failure/i)).toBeInTheDocument();
     });
 
-    it('renders fallback message if no error is provided', () => {
+    it('renders fallback message if no error is provided', async () => {
         (ReactRouter.useRouteError as Mock).mockReturnValue(null);
         (ReactRouter.isRouteErrorResponse as unknown as Mock).mockReturnValue(false);
 
@@ -70,7 +70,7 @@ describe('ErrorPage', () => {
             preloadedState: mockLogInState,
         });
 
-        expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Seite nicht gefunden/i)).toBeInTheDocument();
         // todo not testable it renders the NotFoundPage beacause of router mechancis
         // expect(screen.getByText(/Unknown error occurred/i)).toBeInTheDocument();
     });
@@ -90,7 +90,7 @@ describe('ErrorPage', () => {
             preloadedState: mockLogInState,
         });
 
-        expect(screen.getByText(/Seite nicht gefunden/i)).toBeInTheDocument();
+        expect(await screen.findByText(/Seite nicht gefunden/i)).toBeInTheDocument();
         // todo not testable it renders the NotFoundPage beacause of router mechancis
         // expect(screen.queryByText(/Production error/i)).not.toBeInTheDocument();
     });

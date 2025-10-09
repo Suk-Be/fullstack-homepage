@@ -16,10 +16,10 @@ describe('ImprintPage', () => {
             preloadedState: mockLogInState,
         });
 
-        const heading = screen.getByRole('heading', {
+        const heading = await screen.findByRole('heading', {
             name: /impressum/i,
         });
-        const paragraph = screen.getByText(/Angaben gemäß § 5 DDG/i);
+        const paragraph = await screen.findByText(/Angaben gemäß § 5 DDG/i);
 
         expect(heading).toHaveTextContent(/impressum/i);
         expect(paragraph).toBeInTheDocument();

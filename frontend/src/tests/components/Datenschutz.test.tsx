@@ -11,7 +11,7 @@ vi.mock('@/components/RouterLink', () => ({
 }));
 
 describe('Datenschutz', () => {
-    const renderUtils = () => {
+    const renderUtils = async () => {
         const user = userEvent.setup();
 
         navigateTo({
@@ -19,7 +19,7 @@ describe('Datenschutz', () => {
             preloadedState: mockLoggedInUserState,
         });
 
-        const linkImprintPage = screen.getByTestId('link-datenschutz-impressum-page');
+        const linkImprintPage = await screen.findByTestId('link-datenschutz-impressum-page');
 
         return {
             linkImprintPage,
@@ -27,15 +27,15 @@ describe('Datenschutz', () => {
         };
     };
 
-    it('should render a heading', () => {
+    it('should render a heading', async () => {
         renderUtils();
-        const heading = screen.getByRole('heading', { name: /Datenschutzerklärung/i });
+        const heading = await screen.findByRole('heading', { name: /Datenschutzerklärung/i });
 
         expect(heading).toBeInTheDocument();
     });
 
     it('should render a paragraph with person responsible for data and link to imprint page', async () => {
-        const { linkImprintPage } = renderUtils();
+        const { linkImprintPage } = await renderUtils();
         const headlineDatenschutz = screen.getByText(/Verantwortlich für die Datenverarbeitung/i);
         const paragraphDatenschutz = screen.getByText(/Suk-Be Jang - Privatperson/i);
         expect(headlineDatenschutz).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('Datenschutz', () => {
 
     it('should contain external link for Landesbeauftragte Datenschutz', async () => {
         renderUtils();
-        const landesbeauftragteLink = screen.getByText(/Aufsichtsbehörden in Deutschland/i);
+        const landesbeauftragteLink = await screen.findByText(/Aufsichtsbehörden in Deutschland/i);
 
         expect(landesbeauftragteLink).toBeInTheDocument();
 

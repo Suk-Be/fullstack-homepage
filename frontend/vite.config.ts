@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -8,10 +9,17 @@ export default ({ mode }: { mode: string }) => {
 
     return defineConfig({
         plugins: [
+            react(),
             tsconfigPaths({
                 projects: ['./tsconfig.json', './tsconfig.app.json'],
             }),
-            react(),
+
+            visualizer({
+                filename: 'dist/stats.html',
+                open: false,
+                gzipSize: true,
+                brotliSize: true,
+            }),
         ],
         server: {
             host: '0.0.0.0', // wichtig, sonst nur localhost erreichbar
@@ -29,6 +37,33 @@ export default ({ mode }: { mode: string }) => {
                 usePolling: true,
                 interval: 100,
             },
+        },
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        // 🔹 Framework Core
+                        react: ['react', 'react-dom', 'react-router', 'react-router-dom'],
+
+                        // 🔹 State Management
+                        redux: ['react-redux', '@reduxjs/toolkit'],
+
+                        // 🔹 Material UI Core (wird auf allen Seiten benötigt)
+                        mui: [
+                            '@mui/material',
+                            '@mui/icons-material',
+                            '@emotion/react',
+                            '@emotion/styled',
+                        ],
+
+                        // 🔹 Headless UI (nur in Protected-Bereich)
+                        headlessui: ['@headlessui/react'],
+                    },
+                },
+            },
+
+            // Optional: leicht erhöhen, damit Vite keine Warnungen spammt
+            chunkSizeWarningLimit: 800,
         },
     });
 };

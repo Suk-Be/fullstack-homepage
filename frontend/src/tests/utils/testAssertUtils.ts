@@ -67,7 +67,7 @@ const switchToComponentHelper = async ({
     linkName: string | RegExp;
 }) => {
     navigateTo({ route: urlToRender, preloadedState: {} });
-    const linkSwitchingComponent = screen.getByRole(ctaHandler, { name: linkName });
+    const linkSwitchingComponent = await screen.findByRole(ctaHandler, { name: linkName });
     const user = userEvent.setup();
     await user.click(linkSwitchingComponent);
 };

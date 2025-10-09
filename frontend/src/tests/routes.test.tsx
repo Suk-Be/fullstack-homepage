@@ -1,6 +1,5 @@
 import HomePage from '@/pages/HomePage';
 import ImprintPage from '@/pages/ImprintPage';
-import PlaygroundPage from '@/pages/PlaygroundPage';
 import ProjectTemplateEnginePresetsPage from '@/pages/ProjectTemplateEngineLayoutExamplesPage';
 import ProjectTemplateEnginePage from '@/pages/ProjectTemplateEnginePage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
@@ -47,13 +46,6 @@ describe('routes', () => {
             elementHeadline: /impressum/i,
             page: 'ImprintPage',
             component: <ImprintPage />,
-            level: 1,
-        },
-        {
-            path: '/playground',
-            elementHeadline: /playground/i,
-            page: 'PlaygroundPage',
-            component: <PlaygroundPage />,
             level: 1,
         },
     ])(

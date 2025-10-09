@@ -38,7 +38,7 @@ describe('BasicMenu', () => {
         const { logoLink, user } = renderUtils(HPLoginState());
         await user.click(logoLink!);
 
-        const heading = screen.getByText(HPProps.data[0].attributes.title);
+        const heading = await screen.findByText(HPProps.data[0].attributes.title);
         expect(heading).toBeInTheDocument();
     });
 
@@ -61,9 +61,8 @@ describe('BasicMenu', () => {
         // Nach Klick sind alle Menü-Links sichtbar
         expect(screen.getByRole('link', { name: 'Template Engine' })).toBeInTheDocument();
         expect(
-            screen.getByRole('link', { name: 'Template Engine Layout Examples' }),
+            await screen.findByRole('link', { name: 'Template Engine Layout Examples' }),
         ).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /playgroundpage/i })).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /logout/i })).toBeInTheDocument();
     });
 
@@ -71,11 +70,14 @@ describe('BasicMenu', () => {
         const { avatarLink, user } = renderUtils(HPLoginState());
         await user.click(avatarLink!);
 
-        const playgroundPageLink = screen.getByRole('link', { name: /playgroundpage/i });
-        expect(playgroundPageLink).toBeInTheDocument();
+        const templateEnginePageLink = await screen.findByRole('link', {
+            name: 'Template Engine',
+        });
+        expect(templateEnginePageLink).toBeInTheDocument();
 
-        await user.click(playgroundPageLink);
-        expect(screen.queryByRole('link', { name: /playgroundpage/i })).not.toBeInTheDocument();
+        await user.click(templateEnginePageLink);
+
+        expect(screen.queryByRole('link', { name: 'Template Engine' })).not.toBeInTheDocument();
     });
 
     it('should render a header with a Logo and no Avatar if user is not logged in', () => {

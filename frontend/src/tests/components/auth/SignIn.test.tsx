@@ -60,8 +60,6 @@ describe('SignIn component', () => {
         await user.type(passwordInput, registeredUserData.password);
         await user.click(submitButton);
 
-        console.log('Alle User in DB:', db.user.getAll());
-
         expect(
             db.user.findFirst({
                 where: {

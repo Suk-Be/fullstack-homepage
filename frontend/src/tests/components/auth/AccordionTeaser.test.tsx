@@ -11,12 +11,12 @@ vi.mock('@/components/RouterLink', () => ({
 }));
 
 describe('AccordionTeaser', () => {
-    const renderUtils = () => {
+    const renderUtils = async () => {
         const user = userEvent.setup();
 
         navigateTo({ route: '/', preloadedState: mockLoggedInAdminState });
 
-        const accordion = screen.getByTestId('accordion');
+        const accordion = await screen.findByTestId('accordion');
         const projekte = screen.getByTestId('accordion-projekte');
         const templateEngine = screen.getByTestId('accordion-template-engine');
         const codeRepo = screen.getByTestId('accordion-code-repository');
@@ -38,8 +38,8 @@ describe('AccordionTeaser', () => {
             'Der Code für diese App ist in einem privaten Code Repository hinterlegt. Bitte nutzen Sie den mit github anmelden Button, um Zugang für das private Repo zu erhalten.',
     };
 
-    it('should render accordion with initially expanded entries', () => {
-        const { projekte, templateEngine, codeRepo } = renderUtils();
+    it('should render accordion with initially expanded entries', async () => {
+        const { projekte, templateEngine, codeRepo } = await renderUtils();
 
         expect(projekte).toBeInTheDocument();
         expect(templateEngine).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('AccordionTeaser', () => {
     });
 
     it('should toogle accordion entries', async () => {
-        const { user, projekte, templateEngine, codeRepo } = renderUtils();
+        const { user, projekte, templateEngine, codeRepo } = await renderUtils();
 
         // Accordion content initially
         expect(screen.getByText(content.projekte)).not.toBeVisible();
@@ -73,14 +73,4 @@ describe('AccordionTeaser', () => {
         await user.click(codeRepo);
         expect(screen.getByText(content.codeRepo)).toBeVisible();
     });
-
-    // it('should link to repo if logged in with github accout', async () => {
-    //     // todo
-    //     renderUtils()
-    // });
-
-    // it('should log in with github accout and redirect to home page', async () => {
-    //     // todo
-    //     renderUtils()
-    // });
 });
