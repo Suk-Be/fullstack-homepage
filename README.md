@@ -3,7 +3,7 @@
 ## Motivation
 
 Meine alte Homepage (siehe [Archivlink 2014](https://web.archive.org/web/20141218065649/http://sokdesign.de/)) stellte vor allem Design-Arbeiten dar.  
-Da mein Schwerpunkt heute in der **Programmierung** liegt, habe ich sie 2025 mit einem modernen Tech-Stack neu gebaut und als MVP veröffentlicht.
+Da mein Schwerpunkt in der **Programmierung** liegt, brauchte die Homepage dringend ein Update. Oktober 2025 gibt es die Seite mit modernem Tech-Stack und einer selbst gebauten Template Engine als MVP zur Präsentation von Code.
 
 ---
 

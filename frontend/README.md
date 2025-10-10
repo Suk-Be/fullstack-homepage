@@ -76,3 +76,12 @@ frontend/
  │   └─ utils/                      # helper zur Standardisierung z.B. für logger oder oder HTTP Responses
  └─ public/                         # Statische Dateien
 ```
+
+#### Testing
+
+```markdown
+- **Unit & Integration Tests** mit [vitest, React Testing Library](https://vitest.dev/), (https://testing-library.com/docs/react-testing-library/intro/)
+- **Factories** für Testdaten [Faker](https://fakerjs.dev/api/)
+- **Custom Helpers** (z. B. für States, Navigation, Integration)
+- **Mocking**: [api, db queries, tokens](https://mswjs.io/), (https://github.com/mswjs/data)
+```
