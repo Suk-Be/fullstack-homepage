@@ -26,4 +26,5 @@ coverage
 *.sw?
 .history/
 .env
+.env.production
 FrontendNotes.md
