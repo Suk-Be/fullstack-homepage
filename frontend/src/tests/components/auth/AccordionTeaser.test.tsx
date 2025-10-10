@@ -31,11 +31,10 @@ describe('AccordionTeaser', () => {
     };
 
     const content = {
-        projekte: /Lorem ipsum dolor sit amet/i,
+        projekte: /Es gibt einen MVP für die Template Engine/i,
         templateEngine:
-            'tailwind spielt Stärken im schnellen Prototyping von Designs aus und schwächelt hingegen ein wenig wenn es um Skalier- und Modulierbarkeit geht.',
-        codeRepo:
-            'Der Code für diese App ist in einem privaten Code Repository hinterlegt. Bitte nutzen Sie den mit github anmelden Button, um Zugang für das private Repo zu erhalten.',
+            /Die Template Engine nutzt ein php backend mit controllern, sql, policies und provided eine RestApi Schnittstelle./i,
+        codeRepo: /Der Code für diese App ist in einem Code Repository hinterlegt./i,
     };
 
     it('should render accordion with initially expanded entries', async () => {
@@ -54,7 +53,7 @@ describe('AccordionTeaser', () => {
         const { user, projekte, templateEngine, codeRepo } = await renderUtils();
 
         // Accordion content initially
-        expect(screen.getByText(content.projekte)).not.toBeVisible();
+        expect(screen.queryByText(content.projekte)).not.toBeVisible();
         expect(screen.getByText(content.templateEngine)).toBeVisible();
         expect(screen.getByText(content.codeRepo)).toBeVisible();
 

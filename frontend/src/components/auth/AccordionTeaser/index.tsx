@@ -24,12 +24,30 @@ export default function AccordionExpandIcon() {
                         id="panel1-header"
                         {...testId('accordion-projekte')}
                     >
-                        <Headline>Projekte</Headline>
+                        <Headline>Projekt</Headline>
                     </AccordionSummary>
                     <AccordionDetails {...testId('accordion-projekte-content')}>
                         <ParagraphHP>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                            malesuada lacus ex, sit amet blandit leo lobortis eget.
+                            <em>MVP Oktober 2025:</em> <br />
+                            Es gibt einen MVP für die Template Engine, die es erlaubt eingeloggten
+                            Usern mit Hilfe von Schiebereglern Layout Grids zu erstellen und für
+                            jedes Layout auch einen HTML Code zu erzeugen.
+                        </ParagraphHP>
+                        <ParagraphHP>
+                            User können beliebig viele Layouts speichern: <br />
+                            Eindeutigkeit. Die gespeicherten Layouts brauchen eindeutige Namen und
+                            Layout Einstellungen. Doppelte Einträge sind nicht erlaubt. <br />
+                            Gespeicherte Layouts sind wieder löschbar.
+                        </ParagraphHP>
+                        <ParagraphHP>
+                            Sortierung: <br />
+                            Die Layouts werden nach neuestem Datum sortiert. Das Datum wird
+                            angezeigt mit today, yesterday und dd.mm.yyyy.
+                        </ParagraphHP>
+                        <ParagraphHP>
+                            Authentifizierung: <br />
+                            User dürfen nur ihre eigenen Layouts erstellen, einsehen, bearbeiten und
+                            löschen.
                         </ParagraphHP>
                     </AccordionDetails>
                 </Accordion>
@@ -48,13 +66,11 @@ export default function AccordionExpandIcon() {
                     </AccordionSummary>
                     <AccordionDetails>
                         <ParagraphHP>
-                            tailwind spielt Stärken im schnellen Prototyping von Designs aus und
-                            schwächelt hingegen ein wenig wenn es um Skalier- und Modulierbarkeit
-                            geht.
+                            Die Template Engine nutzt ein php backend mit controllern, sql, policies
+                            und provided eine RestApi Schnittstelle.
                         </ParagraphHP>
                         <ParagraphHP>
-                            Mit dieser CSS Technologie habe ich eine Template Engine gebaut mit der
-                            man simple dynamische Layouts rendern und als HTML Code ausgeben kann.
+                            Das Frontend ist mit TypeScript und CSS als Single Page App umgesetzt.
                         </ParagraphHP>
                         <ParagraphHP>
                             <MuiLink
@@ -62,7 +78,7 @@ export default function AccordionExpandIcon() {
                                 href="/template-engine"
                                 color="rgba(53,102,64, 1)"
                             >
-                                zum Prototypen
+                                zum MVP
                             </MuiLink>
                         </ParagraphHP>
                     </AccordionDetails>
@@ -82,47 +98,36 @@ export default function AccordionExpandIcon() {
                     </AccordionSummary>
                     <AccordionDetails>
                         <ParagraphHP>
-                            Der Code für diese App ist in einem privaten Code Repository hinterlegt.
-                            Bitte nutzen Sie den mit github anmelden Button, um Zugang für das
-                            private Repo zu erhalten.
+                            Der Code für diese App ist in einem Code Repository hinterlegt. Es gibt
+                            für Interessierte zusätzliche README im Frontend und Backend
+                            Verzeichnis. Dort gibt es Informationen zum Tech-Stack, Schnellstart,
+                            Projektstruktur und Testing.
                         </ParagraphHP>
                         <ParagraphHP>
-                            Das <b>Backend</b> ist in PHP geschrieben und ist REST Api Provider für
-                            Single Page Applications. Dafür nutze ich das Laravel framework und
-                            schreibe unit/integrations tests.
+                            Das <b>Backend</b> ist in PHP geschrieben und nutzt das Laravel
+                            Framework mit Sanctum SPA für Authentication Services und Policies für
+                            Authorization. Unit/Integrations Tests sind mit Pest geschrieben.
                         </ParagraphHP>
                         <ParagraphHP>
-                            Für das <b>Frontend</b> nutze ich TypeScript. Als framework nutze ich
-                            react, redux toolkit, react-router. Für die unit/integrations tests
-                            nutze ich vitest, rtl und msw.
+                            Das <b>Frontend</b> ist in TypeScript geschrieben. Genutzte Frameworks
+                            sind react, redux toolkit, react-router und axios. Für die
+                            Unit/Integration Tests nutze ich vitest, rtl und msw.
                         </ParagraphHP>
                         <ParagraphHP>
-                            FYI: Für das Design der Home Page nutze ich angepasste Material UI
-                            components.
-                        </ParagraphHP>
-
-                        <ParagraphHP>
-                            todo Logik: Wenn man als github angebmeldet ist ist hier nur der Link
-                            zum Repository zu sehen. Sonst nur der Button &quot;Anmelden mit
-                            Github&quot; der hat die gleiche Funktionalität mit callback und
-                            redirect auf die gleiche Seite. Ein toast mit Hinweis auf den Link oder
-                            ähnliches wäre gut.
+                            FYI: <br />
+                            Das Design der Home Page nutzt ich Material UI Komponenten, theme und
+                            CSS. <br />
+                            Das Design der Template Engine nutzt Engine headlessui Komponenten und
+                            tailwindcss.
                         </ParagraphHP>
 
                         <ParagraphHP sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <RegisterButtonSocialite
                                 startIcon={<GithubIcon />}
-                                text="Anmelden mit Github"
+                                text="zum Repository"
                                 testIdIdentifier="form-button-login-with-github"
                                 clickHandler={() => handleSignInUp('github')}
                             />
-                            <MuiLink
-                                component={RouterLinkWrapper}
-                                href="/test-another-project"
-                                color="rgba(53,102,64, 1)"
-                            >
-                                zum Repository
-                            </MuiLink>
                         </ParagraphHP>
                     </AccordionDetails>
                 </Accordion>
