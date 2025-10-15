@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\GridResource;
+use App\Http\Requests\Grid\UpdateByLayoutRequest;
 use App\Traits\ApiResponses;
 
 class GridController extends Controller
@@ -125,29 +126,10 @@ class GridController extends Controller
         return $this->success($resource, 'Grid erfolgreich aktualisiert.');
     }
 
-    public function updateByLayout(Request $request, string $layoutId)
+    public function updateByLayout(UpdateByLayoutRequest $request, string $layoutId)
     {
-        $grid = Grid::where('layout_id', $layoutId)->firstOrFail();
-        $this->authorize('update', $grid);
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        // Prüfen, ob der Name bereits existiert (aber anderes Grid)
-        $existsByName = Grid::where('user_id', Auth::id())
-            ->where('name', $validated['name'])
-            ->where('layout_id', '!=', $layoutId)
-            ->exists();
-
-        if ($existsByName) {
-            return $this->error('A grid with this name already exists.', 422);
-        }
-
-        $grid->update(['name' => $validated['name']]);
-
-        $resource = (new GridResource($grid))->resolve();
-        return $this->success($resource, 'Grid name successfully updated.');
+        $grid = $request->applyUpdate();
+        return $this->success((new GridResource($grid))->resolve(), 'Grid name successfully updated.');
     }
 
 

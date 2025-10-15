@@ -2,6 +2,7 @@ import ApiClient from '@/plugins/axios';
 import { RootState } from '@/store';
 import { apiEndpoints } from '@/store/thunks/apiEndpoints';
 import { GridConfig } from '@/types/Redux';
+import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
@@ -91,24 +92,22 @@ const deleteThisGridThunk = createAsyncThunk<
 });
 
 const renameThisGridThunk = createAsyncThunk<
-    { layoutId: string; newName: string }, // Rückgabe
-    { layoutId: string; newName: string }, // Argument
+    { layoutId: string; newName: string },
+    { layoutId: string; newName: string },
     { rejectValue: string }
 >('userGrids/renameThisGrid', async ({ layoutId, newName }, { rejectWithValue }) => {
     try {
-        // PATCH to backend route defined in api.php
+        const recaptchaToken = await getRecaptchaToken('rename_this_grid');
+
         const response = await ApiClient.patch(
             apiEndpoints.gridByLayout(layoutId),
-            { name: newName },
+            { name: newName, recaptcha_token: recaptchaToken },
             { withCredentials: true },
         );
 
-        // Server gibt GridResource zurück → kann ggf. direkt genutzt werden
-        if (!response?.data?.data) {
-            return { layoutId, newName };
-        }
+        if (!response?.data?.data) return { layoutId, newName };
 
-        const updated = response.data.data as GridConfig;
+        const updated = response.data.data;
         return { layoutId, newName: updated.name || newName };
     } catch (error) {
         return rejectWithValue(
