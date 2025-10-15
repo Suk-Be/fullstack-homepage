@@ -3,6 +3,8 @@ import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
+import { parameterKeys } from '@/utils/recaptcha/parameterKeys';
+import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 
 interface ResetPasswordResult {
     success: boolean;
@@ -17,12 +19,14 @@ const resetPassword = async (
     token: string,
 ): Promise<ResetPasswordResult> => {
     try {
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.forgotPassword);
         await initializeCookies();
         const response = await BaseClient.post('/reset-password', {
             email,
             password,
             password_confirmation,
             token,
+            recaptcha_token: recaptchaToken,
         });
         console.log('response.data: ', response);
         return setResponseValidationSuccess(
