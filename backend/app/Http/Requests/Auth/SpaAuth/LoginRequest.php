@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Rules\ReCaptchaV3;
+use App\Enums\RecaptchaAction;
 
 class LoginRequest extends FormRequest
 {
@@ -21,6 +23,9 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            // Feldname auf 'recaptcha_token' anpassen, um dem Frontend zu entsprechen.
+            // Die Custom Rule wird hier ausgeführt. Die erwartete Aktion ist 'login'.
+            'recaptcha_token' => ['required', new ReCaptchaV3(RecaptchaAction::Login->value)],
         ];
     }
 
@@ -32,7 +37,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Diese Anmeldeinformationen stimmen nicht mit den Eingetragenen überein',
             ]);
         }
 

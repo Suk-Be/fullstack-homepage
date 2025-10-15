@@ -1,4 +1,4 @@
-import ApiClient, { BaseClient } from '@/plugins/axios';
+import { BaseClient } from '@/plugins/axios';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import Cookies from 'js-cookie';
 
@@ -7,56 +7,51 @@ let isCsrfFetched = false;
 
 // For testing only: resets internal state
 export function __testOnlyReset() {
-  lastInitializedAt = 0;
-  isCsrfFetched = false;
+    lastInitializedAt = 0;
+    isCsrfFetched = false;
 }
 
 export function resetCookies() {
-  isCsrfFetched = false;
+    isCsrfFetched = false;
 
-  Cookies.remove('XSRF-TOKEN', { path: '/' });
-  Cookies.remove('laravel_session', { path: '/' });
+    Cookies.remove('XSRF-TOKEN', { path: '/' });
+    Cookies.remove('laravel_session', { path: '/' });
 }
 
 /**
  * Fetch CSRF cookies for clients
  */
 async function fetchCsrf() {
-  if (isCsrfFetched) return;
+    if (isCsrfFetched) return;
 
-  isCsrfFetched = true;
+    isCsrfFetched = true;
 
-  try {
-    // Fetch CSRF for WebClient (used for auth forms)
-    await BaseClient.get('/api/csrf-cookie', { withCredentials: true });
-
-    // Fetch CSRF for API client (Sanctum SPA, optional if different BaseURL)
-    await ApiClient.get('/csrf-cookie', { withCredentials: true });
-
-  } catch (error) {
-    const axiosStatus = getAxiosStatus(error);
-    logRecoverableError({
-      context: 'Failed to fetch CSRF cookie',
-      error,
-      extra: { axiosStatus },
-    });
-  }
+    try {
+        // Fetch CSRF for WebClient (used for auth forms)
+        await BaseClient.get('/api/csrf-cookie', { withCredentials: true });
+    } catch (error) {
+        const axiosStatus = getAxiosStatus(error);
+        logRecoverableError({
+            context: 'Failed to fetch CSRF cookie',
+            error,
+            extra: { axiosStatus },
+        });
+    }
 }
 
 /**
  * Initialize CSRF cookies with throttling
  */
 async function initializeCookies() {
-  const THROTTLE_DELAY_MS = 5000; // 5 seconds
-  const now = Date.now();
+    const THROTTLE_DELAY_MS = 5000; // 5 seconds
+    const now = Date.now();
 
-  if (now - lastInitializedAt > THROTTLE_DELAY_MS) {
-    lastInitializedAt = now;
-    resetCookies();
-    await fetchCsrf();
-  }
+    if (now - lastInitializedAt > THROTTLE_DELAY_MS) {
+        lastInitializedAt = now;
+        resetCookies();
+        await fetchCsrf();
+    }
 }
 
 export default initializeCookies;
 export { fetchCsrf };
-

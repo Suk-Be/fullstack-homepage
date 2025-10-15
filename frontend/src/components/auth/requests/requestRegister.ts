@@ -5,6 +5,8 @@ import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
+import { parameterKeys } from '@/utils/recaptcha/parameterKeys';
+import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 
 interface RegisterUserParams {
     form: RegisterFormData;
@@ -15,8 +17,13 @@ const requestRegister = async ({
     form,
 }: RegisterUserParams): Promise<LoginSuccessResponse | LoginErrorResponse> => {
     try {
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.register);
         await initializeCookies();
-        const formDataPost = await BaseClient.post('/register', form);
+
+        const formDataPost = await BaseClient.post('/register', {
+            ...form,
+            recaptcha_token: recaptchaToken,
+        });
 
         let userId: number | undefined = undefined;
         let role: 'admin' | 'user' | undefined = undefined;

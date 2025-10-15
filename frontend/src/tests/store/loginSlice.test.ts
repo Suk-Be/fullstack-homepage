@@ -1,4 +1,5 @@
-import reducer, { LoginState, loginThunk } from '@/store/loginSlice';
+import reducer, { LoginState } from '@/store/loginSlice';
+import { loginThunk } from '@/store/thunks/loginThunk';
 import { userLoggedInNoAdmin } from '@/tests/mocks/api';
 import { configureStore } from '@reduxjs/toolkit';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

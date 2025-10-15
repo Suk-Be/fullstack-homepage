@@ -5,6 +5,8 @@ import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
+import { parameterKeys } from '@/utils/recaptcha/parameterKeys';
+import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 
 interface LoginResult {
     success: boolean;
@@ -22,10 +24,13 @@ const requestLogin = async ({
     password: string;
 }): Promise<LoginResult> => {
     try {
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.login);
+
         await initializeCookies();
         const response = await BaseClient.post('/login', {
             email,
             password,
+            recaptcha_token: recaptchaToken,
         });
 
         let userId: number | undefined = undefined;

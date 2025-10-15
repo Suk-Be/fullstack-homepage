@@ -1,12 +1,7 @@
-import requestMe from '@/components/auth/requests/requestMe';
-import { BaseClient } from '@/plugins/axios';
-import initializeCookies from '@/utils/auth/initializeCookies';
-import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { LoginArgs, User } from '@/types/Redux';
-import { LoginErrorResponse, LoginSuccessResponse } from '@/types/entities';
-import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
+import { loginThunk } from '@/store/thunks/loginThunk';
+import { User } from '@/types/Redux';
 
 // ---------- Typen ----------
 export interface LoginResult {
@@ -36,43 +31,6 @@ const initialState: LoginState = {
 };
 
 // ---------- AsyncThunk ----------
-export const loginThunk = createAsyncThunk<
-    LoginSuccessResponse, // ✅ Erfolgstyp
-    LoginArgs, // ✅ Argumenttyp
-    { rejectValue: LoginErrorResponse } // ✅ Fehlertyp
->('login/loginThunk', async ({ email, password }, { rejectWithValue }) => {
-    try {
-        await initializeCookies();
-
-        const response = await BaseClient.post('/login', {
-            email,
-            password,
-        });
-
-        // console.log('response: ', response);
-
-        const meResult = await requestMe();
-
-        // console.log('meResult: ', meResult);
-
-        if (meResult?.success && meResult.userId !== undefined && meResult.role) {
-            return {
-                success: true,
-                message: response.data.message || 'Login erfolgreich!',
-                userId: meResult.userId,
-                role: meResult.role,
-            };
-        } else {
-            return rejectWithValue({
-                success: false,
-                message: 'Benutzer konnte nicht geladen werden',
-            });
-        }
-    } catch (error: unknown) {
-        await resetCookiesOnResponseError(error);
-        return rejectWithValue(setResponseValidationError(error));
-    }
-});
 
 // ---------- Slice ----------
 const loginSlice = createSlice({

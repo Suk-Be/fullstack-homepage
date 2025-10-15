@@ -5,7 +5,7 @@ import { GithubIcon, GoogleIcon } from '@/components/shared-components/CustomIco
 import useModalToggle from '@/hooks/useModalToggle';
 import useToggle from '@/hooks/useToggle';
 import { useAppDispatch } from '@/store/hooks';
-import { loginThunk } from '@/store/loginSlice';
+import { loginThunk } from '@/store/thunks/loginThunk';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
