@@ -3,6 +3,8 @@ import initializeCookies from '@/utils/auth/initializeCookies';
 import resetCookiesOnResponseError from '@/utils/auth/resetCookiesOnResponseError';
 import { setResponseValidationError } from '@/utils/auth/setResponseValidationError';
 import { setResponseValidationSuccess } from '@/utils/auth/setResponseValidationSuccess';
+import { parameterKeys } from '@/utils/recaptcha/parameterKeys';
+import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 
 interface RequestPasswordResetResult {
     success: boolean;
@@ -12,8 +14,15 @@ interface RequestPasswordResetResult {
 
 const requestForgotPassword = async (email: string): Promise<RequestPasswordResetResult> => {
     try {
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.forgotPassword);
+
         await initializeCookies();
-        const response = await BaseClient.post('/forgot-password', { email });
+
+        const response = await BaseClient.post('/forgot-password', {
+            email,
+            recaptcha_token: recaptchaToken,
+        });
+
         return setResponseValidationSuccess(
             response.data.message || 'Passwort-Reset-Link wurde gesendet!',
         );
