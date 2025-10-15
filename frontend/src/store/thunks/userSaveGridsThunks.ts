@@ -2,6 +2,7 @@ import ApiClient from '@/plugins/axios';
 import { RootState } from '@/store';
 import { apiEndpoints } from '@/store/thunks/apiEndpoints';
 import { GridConfig } from '@/types/Redux';
+import { parameterKeys } from '@/utils/recaptcha/parameterKeys';
 import getRecaptchaToken from '@/utils/recaptcha/recaptchaToken';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -82,7 +83,10 @@ const deleteThisGridThunk = createAsyncThunk<
     { rejectValue: string }
 >('userGrids/deleteThisGrid', async (layoutId: string, { rejectWithValue }) => {
     try {
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.api.deleteThisGrid);
+
         await ApiClient.delete(apiEndpoints.gridByLayout(layoutId), {
+            data: { recaptcha_token: recaptchaToken },
             withCredentials: true,
         });
         return layoutId;
@@ -97,7 +101,7 @@ const renameThisGridThunk = createAsyncThunk<
     { rejectValue: string }
 >('userGrids/renameThisGrid', async ({ layoutId, newName }, { rejectWithValue }) => {
     try {
-        const recaptchaToken = await getRecaptchaToken('rename_this_grid');
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.api.renameThisGrid);
 
         const response = await ApiClient.patch(
             apiEndpoints.gridByLayout(layoutId),

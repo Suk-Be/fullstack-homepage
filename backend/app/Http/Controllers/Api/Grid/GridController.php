@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\GridResource;
 use App\Http\Requests\Grid\UpdateByLayoutRequest;
+use App\Http\Requests\Grid\DeleteByLayoutRequest;
 use App\Traits\ApiResponses;
 
 class GridController extends Controller
@@ -133,12 +134,9 @@ class GridController extends Controller
     }
 
 
-    public function destroyByLayout(string $layoutId)
+    public function destroyByLayout(DeleteByLayoutRequest $request, string $layoutId)
     {
-        $grid = Grid::where('layout_id', $layoutId)->firstOrFail();
-        $this->authorize('delete', $grid);
-
-        $grid->delete();
+        $grid = $request->applyDelete();
         return $this->success([], 'Grid erfolgreich gelöscht.', 204);
     }
 
