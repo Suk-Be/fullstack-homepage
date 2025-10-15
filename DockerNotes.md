@@ -307,3 +307,10 @@ php artisan queue:work
 cd ../frontend
 npm run dev
 ```
+
+fyi
+
+```bash
+# clear logs for debugging
+docker exec -it laravel_app sh -c "> storage/logs/laravel.log"
+```
