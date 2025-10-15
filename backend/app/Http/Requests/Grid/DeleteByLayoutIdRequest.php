@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\Recaptcha;
 use App\Enums\RecaptchaAction;
 
-class DeleteByLayoutRequest extends FormRequest
+class DeleteByLayoutIdRequest extends FormRequest
 {
     use Recaptcha;
 

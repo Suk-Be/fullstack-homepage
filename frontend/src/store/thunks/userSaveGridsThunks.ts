@@ -41,23 +41,22 @@ const saveUserGridThunk = createAsyncThunk<
     { state: RootState; rejectValue: string }
 >('userGrids/saveUserGrid', async (newGrid: GridConfig, { rejectWithValue }) => {
     try {
-        // const state = getState();
-        // const userId = state.userGrid.userId;
+        // reCAPTCHA Token holen
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.api.saveUserGrid);
 
-        // Backend POST
         const response = await ApiClient.post(
             apiEndpoints.grids,
             {
-                // userId, // muss nicht übermittelt werden, da im backend in der store method: $grid = Auth::user()->grids()->create($gridData); die userId bekannt ist
                 layoutId: newGrid.layoutId,
                 name: newGrid.name,
                 config: newGrid.config,
                 timestamp: newGrid.timestamp,
+                recaptcha_token: recaptchaToken, // ⚡ hier das Token mitsenden
             },
             { withCredentials: true },
         );
 
-        return response.data.data as GridConfig; // GridResource vom Backend
+        return response.data.data as GridConfig;
     } catch (error: unknown) {
         return rejectWithValue(handleAxiosError(error, 'Fehler beim Speichern der Grids'));
     }
@@ -70,7 +69,11 @@ const resetUserGridsThunk = createAsyncThunk<
     { rejectValue: string }
 >('userGrids/resetUserGrids', async (userId: number, { rejectWithValue }) => {
     try {
-        await ApiClient.delete(apiEndpoints.userReset(userId), { withCredentials: true });
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.api.resetUserGrids);
+        await ApiClient.delete(apiEndpoints.userReset(userId), {
+            data: { recaptcha_token: recaptchaToken },
+            withCredentials: true,
+        });
         return userId; // action.payload
     } catch (error: unknown) {
         return rejectWithValue(handleAxiosError(error, `Fehler beim ${userId} Zurücksetzen`));

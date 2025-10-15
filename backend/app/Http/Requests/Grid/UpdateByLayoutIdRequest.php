@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\Recaptcha;
 use App\Enums\RecaptchaAction;
 
-class UpdateByLayoutRequest extends FormRequest
+class UpdateByLayoutIdRequest extends FormRequest
 {
     use Recaptcha;
 

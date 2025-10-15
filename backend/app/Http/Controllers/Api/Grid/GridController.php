@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api\Grid;
 
 use App\Http\Controllers\Controller;
 use App\Models\Grid;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\GridResource;
-use App\Http\Requests\Grid\UpdateByLayoutRequest;
-use App\Http\Requests\Grid\DeleteByLayoutRequest;
+use App\Http\Requests\Grid\UpdateByLayoutIdRequest;
+use App\Http\Requests\Grid\DeleteByLayoutIdRequest;
+use App\Http\Requests\Grid\SaveNewGridRequest;
+use App\Http\Requests\Grid\ResetUserGridsRequest;
 use App\Traits\ApiResponses;
 
 class GridController extends Controller
@@ -46,55 +46,16 @@ class GridController extends Controller
      * ensure config keys are sorted and cannot be saved more than once
      * ensure name cannot be saved more than once
      */
-    public function store(Request $request)
+    public function store(SaveNewGridRequest $request)
     {
-        $validated = $request->validate([
-            'layoutId' => 'required|uuid',
-            'name' => 'nullable|string|max:255',
-            'config' => 'required|array',
-            'timestamp' => 'required|date',
-        ]);
+        $result = $request->applySave();
 
-        $sortedConfig = $validated['config'];
-        ksort($sortedConfig);
-        $encodedConfig = json_encode($sortedConfig);
-
-        $gridData = [
-            'layout_id' => $validated['layoutId'],
-            'name' => $validated['name'],
-            'config' => $validated['config'],
-            'timestamp' => $validated['timestamp'],
-        ];
-
-        $existsByLayoutId = Auth::user()
-            ->grids()
-            ->where('layout_id', $validated['layoutId'])
-            ->exists();
-
-        if ($existsByLayoutId) {
-            return $this->error('A grid with the same layoutId already exists.');
+        // Falls es sich um ein JsonResponse (Fehler) handelt:
+        if ($result instanceof JsonResponse) {
+            return $result;
         }
 
-        $existsByLayoutConfig = Auth::user()
-            ->grids()
-            ->where('config', $encodedConfig)
-            ->exists();
-
-        if ($existsByLayoutConfig) {
-            return $this->error('A grid with the same configuration already exists.');
-        }
-
-        $existsByLayoutName = Auth::user()
-            ->grids()
-            ->where('name', $validated['name'])
-            ->exists();
-
-        if ($existsByLayoutName) {
-            return $this->error('A grid with the same name already exists.');
-        }
-
-        $grid = Auth::user()->grids()->create($gridData);
-        return $this->success(new GridResource($grid), 'Grid erfolgreich erstellt.', 201);
+        return $this->success($result->resolve(), 'Grid erfolgreich erstellt.', 201);
     }
 
     public function show(string $id)
@@ -127,25 +88,23 @@ class GridController extends Controller
         return $this->success($resource, 'Grid erfolgreich aktualisiert.');
     }
 
-    public function updateByLayout(UpdateByLayoutRequest $request, string $layoutId)
+    public function updateByLayout(UpdateByLayoutIdRequest $request, string $layoutId)
     {
         $grid = $request->applyUpdate();
         return $this->success((new GridResource($grid))->resolve(), 'Grid name successfully updated.');
     }
 
 
-    public function destroyByLayout(DeleteByLayoutRequest $request, string $layoutId)
+    public function destroyByLayout(DeleteByLayoutIdRequest $request, string $layoutId)
     {
         $grid = $request->applyDelete();
         return $this->success([], 'Grid erfolgreich gelöscht.', 204);
     }
 
-    public function resetUserGrids(int $userId)
+    public function resetUserGrids(ResetUserGridsRequest $request, int $userId)
     {
-        $user = User::findOrFail($userId);
-        $this->authorize('reset', $user);
-
-        Grid::where('user_id', $userId)->delete();
+        $request->applyReset();
         return $this->success([], 'Alle Grids erfolgreich gelöscht.', 204);
     }
+
 }
