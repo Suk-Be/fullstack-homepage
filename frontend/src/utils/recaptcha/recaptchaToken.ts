@@ -1,9 +1,8 @@
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-
 // Ein Promise, das sicherstellt, dass das Skript nur einmal geladen wird
-let recaptchaScriptPromise: Promise<void> | null = null;
+export let recaptchaScriptPromise: Promise<void> | null = null;
 
 const loadRecaptchaScript = (): Promise<void> => {
+    const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
     if (recaptchaScriptPromise) return recaptchaScriptPromise;
 
     recaptchaScriptPromise = new Promise((resolve, reject) => {
@@ -34,6 +33,8 @@ const loadRecaptchaScript = (): Promise<void> => {
  * @returns Das generierte reCAPTCHA Token.
  */
 const getRecaptchaToken = async (action: string): Promise<string> => {
+    const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
     // 💡 Zugriff auf die Vite Umgebungsvariable
     if (!RECAPTCHA_SITE_KEY) throw new Error('VITE_RECAPTCHA_SITE_KEY fehlt.');
 
