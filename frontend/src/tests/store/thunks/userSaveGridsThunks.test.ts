@@ -10,7 +10,11 @@ vi.mock('@/plugins/axios', () => ({
     },
 }));
 
-// 2️⃣ Dann die Thunks importieren
+// 2️⃣ Dann die recaptcha utility importieren
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 import ApiClient from '@/plugins/axios';
 import { apiEndpoints } from '@/store/thunks/apiEndpoints';
 import {
@@ -83,6 +87,7 @@ describe('userSaveGridsThunks', () => {
                 name: newGrid.name,
                 config: newGrid.config,
                 timestamp: newGrid.timestamp,
+                recaptcha_token: 'mocked-recaptcha-token',
             },
             { withCredentials: true },
         );
@@ -95,6 +100,7 @@ describe('userSaveGridsThunks', () => {
         const result = await resetUserGridsThunk(adminId)(dispatch, getState, undefined);
 
         expect(mockedApiClient.delete).toHaveBeenCalledWith('/users/123/grids', {
+            data: { recaptcha_token: 'mocked-recaptcha-token' },
             withCredentials: true,
         });
         expect(result.payload).toBe(123);
@@ -108,6 +114,7 @@ describe('userSaveGridsThunks', () => {
         expect(mockedApiClient.delete).toHaveBeenCalledWith(
             apiEndpoints.gridByLayout(gridLayoutId),
             {
+                data: { recaptcha_token: 'mocked-recaptcha-token' },
                 withCredentials: true,
             },
         );

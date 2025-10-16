@@ -12,7 +12,9 @@ const pages = import.meta.glob('./pages/*.tsx');
 const lazyPage = (path: string, message?: string) => {
     const loader = pages[`./pages/${path}.tsx`];
     if (!loader) throw new Error(`Page not found: ${path}`);
-    const Component = lazy(loader as () => Promise<{ default: React.ComponentType<any> }>);
+    const Component = lazy(
+        loader as () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
+    );
     return (
         <Suspense fallback={<Loading message={message ?? 'Lade Seite ...'} />}>
             <Component />

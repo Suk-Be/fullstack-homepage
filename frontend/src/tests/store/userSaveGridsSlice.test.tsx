@@ -24,12 +24,14 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 const mockNewLayoutId = 'mock-uuid-1234';
 
-// mock uuid
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 vi.mock('uuid', () => ({
     v4: () => mockNewLayoutId,
 }));
 
-// mock localStorage utils
 vi.mock('@/store/localStorage', () => ({
     loadFromLocalStorage: vi.fn(),
     saveToLocalStorage: vi.fn(),

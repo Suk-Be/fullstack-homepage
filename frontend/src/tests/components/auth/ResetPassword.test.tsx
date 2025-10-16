@@ -12,6 +12,10 @@ import { vi } from 'vitest';
 
 const mockDispatch = vi.fn();
 
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 vi.mock('react-redux', async () => {
     const actual = await vi.importActual('react-redux');
     return {

@@ -7,6 +7,10 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 describe('ForgotPassword', () => {
     beforeEach(() => {
         db.user.create({

@@ -4,7 +4,11 @@ import { db } from '@/tests/mocks/db';
 import { server } from '@/tests/mocks/server';
 import { baseUrl } from '@/utils/apiBaseUrl';
 import { http, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
 
 const webServer = baseUrl();
 

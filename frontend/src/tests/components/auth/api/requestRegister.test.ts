@@ -10,6 +10,10 @@ import { setResponseValidationError } from '@/utils/auth/setResponseValidationEr
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mocks
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 vi.mock('@/utils/auth/initializeCookies', () => ({
     default: vi.fn().mockResolvedValue(undefined),
 }));

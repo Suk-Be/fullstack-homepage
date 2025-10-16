@@ -4,14 +4,59 @@ import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { expectErrorMessages, switchToComponentHelper } from '@/tests/utils/testAssertUtils';
 import { authProviderUrls, renderWithProviders } from '@/tests/utils/testRenderUtils';
-import { screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import fetchAdapter from '@/tests/utilsTest/auth/fetchAdapter';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/store/hooks', () => ({
+    useAppDispatch: () =>
+        vi.fn(async (action: unknown) => {
+            if (typeof action === 'function') {
+                return await (action() as () => unknown)();
+            }
+            return action;
+        }),
+    useAppSelector: vi.fn(),
+}));
+
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+vi.mock('@/store/thunks/loginThunk', () => {
+    const baseType = 'login/loginThunk';
+
+    // Mock-Funktion für den Thunk selbst
+    const mockThunk = vi.fn(async () => ({
+        type: `${baseType}/fulfilled`,
+        payload: {
+            success: true,
+            userId: 1,
+            role: 'user',
+            message: 'Login erfolgreich!',
+        },
+    }));
+
+    interface ActionWithType {
+        type: string;
+    }
+
+    const createMatch = (type: string) => ({
+        type,
+        match: <T extends ActionWithType>(action: T | undefined): boolean => action?.type === type,
+    });
+
+    Object.assign(mockThunk, {
+        pending: createMatch(`${baseType}/pending`),
+        fulfilled: createMatch(`${baseType}/fulfilled`),
+        rejected: createMatch(`${baseType}/rejected`),
+    });
+
+    return { loginThunk: mockThunk };
+});
+
 vi.mock('@/components/RouterLink', () => ({
     default: (props: ComponentProps<'a'>) => <a {...props} />,
 }));

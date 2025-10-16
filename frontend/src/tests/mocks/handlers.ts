@@ -30,7 +30,7 @@ export interface ResetPasswordRequestBody {
 
 export const handlers = [
     // CSRF cookie request
-    http.get(`${api}/csrf-cookie`, () => {
+    http.get(`${base}/api/csrf-cookie`, () => {
         // Simulate the cookie
         document.cookie = 'XSRF-TOKEN=mocked-csrf-token; Path=/';
 

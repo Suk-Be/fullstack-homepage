@@ -29,6 +29,10 @@ vi.mock('@/plugins/axios', () => {
     };
 });
 
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 vi.mock('@/utils/auth/initializeCookies', () => ({
     default: mockInitializeCookies,
 }));
@@ -76,6 +80,7 @@ describe('loginThunk', () => {
         expect(mockPost).toHaveBeenCalledWith('/login', {
             email: 'test@example.com',
             password: 'secret',
+            recaptcha_token: 'mocked-recaptcha-token',
         });
         expect(mockRequestMe).toHaveBeenCalledTimes(1);
         expect(state.isLoggedIn).toBe(true);

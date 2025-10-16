@@ -8,6 +8,11 @@ import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
 const renameUniqueGridName = 'Unique Grid';
+
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+
 vi.spyOn(ApiClient, 'delete').mockResolvedValueOnce({ data: {} });
 vi.spyOn(ApiClient, 'patch').mockResolvedValue({
     data: { data: { name: renameUniqueGridName } },

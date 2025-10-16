@@ -5,6 +5,28 @@ import { screen } from '@testing-library/react';
 import { ComponentProps } from 'react';
 import { vi } from 'vitest';
 
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
+vi.mock('@/store/thunks/loginThunk', () => ({
+    loginThunk: Object.assign(
+        vi.fn(async () => ({
+            type: 'login/loginThunk/fulfilled',
+            payload: {
+                success: true,
+                userId: 1,
+                role: 'user',
+                message: 'Login erfolgreich!',
+            },
+        })),
+        {
+            pending: { type: 'login/loginThunk/pending' },
+            fulfilled: { type: 'login/loginThunk/fulfilled' },
+            rejected: { type: 'login/loginThunk/rejected' },
+        },
+    ),
+}));
+
 vi.mock('@/components/RouterLink', () => ({
     default: (props: ComponentProps<'a'>) => <a {...props} />,
 }));

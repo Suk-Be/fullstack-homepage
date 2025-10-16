@@ -20,6 +20,9 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 const mockDispatch = vi.fn();
 
 vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
+vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
+    default: vi.fn(async () => 'mocked-recaptcha-token'),
+}));
 vi.mock('@/components/RouterLink', () => ({
     default: (props: ComponentProps<'a'>) => <a {...props} />,
 }));

@@ -65,12 +65,9 @@ describe('fetchCsrf', () => {
         __testOnlyReset();
     });
 
-    it('should call both endpoints once and set isCsrfFetched', async () => {
+    it('should call endpoint once and set isCsrfFetched', async () => {
         (
             BaseClient.get as Mock<(...args: unknown[]) => Promise<AxiosResponse<unknown>>>
-        ).mockResolvedValueOnce(mockResponse);
-        (
-            ApiClient.get as Mock<(...args: unknown[]) => Promise<AxiosResponse<unknown>>>
         ).mockResolvedValueOnce(mockResponse);
 
         await fetchCsrf();
@@ -78,15 +75,11 @@ describe('fetchCsrf', () => {
         expect(BaseClient.get as Mock<AxiosGet>).toHaveBeenCalledWith('/api/csrf-cookie', {
             withCredentials: true,
         });
-        expect(ApiClient.get as Mock<AxiosGet>).toHaveBeenCalledWith('/csrf-cookie', {
-            withCredentials: true,
-        });
 
         // second call should not trigger again
         await fetchCsrf();
 
         expect(BaseClient.get as Mock<AxiosGet>).toHaveBeenCalledTimes(1);
-        expect(ApiClient.get as Mock<AxiosGet>).toHaveBeenCalledTimes(1);
     });
 
     it('should log error if call fails', async () => {
