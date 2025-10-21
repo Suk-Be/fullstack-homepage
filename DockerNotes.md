@@ -284,7 +284,7 @@ docker-compose pull
 docker-compose --profile backend --profile mailpit up -d
 ```
 
-## Für Frontend und Backend Entwicklung: db und mailpit zur Verfügun stellen
+## Für Frontend und Backend Entwicklung: db und mailpit zur Verfügung stellen
 
 --profile backend → aktiviert db + phpmyadmin
 
