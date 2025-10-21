@@ -313,4 +313,17 @@ fyi
 ```bash
 # clear logs for debugging
 docker exec -it laravel_app sh -c "> storage/logs/laravel.log"
+# backend unit tests
+docker exec -it laravel_app php artisan test
+```
+
+### Testing Umgebung für das Backend
+
+--profile test → aktiviert backend + mysql + .env.testing Konfiguration
+
+```bash
+docker-compose --profile backend --profile mailpit --profile test  down -v
+docker-compose --profile test up -d
+docker exec -it laravel_app_test bash
+php artisan test
 ```

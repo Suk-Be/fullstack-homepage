@@ -29,6 +29,7 @@ Da mein Schwerpunkt in der **Programmierung** liegt, brauchte die Homepage dring
 - 📊 **Tests**
 
   - ~99% Coverage in Frontend & Backend
+  - Docker Service für backend Testing
 
 - 📦 **Dockerized Services**
   - Separat startbare Container für Frontend, Backend, Mail, DB
