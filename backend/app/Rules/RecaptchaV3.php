@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class ReCaptchaV3 implements ValidationRule
+class RecaptchaV3 implements ValidationRule
 {
     protected string $action;
 

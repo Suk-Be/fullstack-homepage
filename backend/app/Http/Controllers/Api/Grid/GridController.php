@@ -94,7 +94,6 @@ class GridController extends Controller
         return $this->success((new GridResource($grid))->resolve(), 'Grid name successfully updated.');
     }
 
-
     public function destroyByLayout(DeleteByLayoutIdRequest $request, string $layoutId)
     {
         $grid = $request->applyDelete();
