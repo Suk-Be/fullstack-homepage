@@ -1,13 +1,79 @@
 <?php
 
+use Illuminate\Testing\TestResponse;
+
 /**
  * ------------------------------
  * Assertions
  * ------------------------------
  */
 
-/** Assert that a response has the default user JSON structure */
-function assertUserResponseStructure($response): void {
+/**
+ * Prüft, ob die Response Validierungsfehler enthält.
+ *
+ * - Ignoriert automatisch das Feld 'recaptcha_token'
+ * - Erwartete Felder können als String-Liste oder assoziatives Array mit Fehlermeldungen angegeben werden
+ *
+ * @param TestResponse $response
+ * @param array|string $expectedFields
+ * @return void
+ * @throws \Exception
+ */
+function assertJsonValidationError(TestResponse $response, array|string $expectedFields = []): void
+{
+    $errors = $response->json('errors', []);
+
+    // recaptcha_token automatisch ignorieren
+    unset($errors['recaptcha_token']);
+
+    // Wenn nur eine numerische Liste übergeben wurde, in strukturierte Fehlermeldungen konvertieren
+    if (is_array($expectedFields) && array_is_list($expectedFields)) {
+        $converted = [];
+        foreach ($expectedFields as $field) {
+            $converted[$field] = ["Das Feld {$field} ist erforderlich."];
+        }
+        $expectedFields = $converted;
+    }
+
+    // Prüfe, dass alle erwarteten Keys in den Response-Errors vorhanden sind
+    foreach (array_keys($expectedFields) as $field) {
+        if (!isset($errors[$field])) {
+            throw new \Exception("Expected validation error for field '{$field}', but not found.");
+        }
+    }
+
+    // Grundlegende Struktur prüfen
+    $response->assertStatus(422)
+             ->assertJsonStructure([
+                 'message',
+                 'errors',
+             ])
+             ->assertJson(['errors' => $expectedFields]);
+}
+
+function assertJsonValidationKeys(TestResponse $response, array $expectedFields): void
+{
+    $errors = $response->json('errors', []);
+    unset($errors['recaptcha_token']);
+
+    foreach ($expectedFields as $field) {
+        if (!array_key_exists($field, $errors)) {
+            throw new \Exception("Expected validation error for field '{$field}', but not found.");
+        }
+    }
+
+    $response->assertStatus(422)
+             ->assertJsonStructure([
+                 'message',
+                 'errors',
+             ]);
+}
+
+/**
+ * Assert that a response has the default user JSON structure
+ */
+function assertUserResponseStructure(TestResponse $response): void
+{
     $response->assertJsonStructure([
         'status',
         'data' => [
@@ -17,13 +83,18 @@ function assertUserResponseStructure($response): void {
     ]);
 }
 
-/** Quick helper to assert JSON resource count */
-function assertJsonCountMatches($response, int $expected, string $key = 'data'): void {
+/**
+ * Quick helper to assert JSON resource count
+ */
+function assertJsonCountMatches(TestResponse $response, int $expected, string $key = 'data'): void
+{
     $response->assertJsonCount($expected, $key);
 }
 
-/** Assert that a response contains a JSON error with optional details */
-function assertJsonErrorResponse($response, int $status, string $message, array $errors = []): void
+/**
+ * Assert that a response contains a JSON error with optional details
+ */
+function assertJsonErrorResponse(TestResponse $response, int $status, string $message, array $errors = []): void
 {
     $payload = ['message' => $message];
     if (!empty($errors)) {
@@ -34,44 +105,42 @@ function assertJsonErrorResponse($response, int $status, string $message, array 
              ->assertJson($payload);
 }
 
-function assertJsonValidationError($response, $expectedErrors = []): void
+/**
+ * Shortcut for 401 Unauthorized
+ */
+function assertJsonUnauthorized(TestResponse $response, string $message = 'Nicht authentifiziert.'): void
 {
-    if (is_string($expectedErrors)) {
-        // Single error message ohne Feldnamen
-        $expectedErrors = ['error' => [$expectedErrors]];
-    } elseif (is_array($expectedErrors) && array_is_list($expectedErrors)) {
-        // Numerische Liste von Feldnamen -> konvertiere in strukturierte Fehlermeldungen
-        $converted = [];
-        foreach ($expectedErrors as $field) {
-            $converted[$field] = ["Das Feld {$field} ist erforderlich."];
-        }
-        $expectedErrors = $converted;
-    }
-    // andernfalls: assoziatives Array bleibt so wie es ist
-    $response->assertStatus(422)
-             ->assertJsonStructure([
-                 'message',
-                 'errors'
-             ])
-             ->assertJson(['errors' => $expectedErrors]);
-}
-
-function assertJsonUnauthorized($response, string $message = 'Nicht authentifiziert.'): void {
     assertJsonErrorResponse($response, 401, $message);
 }
 
-function assertJsonForbidden($response, string $message = 'Verboten.'): void {
+/**
+ * Shortcut for 403 Forbidden
+ */
+function assertJsonForbidden(TestResponse $response, string $message = 'Verboten.'): void
+{
     assertJsonErrorResponse($response, 403, $message);
 }
 
-function assertJsonNotFound($response, string $message = 'Ressource nicht gefunden.'): void {
+/**
+ * Shortcut for 404 Not Found
+ */
+function assertJsonNotFound(TestResponse $response, string $message = 'Ressource nicht gefunden.'): void
+{
     assertJsonErrorResponse($response, 404, $message);
 }
 
-function assertJsonMethodNotAllowed($response, string $message = 'Die HTTP-Methode wird für diese Route nicht unterstützt.'): void {
+/**
+ * Shortcut for 405 Method Not Allowed
+ */
+function assertJsonMethodNotAllowed(TestResponse $response, string $message = 'Die HTTP-Methode wird für diese Route nicht unterstützt.'): void
+{
     assertJsonErrorResponse($response, 405, $message);
 }
 
-function assertJsonServerError($response, string $message = 'Es ist ein unerwarteter Fehler aufgetreten.'): void {
+/**
+ * Shortcut for 500 Internal Server Error
+ */
+function assertJsonServerError(TestResponse $response, string $message = 'Es ist ein unerwarteter Fehler aufgetreten.'): void
+{
     assertJsonErrorResponse($response, 500, $message);
 }

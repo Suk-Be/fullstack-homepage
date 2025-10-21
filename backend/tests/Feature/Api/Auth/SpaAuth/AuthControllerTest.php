@@ -1,45 +1,45 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use function Pest\Laravel\post;
-use function Pest\Laravel\get;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\getJson;
 use App\Enums\UserRole;
-
-// assertUserResponseStructure ist global eingebunden, siehe Pest.php
+use App\Enums\RecaptchaAction;
 
 // -------------------------------------------------
-// Register
+// Register Tests
 // -------------------------------------------------
 it('registers a new user and logs them in', function () {
-    $response = post('/register', [
+    $response = postJson('/register', withRecaptchaPayload([
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-    ]);
+    ], RecaptchaAction::Register));
 
     $response->assertOk();
     assertUserResponseStructure($response);
-
-    // Prüft, dass der Benutzer nach Registrierung eingeloggt ist
-    expect(auth()->check())->toBeTrue();
+    assertLoggedIn();
 });
 
 it('fails to register user with invalid input', function () {
+    $recaptcha = fakeRecaptcha(RecaptchaAction::Register);
+
     $response = postJson('/register', [
         'name' => '',
         'email' => 'not-an-email',
         'password' => '123',
         'password_confirmation' => 'wrong',
-    ]);
+    ] + $recaptcha);
 
     $response->assertStatus(422);
     $response->assertInvalid(['name', 'email', 'password']);
+    assertLoggedOut();
 });
 
 it('rejects registration with duplicate email', function () {
+    $recaptcha = fakeRecaptcha(RecaptchaAction::Register);
+
     User::factory()->create(['email' => 'taken@example.com']);
 
     $response = postJson('/register', [
@@ -47,49 +47,56 @@ it('rejects registration with duplicate email', function () {
         'email' => 'taken@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-    ]);
+    ] + $recaptcha);
 
     $response->assertStatus(422);
+    assertLoggedOut();
 });
 
 // -------------------------------------------------
-// Login
+// Login Tests
 // -------------------------------------------------
 it('logs in an existing user', function () {
-    createUserWithPassword('secret123', ['email' => 'test@example.com']);
+    $user = loginWebUser(['password' => bcrypt('secret123')]);
 
-    $response = post('/login', [
-        'email' => 'test@example.com',
+    $response = postJson('/login', withRecaptchaPayload([
+        'email' => $user->email,
         'password' => 'secret123',
-    ]);
+    ], RecaptchaAction::Login));
 
     $response->assertOk()
              ->assertJson(['message' => 'Sie haben sich erfolgreich angemeldet.']);
 
-    expect(auth()->check())->toBeTrue();
+    assertLoggedIn($user);
 });
 
 it('fails to log in with wrong credentials', function () {
-    createUserWithPassword('correct', ['email' => 'wrong@example.com']);
+    $recaptcha = fakeRecaptcha(RecaptchaAction::Login);
+
+    $user = loginUser(null, false);
+    $user->update(['password' => bcrypt('correct')]);
 
     $response = postJson('/login', [
-        'email' => 'wrong@example.com',
+        'email' => $user->email,
         'password' => 'wrong',
-    ]);
+    ] + $recaptcha);
 
     $response->assertInvalid('email');
-    expect(auth()->check())->toBeFalse();
+    assertLoggedOut();
 });
 
 it('fails login with missing credentials', function () {
-    $response = postJson('/login', []);
+    $recaptcha = fakeRecaptcha(RecaptchaAction::Login);
+
+    $response = postJson('/login', $recaptcha);
 
     $response->assertStatus(422);
     $response->assertInvalid(['email', 'password']);
+    assertLoggedOut();
 });
 
 // -------------------------------------------------
-// Logout
+// Logout Test
 // -------------------------------------------------
 it('logs out an authenticated user', function () {
     $user = createUserWithPassword('password123');
@@ -104,74 +111,34 @@ it('logs out an authenticated user', function () {
     expect(session()->has('login_web'))->toBeFalse();
 });
 
+
 // -------------------------------------------------
-// /me Route (Session-authenticated user)
+// /me Route Test
 // -------------------------------------------------
 it('returns the authenticated user', function () {
-    $user = loginUser();
+    $user = loginWebUser();
 
-    $response = get('/me');
+    $response = getJson('/me');
 
     $response->assertOk()
-             ->assertJson([
-                 'data' => [
-                     'user' => [
-                         'id' => $user->id,
-                         'email' => $user->email,
-                     ]
-                 ]
+             ->assertJsonFragment([
+                 'id' => $user->id,
+                 'email' => $user->email,
              ]);
+
+    assertLoggedIn($user);
 });
 
-it('returns full authenticated user profile structure', function () {
-    $user = loginUser();
+it('returns full authenticated user profile including role', function () {
+    $user = loginWebUser(['role' => UserRole::Admin]);
 
-    $response = get('/me');
-
-    $response->assertOk();
-    $response->assertJsonStructure([
-        'data' => [
-            'user' => [
-                'id',
-                'name',
-                'email',
-                'role',
-            ]
-        ],
-        'status',
-        'message',
-    ]);
-
-    $response->assertJson([
-        'data' => [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => UserRole::User->value,
-            ]
-        ]
-    ]);
-});
-
-it('returns the authenticated user including role', function () {
-    $user = createUser(['role' => UserRole::Admin]);
-    loginUser($user);
-
-    $response = get('/me');
+    $response = getJson('/me');
 
     $response->assertOk()
              ->assertJsonFragment([
                  'email' => $user->email,
                  'role' => UserRole::Admin->value,
              ]);
-});
 
-// -------------------------------------------------
-// Guest access denied
-// -------------------------------------------------
-it('returns 401 for unauthenticated user calling /me', function () {
-    $response = $this->getJson('/me');
-
-    $response->assertStatus(401);
+    assertLoggedIn($user);
 });

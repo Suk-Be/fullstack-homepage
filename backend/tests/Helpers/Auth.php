@@ -9,9 +9,13 @@ use App\Models\User;
  */
 
 /** Log in a user for session-based tests (creates one if null) */
-function loginUser(?User $user = null): User {
+function loginUser(?User $user = null, bool $login = true): User {
     $user ??= createUser();
-    test()->actingAsSessionUser($user);
+
+    if ($login) {
+        test()->actingAsSessionUser($user);
+    }
+
     return $user;
 }
 
@@ -38,5 +42,16 @@ function assertRequiresApiAuth(callable $callback): void {
 /** Assert that a route requires authentication for web routes */
 function assertRequiresWebAuth(callable $callback): void {
     $response = $callback();
-    $response->assertRedirect(); // typical web redirect to login
+    $response->assertStatus(401); // JSON API Unauthorized
+}
+
+function assertLoggedIn(?User $user = null, string $guard = 'web'): void {
+    expect(auth()->guard($guard)->check())->toBeTrue();
+    if ($user) {
+        expect(auth()->guard($guard)->user()->id)->toBe($user->id);
+    }
+}
+
+function assertLoggedOut(string $guard = 'web'): void {
+    expect(auth()->guard($guard)->check())->toBeFalse();
 }

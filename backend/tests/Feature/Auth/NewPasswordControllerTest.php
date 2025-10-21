@@ -29,7 +29,10 @@ it('can reset a password with a valid token and email', function () {
     ]);
 
     $response->assertOk()
-        ->assertJson(['status' => __('passwords.reset')]);
+        ->assertJson([
+            'status' => 'success',
+            'message' => 'Passwort wurde erfolgreich zurückgesetzt!',
+        ]);
 
     $user->refresh();
     expect(Hash::check($newPassword, $user->password))->toBeTrue();

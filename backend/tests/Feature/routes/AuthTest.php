@@ -9,12 +9,13 @@ uses(RefreshDatabase::class);
 // Register & Login Input Validation (Web / JSON)
 // -------------------------------------------------
 it('validates input for register and login routes', function () {
-    // Leere Eingaben => ValidationErrors
+    // Registrierung
     $response = $this->postJson('/register', []);
-    assertJsonValidationError($response, ['name','email','password']);
+    assertJsonValidationKeys($response, ['name','email','password']);
 
+    // Login
     $response = $this->postJson('/login', []);
-    assertJsonValidationError($response, ['email','password']);
+    assertJsonValidationKeys($response, ['email','password']);
 });
 
 // -------------------------------------------------

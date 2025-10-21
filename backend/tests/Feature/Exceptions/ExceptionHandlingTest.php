@@ -10,7 +10,7 @@ it('handles ValidationException for missing required fields correctly', function
 
     assertJsonValidationError($response, [
         'required_field' => ['Das erforderliche Feld ist nicht da.'],
-        'another_field' => ['Dies ist ein weiterer Validierungsfehler.'],
+        'another_field'  => ['Dies ist ein weiterer Validierungsfehler.'],
     ]);
 });
 
