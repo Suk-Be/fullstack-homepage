@@ -19,7 +19,7 @@ const resetPassword = async (
     token: string,
 ): Promise<ResetPasswordResult> => {
     try {
-        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.forgotPassword);
+        const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.resetPassword);
         await initializeCookies();
         const response = await BaseClient.post('/reset-password', {
             email,
