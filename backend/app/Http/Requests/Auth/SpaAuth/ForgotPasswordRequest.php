@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
-use App\Rules\ReCaptchaV3;
+use App\Rules\RecaptchaV3;
 use App\Enums\RecaptchaAction;
 
 class ForgotPasswordRequest extends FormRequest
@@ -28,7 +28,7 @@ class ForgotPasswordRequest extends FormRequest
         ];
 
         if (env('RECAPTCHA_PROTECT_RESET_PASSWORD', false)) {
-            $rules['recaptcha_token'] = ['required', new ReCaptchaV3(RecaptchaAction::ResetPassword->value)];
+            $rules['recaptcha_token'] = ['required', new RecaptchaV3(RecaptchaAction::ResetPassword->value)];
         }
 
         return $rules;
