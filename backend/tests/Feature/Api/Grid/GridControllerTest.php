@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RecaptchaAction;
 use App\Models\User;
 use App\Models\Grid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,6 +13,9 @@ beforeEach(function () {
     loginUser($this->user);
 });
 
+// ----------------------------------------
+// Listen / Index
+// ----------------------------------------
 it('returns a list of grids for the authenticated user', function () {
     $grids = createGrids($this->user, 3);
 
@@ -25,13 +29,16 @@ it('returns a list of grids for the authenticated user', function () {
     expect($layoutIds)->toMatchArray($expectedIds);
 });
 
+// ----------------------------------------
+// Create Grid
+// ----------------------------------------
 it('can create a new grid', function () {
-    $payload = [
+    $payload = withRecaptchaPayload([
         'layoutId' => (string) Str::uuid(),
         'name' => 'My Test Grid',
         'config' => ['columns' => 3],
         'timestamp' => now()->toISOString(),
-    ];
+    ], RecaptchaAction::SaveUserGrid);
 
     $response = $this->postJson(route('grids.store'), $payload);
 
@@ -51,27 +58,18 @@ it('validates required fields when creating a grid', function () {
         ->assertJsonValidationErrors(['layoutId', 'config', 'timestamp']);
 });
 
-it('can update a grid', function () {
-    $grid = createGrids($this->user, 1)->first();
-    $grid->name = 'Old Name';
-    $grid->save();
-
-    $payload = ['name' => 'Updated Name'];
-
-    $response = $this->putJson(route('grids.update', $grid), $payload);
-
-    $response->assertOk()
-        ->assertJsonFragment(['name' => 'Updated Name']);
-
-    expect($grid->fresh()->name)->toBe('Updated Name');
-});
-
+// ----------------------------------------
+// Delete Grid
+// ----------------------------------------
 it('can delete a grid by its layoutId', function () {
     $grid = createGrids($this->user, 1)->first();
     $grid->layout_id = '123e4567-e89b-12d3-a456-426614174000';
     $grid->save();
 
-    $response = $this->deleteJson(route('grids.layout.destroy', $grid->layout_id));
+    $response = $this->deleteJson(
+        route('grids.layout.destroy', $grid->layout_id),
+        fakeRecaptcha(RecaptchaAction::DeleteThisGrid)
+    );
 
     $response->assertNoContent();
     expect(Grid::count())->toBe(0);
@@ -88,6 +86,9 @@ it('denies another user from deleting a grid by layoutId', function () {
     $response->assertForbidden();
 });
 
+// ----------------------------------------
+// Reset Grids
+// ----------------------------------------
 it('denies a regular user from resetting their own grids', function () {
     createGrids($this->user, 5);
 
@@ -108,6 +109,9 @@ it('denies an admin from resetting another users grids', function () {
     expect(Grid::where('user_id', $otherUser->id)->count())->toBe(5);
 });
 
+// ----------------------------------------
+// My Grids
+// ----------------------------------------
 it('returns only the authenticated users own grids via myGrids', function () {
     $ownGrids = createGrids($this->user, 3);
     $otherUser = createUser();
@@ -131,7 +135,7 @@ it('denies access to grids if not authenticated', function () {
 });
 
 // ----------------------------------------
-// Erfolgreiches Umbenennen eines Grids
+// Update Grid
 // ----------------------------------------
 it('successfully renames a grid by layoutId', function () {
     $grid = createGrids($this->user, 1, [
@@ -139,7 +143,7 @@ it('successfully renames a grid by layoutId', function () {
         'name' => 'Old Name',
     ])->first();
 
-    $payload = ['name' => 'New Unique Name'];
+    $payload = withRecaptchaPayload(['name' => 'New Unique Name'], RecaptchaAction::RenameThisGrid);
 
     $response = $this->patchJson(route('grids.layout.update', $grid->layout_id), $payload);
 
@@ -150,11 +154,7 @@ it('successfully renames a grid by layoutId', function () {
     expect($grid->fresh()->name)->toBe('New Unique Name');
 });
 
-// ----------------------------------------
-// Fehler bei Duplikatname
-// ----------------------------------------
 it('returns error if another grid already has the same name', function () {
-    // Erstes Grid mit existierendem Namen
     $existingGrid = Grid::create([
         'user_id' => $this->user->id,
         'layout_id' => 'layout-1',
@@ -163,7 +163,6 @@ it('returns error if another grid already has the same name', function () {
         'timestamp' => now(),
     ]);
 
-    // Zweites Grid, das umbenannt werden soll
     $gridToUpdate = Grid::create([
         'user_id' => $this->user->id,
         'layout_id' => 'layout-2',
@@ -172,21 +171,18 @@ it('returns error if another grid already has the same name', function () {
         'timestamp' => now(),
     ]);
 
-    $payload = ['name' => 'Existing Name'];
+    $payload = withRecaptchaPayload(['name' => 'Existing Name'], RecaptchaAction::RenameThisGrid);
 
     $response = $this->patchJson(route('grids.layout.update', $gridToUpdate->layout_id), $payload);
 
     $response->assertStatus(422)
              ->assertJsonFragment([
-                 'errors' => ['general' => ['A grid with this name already exists.']]
+                 'errors' => ['name' => ['A grid with this name already exists.']]
              ]);
 
     expect($gridToUpdate->fresh()->name)->toBe('Original Name');
 });
 
-// ----------------------------------------
-// Andere User dürfen nicht updaten
-// ----------------------------------------
 it('forbids another user from updating a grid they do not own', function () {
     $owner = createUser();
     $grid = Grid::create([
@@ -197,7 +193,6 @@ it('forbids another user from updating a grid they do not own', function () {
         'timestamp' => now(),
     ]);
 
-    // Ein anderer Benutzer loggt sich ein
     loginUser(createUser());
 
     $response = $this->patchJson(route('grids.layout.update', $grid->layout_id), [

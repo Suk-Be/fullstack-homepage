@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Grid;
+use App\Enums\RecaptchaAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -19,7 +20,8 @@ it('requires authentication for /api/v1/grids', function () {
 it('can create a new grid', function () {
     $user = loginWebUser(); // Authentifizierter Benutzer (Web-Session)
 
-    $payload = makeGridPayload();
+    $payload = withRecaptchaPayload(makeGridPayload(), RecaptchaAction::SaveUserGrid);
+
     $response = $this->postJson('/api/v1/grids', $payload);
 
     $response->assertCreated()
@@ -27,6 +29,7 @@ it('can create a new grid', function () {
 
     expect(Grid::count())->toBe(1);
 });
+
 
 it('can get a list of grids for authenticated user', function () {
     $user = loginWebUser();
@@ -41,8 +44,11 @@ it('can update a grid', function () {
     $user = loginWebUser();
     $grid = createUserGrids($user, 1)->first();
 
-    $payload = ['name' => 'Updated Name'];
-    $response = $this->putJson("/api/v1/grids/{$grid->id}", $payload);
+    // ReCAPTCHA für das Rename-Feature faken
+    $payload = withRecaptchaPayload(['name' => 'Updated Name'], RecaptchaAction::RenameThisGrid);
+
+    // PATCH über layoutId statt PUT über ID
+    $response = $this->patchJson("/api/v1/grids/layout/{$grid->layout_id}", $payload);
 
     $response->assertOk()
              ->assertJsonFragment(['name' => 'Updated Name']);
@@ -54,7 +60,10 @@ it('can delete a grid by layout_id', function () {
     $user = loginWebUser();
     $grid = createUserGrids($user, 1, ['layout_id' => '123e4567-e89b-12d3-a456-426614174000'])->first();
 
-    $response = $this->deleteJson("/api/v1/grids/layout/{$grid->layout_id}");
+    // ReCAPTCHA für die Lösch-Aktion faken
+    $recaptcha = withRecaptchaPayload([], RecaptchaAction::DeleteThisGrid);
+
+    $response = $this->deleteJson("/api/v1/grids/layout/{$grid->layout_id}", $recaptcha);
 
     $response->assertNoContent();
     $this->assertDatabaseMissing('grids', ['id' => $grid->id]);
