@@ -18,6 +18,7 @@ const requestRegister = async ({
 }: RegisterUserParams): Promise<LoginSuccessResponse | LoginErrorResponse> => {
     try {
         const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.register);
+
         await initializeCookies();
 
         const formDataPost = await BaseClient.post('/register', {

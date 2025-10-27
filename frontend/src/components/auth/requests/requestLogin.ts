@@ -27,6 +27,7 @@ const requestLogin = async ({
         const recaptchaToken = await getRecaptchaToken(parameterKeys.auth.login);
 
         await initializeCookies();
+
         const response = await BaseClient.post('/login', {
             email,
             password,
