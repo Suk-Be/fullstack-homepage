@@ -28,7 +28,7 @@ const resetPassword = async (
             token,
             recaptcha_token: recaptchaToken,
         });
-        console.log('response.data: ', response);
+
         return setResponseValidationSuccess(
             response.data.message || 'Passwort wurde erfolgreich zurückgesetzt!',
         );
