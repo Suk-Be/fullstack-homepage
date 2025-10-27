@@ -13,7 +13,8 @@ export interface ValidationResult {
 }
 
 export default function validateInputs(data: RegisterInput): ValidationResult {
-    const result = registerInputSchema.safeParse(data);
+
+  const result = registerInputSchema.safeParse(data);
 
     if (result.success) {
         return {

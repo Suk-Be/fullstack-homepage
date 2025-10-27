@@ -79,8 +79,6 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         // 🔄 Dynamischer Import von loginThunk
         const actionResult = await dispatch(loginThunk({ email, password }));
 
-        // console.log('actionResult.payload: ', actionResult.payload);
-
         if (loginThunk.fulfilled.match(actionResult)) {
             setEmail('');
             setPassword('');
@@ -88,15 +86,8 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
             });
-
-            // if (loginThunk.fulfilled.match(actionResult) && actionResult.payload?.userId) {
-            //     const userId = actionResult.payload.userId;
-            //     dispatch(setUserIdForGrids(userId));
-            // }
         } else if (loginThunk.rejected.match(actionResult)) {
             const payload = actionResult.payload;
-
-            // console.log('payload:', payload);
 
             const backendFieldErrors = payload?.fieldErrors || {};
 
