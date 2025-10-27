@@ -13,6 +13,7 @@ const ApiClient = axios.create({
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',
+        'Content-Type': 'application/json',
     },
     withCredentials: true,
 });
@@ -22,6 +23,7 @@ const BaseClient = axios.create({
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Accept: 'application/json',
+        'Content-Type': 'application/json',
     },
     withCredentials: true,
 });
