@@ -88,7 +88,7 @@ frontend/
 
 ## Architekturübersicht
 
-#### Mit Login ist die Template Engine nutzbar
+### Mit Login ist die Template Engine nutzbar
 
 ```mermaid
 graph TD;
