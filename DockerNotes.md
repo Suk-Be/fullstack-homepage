@@ -27,9 +27,9 @@ project-root/
 
 # Anpassungen in der lokalen laravel Entwicklungsumgebung
 
-In der env Datei gibt es configurationen für database, session und mail, die für docker und für lokale Entwicklung unterschiedlich sein können.
+In der env Datei gibt es Konfigurationen für database, session und mail, die für docker und für lokale Entwicklung unterschiedlich sein können.
 
-Das Setup ist so konfiguriert dass die session, mail und database Docker unabhängig sind und so dass entwickelt werden kann ohne dass man docker apis 'docker exec' verwendet werden muss.
+Das Setup ist so konfiguriert dass die session, mail und database mit oder auch ohne Docker entwickelt werden kann.
 
 ```yml docker-compose.yml
 DB_HOST=127.0.0.1               # lokal ohne Docker
@@ -42,9 +42,7 @@ SESSION_DRIVER=cookie           # lokal ohne Docker
 MAIL_HOST=127.0.0.1             # lokal ohne Docker
 ```
 
-Die Einstellung kann geändert werden um einem Test Team einen fixen Stand im Docker Container auszuliefern. Dieses Szenraio existiert aktuell nicht.
-
-# phpmyadmin im browser
+# phpmyadmin im Browser
 
 ## ui
 
@@ -67,7 +65,7 @@ url
 
 <http://localhost:8025/>
 
-FYI: damit die mails (notifications in php) abgearbeitet werden können muss der laravle queue aktic sein.
+FYI: damit die mails (notifications in php) abgearbeitet werden können muss der laravel queue aktiv sein.
 
 ```bash
 cd backend
@@ -76,7 +74,7 @@ php artisan queue:work
 
 # frontend Einstellungen
 
-host musss umbenannt werde, zuvor war der Rechner/Machine eingetrage mit 127.0.0.1. Auf 0.0.0.0 umstellen, damit container als auch machine und container ansgesprochen werden können.
+host muss umbenannt werde, zuvor war nur der Rechner/Machine ansprechbar (127.0.0.1). Auf 0.0.0.0 umstellen, damit container und Rechner angesprochen werden können.
 
 ## vite.config
 
@@ -96,7 +94,7 @@ url im browser
 
 # Cheatsheet: Interaktion mit Inhalten von containern (wird nicht genutzt zu umständlich)
 
-Es flexibler und simpler mit dem cheatsheet: 'Für Frontend und Backend Entwicklung: db und mailpit zur Verfügun stellen.' zu arbeiten.
+Es flexibler und simpler mit dem cheatsheet: 'Für Frontend und Backend Entwicklung: db und mailpit zur Verfügung stellen.' zu arbeiten.
 
 ## backend
 
@@ -328,15 +326,15 @@ docker exec -it laravel_app_test bash
 php artisan test
 ```
 
-#### Frontnend und Backend Entwicklung: frontend lokal, übrige Services in docker laufen lassen
+#### Frontend und Backend Entwicklung: frontend lokal, übrige Services in docker laufen lassen
 
-Falls das laravel backend lokal noch läuft, schließen und anschleßend das backend in docker laufen lassen.
+Falls das laravel backend lokal noch läuft, schließen und anschließend das backend in docker laufen lassen.
 
 Hier folgt eine Anleitung für einen hard reset in docker Containern.
 
 ```bash initiale Einrichtung
 # root der app
-docker-compose --profile backend --profile mailpit down -v # -v löscht auch die volumes falls es fehlerhafte connection zwischen den containern gibt (mail feature konnte nicht mit der db user connencten)
+docker-compose --profile backend --profile mailpit down -v # -v löscht auch die volumes falls es fehlerhafte connection zwischen den containern gibt (mail feature konnte nicht mit der db user connecten)
 docker-compose --profile backend --profile mailpit up -d
 # Wichtig: Laravel cached manchmal die Konfiguration.
 docker exec -it laravel_app php artisan config:clear
