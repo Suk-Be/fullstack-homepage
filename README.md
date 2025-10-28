@@ -42,6 +42,6 @@ Da mein Schwerpunkt in der **Programmierung** liegt, brauchte die Homepage dring
 graph TD;
   A[Frontend React Redux] <--> B[Laravel Backend and Rest Api]
   B <--> C[(SQL Database)]
-  B --> D[Auth Service]
+  B <--> D[Auth Service]
   B --> E[Mail Service]
 ```

@@ -109,3 +109,32 @@ backend/
 -   **Erweiterte Expectations** mit `expect()->extend()`
 -   **Mocking (optional)**: [Mockery](https://github.com/mockery/mockery) wird in speziellen Szenarien genutzt, z. B. für OAuth-Tests mit Socialite.
 ```
+
+## Architekturübersicht
+
+#### Mit Login ist die Template Engine nutzbar
+
+```mermaid
+graph TD;
+  A[guest Homepage] --> |login or registration |B[use Template Engine and CRUD Layout Configurations]
+```
+
+#### Die route Temlate Engine ist über das Frontend geschützt nur eingeloggte User haben Zutritt
+
+```mermaid
+graph TD;
+A[Registration or Login]
+  A <--> C[SQL Database]
+  A <--> |redirects if not logged in|D[Auth Service Web tokens]
+  A --> E[Mail Service]
+```
+
+#### Handling User Iputs und Auth Sessions
+
+```mermaid
+graph TD;
+A[Template Engine]
+  A <--> | CRUD user input  |B[SQL Database]
+  A <--> | protected page check session if expired redirect to login | C[Auth Service]
+  B --> | renew sessions on CRUD | C
+```
