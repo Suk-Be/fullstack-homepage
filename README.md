@@ -40,7 +40,7 @@ Da mein Schwerpunkt in der **Programmierung** liegt, brauchte die Homepage dring
 
 ```mermaid
 graph TD;
-  A[Frontend React vite] <--> B[Backend Laravel conmposer]
+  A[Frontend React vite] <--> B[Backend Laravel composer]
   B <--> C[(SQL Database)]
   B --> D[Auth Service]
   B --> E[Mail Service]
