@@ -85,3 +85,15 @@ frontend/
 - **Custom Helpers** (z. B. für States, Navigation, Integration)
 - **Mocking**: [api, db queries, tokens](https://mswjs.io/), (https://github.com/mswjs/data)
 ```
+
+## Architekturübersicht
+
+```mermaid
+graph TD;
+  A[guest Homepage] <--> B[logged user and admin Template engine]
+  A <--> C[SQL Database]
+  B <--> C[SQL Database]
+  A <--> D[Auth Service]
+  B <--> D[Auth Service]
+  B --> E[Mail Service]
+```
