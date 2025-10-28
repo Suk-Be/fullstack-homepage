@@ -247,6 +247,29 @@ describe('SignUp - Form', () => {
             expect(passwordConfirmationInput).toHaveValue('');
         });
     });
+
+    it('should sanitize the name input and show feedback if invalid characters are removed', async () => {
+        const { user, nameInput, registerButton } = renderRegistrationForm();
+
+        // Gib dem Input HTML/unerlaubte Zeichen
+        const dirtyName = '<script>a("x")</script>test@';
+        await user.clear(nameInput);
+        await user.type(nameInput, dirtyName);
+
+        // Submit
+        await user.click(registerButton);
+
+        // Warte auf den Fehler/Hinweis
+        await waitFor(() => {
+            const fieldError = screen.getByText(
+                /Der Name wurde angepasst\. Wenn es ok für Sie ist, klicken Sie bitte auf registrieren\./i,
+            );
+            expect(fieldError).toBeInTheDocument();
+        });
+
+        // Prüfe, dass das Formular nicht sofort abgesendet wurde
+        expect(nameInput).toHaveValue('test@'); // HTML-Tags entfernt
+    });
 });
 
 describe('SignUp - AuthProviders and Toggle SignUp/In', () => {

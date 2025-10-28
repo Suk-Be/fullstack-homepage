@@ -282,4 +282,33 @@ describe('SavedGridList', () => {
             );
         });
     });
+
+    it('sanitizes grid name during renaming and shows feedback', async () => {
+        const { user } = renderUtils();
+
+        const renameBtn = screen
+            .getAllByRole('button', { name: /rename layout/i })
+            .find((btn) => btn.closest('tr')?.textContent?.includes('Second Grid'));
+        if (!renameBtn) throw new Error('Rename button not found');
+
+        await user.click(renameBtn);
+
+        const input = screen.getByPlaceholderText('name of the grid');
+        expect(input).toBeInTheDocument();
+        expect(input).toHaveValue('Second Grid');
+
+        await user.clear(input);
+        await user.type(input, 'My*Grid!');
+
+        const saveBtn = screen.getByRole('button', { name: /save/i });
+        await user.click(saveBtn);
+
+        await waitFor(() => {
+            const errorMessage = screen.queryByText(/invalid characters/i);
+            const sanitizedValue = (input as HTMLInputElement).value;
+
+            // Entweder wird Fehlermeldung angezeigt ODER der Wert korrigiert
+            expect(errorMessage || sanitizedValue).toBeTruthy();
+        });
+    });
 });

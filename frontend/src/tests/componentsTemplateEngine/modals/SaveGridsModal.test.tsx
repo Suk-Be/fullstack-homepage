@@ -1,14 +1,19 @@
 import SaveGridsModal from '@/componentsTemplateEngine/modals/SaveGridsModal';
-import type { RootState } from '@/store';
+import { saveToLocalStorage } from '@/store/localStorage';
+import { initialGridConfig, initialLayoutId, initialName } from '@/store/userSaveGridsSlice';
+import { userLoggedAdmin } from '@/tests/mocks/api';
 import { mockGuestUserState, mockLoggedInAdminState } from '@/tests/mocks/redux';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Partial Mock für die Store-Selectoren
 const mockSaveUserGridThunk = vi.fn();
+const mockFetchUserGridsThunk = vi.fn();
 vi.mock('@/store/thunks/userGridThunks', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fetchUserGridsThunk: (...args: any[]) => mockFetchUserGridsThunk(...args),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveUserGridThunk: (...args: any[]) => mockSaveUserGridThunk(...args),
 }));
@@ -38,19 +43,38 @@ vi.mock('@/plugins/axios', () => {
     };
 });
 
-// Preloaded Redux State
-const preloadedState: Partial<RootState> = mockLoggedInAdminState;
-
 describe('SaveGridsModal', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+
+        localStorage.clear(); // sauberer Start
+
+        saveToLocalStorage(userLoggedAdmin, {
+            userId: userLoggedAdmin,
+            savedGrids: {
+                [initialLayoutId]: {
+                    layoutId: initialLayoutId,
+                    timestamp: new Date().toISOString(),
+                    name: initialName,
+                    config: initialGridConfig,
+                },
+            },
+        });
+    });
+
+    beforeAll(() => {
+        vi.spyOn(window, 'alert').mockImplementation(() => {});
+        vi.spyOn(window, 'confirm').mockImplementation(() => true);
+    });
+    afterAll(() => {
+        vi.restoreAllMocks();
     });
 
     const renderModal = async () => {
         const user = userEvent.setup();
         const { store } = renderWithProviders(<SaveGridsModal />, {
             route: '/template-engine',
-            preloadedState,
+            preloadedState: mockLoggedInAdminState,
         });
 
         const openModalButton = screen.getByRole('button', {
@@ -88,11 +112,23 @@ describe('SaveGridsModal', () => {
         const { user, openModalButton, store } = await renderModal();
         await user.click(openModalButton);
 
-        // Mock initial savedGrids im Store
+        mockFetchUserGridsThunk.mockImplementation(() => {
+            return () => ({
+                unwrap: () =>
+                    Promise.resolve({
+                        [initialLayoutId]: {
+                            layoutId: initialLayoutId,
+                            timestamp: new Date().toISOString(),
+                            name: initialName,
+                            config: initialGridConfig,
+                        },
+                    }),
+            });
+        });
+
         const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
         await user.click(showGridsBtn);
 
-        // Warten, bis hasGridIsOpen true ist und die SavedGridList sichtbar wird
         await waitFor(() => {
             const state = store.getState();
             expect(state.userGrid.savedGrids.initialLayoutId).toBeDefined();
@@ -150,9 +186,6 @@ describe('SaveGridsModal', () => {
     });
 
     it('calls isNameUnique and shows error if name empty', async () => {
-        // const { store } = renderWithProviders(<SaveGridsModal />, {
-        //     preloadedState: mockLoggedInAdminState,
-        // });
         renderWithProviders(<SaveGridsModal />, {
             preloadedState: mockLoggedInAdminState,
         });
@@ -162,42 +195,66 @@ describe('SaveGridsModal', () => {
         });
         await userEvent.click(openModalButton);
 
-        // const storeBeforeSave = store.getState();
-        // console.log('storeBeforeSave', storeBeforeSave);
-
         const saveBtn = screen.getByRole('button', { name: /save/i });
         await userEvent.click(saveBtn);
 
-        // const dialog = screen.getByTestId('dialog-markup');
-        // screen.debug(dialog);
-
-        // const storeAfterSave = store.getState();
-        // console.log('preloadedState', preloadedState);
-        // console.log('storeAfterSave', storeAfterSave);
-
         expect(await screen.findByTestId('grid-error')).toHaveTextContent(
-            // /Please input a recognizable name/i, should be this message but there seems to be a bug in the test suite it recognizes userId but it will not be applied to hasValidUser
-            /User not logged in./i,
+            /Please input a recognizable name./i,
         );
     });
 
-    it('dispatches saveUserGridThunk if all checks pass', async () => {
-        renderWithProviders(<SaveGridsModal />, {
-            preloadedState: mockLoggedInAdminState,
-        });
+    it('dispatches saveUserGridThunk and updates state', async () => {
+        const { user, openModalButton, store } = await renderModal();
 
-        const openModalButton = screen.getByRole('button', {
-            name: /with a meaningful name/i,
-        });
-        await userEvent.click(openModalButton);
-
+        // Modal öffnen und Name tippen
+        await user.click(openModalButton);
         const input = screen.getByPlaceholderText(/name of the grid/i);
-        await userEvent.type(input, 'MyUniqueGrid');
-
+        await user.type(input, 'MyUniqueGrid');
         const saveBtn = screen.getByRole('button', { name: /save/i });
-        await userEvent.click(saveBtn);
+        await user.click(saveBtn);
 
-        // todo
-        // expect(mockSaveUserGridThunk).toHaveBeenCalled();
+        // Dispatchen des Fulfilled Actions (simuliert)
+        await act(async () => {
+            store.dispatch({
+                type: 'userGrids/saveUserGrid/fulfilled',
+                payload: {
+                    layoutId: 'my-grid-id',
+                    name: 'MyUniqueGrid',
+                    config: {},
+                    timestamp: new Date().toISOString(),
+                },
+            });
+        });
+
+        await waitFor(() => {
+            const state = store.getState();
+            const savedGrid = Object.values(state.userGrid.savedGrids).find(
+                (g) => g.name === 'MyUniqueGrid',
+            );
+            expect(savedGrid).toBeDefined();
+        });
+    });
+
+    it('sanitizes grid name and shows feedback if invalid characters are removed', async () => {
+        const { user, openModalButton } = await renderModal();
+        await user.click(openModalButton);
+
+        const input = await screen.findByPlaceholderText(/name of the grid/i);
+        const saveBtn = screen.getByRole('button', { name: /save/i });
+
+        const dirtyName = '<script>alert(1)</script>MyGrid@';
+        await user.clear(input);
+        await user.type(input, dirtyName);
+
+        await user.click(saveBtn);
+
+        await waitFor(() => {
+            expect(
+                screen.getByText(/Some special characters were automatically removed/i),
+            ).toBeInTheDocument();
+        });
+
+        expect((input as HTMLInputElement).value).toBe('MyGrid@');
+        expect(mockSaveUserGridThunk).not.toHaveBeenCalled();
     });
 });

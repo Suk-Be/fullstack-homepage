@@ -97,6 +97,7 @@ const mockLoggedInAdminState: Partial<RootState> = {
         isLoading: false,
         error: null,
         role: 'admin' as const,
+        userId: userLoggedAdmin,
     },
     userGrid: {
         ...mockInitialState,
