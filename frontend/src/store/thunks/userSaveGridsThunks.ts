@@ -25,7 +25,7 @@ const fetchUserGridsThunk = createAsyncThunk<
     number, // userId als Argument
     { rejectValue: string }
 >('userGrids/fetchUserGrids', async (_userId, { rejectWithValue }) => {
-    console.log('👉 fetchUserGridsThunk gestartet mit userId', _userId);
+    // console.log('👉 fetchUserGridsThunk gestartet mit userId', _userId);
     try {
         const response = await ApiClient.get(apiEndpoints.userGrids, { withCredentials: true });
         // payload ist jetzt ein Object keyed by layoutId
