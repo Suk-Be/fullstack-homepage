@@ -3,7 +3,6 @@ import { Card, SignInContainer as SignUpContainer } from '@/components/Container
 import RouterLinkWrapper from '@/components/RouterLink';
 import { GithubIcon } from '@/components/shared-components/CustomIcons';
 import { HeadlineSignInUp as Headline, ParagraphHP } from '@/components/TextElements';
-import { handleSignInUp } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Link as MuiLink } from '@mui/material';
@@ -126,7 +125,12 @@ export default function AccordionExpandIcon() {
                                 startIcon={<GithubIcon />}
                                 text="zum Repository"
                                 testIdIdentifier="form-button-login-with-github"
-                                clickHandler={() => handleSignInUp('github')}
+                                clickHandler={() =>
+                                    window.open(
+                                        'https://github.com/Suk-Be/fullstack-homepage',
+                                        '_blank',
+                                    )
+                                }
                             />
                         </ParagraphHP>
                     </AccordionDetails>
