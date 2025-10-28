@@ -5,6 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { ComponentProps } from 'react';
 import { vi } from 'vitest';
 
+const windowOpen = window.open;
+window.open = vi.fn();
+
 vi.mock('@/hooks/useScroll', () => ({ default: vi.fn() }));
 vi.mock('@/components/RouterLink', () => ({
     default: (props: ComponentProps<'a'>) => <a {...props} />,
@@ -36,6 +39,14 @@ describe('AccordionTeaser', () => {
             /Die Template Engine nutzt ein php backend mit controllern, sql, policies und provided eine RestApi Schnittstelle./i,
         codeRepo: /Der Code für diese App ist in einem Code Repository hinterlegt./i,
     };
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    afterAll(() => {
+        window.open = windowOpen;
+    });
 
     it('should render accordion with initially expanded entries', async () => {
         const { projekte, templateEngine, codeRepo } = await renderUtils();
@@ -71,5 +82,18 @@ describe('AccordionTeaser', () => {
         expect(screen.getByText(content.codeRepo)).not.toBeVisible();
         await user.click(codeRepo);
         expect(screen.getByText(content.codeRepo)).toBeVisible();
+    });
+    it('should open the github repository link when clicking the button', async () => {
+        const { user } = await renderUtils();
+
+        const repoButton = screen.getByTestId('form-button-login-with-github');
+
+        await user.click(repoButton);
+
+        expect(window.open).toHaveBeenCalledTimes(1);
+        expect(window.open).toHaveBeenCalledWith(
+            'https://github.com/Suk-Be/fullstack-homepage',
+            '_blank',
+        );
     });
 });
