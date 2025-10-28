@@ -8,6 +8,7 @@ import { AppDispatch } from '@/store';
 import { logout } from '@/store/loginSlice';
 import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
 import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
+import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
 import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
@@ -79,6 +80,23 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         event.preventDefault();
         setIsSubmitting(true);
         setErrors({});
+
+        // sanitize the name field with feedback
+        const sanitizedName = sanitizeWithFeedback({
+            value: form.name,
+            setValue: (val) => setForm((prev) => ({ ...prev, name: val })),
+            setError: (msg) =>
+                setFieldErrors((prev) => ({
+                    ...prev,
+                    name: { hasError: true, message: msg },
+                })),
+            friendlyMessage: `Der Name wurde angepasst. Wenn es ok für Sie ist, klicken Sie bitte auf registrieren.`,
+        });
+
+        if (sanitizedName) {
+            setIsSubmitting(false);
+            return;
+        }
 
         const {
             isValid,

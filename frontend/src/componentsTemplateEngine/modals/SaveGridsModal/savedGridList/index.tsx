@@ -6,6 +6,7 @@ import { selectSavedGridsMap, selectSortedGrids } from '@/store/selectors/userGr
 import { deleteThisGridThunk, renameThisGridThunk } from '@/store/thunks/userSaveGridsThunks';
 import { applySavedGridToInitial } from '@/store/userSaveGridsSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
+import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
 import { useRef, useState } from 'react';
 
 const SavedGridList = () => {
@@ -83,24 +84,32 @@ const SavedGridList = () => {
     };
 
     const handleConfirmRename = async (id: string) => {
-        const newName = renameInput[id]?.trim();
+        const rawName = renameInput[id] ?? '';
+
+        const sanitizedGridRename = sanitizeWithFeedback({
+            value: rawName,
+            setValue: (val) => setRenameInput((prev) => ({ ...prev, [id]: val })),
+            setError: (msg) => setErrorMessage((prev) => ({ ...prev, [id]: msg })),
+        });
+        if (sanitizedGridRename) return;
 
         if (
-            !isGridNameUnique(newName, savedGridsMap, (msg) =>
+            !isGridNameUnique(renameInput[id]!, savedGridsMap, (msg) =>
                 setErrorMessage((prev) => ({ ...prev, [id]: msg })),
             )
-        ) {
+        )
             return;
-        }
 
         try {
-            await dispatch(renameThisGridThunk({ layoutId: id, newName })).unwrap();
+            await dispatch(
+                renameThisGridThunk({ layoutId: id, newName: renameInput[id]! }),
+            ).unwrap();
             setRenaming((prev) => ({ ...prev, [id]: false }));
         } catch (error) {
             console.error('Rename error:', error);
             setErrorMessage((prev) => ({
                 ...prev,
-                [id]: 'Fehler beim Umbenennen der Grid-Konfiguration.',
+                [id]: 'Error renaming this grid layout.',
             }));
         }
     };

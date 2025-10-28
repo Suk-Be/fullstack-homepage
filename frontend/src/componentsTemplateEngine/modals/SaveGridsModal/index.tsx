@@ -17,6 +17,7 @@ import {
     initialLayoutId,
 } from '@/store/userSaveGridsSlice';
 import { GridConfig, GridConfigKey } from '@/types/Redux';
+import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
 import { testId } from '@/utils/testId';
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
@@ -134,6 +135,15 @@ function SaveGridsModal() {
 
     const handleSaveGrid = async () => {
         if (!hasValidUser()) return;
+
+        // if sanitied grid name inform user
+        const sanitizedGridName = sanitizeWithFeedback({
+            value: gridName,
+            setValue: setGridName,
+            setError: setErrorMessage,
+        });
+        if (sanitizedGridName) return;
+
         const isUniqueName = isGridNameUnique(gridName, savedGrids, setErrorMessage);
         if (!isUniqueName) return;
         if (!isConfigUnique()) return;
