@@ -8,7 +8,7 @@ describe('getRecaptchaToken', () => {
     beforeEach(() => {
         originalEnv = import.meta.env;
 
-        // @ts-ignore: Mocking appendChild for test
+        // @ts-expect-error: Mocking appendChild for test
         appendChildSpy = vi.spyOn(Node.prototype, 'appendChild').mockImplementation(function (
             this: unknown,
             ...args: unknown[]

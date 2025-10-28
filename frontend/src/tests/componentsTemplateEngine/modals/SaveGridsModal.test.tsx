@@ -63,6 +63,7 @@ describe('SaveGridsModal', () => {
     });
 
     beforeAll(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         vi.spyOn(window, 'alert').mockImplementation(() => {});
         vi.spyOn(window, 'confirm').mockImplementation(() => true);
     });

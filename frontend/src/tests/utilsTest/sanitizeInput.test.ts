@@ -45,7 +45,7 @@ describe('sanitizeWithFeedback', () => {
     });
 
     it('should not set feedback if value unchanged', () => {
-        let value = 'hello';
+        const value = 'hello';
         const setValue = vi.fn();
         const setError = vi.fn();
 
