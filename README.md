@@ -39,8 +39,8 @@ Da mein Schwerpunkt in der **Programmierung** liegt, brauchte die Homepage dring
 ## Architekturübersicht
 
 ```mermaid
-graph TD
-  A[Frontend (React/Vite)] <--> B[Backend (Laravel)]
+graph TD;
+  A[Frontend React vite] <--> B[Backend Laravel conmposer]
   B <--> C[(SQL Database)]
   B --> D[Auth Service]
   B --> E[Mail Service]
