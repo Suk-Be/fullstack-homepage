@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { Skeleton, SkeletonProps } from '@mui/material';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -22,6 +23,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
             {Array.from({ length: count }).map((_, i) => (
                 <Skeleton
                     key={i}
+                    {...testId('loading-skeleton')}
                     variant={variant}
                     animation={animation}
                     height={height}
