@@ -1,3 +1,4 @@
+import Loading from '@/components/auth/shared-components/Loading';
 import { formatGridDate } from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList/formatGridDate';
 import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/shared/IsGridNameUnique';
 import { CancelSVG, CheckSVG } from '@/componentsTemplateEngine/svgs';
@@ -24,6 +25,9 @@ const SavedGridList = () => {
     const [renaming, setRenaming] = useState<Record<string, boolean>>({});
     const [renameInput, setRenameInput] = useState<Record<string, string>>({});
     const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
+
+    // loading State
+    const [rowLoadingMap, setRowLoadingMap] = useState<Record<string, boolean>>({});
 
     // Event handlers
     const toggleConfigText = (id: string) => {
@@ -53,6 +57,7 @@ const SavedGridList = () => {
 
     const confirmDeleteAction = async (id: string) => {
         setIsDeletingMap((prev) => ({ ...prev, [id]: true }));
+
         try {
             await dispatch(deleteThisGridThunk(id)).unwrap();
         } catch (error) {
@@ -100,6 +105,8 @@ const SavedGridList = () => {
         )
             return;
 
+        setRowLoadingMap((prev) => ({ ...prev, [id]: true }));
+
         try {
             await dispatch(
                 renameThisGridThunk({ layoutId: id, newName: renameInput[id]! }),
@@ -111,6 +118,8 @@ const SavedGridList = () => {
                 ...prev,
                 [id]: 'Error renaming this grid layout.',
             }));
+        } finally {
+            setRowLoadingMap((prev) => ({ ...prev, [id]: false }));
         }
     };
 
@@ -147,7 +156,16 @@ const SavedGridList = () => {
                                 >
                                     <td className="px-4 py-2">{grid.name}</td>
                                     <td className="px-4 py-2">
-                                        {renaming[grid.layoutId] ? (
+                                        {rowLoadingMap[grid.layoutId] ? (
+                                            <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
+                                                <Loading
+                                                    size={25}
+                                                    height="auto"
+                                                    textColor="common.white"
+                                                    message="Saving..."
+                                                />
+                                            </div>
+                                        ) : renaming[grid.layoutId] ? (
                                             <div className="flex flex-col gap-2">
                                                 <input
                                                     type="text"
@@ -226,11 +244,16 @@ const SavedGridList = () => {
                                         </button>
                                     </td>
                                     <td className="px-4 py-2 w-[200px]">
-                                        {isDeleting ? (
+                                        {isDeletingMap[grid.layoutId] ? (
+                                            <div className="flex justify-center items-center">
+                                                <Loading size={25} height="auto" message="" />
+                                            </div>
+                                        ) : isDeleting ? (
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm text-gray-300">
                                                     really delete?
                                                 </span>
+
                                                 {/* yes Icon */}
                                                 <button
                                                     className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
@@ -241,6 +264,7 @@ const SavedGridList = () => {
                                                 >
                                                     <CheckSVG />
                                                 </button>
+
                                                 {/* no Icon */}
                                                 <button
                                                     className="text-green-500 hover:text-green-700"
@@ -254,7 +278,6 @@ const SavedGridList = () => {
                                             <button
                                                 className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
                                                 onClick={() => openDeleteOptions(grid.layoutId)}
-                                                disabled={isDeletingMap[grid.layoutId]}
                                             >
                                                 delete layout
                                             </button>

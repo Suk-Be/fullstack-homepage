@@ -189,8 +189,8 @@ const userSaveGridsSlice = createSlice({
             saveToLocalStorage(state.userId, state);
         });
 
-        builder.addCase(fetchUserGridsThunk.rejected, (_state, action) => {
-            console.error('Fetch grids fehlgeschlagen', action.payload);
+        builder.addCase(fetchUserGridsThunk.rejected, (state, action) => {
+            console.error('Fetch grids fehlgeschlagen', state, action.payload);
         });
 
         // save(this)Grid
@@ -204,8 +204,8 @@ const userSaveGridsSlice = createSlice({
             saveToLocalStorage(state.userId, state);
         });
 
-        builder.addCase(saveUserGridThunk.rejected, (_state, action) => {
-            console.error('Grid speichern fehlgeschlagen:', action.payload);
+        builder.addCase(saveUserGridThunk.rejected, (state, action) => {
+            console.error('Grid speichern fehlgeschlagen:', state, action.payload);
         });
     },
 });
