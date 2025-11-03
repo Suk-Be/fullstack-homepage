@@ -327,6 +327,11 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             fullWidth
                             variant="contained"
                             disabled={isSubmitting}
+                            sx={{
+                                '&.Mui-disabled': {
+                                    color: 'common.white',
+                                },
+                            }}
                             {...testId('form-button-register')}
                         >
                             {isSubmitting ? 'Wird gesendet...' : 'Registrieren'}
