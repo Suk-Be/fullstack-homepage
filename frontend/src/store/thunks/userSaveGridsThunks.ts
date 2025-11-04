@@ -62,7 +62,6 @@ const saveUserGridThunk = createAsyncThunk<
     }
 });
 
-/* This code block defines a Redux thunk function named `resetUserGridsThunk`. */
 const resetUserGridsThunk = createAsyncThunk<
     number, // Rückgabe: userId
     number, // Argument: userId
