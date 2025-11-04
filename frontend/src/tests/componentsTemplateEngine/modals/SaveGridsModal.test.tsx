@@ -1,4 +1,5 @@
 import SaveGridsModal from '@/componentsTemplateEngine/modals/SaveGridsModal';
+import { store } from '@/store';
 import { saveToLocalStorage } from '@/store/localStorage';
 import { initialGridConfig, initialLayoutId, initialName } from '@/store/userSaveGridsSlice';
 import { userLoggedAdmin } from '@/tests/mocks/api';
@@ -8,15 +9,50 @@ import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Partial Mock für die Store-Selectoren
-const mockSaveUserGridThunk = vi.fn();
-const mockFetchUserGridsThunk = vi.fn();
-vi.mock('@/store/thunks/userGridThunks', () => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetchUserGridsThunk: (...args: any[]) => mockFetchUserGridsThunk(...args),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    saveUserGridThunk: (...args: any[]) => mockSaveUserGridThunk(...args),
-}));
+// Spy/Resolver für den Test
+let resolveSave: Function;
+let resolveFetch: Function;
+
+vi.mock('@/store/thunks/userSaveGridsThunks', async () => {
+    const { createAsyncThunk } = await import('@reduxjs/toolkit');
+
+    const saveUserGridThunk = createAsyncThunk<number, void>(
+        'userGrids/saveUserGrid',
+        async () =>
+            new Promise((resolve) => {
+                resolveSave = resolve;
+            }),
+    );
+    const fetchUserGridsThunk = createAsyncThunk<Record<string, any>, number>(
+        'userGrids/fetchUserGrids',
+        async () =>
+            new Promise((resolve) => {
+                resolveFetch = resolve;
+            }),
+    );
+
+    const resetUserGridsThunk = createAsyncThunk<number, number>(
+        'userGrids/resetUserGrids',
+        async (userId = userLoggedAdmin) => userId,
+    );
+    const deleteThisGridThunk = createAsyncThunk<number, number>(
+        'userGrids/deleteThisGrid',
+        async (gridId) => gridId,
+    );
+
+    const renameThisGridThunk = createAsyncThunk<number, void>(
+        'userGrids/renameThisGrid',
+        async () => 0,
+    );
+
+    return {
+        resetUserGridsThunk,
+        deleteThisGridThunk,
+        fetchUserGridsThunk,
+        saveUserGridThunk,
+        renameThisGridThunk,
+    };
+});
 
 // Axios Mock
 vi.mock('@/plugins/axios', () => {
@@ -112,20 +148,6 @@ describe('SaveGridsModal', () => {
     it('shows saved grids when clicking Show Grids', async () => {
         const { user, openModalButton, store } = await renderModal();
         await user.click(openModalButton);
-
-        mockFetchUserGridsThunk.mockImplementation(() => {
-            return () => ({
-                unwrap: () =>
-                    Promise.resolve({
-                        [initialLayoutId]: {
-                            layoutId: initialLayoutId,
-                            timestamp: new Date().toISOString(),
-                            name: initialName,
-                            config: initialGridConfig,
-                        },
-                    }),
-            });
-        });
 
         const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
         await user.click(showGridsBtn);
@@ -238,6 +260,7 @@ describe('SaveGridsModal', () => {
 
     it('sanitizes grid name and shows feedback if invalid characters are removed', async () => {
         const { user, openModalButton } = await renderModal();
+        const dispatchSpy = vi.spyOn(store, 'dispatch');
         await user.click(openModalButton);
 
         const input = await screen.findByPlaceholderText(/name of the grid/i);
@@ -256,6 +279,62 @@ describe('SaveGridsModal', () => {
         });
 
         expect((input as HTMLInputElement).value).toBe('MyGrid@');
-        expect(mockSaveUserGridThunk).not.toHaveBeenCalled();
+        expect(dispatchSpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({ type: 'userGrids/saveUserGrid/pending' }),
+        );
+    });
+
+    it('shows LoadingSkeleton when fetching grids', async () => {
+        const { user, openModalButton } = await renderModal();
+
+        await user.click(openModalButton);
+
+        const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
+
+        await user.click(showGridsBtn);
+
+        const skeletons = await screen.findAllByTestId('loading-skeleton');
+        expect(skeletons).toHaveLength(4);
+
+        await act(async () =>
+            resolveFetch?.({
+                'grid-1': {
+                    layoutId: 'grid-1',
+                    timestamp: new Date().toISOString(),
+                    name: 'MyGrid1',
+                    config: {
+                        items: '1',
+                        columns: '1',
+                        gap: '0',
+                        border: '0',
+                        paddingX: '0',
+                        paddingY: '0',
+                    },
+                },
+            }),
+        );
+
+        await waitFor(() =>
+            expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),
+        );
+    });
+
+    it('shows LoadingSkeleton when saving a grid', async () => {
+        const { user, openModalButton } = await renderModal();
+        await user.click(openModalButton);
+
+        const input = screen.getByPlaceholderText(/name of the grid/i);
+        await user.type(input, 'MyUniqueGrid');
+
+        const saveBtn = screen.getByRole('button', { name: /save/i });
+        await user.click(saveBtn);
+
+        expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(4);
+
+        await act(async () => resolveSave?.({}));
+
+        await waitFor(() =>
+            expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),
+        );
     });
 });
