@@ -136,77 +136,80 @@ const userSaveGridsSlice = createSlice({
     },
     extraReducers: (builder) => {
         // reset(all)Grids
-        builder.addCase(resetUserGridsThunk.fulfilled, (state, action) => {
-            userSaveGridsSlice.caseReducers.resetUserGrids(state, {
-                payload: action.payload,
-                type: '',
+        builder
+            .addCase(resetUserGridsThunk.fulfilled, (state, action) => {
+                userSaveGridsSlice.caseReducers.resetUserGrids(state, {
+                    payload: action.payload,
+                    type: '',
+                });
+            })
+            .addCase(resetUserGridsThunk.rejected, (_state, action) => {
+                console.error('Reset fehlgeschlagen', action.payload);
             });
-        });
-        builder.addCase(resetUserGridsThunk.rejected, (_state, action) => {
-            console.error('Reset fehlgeschlagen', action.payload);
-        });
 
         // reset(this)Grid
-        builder.addCase(deleteThisGridThunk.fulfilled, (state, action) => {
-            userSaveGridsSlice.caseReducers.deleteThisGrid(state, {
-                payload: action.payload,
-                type: '',
+        builder
+            .addCase(deleteThisGridThunk.fulfilled, (state, action) => {
+                userSaveGridsSlice.caseReducers.deleteThisGrid(state, {
+                    payload: action.payload,
+                    type: '',
+                });
+            })
+            .addCase(deleteThisGridThunk.rejected, (_state, action) => {
+                console.error('Löschen fehlgeschlagen', action.payload);
             });
-        });
-        builder.addCase(deleteThisGridThunk.rejected, (_state, action) => {
-            console.error('Löschen fehlgeschlagen', action.payload);
-        });
 
         // rename(this)Grid
-        builder.addCase(renameThisGridThunk.fulfilled, (state, action) => {
-            const { layoutId, newName } = action.payload;
-            if (state.savedGrids[layoutId]) {
-                state.savedGrids[layoutId].name = newName;
-                if (state.userId) {
-                    saveToLocalStorage(state.userId, state);
+        builder
+            .addCase(renameThisGridThunk.fulfilled, (state, action) => {
+                const { layoutId, newName } = action.payload;
+                if (state.savedGrids[layoutId]) {
+                    state.savedGrids[layoutId].name = newName;
+                    if (state.userId) {
+                        saveToLocalStorage(state.userId, state);
+                    }
                 }
-            }
-        });
-        builder.addCase(renameThisGridThunk.rejected, (_state, action) => {
-            console.error('Rename failed:', action.payload);
-        });
+            })
+            .addCase(renameThisGridThunk.rejected, (_state, action) => {
+                console.error('Rename failed:', action.payload);
+            });
 
         // fetchGrids
-        builder.addCase(fetchUserGridsThunk.fulfilled, (state, action) => {
-            if (!state.userId) return;
+        builder
+            .addCase(fetchUserGridsThunk.fulfilled, (state, action) => {
+                if (!state.userId) return;
 
-            // todo hier müssen alle grids erhalten bleiben
+                // todo hier müssen alle grids erhalten bleiben
 
-            // Behalte das grid 'initialLayoutId'
-            const initialGridEntry = state.savedGrids.initialLayoutId;
+                // Behalte das grid 'initialLayoutId'
+                const initialGridEntry = state.savedGrids.initialLayoutId;
 
-            // action.payload ist Object keyed by layoutId
-            state.savedGrids = {
-                initialLayoutId: initialGridEntry, // behalten
-                ...action.payload, // Backend Grids hinzufügen
-            };
+                // action.payload ist Object keyed by layoutId
+                state.savedGrids = {
+                    initialLayoutId: initialGridEntry, // behalten
+                    ...action.payload, // Backend Grids hinzufügen
+                };
 
-            saveToLocalStorage(state.userId, state);
-        });
-
-        builder.addCase(fetchUserGridsThunk.rejected, (state, action) => {
-            console.error('Fetch grids fehlgeschlagen', state, action.payload);
-        });
+                saveToLocalStorage(state.userId, state);
+            })
+            .addCase(fetchUserGridsThunk.rejected, (state, action) => {
+                console.error('Fetch grids fehlgeschlagen', state, action.payload);
+            });
 
         // save(this)Grid
-        builder.addCase(saveUserGridThunk.fulfilled, (state, action) => {
-            if (!state.userId) return;
+        builder
+            .addCase(saveUserGridThunk.fulfilled, (state, action) => {
+                if (!state.userId) return;
 
-            const grid = action.payload;
+                const grid = action.payload;
 
-            state.savedGrids[action.payload.layoutId] = grid;
+                state.savedGrids[action.payload.layoutId] = grid;
 
-            saveToLocalStorage(state.userId, state);
-        });
-
-        builder.addCase(saveUserGridThunk.rejected, (state, action) => {
-            console.error('Grid speichern fehlgeschlagen:', state, action.payload);
-        });
+                saveToLocalStorage(state.userId, state);
+            })
+            .addCase(saveUserGridThunk.rejected, (state, action) => {
+                console.error('Grid speichern fehlgeschlagen:', state, action.payload);
+            });
     },
 });
 
