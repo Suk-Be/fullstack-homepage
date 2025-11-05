@@ -174,6 +174,37 @@ describe('SavedGridList', () => {
         });
     });
 
+    it('shows and hides the loading spinner when deleting a grid', async () => {
+        const { user } = renderUtils();
+
+        const deleteBtn = screen
+            .getAllByRole('button', { name: /delete/i })
+            .find((btn) => btn.closest('tr')?.textContent?.includes('First Grid'));
+        if (!deleteBtn) throw new Error('Delete button not found');
+
+        await user.click(deleteBtn);
+        const confirmBtn = screen.getByTitle(/Yes, delete/i);
+        expect(confirmBtn).toBeInTheDocument();
+
+        const deleteMock = vi.spyOn(ApiClient, 'delete').mockImplementationOnce(
+            () =>
+                new Promise((resolve) => {
+                    setTimeout(() => resolve({ data: {} }), 150); // künstliche Verzögerung
+                }),
+        );
+
+        await user.click(confirmBtn);
+
+        const spinner = await screen.findByTestId('loading-spinner');
+        expect(spinner).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+        });
+
+        expect(deleteMock).toHaveBeenCalled();
+    });
+
     it('renames a grid and validates duplicate name errors', async () => {
         vi.spyOn(ApiClient, 'patch').mockResolvedValue({
             data: { data: { name: renameUniqueGridName } },
@@ -224,6 +255,66 @@ describe('SavedGridList', () => {
             const renamedGrid = state.userGrid.savedGrids['grid2'];
             expect(renamedGrid.name).toBe(renameUniqueGridName);
         });
+    });
+
+    it('shows and hides the loading spinner when renaming a grid', async () => {
+        const { user } = renderUtils();
+
+        const renameBtn = screen
+            .getAllByRole('button', { name: /rename layout/i })
+            .find((btn) => btn.closest('tr')?.textContent?.includes('Second Grid'));
+        if (!renameBtn) throw new Error('Rename button not found');
+
+        await user.click(renameBtn);
+
+        const input = screen.getByPlaceholderText('name of the grid');
+        expect(input).toBeInTheDocument();
+        expect(input).toHaveValue('Second Grid');
+
+        // User tippt Namen, der schon existiert -> Fehlermeldung
+        await user.clear(input);
+        await user.type(input, 'First Grid');
+        const saveBtn = screen.getByRole('button', { name: /save/i });
+        await user.click(saveBtn);
+
+        await waitFor(() => {
+            expect(
+                screen.getByText(/A grid with the name "First Grid" already exists/i),
+            ).toBeInTheDocument();
+        });
+
+        await user.click(input);
+        // clear message on user input
+        await waitFor(() => {
+            expect(screen.queryByText(/already exists/i)).not.toBeInTheDocument();
+        });
+
+        // User gibt einen neuen, eindeutigen Namen ein
+        await user.clear(input);
+        await user.type(input, renameUniqueGridName);
+
+        // 👇 Jetzt den verzögerten API-Mock setzen
+        const patchMock = vi.spyOn(ApiClient, 'patch').mockImplementationOnce(
+            () =>
+                new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({ data: { data: { name: renameUniqueGridName } } });
+                    }, 150);
+                }),
+        );
+        // benutzen des api patch mock
+        await user.click(saveBtn);
+
+        // Spinner sichtbar
+        const spinner = await screen.findByTestId('loading-spinner');
+        expect(spinner).toBeInTheDocument();
+
+        // Spinner verschwindet nach Abschluss
+        await waitFor(() => {
+            expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+        });
+
+        expect(patchMock).toHaveBeenCalled();
     });
 
     it('cancels renaming and keeps the original grid name unchanged', async () => {
