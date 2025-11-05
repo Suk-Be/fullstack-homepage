@@ -1,3 +1,4 @@
+import { testId } from '@/utils/testId';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 interface LoadingProps {
@@ -26,6 +27,7 @@ const Loading = ({
             height={height}
             textAlign="center"
             px={px}
+            {...testId('loading-spinner')}
         >
             <CircularProgress color="primary" size={size} />
             <Typography variant="body1" mt={mt} color={textColor}>
