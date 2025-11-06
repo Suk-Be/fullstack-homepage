@@ -240,6 +240,7 @@ describe('SavedGridList', () => {
 
         // User klickt danach ins Inputfeld -> Fehlermeldung verschwindet
         await user.click(input);
+
         await waitFor(() => {
             expect(screen.queryByText(/already exists/i)).not.toBeInTheDocument();
         });
@@ -401,5 +402,63 @@ describe('SavedGridList', () => {
             // Entweder wird Fehlermeldung angezeigt ODER der Wert korrigiert
             expect(errorMessage || sanitizedValue).toBeTruthy();
         });
+    });
+
+    it('sorts the grid list alphabetically by name when clicking the Name column header', async () => {
+        const { user } = renderUtils();
+
+        const nameHeader = screen.getByText(/^name$/i).closest('th');
+        expect(nameHeader).toBeInTheDocument();
+
+        // Klick → Sortierung absteigend (Z → A), die Daten sind beim initialen rendern (A → Z)
+        await user.click(nameHeader!);
+
+        const rowsDesc = screen.getAllByRole('row').slice(1); // Header überspringen, match content Reihenfolge
+        const namesDesc = rowsDesc.map(
+            (row) => row.textContent?.match(/First Grid|Second Grid|Initial/i)?.[0],
+        );
+
+        const sortedDesc = [...namesDesc].sort((a, b) => b!.localeCompare(a!));
+        expect(namesDesc).toEqual(sortedDesc);
+
+        // Klick (toggle Sortierung) → Sortierung aufsteigend (A → Z)
+        await user.click(nameHeader!);
+
+        const rowsAsc = screen.getAllByRole('row').slice(1);
+        const namesAsc = rowsAsc.map(
+            (row) => row.textContent?.match(/First Grid|Second Grid|Initial/i)?.[0],
+        );
+
+        const sortedAsc = [...namesAsc].sort((a, b) => a!.localeCompare(b!));
+        expect(namesAsc).toEqual(sortedAsc);
+    });
+
+    it('sorts the grid list by date when clicking the Date column header', async () => {
+        const { user } = renderUtils();
+
+        const dateHeader = screen.getByText(/^date$/i).closest('th');
+        expect(dateHeader).toBeInTheDocument();
+
+        // Klick → Sortierung nach Datum (neueste zuerst)
+        await user.click(dateHeader!);
+
+        const rowsDesc = screen.getAllByRole('row').slice(1);
+        const timestampsDesc = rowsDesc.map((row) => {
+            const match = row.textContent?.match(/\d{4}-\d{2}-\d{2}T\d{2}:/);
+            return match ? new Date(match[0]).getTime() : 0;
+        });
+        const sortedDesc = [...timestampsDesc].sort((a, b) => b - a);
+        expect(timestampsDesc).toEqual(sortedDesc);
+
+        // Klick → Sortierung nach Datum (älteste zuerst)
+        await user.click(dateHeader!);
+
+        const rowsAsc = screen.getAllByRole('row').slice(1);
+        const timestampsAsc = rowsAsc.map((row) => {
+            const match = row.textContent?.match(/\d{4}-\d{2}-\d{2}T\d{2}:/);
+            return match ? new Date(match[0]).getTime() : 0;
+        });
+        const sortedAsc = [...timestampsAsc].sort((a, b) => a - b);
+        expect(timestampsAsc).toEqual(sortedAsc);
     });
 });
