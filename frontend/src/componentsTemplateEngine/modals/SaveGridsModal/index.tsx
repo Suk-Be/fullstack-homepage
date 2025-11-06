@@ -1,3 +1,4 @@
+import { LoadingSkeleton } from '@/components/auth/shared-components/LoadingSkeleton';
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
 import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/shared/IsGridNameUnique';
@@ -28,6 +29,7 @@ function SaveGridsModal() {
     const [gridName, setGridName] = useState('');
     const [hasGrid, setHasGridIsOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleOpen = () => {
@@ -120,6 +122,7 @@ function SaveGridsModal() {
         if (!hasValidUser()) return;
 
         setIsButtonDisabled(true);
+        setIsLoading(true);
 
         try {
             await dispatch(fetchUserGridsThunk(userId!)).unwrap();
@@ -128,6 +131,7 @@ function SaveGridsModal() {
             alert('Fehler beim Laden der Grids: ' + err);
         } finally {
             setIsButtonDisabled(false);
+            setIsLoading(false);
         }
 
         setIsButtonDisabled(true);
@@ -152,6 +156,8 @@ function SaveGridsModal() {
         setIsButtonDisabled(true);
 
         const newGrid = createGrid(gridConfig, gridName);
+        setIsLoading(true);
+
         try {
             await dispatch(saveUserGridThunk(newGrid)).unwrap();
             setGridName('');
@@ -159,6 +165,7 @@ function SaveGridsModal() {
             alert('Fehler beim Speichern: ' + err);
         } finally {
             setIsButtonDisabled(true);
+            setIsLoading(false);
         }
     };
 
@@ -261,13 +268,25 @@ function SaveGridsModal() {
                                 </div>
                             )}
 
-                            {hasGrid && (
+                            {isLoading && (
+                                <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
+                                    <div>
+                                        <LoadingSkeleton count={4} variant="text" height={24} />
+                                    </div>
+                                </div>
+                            )}
+
+                            {!isLoading && hasGrid && (
                                 <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
                                     <div>
                                         {!userId && (
                                             <p className="text-gray-700">User not loaded yet.</p>
                                         )}
-                                        <SavedGridList />
+                                        {isLoading ? (
+                                            <LoadingSkeleton count={4} variant="text" height={24} />
+                                        ) : (
+                                            <SavedGridList />
+                                        )}
                                     </div>
                                 </div>
                             )}
