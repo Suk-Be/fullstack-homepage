@@ -27,4 +27,5 @@ coverage
 .history/
 .env
 .env.production
+.env.staging
 FrontendNotes.md
