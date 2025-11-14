@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "build": "vite build",
         "build:staging": "vite build --mode staging",
         "build:prod": "vite build --mode production",
         "analyze": "vite build && npx vite --open dist/stats.html",
