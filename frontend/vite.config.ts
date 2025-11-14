@@ -8,7 +8,7 @@ export default ({ mode }: { mode: string }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     return defineConfig({
-        base: '/staging', // only needed for staging
+        base: '/staging/', // only needed for staging
         plugins: [
             react(),
             tsconfigPaths({
