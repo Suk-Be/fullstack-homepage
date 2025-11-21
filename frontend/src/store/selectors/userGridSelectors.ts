@@ -3,7 +3,6 @@ import { initialGridConfig, initialLayoutId } from '@/store/userSaveGridsSlice';
 import { createSelector } from '@reduxjs/toolkit';
 
 const selectSavedGridsMap = (state: RootState) => state.userGrid.savedGrids;
-console.log('selectSavedGridsMap', selectSavedGridsMap);
 
 const selectSortedGrids = createSelector(selectSavedGridsMap, (savedGridsMap) => {
     const savedGridsToArray = Object.values(savedGridsMap);
