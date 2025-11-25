@@ -28,7 +28,7 @@ async function fetchCsrf() {
 
     try {
         // Fetch CSRF for WebClient (used for auth forms)
-        await BaseClient.get('/api/sanctum/csrf-cookie', { withCredentials: true });
+        await BaseClient.get('/api/csrf-cookie', { withCredentials: true });
     } catch (error) {
         const axiosStatus = getAxiosStatus(error);
         logRecoverableError({
