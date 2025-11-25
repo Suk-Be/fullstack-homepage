@@ -17,8 +17,7 @@ return [
 
     'paths' => [
         'api/*',
-        'staging/api/*',
-        'sanctum/csrf-cookie',
+        'api/sanctum/csrf-cookie',
         'me',
         'login',          // <--- Login Route
         'register',       // optional für Registration
