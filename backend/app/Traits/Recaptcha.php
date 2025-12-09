@@ -16,8 +16,8 @@ trait Recaptcha
      */
     protected function verifyRecaptcha(string $token, string $action): array
     {
-        $secretKey = env('RECAPTCHA_SECRET_KEY');
-        $threshold = (float) env('RECAPTCHA_SCORE_THRESHOLD', 0.5);
+        $secretKey = config('recaptcha.secret');
+        $threshold = (float) config('recaptcha.score_threshold', 0.5);
 
         if (!$secretKey) {
              throw new \Exception("RECAPTCHA_SECRET_KEY ist nicht konfiguriert.");
