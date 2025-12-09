@@ -25,8 +25,10 @@ class RecaptchaV3 implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $secretKey = env('RECAPTCHA_SECRET_KEY');
-        $threshold = (float) env('RECAPTCHA_SCORE_THRESHOLD', 0.5);
+        $secretKey = config('recaptcha.secret');
+        $threshold = (float) config('recaptcha.score_threshold', 0.5);
+
+
 
         if (!$secretKey) {
             Log::error('RECAPTCHA_SECRET_KEY fehlt in der .env-Datei. Verifizierung übersprungen.');

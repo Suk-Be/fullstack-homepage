@@ -16,13 +16,13 @@ return [
     */
 
     'paths' => [
-        'api/*',
-        'staging/api/*',
-        'sanctum/csrf-cookie',
+        'api/*',          // api local
+        'v1/*',           // api web server
+        'api/csrf-cookie',
         'me',
-        'login',          // <--- Login Route
-        'register',       // optional für Registration
-        'logout',         // optional
+        'login',
+        'register',
+        'logout',
         'forgot-password',
         'reset-password',
         // Optional: OAuth, falls Frontend direkt darauf zugreift
@@ -30,6 +30,7 @@ return [
         'github/callback',
         'google',
         'google/callback',
+        'auth/*',         // google/github callbacks webserver
     ],
 
 

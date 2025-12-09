@@ -38,9 +38,6 @@ const getRecaptchaToken = async (action: string): Promise<string> => {
     // 💡 Zugriff auf die Vite Umgebungsvariable
     if (!RECAPTCHA_SITE_KEY) throw new Error('VITE_RECAPTCHA_SITE_KEY fehlt.');
 
-    // Skript laden, falls noch nicht
-    await loadRecaptchaScript();
-
     if (typeof grecaptcha === 'undefined' || !grecaptcha.execute) {
         throw new Error('grecaptcha ist nicht verfügbar.');
     }
@@ -53,3 +50,4 @@ const getRecaptchaToken = async (action: string): Promise<string> => {
 };
 
 export default getRecaptchaToken;
+export { loadRecaptchaScript };

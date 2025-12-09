@@ -45,6 +45,10 @@ abstract class BaseSocialiteController extends Controller
         );
 
         Auth::login($user);
-        return redirect(env('FRONTEND_URL', 'http://localhost:5173') . '/auth/callback?logged_in=true');
+
+        $frontendUrl = rtrim(config('app.frontend_url'), '/');
+        $callbackUrl = $frontendUrl . '/auth/callback?logged_in=true';
+
+        return redirect()->away($callbackUrl);
     }
 }
