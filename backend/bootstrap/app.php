@@ -39,16 +39,18 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Die HTTP-Methode wird für diese Route nicht unterstützt.',
                 ], 405);
             }
-            // For non-JSON requests, let Laravel's default handler take over
-            return parent::render($request, $e); // This passes it back to your App\Exceptions\Handler's default
+
+            return null;
         });
+
         $exceptions->renderable(function (NotFoundHttpException $e, \Illuminate\Http\Request $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json([
                     'message' => 'Ressource nicht gefunden.',
                 ], 404);
             }
-            return parent::render($request, $e);
+
+            return null;
         });
     })
     ->create();
