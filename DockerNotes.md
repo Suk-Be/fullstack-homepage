@@ -92,7 +92,9 @@ server: {
 url im browser
 <http://localhost:5173/>
 
-# Cheatsheet: Interaktion mit Inhalten von containern (wird nicht genutzt zu umständlich)
+# Interaktion mit Inhalten von containern
+
+(wird nicht genutzt zu umständlich)
 
 Es flexibler und simpler mit dem cheatsheet: 'Für Frontend und Backend Entwicklung: db und mailpit zur Verfügung stellen.' zu arbeiten.
 
@@ -104,17 +106,17 @@ Es flexibler und simpler mit dem cheatsheet: 'Für Frontend und Backend Entwickl
 - php artisan config:clear: der laravel Befehl
 
 ```bash
-# default set laravel_app
+# container name: laravel_app
 docker exec -it laravel_app php artisan config:clear
 docker exec -it laravel_app php artisan cache:clear
 docker exec -it laravel_app php artisan config:cache
 
-# provide test data
+# provide db and dummy data
 docker exec -it laravel_app php artisan migrate:fresh --seed
 # provide queue for mail
 docker exec -it laravel_app php artisan queue:work
 
-# run front tests
+# run front tests with frontend container
 docker exec -it vite_frontend npm run test
 ```
 
@@ -160,7 +162,7 @@ up → Container hochfahren
 
 -d → „detached mode“, d. h. die Container laufen im Hintergrund
 
-### docker-compose --profile backend --profile mailpit up
+## docker-compose --profile backend --profile mailpit up
 
 1. Aktivierte Services:
 
@@ -184,37 +186,23 @@ up → Container hochfahren
 docker-compose logs -f
 ```
 
-# Cheatsheet: einzelne Container entfernen 🚀
-
-## docker ps -a
-
-ps: zeigt laufende container an
--a: zeigt alle container an
-
-### Beispiel Anzeige der container
+## backend config im laufenden containern aktualisieren
 
 ```bash
-CONTAINER ID    IMAGE                   COMMAND                   CREATED           STATUS                   PORTS                                          NAMES
-47287c7ce41c    mariadb:10.6            "docker-entrypoint.s…"    15 minutes ago    Up 15 minutes            0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp    mariadb_db
-35a0e53b3e87    spa-backend             "docker-php-entrypoi…"    3 hours ago       Exited (0) 2 hours ago                                                  laravel_app
-1a98cd111492    phpmyadmin/phpmyadmin   "/docker-entrypoint.…"    4 weeks ago       Up 3 hours               0.0.0.0:8080->80/tcp, [::]:8080->80/tcp        pma
-b7ce58d34eba    axllent/mailpit         "/mailpit"                4 weeks ago       Up 3 hours (healthy)     0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp,   mailpit
-                                                                                                             0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp
-d501e26dc198    httpd:latest            "httpd-foreground"        5 weeks ago       Exited (0) 4 weeks ago                                                  apache_server
+docker compose exec backend php artisan optimize:clear
 ```
 
-## docker rm <id | name>
+oder gezielt
 
-rm: entfernt einen container, der muss allerdings benannt sein
-<id|name>: entfernt benannten container
+```bash
+docker compose exec backend php artisan config:clear
+docker compose exec backend php artisan route:clear
+docker compose exec backend php artisan view:clear
+```
 
-### docker rm e729de77d3ec
+---
 
-Beispiel: Dieser Befehl entfernt den backend container mit id e729de77d3ec
-
-### docker rm laravel_app
-
-macht das gleiche
+---
 
 # container mit profile starten. Mit profiles container flexibel ansprechen 🚀
 
@@ -246,43 +234,36 @@ docker-compose pull
 docker compose --profile backend --profile mailpit --profile frontend build frontend
 ```
 
+---
+
+---
+
 # Cheatsheet
 
 copy & paste Befehle zu Entwicklung mit docker
 
-## Für Tests: Alle services (aktueller branch) neu bauen und in container zur Verfügung stellen
+## Für backend Tests
 
-1. docker-compose → das Tool zum Verwalten von Docker-Containern über die Compose-Datei.
+Nicht für die Entwicklung geeignet - dieser eigene container läuft mit einer eigenen Konfiguration, um google recaptcha testbar zu machen.
 
---profile backend --profile mailpit → aktiviert nur die Services, die diesen Profilen zugeordnet sind.
+FYI: Frontend tests brauchen keinen eigenen docker service diese laufen im frontend Verzeichnis mit 'npm run test' alle Integrationen konnten hier gemocked werden.
 
-2. up -d
-
-up → startet die Container, erstellt sie bei Bedarf neu.
-
--d → „detached mode“, Container laufen im Hintergrund.
-
-3. Welche Container laufen danach?
-
-Alle Services, die zu den aktivierten Profilen gehören:
-
-backend → laravel_app
-
-db → mariadb_db
-
-phpmyadmin → pma
-
-mailpit → mailpit
-
-Services, die nicht zu diesen Profilen gehören, wie frontend, werden nicht gestartet.
+--profile test → aktiviert backend + mysql + .env.testing Konfiguration
 
 ```bash
-docker-compose down
-docker-compose pull
-docker-compose --profile backend --profile mailpit up -d
+docker-compose --profile backend --profile mailpit --profile test  down -v
+docker-compose --profile test up -d
+docker exec -it laravel_app_test bash
+php artisan test
 ```
 
-## Für Frontend und Backend Entwicklung: db und mailpit zur Verfügung stellen
+## Für Frontend und Backend Entwicklung
+
+db und mailpit zur Verfügung stellen
+
+```bash
+docker-compose --profile backend --profile mailpit up -d db mailpit
+```
 
 --profile backend → aktiviert db + phpmyadmin
 
@@ -306,31 +287,34 @@ cd ../frontend
 npm run dev
 ```
 
-fyi
+## Für logs
 
 ```bash
 # clear logs for debugging
 docker exec -it laravel_app sh -c "> storage/logs/laravel.log"
-# backend unit tests
-docker exec -it laravel_app php artisan test
 ```
 
-### Testing Umgebung für das Backend, nicht für die Entwicklung geeignet
-
---profile test → aktiviert backend + mysql + .env.testing Konfiguration
+## Für configurationen
 
 ```bash
-docker-compose --profile backend --profile mailpit --profile test  down -v
-docker-compose --profile test up -d
-docker exec -it laravel_app_test bash
-php artisan test
+# clear all configs
+docker compose exec backend php artisan optimize:clear
 ```
 
-#### Frontend und Backend Entwicklung: frontend lokal, übrige Services in docker laufen lassen
+```bash
+# clear all configs
+docker compose exec backend php artisan config:clear
+docker compose exec backend php artisan route:clear
+docker compose exec backend php artisan view:clear
+```
+
+## Frontend und Backend Entwicklung
+
+Frontend lokal, übrige Services in docker laufen lassen.
 
 Falls das laravel backend lokal noch läuft, schließen und anschließend das backend in docker laufen lassen.
 
-Hier folgt eine Anleitung für einen hard reset in docker Containern.
+FYI: Es gibt merkliche Verzögerungen in den requests und resonses
 
 ```bash initiale Einrichtung
 # root der app
@@ -357,4 +341,55 @@ Das frontend kann lokal ohne Docker laufen.
 ```bash
 # frontend der app
 npm run dev
+```
+
+---
+
+---
+
+## einzelne Container entfernen 🚀
+
+### container anzeigen
+
+```bash
+docker ps -a
+```
+
+ps: zeigt laufende container an
+
+-a: zeigt alle container an
+
+### Beispiel Ergebnis
+
+```bash
+CONTAINER ID    IMAGE                   COMMAND                   CREATED           STATUS                   PORTS                                          NAMES
+47287c7ce41c    mariadb:10.6            "docker-entrypoint.s…"    15 minutes ago    Up 15 minutes            0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp    mariadb_db
+35a0e53b3e87    spa-backend             "docker-php-entrypoi…"    3 hours ago       Exited (0) 2 hours ago                                                  laravel_app
+1a98cd111492    phpmyadmin/phpmyadmin   "/docker-entrypoint.…"    4 weeks ago       Up 3 hours               0.0.0.0:8080->80/tcp, [::]:8080->80/tcp        pma
+b7ce58d34eba    axllent/mailpit         "/mailpit"                4 weeks ago       Up 3 hours (healthy)     0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp,   mailpit
+                                                                                                             0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp
+d501e26dc198    httpd:latest            "httpd-foreground"        5 weeks ago       Exited (0) 4 weeks ago                                                  apache_server
+```
+
+## container entfernen
+
+```bash
+docker rm <id | name>
+```
+
+rm: entfernt einen container, der muss allerdings benannt sein
+<id|name>: entfernt benannten container
+
+```bash
+# entfernt aus der Beispiel Tabelle der image spa-backend
+docker rm 35a0e53b3e87
+```
+
+Beispiel: Dieser Befehl entfernt den backend container mit id 35a0e53b3e87
+
+```bash
+# entfernt aus der Beispiel Tabelle der image spa-backend
+docker rm 35a0e53b3e87
+# macht das gleiche
+docker rm spa-backend
 ```
