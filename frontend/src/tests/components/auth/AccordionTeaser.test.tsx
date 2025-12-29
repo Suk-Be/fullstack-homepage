@@ -34,10 +34,10 @@ describe('AccordionTeaser', () => {
     };
 
     const content = {
-        projekte: /Es gibt einen MVP für die Template Engine/i,
+        projekte: /Die bestehende Website aus dem Jahr 2014 war dringend/i,
         templateEngine:
-            /Die Template Engine nutzt ein php backend mit controllern, sql, policies und provided eine RestApi Schnittstelle./i,
-        codeRepo: /Der Code für diese App ist in einem Code Repository hinterlegt./i,
+            /Mit dieser Web-App können Nutzer Layout-Grids dynamisch über eine Konfiguration erstellen./i,
+        codeRepo: /Der vollständige Projektcode ist auf GitHub verfügbar/i,
     };
 
     afterEach(() => {

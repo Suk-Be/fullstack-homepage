@@ -4,24 +4,22 @@ export const HPProps = {
             type: 'profile',
             id: 1,
             attributes: {
-                title: 'Das fehlende Puzzlestück',
-                description: `Als Frontend Entwickler sehe ich mich in einer unterstützenden Rolle für das Team.
+                title: 'Das universelle Puzzlestück',
+                description: `Als Web Developer mit Design-Background liegen meine offensichtlichen Stärken im Frontend. Hier bringe ich die meiste Erfahrung in Breite und Tiefe mit – von Architekturen über Frameworks bis hin zu Sprachen.
+                <br /><br />
+                In der Fullstack-Entwicklung setze ich auf PHP und SQL sowie auf die Konfiguration von Zugriffs- und Berechtigungsstrukturen für Apache-Webserver.
                     <br /><br />
-                    Wenn Kollegen und Kolleginnen den Arbeitsalltag erleichtern kann, dann ist das
-                    auch für mich ein Erfolg.
+                    Für die Backend- und Middleware-Entwicklung nutze ich das Laravel-Framework und dessen Package-Ökosystem, im Frontend arbeite ich mit dem React-Ökosystem.
+                    <br /><br />
+                    Für lokale Entwicklungsszenarien verwende ich Docker-Profile und Konfigurationsdateien (.env). Diese Website deploye ich in unterschiedliche Umgebungen unter Einsatz von Git, SSH, FTP, .htaccess und .env-Dateien.
+                    <br /><br />
+                    Im Corporate-Umfeld habe ich ebenfalls mit Docker, Git und Jenkins gearbeitet.
                     <br />
                     <br />
-                    Als Frontend Entwickler berate und konzipiere ich gerne in Planungsrunden mit
-                    und programmiere selbständig in SCRUM Sprints.
+                    Seit über 10 Jahren arbeite ich agil, überwiegend in Scrum-Teams.
                     <br />
                     <br />
-                    Für Product Owner kann ich figma Designs auf technische und inhaltliche Qualität
-                    prüfen (Gibt es Lücken im Styleguide? Sind eventuell States unvollständig?)
-                    <br />
-                    <br />
-                    Für Entwickler/innen stehe ich gerne für Frontend Fragen zur Verfügung. Dazu
-                    gehören klassischerweise Schätzungen zur Komplexität und mögliche Dauern - und
-                    die gemeinsame Gestaltung von REST Schnittstellen.`,
+                    Für Product Owner kann ich Figma-Designs auf konzeptionelle Lücken prüfen und bereits in der Planungsphase fundiertes Feedback geben.`,
                 image: 'https://sokdesign.de/images/Sok.jpg',
             },
         },
@@ -29,23 +27,14 @@ export const HPProps = {
             type: 'offer',
             id: 1,
             attributes: {
-                title: 'FRONTENDENTWICKLUNG',
-                description: `Moderne JavaScript basierte Single Page Applications, klassische
-                    Server Side Rendered Applications, Hybride Page Applications haben allesamt ihre Daseinsberechtigung.
+                title: 'FRONTEND',
+                description: `Ich entwickle moderne, JavaScript-basierte Single Page Applications ebenso wie klassische serverseitig gerenderte Anwendungen und hybride Architekturen.
                     <br />
                     <br />
-                    Gerne berate ich Sie kontinuierlich bei der Anpassung der Frontend Architektur
-                    oder bei der Wahl einer geeigneten Architektur, die zu Ihrem Team und Ihrem
-                    Service passt.
+                    Auch bestehender oder historisch gewachsener Code ist kein Problem: Sie liefern die Tickets, ich transformiere, refaktoriere oder konsolidiere bestehenden Code nachhaltig.
                     <br />
                     <br />
-                    Alter Code! Kein Problem, Sie haben die Tickets, ich transformiere oder
-                    insoliere alten Code.
-                    <br />
-                    <br />
-                    Seit 9 Jahren arbeite ich mit git und mit unterschiedlich großen Repositories.
-                    Sie können davon ausgehen, dass ich sorgsam mit dem bereits implementierten Code
-                    umgehe, ob im mono oder verteilten Repo.`,
+                    Seit 2015 arbeite ich mit Git und Repositories unterschiedlichster Größen. Bereits implementierter Code ist bei mir in sicheren Händen – unabhängig davon, ob es sich um Monorepos oder verteilte Repositories handelt.`,
             },
         },
         {
@@ -54,14 +43,40 @@ export const HPProps = {
             attributes: {
                 title: 'DESIGN',
                 subtitle: null,
-                description: `Als Web Design Ansatz verfolge ich die „form follows function“ Prinzipien der Architektur und industrieller Produkte.
+                description: `Mein Webdesign-Ansatz orientiert sich an dem Prinzip <em>„Form follows function“</em> aus Architektur und Industriedesign.
                   <br />
                   <br />
-                  Schriften, Farben und Proportionen in Layouts setze ich ein, um die Wiedererkennbarkeit deutlich zu machen.
-                  Mir ist es wichtig, dass Marke, Produkt und Nutzbarkeit / Funktionalität einer Anwendung im Gedächtnis bleiben.
+                  Schrift-, Farb- und Proportionssysteme aus Figma, Photoshop oder Illustrator setze ich technisch sauber und wiederverwendbar um.
                   <br />
                   <br />
-                  Wenn Sie Mockups, Layouts, Widgets oder Styleguides für Corporate Designs benötigen, kann ich diese auch erstellen.`,
+                  Bei Bedarf erstelle ich auch Mockups, Layouts oder Styleguides.`,
+                image: null,
+            },
+        },
+        {
+            type: 'offer',
+            id: 3,
+            attributes: {
+                title: 'FULLSTACK',
+                subtitle: null,
+                description: `Im Backend biete ich Services mit Fokus auf Single Page Applications über REST-API-Schnittstellen an.
+                <br />
+                  <br />
+                Für die Entwicklung von Backend und Middleware implementiere ich unter anderem Authentication, Authorization, CORS, Validation, Error-Handling und Logging.
+                  <br />
+                  <br />
+                  Dabei lege ich besonderen Wert auf die Entwicklung skalierbarer APIs mit Laravel, inklusive Policies, Traits und einer sauberen, wartbaren Architektur.
+                  <br />
+                  <br />
+                  Die Daten modelliere und persistiere ich mit MariaDB bzw. MySQL.
+                  <br />
+                  <br />
+                  Der Backend-Code ist vollständig getestet. Zur Qualitätssicherung nutze ich Unit- und Integrationstests mit Pest. Im Frontend setze ich beim automatisierten Testen auf Vitest, React Testing Library und MSW.
+                  <br />
+                  <br />
+                  Deployment und Code-Entwicklung erfolgen in getrennten, klar definierten Entwicklungsumgebungen.
+                  `,
+
                 image: null,
             },
         },
@@ -69,24 +84,28 @@ export const HPProps = {
             type: 'teaser',
             id: 1,
             attributes: {
-                title: 'FRONTEND / DESIGN',
-                subtitle: 'Konzeption und Weiterentwicklung',
+                title: 'FRONTEND / DESIGN / FULLSTACK',
+                subtitle: 'Konzeption und Umsetzung',
                 list: [
                     {
                         number: 1,
-                        text: 'Über 10 Jahre Frontend',
+                        text: 'Seit 2014 Schwerpunkt Frontend-Entwicklung',
                     },
                     {
                         number: 2,
-                        text: 'Über 10 Jahre Design',
+                        text: 'Von 2001 bis 2013 Design-Background',
                     },
                     {
                         number: 3,
-                        text: 'Mitarbeit in wachsenden Systemen',
+                        text: 'Mitarbeit an wachsenden und langlebigen Systemen',
                     },
                     {
                         number: 4,
-                        text: 'Erfahren in Industrie und Agenturen',
+                        text: 'Erfahrung in Industrie- und Agenturumfeldern',
+                    },
+                    {
+                        number: 5,
+                        text: 'Seit 2024 in Fullstack-Entwicklung',
                     },
                 ],
             },

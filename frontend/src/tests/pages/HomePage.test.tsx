@@ -54,7 +54,7 @@ describe('HomePage', () => {
 
         const profilePic = await screen.findByAltText(/suk-be jang/i);
         const subtitle = await screen.findByRole('heading', { name: profile.attributes.title });
-        const profileText = await screen.findByText(/Als Frontend Entwickler sehe ich mich/i);
+        const profileText = await screen.findByText(/Als Web Developer mit Design-Background/i);
 
         expect(profilePic).toBeInTheDocument();
         expect(subtitle).toBeInTheDocument();
@@ -65,13 +65,13 @@ describe('HomePage', () => {
         const { teaser } = renderUtil();
 
         const title = await screen.findByRole('heading', { name: teaser.attributes.title });
-        const subtitle = await screen.findByText('Konzeption und Weiterentwicklung');
+        const subtitle = await screen.findByText('Konzeption und Umsetzung');
         const teaserList = teaser.attributes.list;
         const teaserAmount = teaserList?.length;
 
         expect(title).toBeInTheDocument();
         expect(subtitle).toBeInTheDocument();
-        expect(teaserAmount).toBe(4);
+        expect(teaserAmount).toBe(5);
 
         teaserList?.forEach((listItem) => {
             expect(screen.getByText(listItem.number)).toBeInTheDocument();
@@ -89,12 +89,12 @@ describe('HomePage', () => {
 
         expect(headline1).toHaveTextContent(offer[0].attributes.title);
         expect(paragraph1).toHaveTextContent(
-            'Moderne JavaScript basierte Single Page Applications, klassische Server Side Rendered Applications, Hybride Page Applications haben allesamt ihre Daseinsberechtigung.',
+            'Ich entwickle moderne, JavaScript-basierte Single Page Applications',
         );
 
         expect(headline2).toHaveTextContent(offer[1].attributes.title);
         expect(paragraph2).toHaveTextContent(
-            'Als Web Design Ansatz verfolge ich die „form follows function“ Prinzipien der Architektur und industrieller Produkte.',
+            'Mein Webdesign-Ansatz orientiert sich an dem Prinzip',
         );
     });
 });

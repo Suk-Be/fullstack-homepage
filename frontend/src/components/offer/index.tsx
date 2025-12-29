@@ -36,6 +36,8 @@ const OfferHP = ({ offer, teaser }: Props) => {
     const sanitizedData0 = DOMPurify.sanitize(offer[0].attributes.description);
     /* @ts-expect-error dom string purified */
     const sanitizedData1 = DOMPurify.sanitize(offer[1].attributes.description);
+    /* @ts-expect-error dom string purified */
+    const sanitizedData2 = DOMPurify.sanitize(offer[2].attributes.description);
     return (
         <>
             <Section
@@ -89,6 +91,26 @@ const OfferHP = ({ offer, teaser }: Props) => {
                     {offer[1].attributes.title!}
                 </HeadlineHP>
                 <ParagraphHP {...testId('offer-content-02')}>{parse(sanitizedData1)}</ParagraphHP>
+            </Section>
+
+            <Section
+                textAlign="left"
+                background="rgba(255,255,255, 1)"
+                color="rgba(33,29,29, 1)"
+                padding="0rem 2rem 2rem 4rem"
+            >
+                <HeadlineHP
+                    variant="h4"
+                    component="h4"
+                    marginBottom="1rem"
+                    textAlign="left"
+                    {...testId('offer-headline-03')}
+                >
+                    {/* @ts-expect-error possibly undefined */}
+                    {offer[2].attributes.title}
+                </HeadlineHP>
+
+                <ParagraphHP {...testId('offer-content-03')}>{parse(sanitizedData2)}</ParagraphHP>
             </Section>
         </>
     );
