@@ -20,6 +20,7 @@ const UnitOfMeasurement = ({ unit, numerator, denominator, suffix = 'rem' }: Pro
     }
 
     if (unit === 'px') return <p>Unit: px</p>;
+
     if (unit === 'element') return <p>Unit: element</p>;
 
     return null;
