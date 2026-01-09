@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef } from 'react';
 
 export interface Props extends ComponentPropsWithoutRef<'p'> {
-    unit: 'fraction' | 'px' | 'elements';
+    unit: 'fraction' | 'px' | 'element';
     numerator?: number;
     denominator?: number;
     suffix?: 'rem' | 'px';
@@ -20,7 +20,7 @@ const UnitOfMeasurement = ({ unit, numerator, denominator, suffix = 'rem' }: Pro
     }
 
     if (unit === 'px') return <p>Unit: px</p>;
-    if (unit === 'elements') return <p>Unit: element</p>;
+    if (unit === 'element') return <p>Unit: element</p>;
 
     return null;
 };
