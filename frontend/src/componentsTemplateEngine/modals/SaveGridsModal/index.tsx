@@ -200,7 +200,7 @@ function SaveGridsModal() {
                   bg-gray text-white"
                 onClick={handleOpen}
             >
-                ... with a meaningful name
+                save as many grids as you wish
             </Button>
 
             <Dialog
@@ -230,7 +230,7 @@ function SaveGridsModal() {
                             </button>
 
                             <DialogTitle as="h3" className="text-xl font-bold py-4 text-white">
-                                Save Grid
+                                Save this Grid
                             </DialogTitle>
 
                             {!hasGrid && (

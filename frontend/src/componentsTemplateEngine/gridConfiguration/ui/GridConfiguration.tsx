@@ -1,8 +1,9 @@
+import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
 import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
+import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/RangeSlider';
+import UnitOfMeasurement from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/UnitOfMeasurement';
 import { GridProps, HandleChange } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
-import HeadlineAside from './shared-comnponents/HeadlineAside';
-import RangeSlider from './shared-comnponents/RangeSlider';
 
 interface Props {
     handleChange: HandleChange;
@@ -12,7 +13,7 @@ interface Props {
 const GridConfiguration = ({ handleChange, grid }: Props) => {
     return (
         <section {...testId('grid-configuration')}>
-            <HeadlineAside>Layout</HeadlineAside>
+            <HeadlineAside>Layout Grid</HeadlineAside>
             <RangeSlider
                 min="1"
                 max="10"
@@ -30,6 +31,7 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel>Items: </InputLabel>
             </RangeSlider>
+            <UnitOfMeasurement unit="elements" />
         </section>
     );
 };

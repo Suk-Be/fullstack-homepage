@@ -92,7 +92,7 @@ describe('BorderConfiguration', () => {
         expect(screen.getByTestId('border-display-value')).toHaveTextContent(MockGrid.border);
         expect(screen.getByTestId('border-value')).toHaveValue(MockGrid.border);
 
-        expect(screen.getByText('Unit: rem/3')).toBeInTheDocument();
+        screen.getByText((_, el) => el?.textContent === 'Unit: 1/3 rem');
     });
 
     it('calls handleToggle when checkbox changes', async () => {

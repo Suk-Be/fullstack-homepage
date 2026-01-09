@@ -5,8 +5,8 @@ import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markU
 import { DynamicGridProps } from '@/types/templateEngine';
 import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import {
-  createHtmlAsTextFromPassedComponent,
-  parseStringToADomModel,
+    createHtmlAsTextFromPassedComponent,
+    parseStringToADomModel,
 } from '@/utils/templateEngine/parseHtmlToText';
 import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
@@ -59,7 +59,7 @@ function CreateMarkupModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
                   bg-gray text-white"
                 onClick={handleOpen}
             >
-                HTML + Tailwind
+                HTML & Tailwind CSS
             </Button>
 
             <Dialog

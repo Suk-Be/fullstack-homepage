@@ -30,14 +30,14 @@ describe('ExampleTeaser', () => {
         const container = screen.getByTestId('layout-example-teaser');
         expect(container).toBeInTheDocument();
 
-        expect(screen.getByRole('heading', { name: /layout example grids/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /open example grids/i })).toBeInTheDocument();
 
         expect(screen.getByTestId('grid-eample-teaser')).toBeInTheDocument();
 
         // Button vorhanden
         const button = screen.getByTestId('button-example-teaser');
         expect(button).toBeInTheDocument();
-        expect(button).toHaveTextContent('Browse Examples');
+        expect(button).toHaveTextContent('Open Examples');
         const style =
             'mb-4 text-center bg-gray-light text-white shadow-inner shadow-white/50 group-focus:outline-none group-hover:bg-gray-dark  group-hover:text-green group-open:bg-gray-dark/700 group-focus:outline-1 group-focus:outline-white';
         expect(button.className).toContain(style);
