@@ -115,7 +115,7 @@ describe('SaveGridsModal', () => {
         });
 
         const openModalButton = screen.getByRole('button', {
-            name: /with a meaningful name/i,
+            name: /save as many/i,
         });
 
         return { user, openModalButton, store };
@@ -198,7 +198,7 @@ describe('SaveGridsModal', () => {
         });
 
         const openModalButton = screen.getByRole('button', {
-            name: /with a meaningful name/i,
+            name: /save as many/i,
         });
         await userEvent.click(openModalButton);
 
@@ -214,7 +214,7 @@ describe('SaveGridsModal', () => {
         });
 
         const openModalButton = screen.getByRole('button', {
-            name: /with a meaningful name/i,
+            name: /save as many/i,
         });
         await userEvent.click(openModalButton);
 

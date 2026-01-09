@@ -37,7 +37,7 @@ describe('DialogModal', () => {
 
         return {
             user,
-            button: screen.getByRole('button', { name: /html \+ tailwind/i }),
+            button: screen.getByRole('button', { name: /HTML & Tailwind CSS/i }),
         };
     };
 
@@ -51,7 +51,7 @@ describe('DialogModal', () => {
         await user.click(button);
 
         expect(await screen.findByTestId('dialog-markup')).toBeVisible();
-        expect(screen.getByText(/grid: html \+ tailwind/i)).toBeInTheDocument();
+        expect(screen.getByText(/HTML & Tailwind CSS/i)).toBeInTheDocument();
 
         await user.click(screen.getByLabelText(/close modal/i));
 

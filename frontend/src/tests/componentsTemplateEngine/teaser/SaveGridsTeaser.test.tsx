@@ -55,7 +55,7 @@ describe('SaveGridsTeaser', () => {
         expect(headlineElement).toBeInTheDocument();
 
         // button of the SaveGridsModal component
-        const modalButton = screen.getByRole('button', { name: /meaningful name/i });
+        const modalButton = screen.getByRole('button', { name: /save as many grids as you wish/i });
         expect(modalButton).toBeInTheDocument();
     });
 });

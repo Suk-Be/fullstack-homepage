@@ -1,3 +1,4 @@
+import UnitOfMeasurement from '@/componentsTemplateEngine/gridConfiguration/ui//shared-comnponents/UnitOfMeasurement';
 import StyledCheckbox from '@/componentsTemplateEngine/gridConfiguration/ui/borderConfiguration/StyledCheckbox';
 import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/HeadlineAside';
 import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
@@ -20,7 +21,7 @@ const BorderConfiguration = ({
 }: Props) => {
     return (
         <section {...testId('border-configuration')} id="border-configuration">
-            <HeadlineAside>Border</HeadlineAside>
+            <HeadlineAside>Grid Border</HeadlineAside>
 
             <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
                 <StyledCheckbox
@@ -36,7 +37,7 @@ const BorderConfiguration = ({
                 >
                     <InputLabel htmlFor="border">Width: </InputLabel>
                 </RangeSlider>
-                Unit: rem/3
+                <UnitOfMeasurement unit="fraction" numerator={1} denominator={3} />
             </div>
         </section>
     );

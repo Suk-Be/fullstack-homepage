@@ -22,8 +22,8 @@ describe('TeaserGenerateMarkup', () => {
                 gridItemsArray={mockGridItemsArray}
             />,
         );
-        const openButton = screen.getByRole('button', { name: /html \+ tailwind/i });
+        const openButton = screen.getByRole('button', { name: /HTML & Tailwind CSS/i });
         expect(openButton).toBeInTheDocument();
-        expect(screen.getByText('Generate HTML')).toBeInTheDocument();
+        expect(screen.getByText('Copy HTML for this Grid')).toBeInTheDocument();
     });
 });

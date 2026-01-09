@@ -104,7 +104,7 @@ describe('routes', () => {
     it.each([
         {
             path: '/template-engine',
-            elementHeadline: 'Layout Example Grids',
+            elementHeadline: 'Open Example Grids',
             page: 'ProjectTemplateEnginePage',
             component: <ProjectTemplateEnginePage />,
             level: 2,

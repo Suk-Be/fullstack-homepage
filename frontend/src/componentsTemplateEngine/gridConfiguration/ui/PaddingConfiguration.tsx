@@ -1,8 +1,9 @@
+import HeadlineAside from '@/componentsTemplateEngine/gridConfiguration/ui//shared-comnponents/HeadlineAside';
 import InputLabel from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/InputLabel';
+import RangeSlider from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/RangeSlider';
+import UnitOfMeasurement from '@/componentsTemplateEngine/gridConfiguration/ui/shared-comnponents/UnitOfMeasurement';
 import { GridProps, HandleChange } from '@/types/templateEngine';
 import { testId } from '@/utils/testId';
-import HeadlineAside from './shared-comnponents/HeadlineAside';
-import RangeSlider from './shared-comnponents/RangeSlider';
 
 interface Props {
     handleChange: HandleChange;
@@ -12,7 +13,7 @@ interface Props {
 const PaddingConfiguration = ({ handleChange, grid }: Props) => {
     return (
         <section {...testId('padding-configuration')}>
-            <HeadlineAside>Padding</HeadlineAside>
+            <HeadlineAside>Grid Padding</HeadlineAside>
             <RangeSlider
                 max="5"
                 value={grid.paddingX}
@@ -29,7 +30,7 @@ const PaddingConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel>Vertical: </InputLabel>
             </RangeSlider>
-            Unit: rem/2
+            <UnitOfMeasurement unit="fraction" numerator={1} denominator={2} />
         </section>
     );
 };
