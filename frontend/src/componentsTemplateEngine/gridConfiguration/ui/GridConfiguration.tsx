@@ -31,7 +31,7 @@ const GridConfiguration = ({ handleChange, grid }: Props) => {
             >
                 <InputLabel>Items: </InputLabel>
             </RangeSlider>
-            <UnitOfMeasurement unit="elements" />
+            <UnitOfMeasurement unit="element" />
         </section>
     );
 };
