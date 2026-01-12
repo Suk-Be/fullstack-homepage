@@ -149,7 +149,7 @@ describe('SaveGridsModal', () => {
         const { user, openModalButton, store } = await renderModal();
         await user.click(openModalButton);
 
-        const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
+        const showGridsBtn = screen.getByRole('button', { name: /Show saved Grids/i });
         await user.click(showGridsBtn);
 
         await waitFor(() => {
@@ -162,7 +162,7 @@ describe('SaveGridsModal', () => {
         const { user, openModalButton, store } = await renderModal();
         await user.click(openModalButton);
 
-        const resetBtn = screen.getByRole('button', { name: /reset/i });
+        const resetBtn = screen.getByRole('button', { name: /Delete all your Grids/i });
 
         await user.click(resetBtn);
 
@@ -172,6 +172,16 @@ describe('SaveGridsModal', () => {
             // Der "initial" Key bleibt bestehen, alles andere gelöscht
             expect(Object.keys(state.userGrid.savedGrids)).toEqual(['initialLayoutId']);
         });
+    });
+
+    it('shows Save this Grid headline', async () => {
+        const { user, openModalButton } = await renderModal();
+        await user.click(openModalButton);
+        const SaveThisGridsHl = screen.getByRole('heading', { name: /Save this Grid/i });
+        const YourSavedGridsH3 = screen.queryByRole('heading', { name: /Your saved Grids/i });
+
+        expect(SaveThisGridsHl).toBeInTheDocument();
+        expect(YourSavedGridsH3).not.toBeInTheDocument();
     });
 
     it('shows no reset button for users with no admin role', () => {
@@ -187,7 +197,7 @@ describe('SaveGridsModal', () => {
             },
         });
 
-        const resetBtn = screen.queryByRole('button', { name: /reset/i });
+        const resetBtn = screen.queryByRole('button', { name: /Delete all your Grids/i });
 
         expect(resetBtn).not.toBeInTheDocument();
     });
@@ -202,7 +212,7 @@ describe('SaveGridsModal', () => {
         });
         await userEvent.click(openModalButton);
 
-        const saveBtn = screen.getByRole('button', { name: /save/i });
+        const saveBtn = screen.getByRole('button', { name: /save this grid/i });
         await userEvent.click(saveBtn);
 
         expect(await screen.findByTestId('grid-error')).toHaveTextContent(/User not logged in/i);
@@ -218,7 +228,7 @@ describe('SaveGridsModal', () => {
         });
         await userEvent.click(openModalButton);
 
-        const saveBtn = screen.getByRole('button', { name: /save/i });
+        const saveBtn = screen.getByRole('button', { name: /save this grid/i });
         await userEvent.click(saveBtn);
 
         expect(await screen.findByTestId('grid-error')).toHaveTextContent(
@@ -233,7 +243,7 @@ describe('SaveGridsModal', () => {
         await user.click(openModalButton);
         const input = screen.getByPlaceholderText(/name of the grid/i);
         await user.type(input, 'MyUniqueGrid');
-        const saveBtn = screen.getByRole('button', { name: /save/i });
+        const saveBtn = screen.getByRole('button', { name: /save this grid/i });
         await user.click(saveBtn);
 
         // Dispatchen des Fulfilled Actions (simuliert)
@@ -264,7 +274,7 @@ describe('SaveGridsModal', () => {
         await user.click(openModalButton);
 
         const input = await screen.findByPlaceholderText(/name of the grid/i);
-        const saveBtn = screen.getByRole('button', { name: /save/i });
+        const saveBtn = screen.getByRole('button', { name: /save this grid/i });
 
         const dirtyName = '<script>alert(1)</script>MyGrid@';
         await user.clear(input);
@@ -289,7 +299,7 @@ describe('SaveGridsModal', () => {
 
         await user.click(openModalButton);
 
-        const showGridsBtn = screen.getByRole('button', { name: /Show Grids/i });
+        const showGridsBtn = screen.getByRole('button', { name: /Show saved Grids/i });
 
         await user.click(showGridsBtn);
 
@@ -326,7 +336,7 @@ describe('SaveGridsModal', () => {
         const input = screen.getByPlaceholderText(/name of the grid/i);
         await user.type(input, 'MyUniqueGrid');
 
-        const saveBtn = screen.getByRole('button', { name: /save/i });
+        const saveBtn = screen.getByRole('button', { name: /save this grid/i });
         await user.click(saveBtn);
 
         expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(4);

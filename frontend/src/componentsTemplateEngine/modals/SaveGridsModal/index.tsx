@@ -229,55 +229,93 @@ function SaveGridsModal() {
                                 <CloseSVG />
                             </button>
 
-                            <DialogTitle as="h3" className="text-xl font-bold py-4 text-white">
-                                Save this Grid
-                            </DialogTitle>
-
                             {!hasGrid && (
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4  items-center">
-                                    <input
-                                        ref={inputRef}
-                                        name="full_name"
-                                        type="text"
-                                        placeholder="name of the grid"
-                                        value={gridName}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setGridName(value);
-                                            if (value.length > 30) {
-                                                setErrorMessage(
-                                                    `${value.length}/30 characters – the grid name is too long.`,
-                                                );
-                                            } else {
-                                                setErrorMessage('');
-                                            }
-                                        }}
-                                        onFocus={() => setErrorMessage('')}
-                                        // maxLength={255} backend linit
-                                        className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
-                                    />
+                                <section>
+                                    <DialogTitle
+                                        as="h3"
+                                        className="text-xl font-bold py-4 text-white"
+                                    >
+                                        Save this Grid
+                                    </DialogTitle>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4  items-center">
+                                        <input
+                                            ref={inputRef}
+                                            name="full_name"
+                                            type="text"
+                                            placeholder="name of the grid"
+                                            value={gridName}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setGridName(value);
+                                                if (value.length > 30) {
+                                                    setErrorMessage(
+                                                        `${value.length}/30 characters – the grid name is too long.`,
+                                                    );
+                                                } else {
+                                                    setErrorMessage('');
+                                                }
+                                            }}
+                                            onFocus={() => setErrorMessage('')}
+                                            // maxLength={255} backend linit
+                                            className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96"
+                                        />
 
-                                    {errorMessage && (
-                                        <Description
-                                            className="text-green-400 text-sm mb-4"
-                                            {...testId('grid-error')}
-                                        >
-                                            {errorMessage}
-                                        </Description>
-                                    )}
-                                </div>
+                                        {errorMessage && (
+                                            <Description
+                                                className="text-green-400 text-sm mb-4"
+                                                {...testId('grid-error')}
+                                            >
+                                                {errorMessage}
+                                            </Description>
+                                        )}
+                                    </div>
+                                </section>
                             )}
 
                             {isLoading && (
-                                <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
+                                <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 mt-8 overflow-auto max-h-96">
                                     <div>
                                         <LoadingSkeleton count={4} variant="text" height={24} />
                                     </div>
                                 </div>
                             )}
 
+                            {!hasGrid && (
+                                <div className="mt-4 flex justify-end gap-3">
+                                    <Button
+                                        className="py-4 rounded-xl 
+                                                text-white 
+                                                bg-gray-dark
+                                                data-[hover]:bg-gray 
+                                                data-[open]:bg-gray/700"
+                                        onClick={handleSaveGrid}
+                                        disabled={isButtonDisabled}
+                                    >
+                                        Save this Grid
+                                    </Button>
+
+                                    <Button
+                                        className="py-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                                        onClick={handleShowGrids}
+                                        disabled={isButtonDisabled}
+                                    >
+                                        Show saved Grids
+                                    </Button>
+
+                                    {userRole === 'admin' && (
+                                        <Button
+                                            className="py-4 rounded-xl bg-white text-gray-light"
+                                            onClick={handleResetGrids}
+                                            disabled={isButtonDisabled}
+                                        >
+                                            Delete all your Grids
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+
                             {!isLoading && hasGrid && (
-                                <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
+                                <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 mt-8 overflow-auto max-h-96">
                                     <div>
                                         {!userId && (
                                             <p className="text-gray-700">User not loaded yet.</p>
@@ -290,50 +328,6 @@ function SaveGridsModal() {
                                     </div>
                                 </div>
                             )}
-
-                            <div className="mt-4 flex justify-end gap-3">
-                                <Button
-                                    className="py-4 rounded-xl 
-                                                text-white 
-                                                bg-gray-dark
-                                                data-[hover]:bg-gray 
-                                                data-[open]:bg-gray/700"
-                                    onClick={handleSaveGrid}
-                                    disabled={isButtonDisabled}
-                                >
-                                    save
-                                </Button>
-
-                                <Button
-                                    className="py-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
-                                    onClick={handleShowGrids}
-                                    disabled={isButtonDisabled}
-                                >
-                                    Show Grids
-                                </Button>
-
-                                {userRole === 'admin' && (
-                                    <Button
-                                        className="py-4 rounded-xl 
-                                                  text-white 
-                                                  bg-gray-dark
-                                                  data-[hover]:bg-gray 
-                                                  data-[open]:bg-gray/700"
-                                        onClick={handleResetGrids}
-                                        disabled={isButtonDisabled}
-                                    >
-                                        reset
-                                    </Button>
-                                )}
-
-                                <Button
-                                    className="py-4 rounded-xl bg-white text-gray-light"
-                                    onClick={handleClose}
-                                    {...testId('close')}
-                                >
-                                    close
-                                </Button>
-                            </div>
                         </DialogPanel>
                     </div>
                 </div>

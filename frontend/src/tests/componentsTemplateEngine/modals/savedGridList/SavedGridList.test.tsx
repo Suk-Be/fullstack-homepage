@@ -91,6 +91,16 @@ describe('SavedGridList', () => {
         expect(screen.getByText(/No grids saved yet/i)).toBeInTheDocument();
     });
 
+    it('shows Your saved Grids headline', () => {
+        renderUtils();
+
+        const SaveThisGridsHl = screen.queryByRole('heading', { name: /Save this Grid/i });
+        const YourSavedGridsH3 = screen.getByRole('heading', { name: /Your saved Grids/i });
+
+        expect(SaveThisGridsHl).not.toBeInTheDocument();
+        expect(YourSavedGridsH3).toBeInTheDocument();
+    });
+
     it('renders a list of saved grids', () => {
         renderUtils();
 
