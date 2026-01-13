@@ -1,119 +1,125 @@
-import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
-import ApiClient from '@/plugins/axios';
-import { initialLayoutId, initialName } from '@/store/userSaveGridsSlice';
-import { userLoggedInNoAdmin } from '@/tests/mocks/api';
-import { renderWithProviders } from '@/tests/utils/testRenderUtils';
-import { screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
-
-const renameUniqueGridName = 'Unique Grid';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/utils/recaptcha/recaptchaToken', () => ({
     default: vi.fn(async () => 'mocked-recaptcha-token'),
 }));
 
-vi.spyOn(ApiClient, 'delete').mockResolvedValueOnce({ data: {} });
-vi.spyOn(ApiClient, 'patch').mockResolvedValue({
-    data: { data: { name: renameUniqueGridName } },
+vi.mock('@/utils/templateEngine/markupClipboard', async (importOriginal) => {
+    const actual =
+        (await importOriginal()) as typeof import('@/utils/templateEngine/markupClipboard');
+
+    return {
+        ...actual,
+        copyGridMarkupToClipboard: vi.fn().mockResolvedValue(''),
+        renderGridMarkup: vi.fn(() => 'MOCK_MARKUP'),
+    };
+});
+
+vi.mock('@/utils/templateEngine/gridStyle', async (importOriginal) => {
+    const actual = (await importOriginal()) as typeof import('@/utils/templateEngine/gridStyle');
+
+    return {
+        ...actual,
+        buildGridRenderPropsFromConfig: vi.fn(() => ({
+            inlineStyles: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
+                gap: '1px',
+                borderWidth: 'calc(0rem/3)',
+                padding: 'calc(0rem/2) calc(0rem/2)',
+            },
+            gridItemsArray: [1, 2],
+        })),
+    };
+});
+
+import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
+import ApiClient from '@/plugins/axios';
+import { initialLayoutId, initialName } from '@/store/userSaveGridsSlice';
+import { userLoggedInNoAdmin } from '@/tests/mocks/api';
+import { renderWithProviders } from '@/tests/utils/testRenderUtils';
+import { buildGridRenderPropsFromConfig } from '@/utils/templateEngine/gridStyle';
+import { copyGridMarkupToClipboard } from '@/utils/templateEngine/markupClipboard';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+const renameUniqueGridName = 'Unique Grid';
+
+const mockGrids = [
+    {
+        layoutId: initialLayoutId,
+        name: initialName,
+        timestamp: new Date().toISOString(),
+        config: { items: '1', columns: '1', gap: '0', border: '0', paddingX: '0', paddingY: '0' },
+    },
+    {
+        layoutId: 'grid1',
+        name: 'First Grid',
+        timestamp: new Date().toISOString(),
+        config: { items: '2', columns: '1', gap: '1', border: '0', paddingX: '0', paddingY: '0' },
+    },
+    {
+        layoutId: 'grid2',
+        name: 'Second Grid',
+        timestamp: new Date().toISOString(),
+        config: { items: '3', columns: '4', gap: '1', border: '1', paddingX: '2', paddingY: '2' },
+    },
+] as const;
+
+const renderUtils = (savedGrids: typeof mockGrids = mockGrids) => {
+    const user = userEvent.setup();
+
+    const preloadedState = {
+        login: { userId: userLoggedInNoAdmin, isLoggedIn: true, isLoading: false, error: null },
+        userGrid: {
+            userId: userLoggedInNoAdmin,
+            savedGrids: Object.fromEntries(savedGrids.map((g) => [g.layoutId, g])),
+        },
+    };
+
+    const { store } = renderWithProviders(<SavedGridList />, { preloadedState });
+    return { store, user };
+};
+
+const getRowByGridName = (name: string) => {
+    const row = screen.getAllByRole('row').find((r) => r.textContent?.includes(name));
+    if (!row) throw new Error(`Row with grid name "${name}" not found`);
+    return row;
+};
+
+const openMoreActionsForRow = async (
+    user: ReturnType<typeof userEvent.setup>,
+    row: HTMLElement,
+) => {
+    await user.click(within(row).getByRole('button', { name: /more actions/i }));
+};
+
+const openCssConfigForRow = async (user: ReturnType<typeof userEvent.setup>, row: HTMLElement) => {
+    await openMoreActionsForRow(user, row);
+
+    await user.click(within(row).getByRole('button', { name: /show css configuration/i }));
+};
+
+beforeEach(() => {
+    vi.stubGlobal('navigator', {
+        clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+
+    vi.spyOn(ApiClient, 'delete').mockResolvedValue({ data: {} } as any);
+    vi.spyOn(ApiClient, 'patch').mockResolvedValue({
+        data: { data: { name: renameUniqueGridName } },
+    } as any);
+});
+
+afterEach(() => {
+    vi.restoreAllMocks();
+    vi.clearAllTimers();
 });
 
 describe('SavedGridList', () => {
-    const mockGrids = [
-        {
-            layoutId: initialLayoutId,
-            name: initialName,
-            timestamp: new Date().toISOString(),
-            config: {
-                items: '1',
-                columns: '1',
-                gap: '0',
-                border: '0',
-                paddingX: '0',
-                paddingY: '0',
-            },
-        },
-        {
-            layoutId: 'grid1',
-            name: 'First Grid',
-            timestamp: new Date().toISOString(),
-            config: {
-                items: '2',
-                columns: '1',
-                gap: '1',
-                border: '0',
-                paddingX: '0',
-                paddingY: '0',
-            },
-        },
-        {
-            layoutId: 'grid2',
-            name: 'Second Grid',
-            timestamp: new Date().toISOString(),
-            config: {
-                items: '3',
-                columns: '4',
-                gap: '1',
-                border: '1',
-                paddingX: '2',
-                paddingY: '2',
-            },
-        },
-    ];
-
-    const renderUtils = (savedGrids: typeof mockGrids = mockGrids) => {
-        const user = userEvent.setup();
-
-        const preloadedState = {
-            login: {
-                userId: userLoggedInNoAdmin,
-                isLoggedIn: true,
-                isLoading: false,
-                error: null,
-            },
-            userGrid: {
-                userId: userLoggedInNoAdmin,
-                savedGrids: Object.fromEntries(savedGrids.map((g) => [g.layoutId, g])),
-            },
-        };
-
-        const { store } = renderWithProviders(<SavedGridList />, { preloadedState });
-
-        return {
-            store,
-            user,
-        };
-    };
-
-    // --- helpers -------------------------------------------------
-    const getRowByGridName = (name: string) => {
-        const row = screen.getAllByRole('row').find((r) => r.textContent?.includes(name));
-
-        if (!row) throw new Error(`Row with grid name "${name}" not found`);
-        return row;
-    };
-
-    const openMoreActionsForRow = async (
-        user: ReturnType<typeof userEvent.setup>,
-        row: HTMLElement,
-    ) => {
-        const moreBtn = within(row).getByRole('button', { name: /more actions/i });
-        await user.click(moreBtn);
-    };
-
-    const openCssConfigForRow = async (
-        user: ReturnType<typeof userEvent.setup>,
-        row: HTMLElement,
-    ) => {
-        await openMoreActionsForRow(user, row);
-        const showBtn = within(row).getByRole('button', { name: /show css configuration/i });
-        await user.click(showBtn);
-    };
-    // -------------------------------------------------------------
-
     it('renders "No grids saved yet" when there are no grids', () => {
         // pass no grids
-        renderUtils([]);
+        renderUtils([] as any);
         expect(screen.getByText(/No grids saved yet/i)).toBeInTheDocument();
     });
 
@@ -379,7 +385,6 @@ describe('SavedGridList', () => {
         const { user, store } = renderUtils();
 
         // example apply grid1 layout config to initialLayoutId
-
         const applyBtnFirstGrid = screen
             .getAllByRole('button', { name: /apply layout/i })
             .find((btn) => btn.closest('tr')?.textContent?.includes('First Grid'));
@@ -520,7 +525,10 @@ describe('SavedGridList', () => {
         expect(
             within(firstRow).getByRole('button', { name: /show css configuration/i }),
         ).toBeInTheDocument();
-        expect(within(firstRow).getByRole('button', { name: /copy html/i })).toBeInTheDocument();
+        expect(
+            within(firstRow).getByRole('button', { name: /copy markup to clipboard/i }),
+        ).toBeInTheDocument();
+        expect(within(firstRow).getByRole('button', { name: /show markup/i })).toBeInTheDocument();
 
         // Toggle wechselt Label
         expect(within(firstRow).getByRole('button', { name: /less actions/i })).toBeInTheDocument();
@@ -895,19 +903,6 @@ describe('SavedGridList', () => {
         expect(within(firstRow).queryByText(/"items":"2"/i)).not.toBeInTheDocument();
     });
 
-    it('closes css configuration when clicking copy action', async () => {
-        const { user } = renderUtils();
-        const firstRow = getRowByGridName('First Grid');
-
-        await openCssConfigForRow(user, firstRow);
-
-        await user.click(
-            within(firstRow).getByRole('button', { name: /copy html & tailwind css/i }),
-        );
-
-        expect(within(firstRow).queryByText(/"items":"2"/i)).not.toBeInTheDocument();
-    });
-
     it('opening delete confirmation closes both rename and css configuration', async () => {
         const { user } = renderUtils();
         const firstRow = getRowByGridName('First Grid');
@@ -946,5 +941,109 @@ describe('SavedGridList', () => {
         expect(
             within(firstRow).getByRole('button', { name: /show css configuration/i }),
         ).toBeInTheDocument();
+    });
+
+    it('hides extra actions AND closes markup + css config when clicking "less actions"', async () => {
+        const { user } = renderUtils();
+        const firstRow = getRowByGridName('First Grid');
+
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+
+        await user.click(within(firstRow).getByRole('button', { name: /show markup/i }));
+        expect(within(firstRow).getByRole('button', { name: /hide markup/i })).toBeInTheDocument();
+
+        await user.click(within(firstRow).getByRole('button', { name: /show css configuration/i }));
+        expect(
+            within(firstRow).getByRole('button', { name: /hide css configuration/i }),
+        ).toBeInTheDocument();
+
+        expect(within(firstRow).getByText(/"items":"2"/i)).toBeInTheDocument(); // config text
+
+        await user.click(within(firstRow).getByRole('button', { name: /less actions/i }));
+
+        expect(
+            within(firstRow).queryByRole('button', { name: /copy markup to clipboard/i }),
+        ).not.toBeInTheDocument();
+        expect(
+            within(firstRow).queryByRole('button', { name: /show markup/i }),
+        ).not.toBeInTheDocument();
+        expect(
+            within(firstRow).queryByRole('button', { name: /show css configuration/i }),
+        ).not.toBeInTheDocument();
+
+        expect(within(firstRow).queryByText(/"items":"2"/i)).not.toBeInTheDocument();
+    });
+
+    it('changes copy button text to "is copied" and back after 750ms', async () => {
+        const { user } = renderUtils(); // kein fakeTimers
+        const firstRow = getRowByGridName('First Grid');
+
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+
+        const copyBtn = within(firstRow).getByRole('button', { name: /copy markup to clipboard/i });
+        await user.click(copyBtn);
+
+        // direkt nach click -> copied label
+        expect(
+            within(firstRow).getByRole('button', { name: /markup is copied to clipboard/i }),
+        ).toBeInTheDocument();
+
+        // wartet bis setTimeout(750) zurücksetzt
+        await waitFor(
+            () => {
+                expect(
+                    within(firstRow).getByRole('button', { name: /copy markup to clipboard/i }),
+                ).toBeInTheDocument();
+            },
+            { timeout: 800 }, // bisschen Puffer
+        );
+
+        expect(copyGridMarkupToClipboard).toHaveBeenCalledTimes(1);
+    });
+
+    it('allows markup and css configuration to be open at the same time', async () => {
+        const { user } = renderUtils();
+        const firstRow = getRowByGridName('First Grid');
+
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+
+        await user.click(within(firstRow).getByRole('button', { name: /show markup/i }));
+        await user.click(within(firstRow).getByRole('button', { name: /show css configuration/i }));
+
+        // config visible
+        expect(within(firstRow).getByText(/"items":"2"/i)).toBeInTheDocument();
+
+        // markup still in "open" state
+        expect(within(firstRow).getByRole('button', { name: /hide markup/i })).toBeInTheDocument();
+    });
+
+    it('resets markup state when closing extra actions', async () => {
+        const { user } = renderUtils();
+        const firstRow = getRowByGridName('First Grid');
+
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+        await user.click(within(firstRow).getByRole('button', { name: /show markup/i }));
+        expect(within(firstRow).getByRole('button', { name: /hide markup/i })).toBeInTheDocument();
+
+        await user.click(within(firstRow).getByRole('button', { name: /less actions/i }));
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+
+        expect(within(firstRow).getByRole('button', { name: /show markup/i })).toBeInTheDocument();
+    });
+
+    it('calls buildGridRenderPropsFromConfig + copyGridMarkupToClipboard when copying', async () => {
+        const { user } = renderUtils();
+        const firstRow = getRowByGridName('First Grid');
+
+        await user.click(within(firstRow).getByRole('button', { name: /more actions/i }));
+        await user.click(
+            within(firstRow).getByRole('button', { name: /copy markup to clipboard/i }),
+        );
+
+        expect(buildGridRenderPropsFromConfig).toHaveBeenCalled();
+        expect(copyGridMarkupToClipboard).toHaveBeenCalledWith(
+            expect.objectContaining({ display: 'grid' }),
+            [1, 2],
+        );
     });
 });

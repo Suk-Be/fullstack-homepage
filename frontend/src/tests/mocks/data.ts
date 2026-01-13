@@ -29,13 +29,21 @@ const RegisteredUserTemplateEngine = {
 };
 
 const MockGrid: GridProps = {
-        items: '1',
-        columns: '1',
-        gap: '0',
-        border: '0',
-        paddingX: '0',
-        paddingY: '0',
-    };
+    items: '1',
+    columns: '1',
+    gap: '0',
+    border: '0',
+    paddingX: '0',
+    paddingY: '0',
+};
 
-export { AnonymousUserTemplateEngine, MockGrid, RegisteredUserTemplateEngine };
+const GridStyleConfig: GridProps = {
+    items: '5',
+    columns: '4',
+    gap: '12',
+    border: '2',
+    paddingX: '6',
+    paddingY: '8',
+};
 
+export { AnonymousUserTemplateEngine, GridStyleConfig, MockGrid, RegisteredUserTemplateEngine };
