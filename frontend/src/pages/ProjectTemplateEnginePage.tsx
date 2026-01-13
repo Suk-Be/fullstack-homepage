@@ -11,6 +11,7 @@ import { useAppSelector } from '@/store/hooks';
 import { selectInitialGrid } from '@/store/selectors/userGridSelectors';
 import { initialLayoutId, updateGridConfig } from '@/store/userSaveGridsSlice';
 import { GridConfigKey } from '@/types/Redux';
+import { buildGridRenderPropsFromConfig } from '@/utils/templateEngine/gridStyle';
 import { testId } from '@/utils/testId';
 import { ChangeEvent, FC, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -29,16 +30,7 @@ const ProjectTemplateEnginePage: FC = () => {
     const handleCheckBoxBorderToggle = () =>
         setCheckBoxBorderToggled((prevToggled) => !prevToggled);
 
-    const InlineStyles = {
-        display: 'grid',
-        gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
-        gap: `${grid.gap}px`,
-        borderWidth: checkBoxBorderToggled ? `calc(${grid.border}rem/3)` : 'calc(0rem/3)',
-        padding: `calc(${grid.paddingY}rem/2) calc(${grid.paddingX}rem/2)`,
-    };
-
-    const gridItems = parseInt(grid.items, 10);
-    const GridItemsArray = Array.from({ length: gridItems }, (_, index) => index + 1);
+    const { inlineStyles, gridItemsArray } = buildGridRenderPropsFromConfig(grid);
 
     return (
         <div className="flex flex-col w-full bg-black mb-[5rem]" {...testId('tempate-engine-page')}>
@@ -53,15 +45,15 @@ const ProjectTemplateEnginePage: FC = () => {
                 </AsideLeft>
 
                 <ContentCenter>
-                    <CreateGridLayout style={InlineStyles} arr={GridItemsArray} />
+                    <CreateGridLayout style={inlineStyles} arr={gridItemsArray} />
                 </ContentCenter>
 
                 <AsideRight>
                     <ExampleTeaser />
                     <SaveGridsTeaser />
                     <GenerateMarkupTeaser
-                        inlineStyles={InlineStyles}
-                        gridItemsArray={GridItemsArray}
+                        inlineStyles={inlineStyles}
+                        gridItemsArray={gridItemsArray}
                     />
                 </AsideRight>
             </MainContainer>
