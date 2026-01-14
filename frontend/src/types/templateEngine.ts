@@ -11,27 +11,27 @@ export interface Teaser {
         isBigCard: boolean;
     };
     link?: string;
-};
+}
 
 export interface Welcome {
     data: Teaser[];
-};
+}
 
 export interface User {
     id: number;
     name: string;
     email: string;
     email_verified_at: string;
-};
+}
 
-export interface GridProps  {
+export interface GridProps {
     items: string;
     columns: string;
     gap: string;
     border: string;
     paddingX: string;
     paddingY: string;
-};
+}
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
@@ -40,7 +40,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     };
 };
 
-export interface DynamicGridProps  {
+export interface DynamicGridProps {
     inlineStyles: {
         display: string;
         gridTemplateColumns: string;
@@ -49,7 +49,7 @@ export interface DynamicGridProps  {
         padding: string;
     };
     gridItemsArray: number[];
-};
+}
 
 export interface ModalProps extends DynamicGridProps {
     setIsOpen: Dispatch<

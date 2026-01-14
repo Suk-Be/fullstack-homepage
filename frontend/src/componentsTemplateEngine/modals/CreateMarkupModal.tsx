@@ -1,13 +1,11 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
 import CopyButton from '@/componentsTemplateEngine/buttons/CopyButton';
-import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
-import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markUp/CreateGridMarkUp';
 import { DynamicGridProps } from '@/types/templateEngine';
 import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import {
-    createHtmlAsTextFromPassedComponent,
-    parseStringToADomModel,
-} from '@/utils/templateEngine/parseHtmlToText';
+    copyGridMarkupToClipboard,
+    renderGridMarkup,
+} from '@/utils/templateEngine/markupClipboard';
 import { testId } from '@/utils/testId';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useState } from 'react';
@@ -22,19 +20,10 @@ function CreateMarkupModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
     const handleOpen = () => setIsOpen({ ...isOpen, open: true });
     const handleClose = () => setIsOpen({ ...isOpen, open: false });
 
-    const renderMarkup = () => (
-        <CreateGridMarkUp
-            Component={<CreateGridLayout style={inlineStyles} arr={gridItemsArray} />}
-        />
-    );
+    const renderMarkup = renderGridMarkup(inlineStyles, gridItemsArray);
 
-    function copyToClipboard() {
-        const html = parseStringToADomModel(createHtmlAsTextFromPassedComponent(renderMarkup()))
-            .body.firstChild;
-
-        if (html) {
-            navigator.clipboard.writeText(html.textContent || '');
-        }
+    async function copyToClipboard() {
+        await copyGridMarkupToClipboard(inlineStyles, gridItemsArray);
 
         setIsOpen({
             ...isOpen,
@@ -100,12 +89,16 @@ function CreateMarkupModal({ inlineStyles, gridItemsArray }: DynamicGridProps) {
                                 </svg>
                             </button>
 
-                            <DialogTitle as="h3" className="text-xl font-bold py-4 text-white">
-                                Grid: HTML + Tailwind
+                            <DialogTitle
+                                as="h3"
+                                className="text-xl font-bold py-4 text-white"
+                                {...testId('dialog-markup-title')}
+                            >
+                                HTML & Tailwind CSS (current Layout)
                             </DialogTitle>
 
                             <div className="bg-gray-700 text-green-400 p-3 rounded-xl mb-4 overflow-auto max-h-96">
-                                {renderMarkup()}
+                                {renderMarkup}
                             </div>
 
                             <div className="mt-4 flex justify-end gap-3">

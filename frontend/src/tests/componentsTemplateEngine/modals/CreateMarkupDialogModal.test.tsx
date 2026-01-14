@@ -51,7 +51,13 @@ describe('DialogModal', () => {
         await user.click(button);
 
         expect(await screen.findByTestId('dialog-markup')).toBeVisible();
-        expect(screen.getByText(/HTML & Tailwind CSS/i)).toBeInTheDocument();
+
+        expect(
+            await screen.findByRole('heading', {
+                name: /HTML & Tailwind CSS \(current Layout\)/i,
+                level: 3,
+            }),
+        ).toBeVisible();
 
         await user.click(screen.getByLabelText(/close modal/i));
 
