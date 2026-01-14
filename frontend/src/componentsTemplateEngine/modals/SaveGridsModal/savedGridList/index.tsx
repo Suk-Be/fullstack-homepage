@@ -8,6 +8,11 @@ import { deleteThisGridThunk, renameThisGridThunk } from '@/store/thunks/userSav
 import { applySavedGridToInitial } from '@/store/userSaveGridsSlice';
 import { getAxiosStatus, logRecoverableError } from '@/utils/logger';
 import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
+import { buildGridRenderPropsFromConfig } from '@/utils/templateEngine/gridStyle';
+import {
+    copyGridMarkupToClipboard,
+    renderGridMarkup,
+} from '@/utils/templateEngine/markupClipboard';
 import { useMemo, useRef, useState } from 'react';
 
 const SavedGridList = () => {
@@ -17,6 +22,7 @@ const SavedGridList = () => {
     const sortedGrids = useAppSelector(selectSortedGrids);
     const dispatch = useAppDispatch();
 
+    // Actions
     const [expandedConfigsText, setExpandedConfigsText] = useState<Record<string, boolean>>({});
     const [deleteConfirm, setDeleteConfirm] = useState<Record<string, boolean>>({});
     const [isDeletingMap, setIsDeletingMap] = useState<Record<string, boolean>>({});
@@ -26,7 +32,8 @@ const SavedGridList = () => {
     const [rowLoadingMap, setRowLoadingMap] = useState<Record<string, boolean>>({});
     const [showAllActions, setShowAllActions] = useState<Record<string, boolean>>({});
     const [appliedLayoutId, setAppliedLayoutId] = useState<string | null>(null);
-
+    const [markupOpenMap, setMarkupOpenMap] = useState<Record<string, boolean>>({});
+    const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
     // Sortierung
     const [sortColumn, setSortColumn] = useState<'name' | 'date'>('date');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -63,6 +70,7 @@ const SavedGridList = () => {
 
             if (!next) {
                 setExpandedConfigsText((c) => ({ ...c, [id]: false }));
+                setMarkupOpenMap((m) => ({ ...m, [id]: false }));
             }
 
             return { ...p, [id]: next };
@@ -151,6 +159,25 @@ const SavedGridList = () => {
             setRowLoadingMap((p) => ({ ...p, [id]: false }));
         }
     };
+
+    // renderMarkup
+    // renderMarkup and copy HTML code
+    const renderMarkupForGrid = (grid: any) => {
+        const { inlineStyles, gridItemsArray } = buildGridRenderPropsFromConfig(grid.config);
+
+        return renderGridMarkup(inlineStyles, gridItemsArray);
+    };
+
+    async function copyToClipboardForGrid(grid: any) {
+        const { inlineStyles, gridItemsArray } = buildGridRenderPropsFromConfig(grid.config);
+
+        await copyGridMarkupToClipboard(inlineStyles, gridItemsArray);
+
+        setCopiedMap((p) => ({ ...p, [grid.layoutId]: true }));
+        setTimeout(() => {
+            setCopiedMap((p) => ({ ...p, [grid.layoutId]: false }));
+        }, 750);
+    }
 
     return (
         <div className="text-white mt-4 overflow-x-auto">
@@ -362,35 +389,7 @@ const SavedGridList = () => {
                                                     </button>
                                                 )}
 
-                                                {/* Extra actions (4+5) */}
-                                                {showAllActions[grid.layoutId] && (
-                                                    <>
-                                                        <button
-                                                            className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
-                                                            onClick={() =>
-                                                                toggleConfigText(grid.layoutId)
-                                                            }
-                                                        >
-                                                            {expandedConfigsText[grid.layoutId]
-                                                                ? 'hide css configuration'
-                                                                : 'show css configuration'}
-                                                        </button>
-
-                                                        <button
-                                                            className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm"
-                                                            onClick={() => {
-                                                                closeConfig(grid.layoutId);
-                                                                handleCancelRename(grid.layoutId);
-                                                                // TODO: dein bestehender copy handler (falls vorhanden)
-                                                                // copyHtmlTailwindForGrid(grid.layoutId)
-                                                            }}
-                                                        >
-                                                            copy html & tailwind css for this grid
-                                                        </button>
-                                                    </>
-                                                )}
-
-                                                {/* More/Less toggle */}
+                                                {/* More/Less toggle: Row 3*/}
                                                 <button
                                                     className="px-2 py-1 
                                                     text-gray-700 group-hover:text-white hover:text-white
@@ -449,12 +448,63 @@ const SavedGridList = () => {
                                                 </div>
                                             )}
 
-                                            {/* Row 3: Config container (one-line, like screenshot) */}
-                                            {expandedConfigsText[grid.layoutId] && (
-                                                <div className="bg-gray-900/60 border border-gray-700 rounded-lg px-3 py-2 overflow-auto">
-                                                    <pre className="text-xs text-gray-200 whitespace-pre-wrap">
-                                                        {JSON.stringify(grid.config)}
-                                                    </pre>
+                                            {/* Row 3: Markup actions + optional markup output */}
+                                            {showAllActions[grid.layoutId] && (
+                                                <div className="grid gap-2">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <button
+                                                            className="px-3 py-2 bg-gray-900/80 hover:bg-gray-900 rounded text-white text-sm flex items-center gap-2"
+                                                            onClick={() =>
+                                                                copyToClipboardForGrid(grid)
+                                                            }
+                                                        >
+                                                            {copiedMap[grid.layoutId]
+                                                                ? 'Markup Is copied to Clipboard'
+                                                                : 'Copy Markup to Clipboard'}
+                                                        </button>
+
+                                                        <button
+                                                            className="px-3 py-2 bg-gray-900/80 hover:bg-gray-900 rounded text-white text-sm"
+                                                            onClick={() =>
+                                                                setMarkupOpenMap((p) => ({
+                                                                    ...p,
+                                                                    [grid.layoutId]:
+                                                                        !p[grid.layoutId],
+                                                                }))
+                                                            }
+                                                        >
+                                                            {markupOpenMap[grid.layoutId]
+                                                                ? 'Hide Markup'
+                                                                : 'Show Markup'}
+                                                        </button>
+
+                                                        <button
+                                                            className="px-3 py-2 bg-gray-900/80 hover:bg-gray-900 rounded text-white text-sm"
+                                                            onClick={() =>
+                                                                toggleConfigText(grid.layoutId)
+                                                            }
+                                                        >
+                                                            {expandedConfigsText[grid.layoutId]
+                                                                ? 'Hide CSS Configuration'
+                                                                : 'Show CSS Configuration'}
+                                                        </button>
+                                                    </div>
+
+                                                    {markupOpenMap[grid.layoutId] && (
+                                                        <div className="bg-gray-900/60 border border-gray-700 rounded-lg px-3 py-2 overflow-auto">
+                                                            <pre className="text-xs text-green-400 whitespace-pre-wrap">
+                                                                {renderMarkupForGrid(grid)}
+                                                            </pre>
+                                                        </div>
+                                                    )}
+
+                                                    {expandedConfigsText[grid.layoutId] && (
+                                                        <div className="bg-gray-900/60 border border-gray-700 rounded-lg px-3 py-2 overflow-auto">
+                                                            <pre className="text-xs text-gray-200 whitespace-pre-wrap">
+                                                                {JSON.stringify(grid.config)}
+                                                            </pre>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
