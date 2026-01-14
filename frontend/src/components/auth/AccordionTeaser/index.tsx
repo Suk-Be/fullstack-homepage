@@ -5,7 +5,15 @@ import { GithubIcon } from '@/components/shared-components/CustomIcons';
 import { HeadlineSignInUp as Headline, ParagraphHP } from '@/components/TextElements';
 import { testId } from '@/utils/testId';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Link as MuiLink } from '@mui/material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    List,
+    ListItem,
+    Link as MuiLink,
+    Typography,
+} from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
 export default function AccordionExpandIcon() {
@@ -67,15 +75,24 @@ export default function AccordionExpandIcon() {
                             performante Koexistenz mit Seiten auf Basis der MUI Component Library
                             möglich ist.
                         </ParagraphHP>
-                        <ParagraphHP>
-                            Anspruch: <br />
-                            <ul>
-                                <li>Clean.</li>
-                                <li>Performant.</li>
-                                <li>Getestet.</li>
-                                <li>Versioniert.</li>
-                                <li>Dokumentiert.</li>
-                            </ul>
+                        <ParagraphHP component="div">
+                            <Typography component="span" sx={{ m: 0 }}>
+                                Anspruch:
+                            </Typography>
+
+                            <List dense sx={{ mt: 1, mb: 0, listStyleType: 'disc', pl: 3 }}>
+                                {[
+                                    'Clean.',
+                                    'Performant.',
+                                    'Getestet.',
+                                    'Versioniert.',
+                                    'Dokumentiert.',
+                                ].map((t) => (
+                                    <ListItem key={t} sx={{ display: 'list-item', p: 0 }}>
+                                        {t}
+                                    </ListItem>
+                                ))}
+                            </List>
                         </ParagraphHP>
                     </AccordionDetails>
                 </Accordion>

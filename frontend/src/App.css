@@ -1,6 +1,35 @@
 @import 'ProjectTemplateEnginePage.css';
 @import 'tailwindcss';
 
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+}
+* {
+    outline: 0; /* die outline wird per js einggefärbt */
+}
+
+/* js Code zum finden von overflow elementen
+
+(() => {
+  const vw = document.documentElement.clientWidth;
+  const bad = [];
+  document.querySelectorAll("*").forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.right > vw + 1 || r.left < -1) {
+      bad.push({ el, left: r.left, right: r.right, width: r.width, cls: el.className });
+    }
+  });
+  bad.sort((a,b) => b.width - a.width);
+  console.table(bad.slice(0, 20).map(x => ({
+    left: Math.round(x.left), right: Math.round(x.right), width: Math.round(x.width), cls: x.cls
+  })));
+  bad.slice(0, 5).forEach(x => x.el.style.outline = "3px solid red");
+})();
+
+*/
+
 /* MAIN RULES header and footer
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 .main-wrapper {

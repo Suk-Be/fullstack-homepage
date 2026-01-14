@@ -46,14 +46,14 @@ export default function LoggedInMenu() {
             container
             spacing={2}
             sx={{
-                width: {
-                    xs: '500px',
-                    sm: '800px',
-                    md: '1024px',
-                    lg: '1600px',
-                    xl: '1920px',
+                width: '100%',
+                maxWidth: {
+                    sm: 800,
+                    md: 1024,
+                    lg: 1600,
+                    xl: 1920,
                 },
-                padding: '0 1rem 0 2rem',
+                px: { xs: 2, sm: 3 },
                 justifyContent: 'space-between',
                 alignItems: 'center',
             }}

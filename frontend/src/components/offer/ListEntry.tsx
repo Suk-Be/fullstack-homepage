@@ -12,7 +12,7 @@ const ListEntry = ({ children }: PropsWithChildren) => {
                 color: 'rgba(33,29,29, 1)',
                 marginLeft: '0.5rem',
                 flexGrow: 1,
-                lineHeight: '0',
+                lineHeight: '1.3',
                 marginBottom: '0',
                 textAlign: 'center',
             }}

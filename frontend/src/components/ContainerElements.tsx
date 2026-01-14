@@ -101,13 +101,17 @@ const SectionRelative = ({ children, paddingBottom = '0px' }: SectionRelativePro
 const breakpointsContainer = {
     margin: '0 auto',
     backgroundColor: 'transparent',
-    width: {
-        xs: '500px',
-        sm: '800px',
-        md: '1024px',
-        lg: '1600px',
-        xl: '1920px',
+
+    width: '100%',
+    maxWidth: {
+        sm: 800,
+        md: 1024,
+        lg: 1600,
+        xl: 1920,
     },
+
+    boxSizing: 'border-box',
+
     boxShadow:
         'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 };
