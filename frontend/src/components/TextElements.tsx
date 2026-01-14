@@ -1,6 +1,6 @@
 import { SxProps, Theme, Typography, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { PropsWithChildren } from 'react';
+import { ElementType, PropsWithChildren } from 'react';
 
 // HomePage
 interface LogoHPProps extends PropsWithChildren {
@@ -159,6 +159,7 @@ const HeadlineHP = ({
 };
 
 interface ParagraphHPProps extends PropsWithChildren {
+    component?: ElementType;
     marginTop?: string;
     marginBottom?: string;
     sx?: SxProps<Theme>;
@@ -166,6 +167,7 @@ interface ParagraphHPProps extends PropsWithChildren {
 
 const ParagraphHP = ({
     children,
+    component = 'p',
     marginTop = '0px',
     marginBottom = '1rem',
     sx,
@@ -173,7 +175,7 @@ const ParagraphHP = ({
 }: ParagraphHPProps) => {
     return (
         <Typography
-            component="p"
+            component={component}
             sx={{
                 fontStyle: 'normal',
                 marginTop: marginTop,
