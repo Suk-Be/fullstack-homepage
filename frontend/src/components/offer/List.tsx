@@ -16,7 +16,8 @@ const Item = styled(Paper)(({ theme }) => ({
     fontSize: '1rem',
     color: 'rgba(33,29,29, 1)',
     ...theme.applyStyles('dark', {
-        backgroundColor: 'rgba(33,29,29, 0.1)',
+        backgroundColor: 'hsl(0, 0%, 90%)',
+        color: 'rgba(0,0,0, 1)',
     }),
 }));
 
