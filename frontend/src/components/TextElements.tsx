@@ -120,7 +120,7 @@ interface HeadlineHPPProps extends PropsWithChildren {
     marginBottom?: string;
     fontWeight?: 600 | 300;
     textAlign?: 'left' | 'center' | 'right';
-    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(53,102,64, 1)';
+    color?: 'colorSecondary';
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     sx?: SxProps<Theme>;
@@ -138,6 +138,9 @@ const HeadlineHP = ({
     sx,
     ...rest
 }: HeadlineHPPProps) => {
+    const resolvedColor =
+        color === 'colorSecondary' ? 'var(--template-palette-headline-colorSecondary)' : color;
+
     return (
         <Typography
             component={component}
@@ -146,7 +149,7 @@ const HeadlineHP = ({
                 fontWeight: fontWeight,
                 fontSize: fontSize,
                 fontStyle: 'normal',
-                color: color,
+                color: resolvedColor,
                 marginBottom: marginBottom,
                 textAlign: textAlign,
                 ...sx,
