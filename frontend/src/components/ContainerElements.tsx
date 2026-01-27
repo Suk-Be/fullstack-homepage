@@ -1,32 +1,20 @@
-import { Box, Container, Card as MuiCard, Stack } from '@mui/material';
+import { Box, Card as MuiCard, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { PropsWithChildren } from 'react';
-
-const SimpleContainer = ({ children }: PropsWithChildren) => {
-    return (
-        <Container maxWidth="sm">
-            <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }}>{children}</Box>
-        </Container>
-    );
-};
+import type { PropsWithChildren } from 'react';
 
 // HomePage
 
 interface SectionProps extends PropsWithChildren {
-    background?: string;
-    color?: string;
-    textAlign?: string;
-    padding?: string;
+    textAlign?: 'left' | 'center' | 'right' | 'justify';
+    padding?: string | number;
     paddingTop?: string;
     paddingTopMd?: string;
-    marginBottom?: string;
-    height?: string;
+    marginBottom?: string | number;
+    height?: string | number;
 }
 
 const Section = ({
     children,
-    background = 'rgba(33,29,29, 1)',
-    color = 'rgba(255,255,255, 1)',
     textAlign = 'left',
     padding = '2rem',
     paddingTop = '0',
@@ -39,16 +27,41 @@ const Section = ({
             component="section"
             sx={{
                 marginRight: '2rem',
-                padding: padding,
-                background: background,
-                color: color,
-                textAlign: textAlign,
-                paddingTop: {
-                    xs: paddingTop,
-                    md: paddingTopMd,
-                },
-                marginBottom: marginBottom,
-                height: height,
+                padding,
+                backgroundColor: 'var(--template-palette-background-default)',
+                color: 'var(--template-palette-text-primary)',
+                textAlign,
+                paddingTop: { xs: paddingTop, md: paddingTopMd },
+                marginBottom,
+                height,
+            }}
+        >
+            {children}
+        </Box>
+    );
+};
+
+const SectionImage = ({
+    children,
+    textAlign = 'left',
+    padding = '2rem',
+    paddingTop = '0',
+    paddingTopMd = '0',
+    marginBottom = '0',
+    height = 'auto',
+}: SectionProps) => {
+    return (
+        <Box
+            component="section"
+            sx={{
+                marginRight: '2rem',
+                padding,
+                backgroundColor: 'var(--template-palette-backgroundColorInverse-default)',
+                color: 'var(--template-palette-textColorInverse-primary)',
+                textAlign,
+                paddingTop: { xs: paddingTop, md: paddingTopMd },
+                marginBottom,
+                height,
             }}
         >
             {children}
@@ -80,13 +93,14 @@ const SectionRelative = ({ children, paddingBottom = '0px' }: SectionRelativePro
         <Box
             component="section"
             sx={{
-                maxWidth: 'calc(100%-2rem)',
+                maxWidth: 'calc(100% - 2rem)',
                 margin: '0 auto',
                 padding: '2rem',
                 marginRight: '2rem',
                 position: 'relative',
-                background: 'rgba(33,29,29, 1)',
-                color: 'rgba(255,255,255, 1)',
+                backgroundColor: 'var(--template-palette-backgroundColorInverse-default)',
+                color: 'var(--template-palette-textColorInverse-primary)',
+
                 textAlign: 'left',
                 paddingBottom: {
                     md: paddingBottom,
@@ -120,21 +134,17 @@ const ResponsiveContainer = ({ children }: PropsWithChildren) => {
     return <Box sx={breakpointsContainer}>{children}</Box>;
 };
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
+const SignInContainer = styled(Stack)(() => ({
+    position: 'relative',
     minHeight: '100%',
     '&::before': {
         content: '""',
-        display: 'block',
         position: 'absolute',
-        zIndex: -1,
         inset: 0,
-        backgroundImage:
-            'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+        zIndex: -1,
+        backgroundImage: 'var(--template-palette-backgroundImage-signIn)',
         backgroundRepeat: 'no-repeat',
-        ...theme.applyStyles('dark', {
-            backgroundImage:
-                'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-        }),
+        display: 'block',
     },
     marginBottom: '4rem',
 }));
@@ -147,20 +157,16 @@ const Card = styled(MuiCard)(({ theme }) => ({
     padding: '2rem',
     gap: theme.spacing(2),
     margin: 'auto',
-    boxShadow:
-        'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-    ...theme.applyStyles('dark', {
-        boxShadow:
-            'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-    }),
+    boxShadow: 'var(--template-palette-boxShadow-card)',
 }));
 
-export default SimpleContainer;
+// export default SimpleContainer;
 export {
     Card,
     ResponsiveContainer,
     Section,
     SectionCenteredChild,
+    SectionImage,
     SectionRelative,
     SignInContainer,
 };
