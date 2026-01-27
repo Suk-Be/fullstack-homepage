@@ -3,7 +3,7 @@ import App from '@/App';
 import Loading from '@/components/auth/shared-components/Loading';
 import ProtectedApp from '@/ProtectedApp';
 import { lazy, Suspense } from 'react';
-import { RouteObject } from 'react-router';
+import { RouteObject } from 'react-router-dom';
 
 // Dynamische Imports aller Seiten im /pages Ordner
 const pages = import.meta.glob('./pages/*.tsx');

@@ -1,5 +1,5 @@
 import routes from '@/routes';
-import { RouterProvider, createBrowserRouter } from 'react-router';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 const router = createBrowserRouter(routes, {
     basename: import.meta.env.VITE_BASENAME,

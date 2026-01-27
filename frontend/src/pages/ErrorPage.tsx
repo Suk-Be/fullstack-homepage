@@ -1,10 +1,11 @@
 import NotFound from '@/components/auth/shared-components/NotFound';
 import { ResponsiveContainer } from '@/components/ContainerElements';
-import { isRouteErrorResponse, useRouteError } from 'react-router';
+import { isProd } from '@/utils/isProd';
+import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 
 const ErrorPage = () => {
     const error = useRouteError();
-    const isProduction = import.meta.env.PROD;
+    const isProduction = isProd();
 
     const renderErrorMessage = () => {
         // This guards against error being falsy.
