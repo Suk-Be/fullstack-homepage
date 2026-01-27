@@ -1,36 +1,106 @@
-import { alpha, createTheme, PaletteMode, Shadows } from '@mui/material/styles';
+/**
+ * themePrimitives.ts (MUI v6 + CSS Variables)
+ *
+ * Zweck
+ * - Zentrale Ablage der Farb-/Style-Tokens für Light/Dark (`colorSchemes`).
+ * - Komponenten sollen möglichst nur Theme-Werte lesen (keine hardcoded HSL/rgba in Components).
+ *
+ * Warum `colorSchemes`?
+ * - In MUI v6 kann `createTheme({ cssVariables: { ... }, colorSchemes })` pro Scheme (light/dark)
+ *   unterschiedliche Palette-Werte definieren.
+ * - MUI erzeugt daraus CSS-Variablen (bei `cssVarPrefix: "template"` z.B. `--template-palette-baseShadow`).
+ * - Wechsel des Color Schemes (data-mui-color-scheme) wechselt automatisch die CSS-Variablen.
+ *
+ * Wichtige Custom Keys (alle in `palette`)
+ * - `baseShadow` (string): wird als CSS Variable konsumiert, um `theme.shadows[1]` scheme-abhängig zu machen.
+ * - `boxShadow.card` (string): spezieller Shadow für eine Card-Komponente.
+ * - `backgroundImage.signIn` (string): scheme-abhängiger Gradient (z.B. SignIn Background).
+ * - `backgroundColorInverse` / `textColorInverse`: “inverse” Oberfläche/Text für Sonderfälle.
+ * - `backgroundColor`: Alias für Legacy (entspricht `background`, kann später entfernt werden wenn ungenutzt).
+ *
+ * Ergebnis für Komponenten
+ * - Normale Oberfläche:
+ *   `backgroundColor: theme.palette.background.default`
+ *   `color: theme.palette.text.primary`
+ *
+ * - Inverse Oberfläche:
+ *   `backgroundColor: theme.palette.backgroundColorInverse?.default`
+ *   `color: theme.palette.textColorInverse?.primary`
+ *
+ * - Gradient:
+ *   `backgroundImage: theme.palette.backgroundImage?.signIn`
+ *
+ * - Shadows:
+ *   `theme.shadows[1]` -> `var(--template-palette-baseShadow)` -> automatisch light/dark
+ */
 
-declare module '@mui/material/Paper' {
-    interface PaperPropsVariantOverrides {
-        highlighted: true;
-    }
-}
+import { alpha, createTheme, Shadows } from '@mui/material/styles';
+
+/** ---------------------------------------------
+ * Type augmentation: Custom palette keys
+ * ---------------------------------------------- */
 declare module '@mui/material/styles' {
-    interface ColorRange {
-        50: string;
-        100: string;
-        200: string;
-        300: string;
-        400: string;
-        500: string;
-        600: string;
-        700: string;
-        800: string;
-        900: string;
+    interface Palette {
+        backgroundColor?: { default: string; paper: string };
+
+        backgroundColorInverse?: { default: string; paper: string };
+
+        /** ✅ gradients via theme token (auto light/dark via colorSchemes) */
+        backgroundImage?: { signIn: string };
+
+        baseShadow: string;
+
+        boxShadow?: {
+            card: string;
+        };
+
+        headline?: {
+            colorSecondary: string;
+        };
+
+        nav?: {
+            bottom: {
+                backgroundColor: string;
+                text: string;
+            };
+        };
+
+        textColorInverse?: { primary: string; secondary?: string };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface PaletteColor extends ColorRange {}
+    interface PaletteOptions {
+        backgroundColor?: { default?: string; paper?: string };
 
-    interface Palette {
-        baseShadow: string;
+        backgroundColorInverse?: { default?: string; paper?: string };
+
+        /** ✅ gradients via theme token (auto light/dark via colorSchemes) */
+        backgroundImage?: { signIn?: string };
+
+        baseShadow?: string;
+
+        boxShadow?: {
+            card?: string;
+        };
+
+        headline?: {
+            colorSecondary: string;
+        };
+
+        nav?: {
+            bottom: {
+                backgroundColor: string;
+                text: string;
+            };
+        };
+
+        textColorInverse?: { primary?: string; secondary?: string };
     }
 }
 
+/** Base theme only used to reuse default shadows after index 1 */
 const defaultTheme = createTheme();
 
-const customShadows: Shadows = [...defaultTheme.shadows];
-
+/** ---------------- Primitives ---------------- */
 export const brand = {
     50: 'hsl(148, 100%, 96%)',
     100: 'hsl(148, 100%, 91%)',
@@ -41,8 +111,8 @@ export const brand = {
     600: 'hsl(148, 100%, 41%)',
     700: 'hsl(148, 100%, 31%)',
     800: 'hsl(148, 100%, 21%)',
-    900: 'hsl(148, 100%, 11%)', // green headline
-};
+    900: 'hsl(148, 100%, 11%)',
+} as const;
 
 export const gray = {
     50: 'hsl(0, 7%, 97%)',
@@ -53,9 +123,9 @@ export const gray = {
     500: 'hsl(0, 7%, 52%)',
     600: 'hsl(0, 7%, 42%)',
     700: 'hsl(0, 7%, 32%)',
-    800: 'hsl(0, 7%, 22%)', // paragraph
-    900: 'hsl(0, 7%, 12%)', // headline
-};
+    800: 'hsl(0, 7%, 22%)',
+    900: 'hsl(0, 7%, 12%)',
+} as const;
 
 export const blue = {
     50: 'hsl(209, 100%, 97%)',
@@ -68,7 +138,7 @@ export const blue = {
     700: 'hsl(209, 100%, 31%)',
     800: 'hsl(209, 100%, 21%)',
     900: 'hsl(209, 100%, 11%)',
-};
+} as const;
 
 export const orange = {
     50: 'hsl(45, 100%, 97%)',
@@ -81,7 +151,7 @@ export const orange = {
     700: 'hsl(45, 94%, 20%)',
     800: 'hsl(45, 95%, 16%)',
     900: 'hsl(45, 93%, 12%)',
-};
+} as const;
 
 export const red = {
     50: 'hsl(328, 100%, 97%)',
@@ -94,219 +164,245 @@ export const red = {
     700: 'hsl(328, 100%, 11%)',
     800: 'hsl(328, 100%, 8%)',
     900: 'hsl(328, 100%, 5%)',
-};
+} as const;
 
-export const getDesignTokens = (mode: PaletteMode) => {
-    customShadows[1] =
-        mode === 'dark'
-            ? 'hsla(220, 30%, 5%, 0.7) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.8) 0px 8px 16px -5px'
-            : 'hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px';
+export const slate = {
+    page: {
+        hex: '#0B0F14',
+        rgb: 'rgb(11, 15, 20)',
+        rgba: 'rgba(11, 15, 20, 1)',
+        hsl: 'hsl(213, 29%, 6%)',
+    },
+    surface1: {
+        hex: '#121923',
+        rgb: 'rgb(18, 25, 35)',
+        rgba: 'rgba(18, 25, 35, 1)',
+        hsl: 'hsl(215, 32%, 10%)',
+    },
+    surface2: {
+        hex: '#171F2B',
+        rgb: 'rgb(23, 31, 43)',
+        rgba: 'rgba(23, 31, 43, 1)',
+        hsl: 'hsl(216, 30%, 13%)',
+    },
+    surface3: {
+        hex: '#1C2633',
+        rgb: 'rgb(28, 38, 51)',
+        rgba: 'rgba(28, 38, 51, 1)',
+        hsl: 'hsl(215, 25%, 0%)',
+    },
+} as const;
 
-    return {
-        palette: {
-            mode,
-            primary: {
-                light: brand[200],
-                main: brand[400],
-                dark: brand[700],
-                contrastText: brand[50],
-                ...(mode === 'dark' && {
-                    contrastText: brand[50],
-                    light: brand[300],
-                    main: brand[400],
-                    dark: brand[700],
-                }),
-            },
-            info: {
-                light: blue[100],
-                main: blue[300],
-                dark: blue[600],
-                contrastText: gray[50],
-                ...(mode === 'dark' && {
-                    contrastText: blue[300],
-                    light: blue[500],
-                    main: blue[700],
-                    dark: blue[900],
-                }),
-            },
-            warning: {
-                light: orange[300],
-                main: orange[400],
-                dark: orange[800],
-                ...(mode === 'dark' && {
-                    light: orange[400],
-                    main: orange[500],
-                    dark: orange[700],
-                }),
-            },
-            error: {
-                light: red[300],
-                main: red[400],
-                dark: red[800],
-                ...(mode === 'dark' && {
-                    light: red[400],
-                    main: red[500],
-                    dark: red[700],
-                }),
-            },
-            success: {
-                light: brand[300],
-                main: brand[400],
-                dark: brand[800],
-                ...(mode === 'dark' && {
-                    light: brand[400],
-                    main: brand[500],
-                    dark: brand[700],
-                }),
-            },
-            grey: {
-                ...gray,
-            },
-            divider: mode === 'dark' ? alpha(gray[700], 0.6) : alpha(gray[300], 0.4),
-            background: {
-                default: 'hsl(0, 0%,99%)',
-                paper: 'hsl(220, 35%, 97%)',
-                ...(mode === 'dark' && { default: gray[900], paper: 'hsl(220, 30%, 7%)' }),
-            },
-            text: {
-                primary: gray[800],
-                secondary: gray[600],
-                warning: orange[400],
-                ...(mode === 'dark' && {
-                    primary: 'hsl(0, 0%, 100%)',
-                    secondary: gray[400],
-                }),
-            },
-            action: {
-                hover: alpha(gray[200], 0.2),
-                selected: `${alpha(gray[200], 0.3)}`,
-                ...(mode === 'dark' && {
-                    hover: alpha(gray[600], 0.2),
-                    selected: alpha(gray[600], 0.3),
-                }),
-            },
-        },
-        shape: {
-            borderRadius: 8,
-        },
-        shadows: customShadows,
-    };
-};
-
+/** ---------------- colorSchemes ---------------- */
 export const colorSchemes = {
     light: {
         palette: {
-            primary: {
-                light: brand[200],
-                main: brand[400],
-                dark: brand[700],
-                contrastText: brand[50],
+            action: {
+                hover: alpha(gray[200], 0.2),
+                selected: `${alpha(gray[200], 0.3)}`,
             },
-            info: {
-                light: brand[100],
-                main: brand[300],
-                dark: brand[600],
-                contrastText: gray[50],
-            },
-            warning: {
-                light: orange[300],
-                main: orange[400],
-                dark: orange[800],
-            },
-            error: {
-                light: red[200],
-                main: red[300],
-                dark: red[500],
-            },
-            success: {
-                light: brand[300],
-                main: brand[400],
-                dark: brand[800],
-            },
-            grey: {
-                ...gray,
-            },
-            divider: alpha(gray[300], 0.4),
+
             background: {
                 default: 'hsl(0, 0%, 100%)',
                 paper: 'hsl(220, 35%, 97%)',
             },
+
+            /** Alias (falls Komponenten das nutzen) */
             backgroundColor: {
                 default: 'hsl(0, 0%, 100%)',
                 paper: 'hsl(220, 35%, 97%)',
             },
+
+            backgroundColorInverse: {
+                default: gray[900],
+                paper: slate.surface3.hsl,
+            },
+
+            /** ✅ theme-driven gradient */
+            backgroundImage: {
+                signIn: 'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+            },
+
+            /** Must be a string (so CSS variable can be consumed in theme.shadows[1]) */
+            baseShadow:
+                'hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px',
+
+            boxShadow: {
+                card: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+            },
+
+            divider: alpha(gray[300], 0.4),
+
+            error: {
+                contrastText: brand[50],
+                dark: red[500],
+                light: red[200],
+                main: red[300],
+            },
+
+            grey: { ...gray },
+
+            headline: {
+                colorSecondary: 'rgba(53,102,64, 1)',
+            },
+
+            info: {
+                contrastText: gray[50],
+                dark: brand[600],
+                light: brand[100],
+                main: brand[300],
+            },
+
+            nav: {
+                bottom: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                    text: 'rgba(33,29,29, 0.5)',
+                },
+            },
+
+            primary: {
+                contrastText: brand[50],
+                dark: brand[700],
+                light: brand[200],
+                main: brand[400],
+            },
+
+            success: {
+                contrastText: brand[50],
+                dark: brand[800],
+                light: brand[300],
+                main: brand[400],
+            },
+
             text: {
                 primary: gray[800],
                 secondary: gray[600],
                 warning: orange[400],
             },
-            action: {
-                hover: alpha(gray[200], 0.2),
-                selected: `${alpha(gray[200], 0.3)}`,
+
+            textColorInverse: {
+                primary: 'hsl(0, 0%, 100%)',
+                secondary: gray[100],
             },
-            baseShadow:
-                'hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px',
+
+            warning: {
+                dark: orange[800],
+                light: orange[300],
+                main: orange[400],
+            },
         },
     },
+
     dark: {
         palette: {
-            primary: {
-                contrastText: brand[50],
-                light: brand[300],
-                main: brand[400],
-                dark: brand[700],
-            },
-            info: {
-                contrastText: brand[300],
-                light: brand[500],
-                main: brand[700],
-                dark: brand[900],
-            },
-            warning: {
-                light: orange[400],
-                main: orange[500],
-                dark: orange[700],
-            },
-            error: {
-                light: red[400],
-                main: red[500],
-                dark: red[700],
-            },
-            success: {
-                light: brand[400],
-                main: brand[500],
-                dark: brand[700],
-            },
-            grey: {
-                ...gray,
-            },
-            divider: alpha(gray[700], 0.6),
-            background: {
-                default: gray[900],
-                paper: 'hsl(220, 30%, 7%)',
-            },
-            text: {
-                primary: 'hsl(0, 0%, 100%)',
-                secondary: gray[400],
-            },
             action: {
                 hover: alpha(gray[600], 0.2),
                 selected: alpha(gray[600], 0.3),
             },
+
+            background: {
+                default: slate.page.hsl,
+                paper: slate.surface1.hsl,
+            },
+
+            /** Alias (falls Komponenten das nutzen) */
+            backgroundColor: {
+                default: slate.page.hsl,
+                paper: slate.surface3.hsl,
+            },
+
+            backgroundColorInverse: {
+                default: slate.page.hsl,
+                paper: slate.surface3.hsl,
+            },
+
+            /** ✅ theme-driven gradient */
+            backgroundImage: {
+                signIn: 'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+            },
+
+            /** ✅ must remain STRING (your shadows[1] depends on it) */
             baseShadow:
                 'hsla(220, 30%, 5%, 0.7) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.8) 0px 8px 16px -5px',
+
+            boxShadow: {
+                card: 'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
+            },
+
+            divider: alpha(gray[700], 0.6),
+
+            error: {
+                contrastText: brand[50],
+                dark: red[400],
+                light: red[100],
+                main: red[300],
+            },
+
+            grey: { ...gray },
+
+            headline: {
+                colorSecondary: 'rgba(255,255,255, 1)',
+            },
+
+            info: {
+                contrastText: brand[300],
+                dark: brand[900],
+                light: brand[500],
+                main: brand[700],
+            },
+
+            nav: {
+                bottom: {
+                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                    text: 'rgba(0,0,0, 1)',
+                },
+            },
+
+            primary: {
+                contrastText: brand[50],
+                dark: brand[700],
+                light: brand[300],
+                main: brand[400],
+            },
+
+            success: {
+                contrastText: brand[50],
+                dark: brand[700],
+                light: brand[400],
+                main: brand[500],
+            },
+
+            text: {
+                primary: 'hsl(0, 0%, 100%)',
+                secondary: 'hsl(0, 0%, 100%)',
+            },
+            textColorInverse: {
+                primary: 'hsl(0, 0%, 100%)',
+                secondary: gray[700],
+            },
+
+            warning: {
+                dark: orange[700],
+                light: orange[400],
+                main: orange[500],
+            },
         },
     },
-};
+} as const;
 
+/** shape (wie im Original) */
 export const shape = {
     borderRadius: 8,
-};
+} as const;
 
-// @ts-expect-error: Shadows type does not allow custom CSS variables
+/** ---------------------------------------------
+ * shadows: CSS variable consumption
+ * ---------------------------------------------- */
+// @ts-expect-error MUI Shadows type does not allow CSS variables, but runtime supports it.
 const defaultShadows: Shadows = [
     'none',
     'var(--template-palette-baseShadow)',
     ...defaultTheme.shadows.slice(2),
 ];
+
 export const shadows = defaultShadows;

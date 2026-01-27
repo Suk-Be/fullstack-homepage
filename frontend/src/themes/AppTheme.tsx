@@ -52,11 +52,11 @@ export default function AppTheme(props: AppThemeProps) {
                       MuiCssBaseline: {
                           styleOverrides: `
                             @font-face {
-                                font-family: 'Fira Sans';
-                                font-style: normal;
-                                font-display: swap;
-                                font-weight: 300;
-                              }
+                              font-family: 'Fira Sans';
+                              font-style: normal;
+                              font-display: swap;
+                              font-weight: 300;
+                            }
                           `,
                       },
                       ...inputsCustomizations,
