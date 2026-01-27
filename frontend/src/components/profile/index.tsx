@@ -1,4 +1,4 @@
-import { Section, SectionRelative } from '@/components/ContainerElements';
+import { SectionImage, SectionRelative } from '@/components/ContainerElements';
 import { Claim, Logo, ParagraphHP } from '@/components/TextElements';
 import { testId } from '@/utils/testId';
 import DOMPurify from 'dompurify';
@@ -23,14 +23,14 @@ const ProfileHP = ({ profile }: Props) => {
 
     return (
         <>
-            <Section textAlign="center" paddingTop="7rem" paddingTopMd="7rem">
+            <SectionImage textAlign="center" paddingTop="7rem" paddingTopMd="7rem">
                 <Logo component="h1" {...testId('headline-logo-home-page')} />
                 <Claim {...testId('profile-claim-home-page')}>(Web Developer)</Claim>
                 <ProfilePic
                     imgSrc={profile.attributes.image!}
                     {...testId('profile-pic-home-page')}
                 />
-            </Section>
+            </SectionImage>
             <SectionRelative paddingBottom="3rem">
                 <RibbonLayout variant="h2" component="h2" {...testId('subtitle-home-page')}>
                     {profile.attributes.title}

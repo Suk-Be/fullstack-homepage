@@ -42,8 +42,6 @@ const OfferHP = ({ offer, teaser }: Props) => {
         <>
             <Section
                 textAlign="center"
-                background="rgba(255,255,255, 1)"
-                color="rgba(33,29,29, 1)"
                 padding="2rem 0 0.5rem 2rem"
                 paddingTop="2rem"
                 paddingTopMd="7rem"
@@ -54,13 +52,7 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 <SubTitle>{teaser.attributes.subtitle}</SubTitle>
                 <NumberedList list={teaser.attributes.list} />
             </Section>
-            <Section
-                textAlign="left"
-                background="rgba(255,255,255, 1)"
-                color="rgba(33,29,29, 1)"
-                padding="0rem 2rem 2rem 4rem"
-                {...testId('offer-content-01')}
-            >
+            <Section textAlign="left" padding="0rem 2rem 2rem 4rem" {...testId('offer-content-01')}>
                 <HeadlineHP
                     variant="h4"
                     component="h4"
@@ -74,17 +66,12 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 <ParagraphHP {...testId('offer-content-01')}>{parse(sanitizedData0)}</ParagraphHP>
             </Section>
 
-            <Section
-                textAlign="left"
-                background="rgba(255,255,255, 1)"
-                color="rgba(33,29,29, 1)"
-                padding="0rem 2rem 2rem 4rem"
-            >
+            <Section textAlign="left" padding="0rem 2rem 2rem 4rem">
                 <HeadlineHP
                     variant="h5"
                     component="h5"
                     marginBottom="1rem"
-                    color="rgba(53,102,64, 1)"
+                    color="colorSecondary"
                     {...testId('offer-headline-02')}
                 >
                     {/* @ts-expect-error possibly undefined */}
@@ -93,12 +80,7 @@ const OfferHP = ({ offer, teaser }: Props) => {
                 <ParagraphHP {...testId('offer-content-02')}>{parse(sanitizedData1)}</ParagraphHP>
             </Section>
 
-            <Section
-                textAlign="left"
-                background="rgba(255,255,255, 1)"
-                color="rgba(33,29,29, 1)"
-                padding="0rem 2rem 2rem 4rem"
-            >
+            <Section textAlign="left" padding="0rem 2rem 2rem 4rem">
                 <HeadlineHP
                     variant="h4"
                     component="h4"

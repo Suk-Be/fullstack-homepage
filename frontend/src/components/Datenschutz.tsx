@@ -7,7 +7,7 @@ import { HeadlineHP, ParagraphHP } from '@/components/TextElements';
 export default function Datenschutz() {
     return (
         <>
-            <Section textAlign="left" background="rgba(255,255,255, 1)" color="rgba(33,29,29, 1)">
+            <Section textAlign="left">
                 <HeadlineHP
                     variant="h1"
                     component="h1"
