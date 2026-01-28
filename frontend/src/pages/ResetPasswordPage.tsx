@@ -1,4 +1,4 @@
-import ResetPassword from '@/components/auth/ResetPassword';
+import ResetPassword from '@/components/auth/resetPassword';
 import { ResponsiveContainer } from '@/components/ContainerElements';
 import { CssBaseline } from '@mui/material';
 

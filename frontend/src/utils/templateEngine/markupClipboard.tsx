@@ -1,5 +1,5 @@
-import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
-import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfiguration/markUp/CreateGridMarkUp';
+import CreateGridLayout from '@/componentsTemplateEngine/gridConfigurations/CreateGridLayout';
+import CreateGridMarkUp from '@/componentsTemplateEngine/gridConfigurations/markUp/CreateGridMarkUp';
 import { DynamicGridProps } from '@/types/templateEngine';
 import {
     createHtmlAsTextFromPassedComponent,

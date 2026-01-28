@@ -1,7 +1,7 @@
-import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
+import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
 import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
+import { GithubIcon } from '@/components/icons/CustomIcons';
 import RouterLinkWrapper from '@/components/RouterLink';
-import { GithubIcon } from '@/components/shared-components/CustomIcons';
 import { HeadlineSignInUp as Headline, ParagraphHP } from '@/components/TextElements';
 import { testId } from '@/utils/testId';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';

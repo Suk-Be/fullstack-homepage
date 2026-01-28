@@ -1,6 +1,6 @@
 // src/routes.tsx
 import App from '@/App';
-import Loading from '@/components/auth/shared-components/Loading';
+import Loading from '@/components/auth/auth-shared-components/Loading';
 import ProtectedApp from '@/ProtectedApp';
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';

@@ -1,6 +1,6 @@
-import Loading from '@/components/auth/shared-components/Loading';
+import Loading from '@/components/auth/auth-shared-components/Loading';
+import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/save-gridsmodal-shared/IsGridNameUnique';
 import { formatGridDate } from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList/formatGridDate';
-import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/shared/IsGridNameUnique';
 import { CancelSVG, CheckSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectSavedGridsMap, selectSortedGrids } from '@/store/selectors/userGridSelectors';

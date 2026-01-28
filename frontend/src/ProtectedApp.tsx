@@ -1,4 +1,4 @@
-import Loading from '@/components/auth/shared-components/Loading';
+import Loading from '@/components/auth/auth-shared-components/Loading';
 import NotLoggedInPage from '@/pages/NotLoggedInPage';
 import { useAppSelector } from '@/store/hooks';
 import { selectLoginState } from '@/store/selectors/loginSelectors';
