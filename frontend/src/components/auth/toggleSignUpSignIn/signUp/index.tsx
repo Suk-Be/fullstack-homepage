@@ -1,4 +1,5 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
+import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
 import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
 import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
 import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
@@ -13,7 +14,6 @@ import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import {
     Box,
-    Button,
     Divider,
     FormControl,
     FormLabel,
@@ -322,20 +322,11 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                             />
                         </FormControl>
 
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            disabled={isSubmitting}
-                            sx={{
-                                '&.Mui-disabled': {
-                                    color: 'common.white',
-                                },
-                            }}
-                            {...testId('form-button-register')}
-                        >
-                            {isSubmitting ? 'Wird gesendet...' : 'Registrieren'}
-                        </Button>
+                        <ButtonDefault
+                            isSubmitting={isSubmitting}
+                            btnName="Registrieren"
+                            testIdName="form-button-register"
+                        />
                     </Box>
                     <Divider>
                         <Typography sx={{ color: 'text.secondary' }}>or</Typography>

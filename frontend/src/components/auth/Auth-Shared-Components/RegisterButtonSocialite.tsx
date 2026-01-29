@@ -1,3 +1,4 @@
+// RegisterButtonSocialite.tsx
 import { testId } from '@/utils/testId';
 import { Button } from '@mui/material';
 import { FC } from 'react';
@@ -22,19 +23,29 @@ const RegisterButtonSocialite: FC<RegisterButtonSocialiteProps> = ({
             onClick={clickHandler}
             startIcon={startIcon}
             sx={{
-                // Textfarbe + Border folgen dem Theme
+                /* DEFAULT */
                 color: 'var(--template-palette-text-primary)',
                 borderColor: 'var(--template-palette-divider)',
+                backgroundColor: 'transparent',
 
+                /* HOVER (light + dark) */
                 '&:hover': {
+                    color: 'var(--template-palette-text-primary)',
                     borderColor: 'var(--template-palette-text-primary)',
                     backgroundColor: 'var(--template-palette-action-hover)',
                 },
 
+                /* ACTIVE */
+                '&:active': {
+                    backgroundColor: 'var(--template-palette-action-selected)',
+                },
+
+                /* DISABLED */
                 '&.Mui-disabled': {
+                    opacity: 0.5,
                     color: 'var(--template-palette-text-primary)',
                     borderColor: 'var(--template-palette-divider)',
-                    opacity: 0.5,
+                    backgroundColor: 'transparent',
                 },
             }}
             {...testId(testIdIdentifier)}

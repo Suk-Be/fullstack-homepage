@@ -1,4 +1,5 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
+import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
 import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
 import { Card, SignInContainer } from '@/components/ContainerElements';
 import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
@@ -13,7 +14,6 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
     Box,
-    Button,
     Divider,
     FormControl,
     FormLabel,
@@ -220,21 +220,11 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 }}
                             />
                         </FormControl>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            disabled={isSubmitting}
-                            sx={{
-                                '&.Mui-disabled': {
-                                    color: 'common.white',
-                                },
-                            }}
-                            {...testId('form-button-login')}
-                        >
-                            {isSubmitting ? 'Wird gesendet...' : 'Anmelden'}
-                        </Button>
-
+                        <ButtonDefault
+                            isSubmitting={isSubmitting}
+                            btnName="Anmelden"
+                            testIdName="form-button-login"
+                        />
                         <Link
                             component="button"
                             type="button"

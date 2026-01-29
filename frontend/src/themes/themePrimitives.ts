@@ -296,7 +296,7 @@ export const colorSchemes = {
     dark: {
         palette: {
             action: {
-                hover: alpha(gray[600], 0.2),
+                hover: alpha(gray[600], 0.12),
                 selected: alpha(gray[600], 0.3),
             },
 

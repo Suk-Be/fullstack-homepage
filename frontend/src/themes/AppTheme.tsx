@@ -1,6 +1,7 @@
 import type { ThemeOptions } from '@mui/material/styles';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import * as React from 'react';
+import buttonsCustomizations from './customizations/buttons';
 import dataDisplayCustomizations from './customizations/dataDisplay';
 import feedbackCustomizations from './customizations/feedback';
 import inputsCustomizations from './customizations/inputs';
@@ -59,6 +60,7 @@ export default function AppTheme(props: AppThemeProps) {
                             }
                           `,
                       },
+                      ...buttonsCustomizations,
                       ...inputsCustomizations,
                       ...dataDisplayCustomizations,
                       ...feedbackCustomizations,
