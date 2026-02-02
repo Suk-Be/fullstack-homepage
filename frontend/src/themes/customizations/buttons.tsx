@@ -242,11 +242,11 @@ const buttonsCustomizations: Components<Theme> = {
                     backgroundColor: gray[200],
                 },
                 ...theme.applyStyles('dark', {
-                    backgroundColor: gray[800],
-                    borderColor: gray[700],
+                    backgroundColor: alpha(gray[50], 0.3),
+                    borderColor: gray[200],
                     '&:hover': {
-                        backgroundColor: gray[900],
-                        borderColor: gray[600],
+                        backgroundColor: gray[100],
+                        borderColor: gray[300],
                     },
                     '&:active': {
                         backgroundColor: gray[900],

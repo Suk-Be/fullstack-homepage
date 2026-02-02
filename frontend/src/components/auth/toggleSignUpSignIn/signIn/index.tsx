@@ -1,6 +1,7 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
 import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
 import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
+import { VisibilityIcon } from '@/components/auth/auth-shared-components/VisibilityIcon';
 import { Card, SignInContainer } from '@/components/ContainerElements';
 import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
 import useModalToggle from '@/hooks/useModalToggle';
@@ -10,17 +11,8 @@ import { loginThunk } from '@/store/thunks/loginThunk';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
 import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import {
-    Box,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-} from '@mui/material';
+import { Box, Divider, FormControl, FormLabel, TextField } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import ForgotPassword from './ForgotPassword';
@@ -197,19 +189,10 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                                 slotProps={{
                                     input: {
                                         endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={togglePasswordVisibility}
-                                                    edge="end"
-                                                    aria-label="Toggle password visibility"
-                                                >
-                                                    {showPassword ? (
-                                                        <VisibilityOff />
-                                                    ) : (
-                                                        <Visibility />
-                                                    )}
-                                                </IconButton>
-                                            </InputAdornment>
+                                            <VisibilityIcon
+                                                togglePassword={togglePasswordVisibility}
+                                                showPassword={showPassword}
+                                            />
                                         ),
                                     },
                                 }}

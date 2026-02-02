@@ -1,6 +1,7 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
 import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
 import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
+import { VisibilityIcon } from '@/components/auth/auth-shared-components/VisibilityIcon';
 import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
 import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
 import { ParagraphHP } from '@/components/TextElements';
@@ -11,17 +12,8 @@ import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
 import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
 import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
 import { testId } from '@/utils/testId';
-import { HowToReg as HowToRegIcon, Visibility, VisibilityOff } from '@mui/icons-material';
-import {
-    Box,
-    Divider,
-    FormControl,
-    FormLabel,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { HowToReg as HowToRegIcon } from '@mui/icons-material';
+import { Box, Divider, FormControl, FormLabel, TextField, Typography } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import requestRegister from '../../requests/requestRegister';
@@ -278,19 +270,10 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                                 slotProps={{
                                     input: {
                                         endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleTogglePassword}
-                                                    edge="end"
-                                                    aria-label="Toggle password visibility"
-                                                >
-                                                    {showPassword ? (
-                                                        <VisibilityOff />
-                                                    ) : (
-                                                        <Visibility />
-                                                    )}
-                                                </IconButton>
-                                            </InputAdornment>
+                                            <VisibilityIcon
+                                                togglePassword={handleTogglePassword}
+                                                showPassword={showPassword}
+                                            />
                                         ),
                                     },
                                 }}
