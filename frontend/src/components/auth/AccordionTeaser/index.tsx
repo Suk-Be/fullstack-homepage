@@ -126,11 +126,7 @@ export default function AccordionExpandIcon() {
                         </ParagraphHP>
                         <ParagraphHP>Testen Sie die Template Engine gerne selbst.</ParagraphHP>
                         <ParagraphHP>
-                            <MuiLink
-                                component={RouterLinkWrapper}
-                                href="/template-engine"
-                                color="rgba(53,102,64, 1)"
-                            >
+                            <MuiLink component={RouterLinkWrapper} href="/template-engine">
                                 zur Template Engine
                             </MuiLink>
                         </ParagraphHP>
