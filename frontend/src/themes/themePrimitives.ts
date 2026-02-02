@@ -283,6 +283,7 @@ export const colorSchemes = {
             textColorInverse: {
                 primary: 'hsl(0, 0%, 100%)',
                 secondary: gray[100],
+                toggleTheme: gray[500],
             },
 
             warning: {
@@ -379,6 +380,7 @@ export const colorSchemes = {
             textColorInverse: {
                 primary: 'hsl(0, 0%, 100%)',
                 secondary: gray[700],
+                toggleTheme: gray[800],
             },
 
             warning: {

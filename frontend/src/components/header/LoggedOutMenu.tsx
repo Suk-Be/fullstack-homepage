@@ -1,12 +1,15 @@
+import { ColorMode } from '@/components/header/ColorMode';
+import LinkedLogo from '@/components/header/LinkedLogo';
 import { testId } from '@/utils/testId';
 import { Grid } from '@mui/material';
-import LinkedLogo from './LinkedLogo';
 
 const LoggedOutMenu = () => {
     return (
         <Grid
             container
             spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
             sx={{
                 width: '100%',
                 maxWidth: {
@@ -21,8 +24,11 @@ const LoggedOutMenu = () => {
             }}
             {...testId('logged-out-menu')}
         >
-            <Grid sx={{ color: '#ffff' }}>
+            <Grid>
                 <LinkedLogo />
+            </Grid>
+            <Grid>
+                <ColorMode />
             </Grid>
         </Grid>
     );
