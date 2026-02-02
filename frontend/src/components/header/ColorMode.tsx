@@ -6,12 +6,17 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
 type ColorModeValue = 'system' | 'light' | 'dark';
+type ColorThemeProps = {
+    color: string;
+};
 
-export const ColorMode = () => {
+export const ColorMode = ({
+    color = 'var(--template-palette-textColorInverse-toggleTheme)',
+}: ColorThemeProps) => {
     const { mode, setMode } = useColorScheme();
     if (!mode) return null;
 
-    const colorTheme = 'var(--template-palette-textColorInverse-toggleTheme)';
+    const colorTheme = color;
     const baseFontSize = '0.875rem';
     const responsiveFontSize = {
         xs: baseFontSize,

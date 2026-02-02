@@ -205,6 +205,7 @@ export const colorSchemes = {
             background: {
                 default: 'hsl(0, 0%, 100%)',
                 paper: 'hsl(220, 35%, 97%)',
+                loggedInMenu: 'hsl(0, 0%, 100%)',
             },
 
             /** Alias (falls Komponenten das nutzen) */
@@ -284,6 +285,8 @@ export const colorSchemes = {
                 primary: 'hsl(0, 0%, 100%)',
                 secondary: gray[100],
                 toggleTheme: gray[500],
+                loggedInMenu: gray[900],
+                loggedInMenuColorTheme: 'hsl(0, 0%, 30%)',
             },
 
             warning: {
@@ -304,6 +307,7 @@ export const colorSchemes = {
             background: {
                 default: slate.page.hsl,
                 paper: slate.surface1.hsl,
+                loggedInMenu: slate.page.hsl,
             },
 
             /** Alias (falls Komponenten das nutzen) */
@@ -377,10 +381,13 @@ export const colorSchemes = {
                 primary: 'hsl(0, 0%, 100%)',
                 secondary: 'hsl(0, 0%, 100%)',
             },
+
             textColorInverse: {
                 primary: 'hsl(0, 0%, 100%)',
                 secondary: gray[700],
                 toggleTheme: gray[800],
+                loggedInMenu: 'hsl(0, 0%, 100%)',
+                loggedInMenuColorTheme: 'hsl(0, 0%, 70%)',
             },
 
             warning: {

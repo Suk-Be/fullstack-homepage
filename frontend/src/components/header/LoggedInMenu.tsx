@@ -9,6 +9,7 @@ import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { ColorMode } from './ColorMode';
 import LinkedLogo from './LinkedLogo';
 
 export default function LoggedInMenu() {
@@ -58,10 +59,10 @@ export default function LoggedInMenu() {
                 alignItems: 'center',
             }}
         >
-            <Grid sx={{ color: '#ffff' }}>
+            <Grid>
                 <LinkedLogo />
             </Grid>
-            <Grid sx={{ color: '#ffff' }}>
+            <Grid>
                 <Button
                     id="avatar-button"
                     aria-controls={open ? 'basic-menu' : undefined}
@@ -95,13 +96,13 @@ export default function LoggedInMenu() {
                                 flexDirection: 'column',
                                 alignItems: 'flex-end',
                                 gap: 1,
+
                                 '& li a': {
-                                    color: (theme) => theme.palette.grey[600],
+                                    color: 'var(--template-palette-textColorInverse-loggedInMenu)',
                                     textDecoration: 'none',
-                                    '&:hover': {
-                                        textDecoration: 'none', // prevent underline on hover
-                                    },
+                                    '&:hover': { textDecoration: 'none' },
                                 },
+
                                 '& li:last-child': {
                                     marginTop: '1rem',
                                     fontWeight: 'bold',
@@ -110,6 +111,9 @@ export default function LoggedInMenu() {
                         },
                         paper: {
                             sx: {
+                                backgroundColor:
+                                    'var(--template-palette-background-loggedInMenu) !important',
+
                                 minWidth: {
                                     xs: 'calc(100vw - 2.5rem)',
                                     sm: '50vw',
@@ -121,6 +125,17 @@ export default function LoggedInMenu() {
                     {...testId('button-close-menu')}
                     disableScrollLock
                 >
+                    <MenuItem
+                        disableRipple
+                        disableTouchRipple
+                        sx={{
+                            mb: '1rem',
+                            cursor: 'default',
+                            '&:hover': { backgroundColor: 'transparent' },
+                        }}
+                    >
+                        <ColorMode color="var(--template-palette-textColorInverse-loggedInMenuColorTheme)" />
+                    </MenuItem>
                     <MenuItem onClick={handleClose}>
                         <MuiLink component={RouterLinkWrapper} href="/template-engine">
                             Template Engine
@@ -131,6 +146,7 @@ export default function LoggedInMenu() {
                             Template Engine Layout Examples
                         </MuiLink>
                     </MenuItem>
+
                     <MenuItem onClick={handleLogout}>
                         <MuiLink component={RouterLinkWrapper} href="/">
                             Logout
