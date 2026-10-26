@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/store/hooks';
 import { selectIsLoggedIn } from '@/store/selectors/loginSelectors';
-import AccordionExpandIcon from './AccordionTeaser';
-import ToggleSignIn from './Toggles';
+import AccordionExpandIcon from './accordionTeaser';
+import ToggleSignIn from './toggleSignUpSignIn';
 
 const ToggleTeaser = () => {
     const isLoggedIn = useAppSelector(selectIsLoggedIn);

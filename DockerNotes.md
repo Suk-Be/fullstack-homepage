@@ -2,7 +2,7 @@
 
 Stand September 2025
 
-### Projektverzeichnis
+Dieses Projekt nutzt Docker Compose für die lokale Entwicklung von Laravel (Backend) und optional React/Vite (Frontend).
 
 ```bash
 project-root/
@@ -25,371 +25,270 @@ project-root/
 └── docker-compose.yml
 ```
 
-# Anpassungen in der lokalen laravel Entwicklungsumgebung
+Eigene Docker Images:
 
-In der env Datei gibt es Konfigurationen für database, session und mail, die für docker und für lokale Entwicklung unterschiedlich sein können.
+- backend
+- queue
+- frontend
 
-Das Setup ist so konfiguriert dass die session, mail und database mit oder auch ohne Docker entwickelt werden kann.
+Externe Docker Images:
 
-```yml docker-compose.yml
-DB_HOST=127.0.0.1               # lokal ohne Docker
-#DB_HOST=db                     # lokal mit Docker
+- mariadb
+- phpmyadmin
+- mailpit
 
-# SESSION_DRIVER=database       # lokal mit Docker
-SESSION_DRIVER=cookie           # lokal ohne Docker
+# Abstimmung der Laravel env und der docker-compose.yml
 
-# MAIL_HOST=mailpit             # lokal mit Docker
-MAIL_HOST=127.0.0.1             # lokal ohne Docker
-```
+Es gibt unterschiedlich env Dateien die für dev, prod und staging genutzt werden.
 
-# phpmyadmin im Browser
+Im development ist laravel env auf die Arbeit mit docker ausgerichtet und nutzt die Services aus der docker-compose.yml.
 
-## ui
-
-phpmyadmin url
-
-<http://localhost:8080/>
-
-## db login
-
-user und login für phpmyadmin
-
-```yml docker-compose.yml
+```env
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=sanctum_cookie
 DB_USERNAME=laravel
-DB_PASSWORD=secret # standard password
+DB_PASSWORD=secret
 ```
 
-## mailpit
+Passend dazu
 
-url
+```yml
+db:
+  environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sanctum_cookie
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+  ports:
+      - '3306:3306
+```
 
-<http://localhost:8025/>
+Wichtig: DB_HOST=db entspricht dem Servicenamen in Compose.
 
-FYI: damit die mails (notifications in php) abgearbeitet werden können muss der laravel queue aktiv sein.
+# Service ports
+
+Laufen die docker Services können, dann können sie über die entsprechenden ports erreicht werden
+
+```yml
+backend:
+  ports:
+    - '8000:80'
+db:
+  ports:
+    - '3306:3306'
+phpmyadmin:
+  ports:
+    - '8080:80'
+mailpit:
+  ports:
+    - '1025:1025'
+    - '8025:8025'
+```
+
+Online erreichbar
+
+- Laravel <http://localhost:8000/>
+- phpmyadmin <http://localhost:8080/>
+- mailpit <http://localhost:8025/>
+- vite <http://localhost:5173/>
+
+# 📧 Mail & Queue
+
+Laravel verarbeitet Mails/Notifications nur mit aktivem Queue-Worker.
 
 ```bash
+# ohne docker
 cd backend
 php artisan queue:work
 ```
 
+In Docker übernimmt das der queue Service:
+
+```yml
+queue:
+  command: php artisan queue:work --tries=3 --timeout=90
+```
+
+👉 Voraussetzung: QUEUE_CONNECTION ≠ sync
+
 # frontend Einstellungen
 
-host muss umbenannt werde, zuvor war nur der Rechner/Machine ansprechbar (127.0.0.1). Auf 0.0.0.0 umstellen, damit container und Rechner angesprochen werden können.
+Frontend wird meist lokal gestartet:
 
-## vite.config
+```bash
+npm run dev
+```
 
-Einstellung des host und des ports
+Die Frontend Einstellungen für docker sind wie die backend services nur auf die lokale Entwicklung ausgerichtet.
+
+# Abstimmung der frontend env, vite.config und der docker-compose.yml
+
+In der env Datei stehen API Endpunkte die je nach environment (dev, staging, prod) unterschiedlich eingestellt sind.
 
 ```ts
+// host muss auf 0.0.0.0 umstellen, damit container und Rechner angesprochen werden können.
 server: {
-  host: '0.0.0.0', // <- wichtig, sonst nur localhost erreichbar
+  host: '0.0.0.0',
   port: 5173,
   strictPort: true, // verhindert automatisches Hochzählen des Ports
   // ...
 },
 ```
 
-url im browser
-<http://localhost:5173/>
-
-# Interaktion mit Inhalten von containern
-
-(wird nicht genutzt zu umständlich)
-
-Es flexibler und simpler mit dem cheatsheet: 'Für Frontend und Backend Entwicklung: db und mailpit zur Verfügung stellen.' zu arbeiten.
-
-## backend
-
-- docker exec: Führt einen Befehl in einem laufenden Container aus.
-- -it: Ermöglicht die interaktive Eingabe (-i) und weist ein Pseudo-Terminal zu (-t), damit du das Passwort eingeben kannst.
-- laravel_app: Der Name deines Containers.
-- php artisan config:clear: der laravel Befehl
-
-```bash
-# container name: laravel_app
-docker exec -it laravel_app php artisan config:clear
-docker exec -it laravel_app php artisan cache:clear
-docker exec -it laravel_app php artisan config:cache
-
-# provide db and dummy data
-docker exec -it laravel_app php artisan migrate:fresh --seed
-# provide queue for mail
-docker exec -it laravel_app php artisan queue:work
-
-# run front tests with frontend container
-docker exec -it vite_frontend npm run test
-```
-
-# Alle container services neu bauen 🚀
-
-## docker-compose down
-
-Stoppt alle laufenden Container, die zu deiner Compose-Datei gehören.
-
-Entfernt die gestoppten Container → sie existieren danach nicht mehr.
-
-Netzwerke, die Docker Compose automatisch für die Services erstellt hat, werden ebenfalls gelöscht.
-
-Volumen bleiben standardmäßig erhalten, außer du gibst -v an.
-
-Beispiel: docker-compose down -v → löscht auch alle benutzerdefinierten Volumes (z. B. db_data)
-
-## docker-compose pull
-
-Lädt die neueste Version der Images herunter, die in deiner docker-compose.yml definiert sind.
-
-Ersetzt nicht automatisch laufende Container – es lädt nur die Images.
-
-## docker-compose --profile backend --profile mailpit up -d
-
-docker-compose → startet Container basierend auf deiner docker-compose.yml.
-
---profile backend --profile mailpit → sagt Docker, welche Profile aktiviert werden sollen.
-
-In deiner Compose-Datei haben viele Services ein Profil:
-
-backend: profiles: [backend]
-db: profiles: [backend]
-phpmyadmin: profiles: [backend]
-mailpit: profiles: [mailpit]
-frontend: profiles: [frontend]
-
-Nur Services mit einem aktivierten Profil werden gestartet.
-
-Hier werden alle Services aus backend und mailpit gestartet.
-
-up → Container hochfahren
-
--d → „detached mode“, d. h. die Container laufen im Hintergrund
-
-## docker-compose --profile backend --profile mailpit up
-
-1. Aktivierte Services:
-
-- backend (Profil backend)
-- db (Profil backend)
-- phpmyadmin (Profil backend)
-- mailpit (Profil mailpit)
-
-2. Nicht aktivierte Services:
-
-- frontend (Profil frontend) → wird nicht gestartet, da das Profil nicht angegeben wurde
-
-3. Abhängigkeiten (depends_on) werden aufgelöst:
-
-- backend hängt von db und mailpit ab
-- Jetzt existieren beide Container → backend startet erfolgreich
-
-4. Container laufen im Hintergrund, du kannst Logs ansehen mit:
-
-```bash
-docker-compose logs -f
-```
-
-## backend config im laufenden containern aktualisieren
-
-```bash
-docker compose exec backend php artisan optimize:clear
-```
-
-oder gezielt
-
-```bash
-docker compose exec backend php artisan config:clear
-docker compose exec backend php artisan route:clear
-docker compose exec backend php artisan view:clear
-```
-
----
-
----
-
-# container mit profile starten. Mit profiles container flexibel ansprechen 🚀
-
-profile Übersicht: backend, frontend und mailpit
-
 ```yml
-backend: profiles: [backend]
-db: profiles: [backend]
-phpmyadmin: profiles: [backend]
-frontend: profiles: [frontend]
-mailpit: profiles: [mailpit]
+frontend:
+  ports:
+    - '5173:5173'
+  env_file:
+    - ./frontend/.env
 ```
 
-## docker-compose --profile backend --profile mailpit up -d
+# Services nutzen 🚀
 
-container backend app (und sql) und mailpit starten. frontend nicht im container starten aber mit 'npm run dev' entwickeln.
+Es gibt drei Nutzungsszenarien. Mit Standard Dev werden die meisten Aufgaben erledigt alle Tests. Mails (und App) laufen nur im zweiten Szenario. Google Recaptcha (und App) laufen nur im dritten Szenario.
+
+- Standard Dev (Laravel + DB + phpMyAdmin)
+- Dev + Mail + Queue (Mail Queue läuft)
+- Test Setup (einziges Szenario um externen Recaptcha Service von Google zu im Browser zu testen)
+
+Über profiles können die entsprechenden services gebaut werden.
 
 ```bash
-docker-compose --profile backend --profile mailpit up -d
-cd frontend
-npm run dev
+# Standard Dev
+docker compose --profile dev up -d --build
+
+# Dev + Mail + Queue
+docker compose --profile dev --profile mail up -d --build
+
+# Test Setup
+docker compose --profile test up -d --build
+
+# optional: Frontend im Container (Vite)
+docker compose --profile dev --profile fe up -d --build
 ```
 
-## docker compose --profile backend --profile mailpit --profile frontend build frontend
+# Images neu bauen 🚀
+
+Hier sind eher die eigene Services interessant. Updates von externe Images können side effects auf das gesamte framework haben und müssen vorher geprüft werden.
 
 ```bash
-docker-compose down
-docker-compose pull
-docker compose --profile backend --profile mailpit --profile frontend build frontend
+# Eigene Images (backend/frontend/queue) neu bauen:
+docker compose --profile dev --profile fe --profile mail build --no-cache
 ```
 
----
-
----
-
-# Cheatsheet
-
-copy & paste Befehle zu Entwicklung mit docker
-
-## Für backend Tests
-
-Nicht für die Entwicklung geeignet - dieser eigene container läuft mit einer eigenen Konfiguration, um google recaptcha testbar zu machen.
-
-FYI: Frontend tests brauchen keinen eigenen docker service diese laufen im frontend Verzeichnis mit 'npm run test' alle Integrationen konnten hier gemocked werden.
-
---profile test → aktiviert backend + mysql + .env.testing Konfiguration
+- docker-compose build
 
 ```bash
-docker-compose --profile backend --profile mailpit --profile test  down -v
-docker-compose --profile test up -d
-docker exec -it laravel_app_test bash
-php artisan test
+# Externe Images (db/phpmyadmin/mailpit) holen:
+docker compose --profile dev --profile mail pull
+
 ```
 
-## Für Frontend und Backend Entwicklung
+- docker-compose pull
 
-db und mailpit zur Verfügung stellen
+# 🚀 TL;DR – Standard Start
+
+Für 90% der Fälle:
 
 ```bash
-docker-compose --profile backend --profile mailpit up -d db mailpit
+docker compose --profile dev --profile mail up -d --build
 ```
 
---profile backend → aktiviert db + phpmyadmin
+# 🛑 Stoppen & Aufräumen
 
---profile mailpit → aktiviert mailpit
-
-up -d db pma mailpit → startet nur diese Services im Hintergrund
+Da die Services über Profiles gestartet werden, sollten sie auch mit denselben Profiles gestoppt werden.
 
 ```bash
-docker-compose --profile backend --profile mailpit up -d db mailpit
-cd ../backend
-php artisan serve
-
-# neuer tab backend test daten (nur lokale Entwicklung)
-php artisan migrate:fresh --seed
-
-# neuer tab zum testen von mail
-php artisan queue:work
-
-# neuer tab
-cd ../frontend
-npm run dev
+# dev und mail
+docker compose --profile dev --profile mail down
+# nur dev
+docker compose --profile dev down
 ```
 
-## Für logs
+# Mit Volumes löschen
+
+⚠️ Löscht Datenbank-Daten!
 
 ```bash
-# clear logs for debugging
-docker exec -it laravel_app sh -c "> storage/logs/laravel.log"
+docker compose --profile dev --profile mail down -v
+
 ```
 
-## Für configurationen
+Sinnvoll bei:
+
+- frischem Setup
+- kaputter DB
+- Reset auf Anfangszustand
+
+Hard Reset (optional)
+
+Stoppt alles und entfernt auch verwaiste Container:
 
 ```bash
-# clear all configs
-docker compose exec backend php artisan optimize:clear
+docker compose --profile dev --profile mail down -v --remove-orphans
 ```
+
+Quick-Check laufender Container
+docker compose ps
+
+## 💡 Merksatz
+
+👉 Immer mit denselben Profiles stoppen, mit denen gestartet wurde.
+
+Start:
 
 ```bash
-# clear all configs
-docker compose exec backend php artisan config:clear
-docker compose exec backend php artisan route:clear
-docker compose exec backend php artisan view:clear
+docker compose --profile dev --profile mail up -d
 ```
 
-## Frontend und Backend Entwicklung
-
-Frontend lokal, übrige Services in docker laufen lassen.
-
-Falls das laravel backend lokal noch läuft, schließen und anschließend das backend in docker laufen lassen.
-
-FYI: Es gibt merkliche Verzögerungen in den requests und resonses
-
-```bash initiale Einrichtung
-# root der app
-docker-compose --profile backend --profile mailpit down -v # -v löscht auch die volumes falls es fehlerhafte connection zwischen den containern gibt (mail feature konnte nicht mit der db user connecten)
-docker-compose --profile backend --profile mailpit up -d
-# Wichtig: Laravel cached manchmal die Konfiguration.
-docker exec -it laravel_app php artisan config:clear
-docker exec -it laravel_app php artisan cache:clear
-# db erstellen
-docker exec -it laravel_app php artisan migrate:fresh --seed
-# mailing queue
-docker exec -it laravel_app php artisan queue:work
-```
-
-```bash Änderungen im app code anzeigen
-docker exec -it laravel_app php artisan config:clear
-docker exec -it laravel_app php artisan cache:clear
-docker exec -it laravel_app php artisan route:clear
-docker exec -it laravel_app php artisan view:clear
-```
-
-Das frontend kann lokal ohne Docker laufen.
+Stop:
 
 ```bash
-# frontend der app
-npm run dev
+docker compose --profile dev --profile mail down
 ```
 
----
+bash
+docker compose --profile dev --profile mail down
 
----
+````
 
-## einzelne Container entfernen 🚀
+# 🧰 Nützliche Interaktion mit Container Inhalt
 
-### container anzeigen
+In Backend Container:
 
 ```bash
-docker ps -a
-```
+docker compose exec backend sh
+````
 
-ps: zeigt laufende container an
-
--a: zeigt alle container an
-
-### Beispiel Ergebnis
+Artisan:
 
 ```bash
-CONTAINER ID    IMAGE                   COMMAND                   CREATED           STATUS                   PORTS                                          NAMES
-47287c7ce41c    mariadb:10.6            "docker-entrypoint.s…"    15 minutes ago    Up 15 minutes            0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp    mariadb_db
-35a0e53b3e87    spa-backend             "docker-php-entrypoi…"    3 hours ago       Exited (0) 2 hours ago                                                  laravel_app
-1a98cd111492    phpmyadmin/phpmyadmin   "/docker-entrypoint.…"    4 weeks ago       Up 3 hours               0.0.0.0:8080->80/tcp, [::]:8080->80/tcp        pma
-b7ce58d34eba    axllent/mailpit         "/mailpit"                4 weeks ago       Up 3 hours (healthy)     0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp,   mailpit
-                                                                                                             0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp
-d501e26dc198    httpd:latest            "httpd-foreground"        5 weeks ago       Exited (0) 4 weeks ago                                                  apache_server
+docker compose exec backend php artisan migrate
+docker compose exec backend php artisan cache:clear
+docker compose exec backend php artisan migrate:fresh --seed
 ```
 
-## container entfernen
+Logs:
 
 ```bash
-docker rm <id | name>
+docker compose logs -f
+docker compose logs -f backend
 ```
 
-rm: entfernt einen container, der muss allerdings benannt sein
-<id|name>: entfernt benannten container
+Logs:
 
 ```bash
-# entfernt aus der Beispiel Tabelle der image spa-backend
-docker rm 35a0e53b3e87
+docker compose logs -f
+docker compose logs -f backend
 ```
 
-Beispiel: Dieser Befehl entfernt den backend container mit id 35a0e53b3e87
-
-```bash
-# entfernt aus der Beispiel Tabelle der image spa-backend
-docker rm 35a0e53b3e87
-# macht das gleiche
-docker rm spa-backend
-```
+| CONTAINER ID | IMAGE                 | COMMAND                | CREATED        | STATUS                  | PORTS                                                                                    | NAMES         |
+| :----------- | :-------------------- | :--------------------- | :------------- | :---------------------- | :--------------------------------------------------------------------------------------- | :------------ |
+| 757d16d40b6f | spa-backend           | "docker-php-entrypoi…" | 10 minutes ago | Up 10 minutes           | 0.0.0.0:8000->80/tcp, [::]:8000->80/tcp                                                  | laravel_app   |
+| bcc1b80bec19 | spa-queue             | "docker-php-entrypoi…" | 10 minutes ago | Up 10 minutes           | 0.0.0.0:8080->80/tcp, [::]:8080->80/tcp                                                  | spa-queue-1   |
+| f63e9984fdc0 | phpmyadmin/phpmyadmin | "/docker-entrypoint.…" | 7 weeks ago    | Up 10 minutes           | 0.0.0.0:8080->80/tcp, [::]:8080->80/tcp                                                  | pma           |
+| 114dab1677e1 | axllent/mailpit       | "/mailpit"             | 7 weeks ago    | Up 10 minutes (healthy) | 0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp, 0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp | mailpit       |
+| 8d3a8abf579d | mariadb:10.6          | "docker-entrypoint.s…" | 8 weeks ago    | Up 10 minutes           | 0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp                                              | mariadb_db    |
+| d501e26dc198 | httpd:latest          | "httpd-foreground"     | 5 months ago   | Exited (0)              | 5 months ago                                                                             | apache_server |

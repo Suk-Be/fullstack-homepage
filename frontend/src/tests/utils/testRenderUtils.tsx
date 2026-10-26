@@ -13,8 +13,7 @@ import { createMemoryHistory } from 'history';
 import { delay, http, HttpResponse } from 'msw';
 import React, { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { createMemoryRouter, RouterProvider } from 'react-router';
-import { MemoryRouter, Router } from 'react-router-dom';
+import { createMemoryRouter, MemoryRouter, Router, RouterProvider } from 'react-router-dom';
 
 const simluateDelay = (endpoint: string) =>
     server.use(

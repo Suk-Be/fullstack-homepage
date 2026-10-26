@@ -11,10 +11,23 @@ services:
     env_file:
       - ./backend/.env
     profiles:
-      - backend
+      - dev
     depends_on:
       - db
-      - mailpit
+
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/var/www/html
+    env_file:
+      - ./backend/.env
+    command: php artisan queue:work --tries=3 --timeout=90
+    profiles:
+      - mail
+    depends_on:
+      - db
 
   backend_test:
     build:
@@ -24,7 +37,7 @@ services:
     volumes:
       - ./backend:/var/www/html
     env_file:
-      - ./backend/.env.testing # Testing env
+      - ./backend/.env.testing
     profiles:
       - test
     depends_on:
@@ -44,7 +57,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     profiles:
-      - backend
+      - dev
       - test
 
   phpmyadmin:
@@ -59,7 +72,7 @@ services:
     depends_on:
       - db
     profiles:
-      - backend
+      - dev
 
   frontend:
     build:
@@ -75,7 +88,7 @@ services:
       - ./frontend/.env
     command: npm run dev
     profiles:
-      - frontend
+      - fe
     depends_on:
       - backend
 
@@ -86,7 +99,7 @@ services:
       - '1025:1025'
       - '8025:8025'
     profiles:
-      - mailpit
+      - mail
 
 volumes:
   db_data:

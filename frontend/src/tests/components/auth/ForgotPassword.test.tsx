@@ -1,4 +1,4 @@
-import ForgotPassword from '@/components/auth/SignIn/ForgotPassword';
+import ForgotPassword from '@/components/auth/toggleSignUpSignIn/signIn/ForgotPassword';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';
 import { renderWithProviders } from '@/tests/utils/testRenderUtils';

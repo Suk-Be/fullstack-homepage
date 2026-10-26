@@ -1,7 +1,7 @@
-import RegisterButtonSocialite from '@/components/auth/shared-components/RegisterButtonSocialite';
+import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
 import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
+import { GithubIcon } from '@/components/icons/CustomIcons';
 import RouterLinkWrapper from '@/components/RouterLink';
-import { GithubIcon } from '@/components/shared-components/CustomIcons';
 import { HeadlineSignInUp as Headline, ParagraphHP } from '@/components/TextElements';
 import { testId } from '@/utils/testId';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
@@ -14,7 +14,6 @@ import {
     Link as MuiLink,
     Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 
 export default function AccordionExpandIcon() {
     return (
@@ -22,11 +21,7 @@ export default function AccordionExpandIcon() {
             <Card variant="outlined">
                 <Accordion>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleDown
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleDown />}
                         aria-controls="panel1-content"
                         id="panel1-header"
                         {...testId('accordion-projekte')}
@@ -98,11 +93,7 @@ export default function AccordionExpandIcon() {
                 </Accordion>
                 <Accordion defaultExpanded>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleUp
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleUp />}
                         aria-controls="panel2-content"
                         id="panel2-header"
                         {...testId('accordion-template-engine')}
@@ -126,11 +117,7 @@ export default function AccordionExpandIcon() {
                         </ParagraphHP>
                         <ParagraphHP>Testen Sie die Template Engine gerne selbst.</ParagraphHP>
                         <ParagraphHP>
-                            <MuiLink
-                                component={RouterLinkWrapper}
-                                href="/template-engine"
-                                color="rgba(53,102,64, 1)"
-                            >
+                            <MuiLink component={RouterLinkWrapper} href="/template-engine">
                                 zur Template Engine
                             </MuiLink>
                         </ParagraphHP>
@@ -138,11 +125,7 @@ export default function AccordionExpandIcon() {
                 </Accordion>
                 <Accordion defaultExpanded>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleUp
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleUp />}
                         aria-controls="panel2-content"
                         id="panel2-header"
                         {...testId('accordion-code-repository')}

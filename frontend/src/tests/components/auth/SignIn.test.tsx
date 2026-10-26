@@ -1,4 +1,4 @@
-import SignIn from '@/components/auth/SignIn';
+import SignIn from '@/components/auth/toggleSignUpSignIn/signIn';
 import ApiClient from '@/plugins/axios';
 import { registeredUserData } from '@/tests/mocks/data';
 import { db } from '@/tests/mocks/db';

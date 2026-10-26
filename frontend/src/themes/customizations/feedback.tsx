@@ -1,4 +1,4 @@
-import { gray, orange } from '@/themes/themePrimitives';
+import { gray, red } from '@/themes/themePrimitives';
 import { alpha, Components, Theme } from '@mui/material/styles';
 
 const feedbackCustomizations: Components<Theme> = {
@@ -6,15 +6,15 @@ const feedbackCustomizations: Components<Theme> = {
         styleOverrides: {
             root: ({ theme }) => ({
                 borderRadius: 10,
-                backgroundColor: orange[100],
+                backgroundColor: red[300],
                 color: theme.palette.text.primary,
-                border: `1px solid ${alpha(orange[300], 0.5)}`,
+                border: `1px solid ${alpha(red[300], 0.5)}`,
                 '& .MuiAlert-icon': {
-                    color: orange[500],
+                    color: red[300],
                 },
                 ...theme.applyStyles('dark', {
-                    backgroundColor: `${alpha(orange[900], 0.5)}`,
-                    border: `1px solid ${alpha(orange[800], 0.5)}`,
+                    backgroundColor: `${alpha(red[200], 0.5)}`,
+                    border: `1px solid ${alpha(red[300], 0.5)}`,
                 }),
             }),
         },

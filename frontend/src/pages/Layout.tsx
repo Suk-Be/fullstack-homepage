@@ -5,7 +5,7 @@ import { testId } from '@/utils/testId';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Outlet } from 'react-router';
+import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
     useEffect(() => {

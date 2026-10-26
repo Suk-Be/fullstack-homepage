@@ -1,5 +1,5 @@
-import ResetPassword from '@/components/auth/ResetPassword';
 import * as resetPassword from '@/components/auth/requests/requestResetPassword';
+import ResetPassword from '@/components/auth/resetPassword';
 import ErrorMessages from '@/data/ErrorMessages';
 import SuccessMessages from '@/data/SuccessMessages';
 import { registeredUserData } from '@/tests/mocks/data';

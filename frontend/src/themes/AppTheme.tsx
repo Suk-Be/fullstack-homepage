@@ -1,6 +1,8 @@
 import type { ThemeOptions } from '@mui/material/styles';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import * as React from 'react';
+import buttonGroupCustomizations from './customizations/buttonGroup';
+import buttonsCustomizations from './customizations/buttons';
 import dataDisplayCustomizations from './customizations/dataDisplay';
 import feedbackCustomizations from './customizations/feedback';
 import inputsCustomizations from './customizations/inputs';
@@ -52,13 +54,15 @@ export default function AppTheme(props: AppThemeProps) {
                       MuiCssBaseline: {
                           styleOverrides: `
                             @font-face {
-                                font-family: 'Fira Sans';
-                                font-style: normal;
-                                font-display: swap;
-                                font-weight: 300;
-                              }
+                              font-family: 'Fira Sans';
+                              font-style: normal;
+                              font-display: swap;
+                              font-weight: 300;
+                            }
                           `,
                       },
+                      ...buttonsCustomizations,
+                      ...buttonGroupCustomizations,
                       ...inputsCustomizations,
                       ...dataDisplayCustomizations,
                       ...feedbackCustomizations,

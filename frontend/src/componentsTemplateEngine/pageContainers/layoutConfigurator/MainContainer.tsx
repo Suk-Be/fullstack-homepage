@@ -9,7 +9,8 @@ const MainContainer = ({ children }: PropsWithChildren) => {
             pt-[4rem] md:pt-[6rem] lg:pt-[8rem] lg:p-10 
             flex-col lg:flex-row 
             full 
-            bg-white text-gray-700"
+            bg-[var(--template-palette-background-default)]
+            text-gray-700"
             {...testId('main-container')}
         >
             {children}

@@ -1,12 +1,12 @@
-import CreateGridLayout from '@/componentsTemplateEngine/gridConfiguration/CreateGridLayout';
-import LayoutConfiguration from '@/componentsTemplateEngine/gridConfiguration/ui';
+import CreateGridLayout from '@/componentsTemplateEngine/gridConfigurations/CreateGridLayout';
+import LayoutConfiguration from '@/componentsTemplateEngine/gridConfigurations/ui';
 import AsideLeft from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideLeft';
 import AsideRight from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/AsideRight';
 import ContentCenter from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/ContentCenter';
 import MainContainer from '@/componentsTemplateEngine/pageContainers/layoutConfigurator/MainContainer';
-import GenerateMarkupTeaser from '@/componentsTemplateEngine/teaser/GenerateMarkupTeaser';
-import ExampleTeaser from '@/componentsTemplateEngine/teaser/LayoutExampleTeaser/LayoutExampleTeaser';
-import SaveGridsTeaser from '@/componentsTemplateEngine/teaser/SaveGridsTeaser';
+import GenerateMarkupTeaser from '@/componentsTemplateEngine/teasers/GenerateMarkupTeaser';
+import ExampleTeaser from '@/componentsTemplateEngine/teasers/layoutExampleTeasers/LayoutExampleTeaser';
+import SaveGridsTeaser from '@/componentsTemplateEngine/teasers/SaveGridsTeaser';
 import { useAppSelector } from '@/store/hooks';
 import { selectInitialGrid } from '@/store/selectors/userGridSelectors';
 import { initialLayoutId, updateGridConfig } from '@/store/userSaveGridsSlice';

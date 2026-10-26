@@ -3,5 +3,6 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 
 export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './src/*.css'],
+    darkMode: ['class', '[data-mui-color-scheme="dark"]'],
     plugins: [forms, tailwindcssAnimate],
 };

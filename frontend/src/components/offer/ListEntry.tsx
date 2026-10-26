@@ -9,7 +9,6 @@ const ListEntry = ({ children }: PropsWithChildren) => {
                 fontFamily: 'Fira Sans',
                 fontWeight: 400,
                 fontSize: '1rem',
-                color: 'rgba(33,29,29, 1)',
                 marginLeft: '0.5rem',
                 flexGrow: 1,
                 lineHeight: '1.3',

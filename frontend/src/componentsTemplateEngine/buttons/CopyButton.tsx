@@ -1,7 +1,7 @@
 import Button from '@/componentsTemplateEngine/buttons/Button';
+import { CopySVG, IsCopiedSVG } from '@/componentsTemplateEngine/svgs';
 import { copyButtonText } from '@/utils/templateEngine/buttonText';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import { CopySVG, IsCopiedSVG } from '../svgs';
 
 const CopyButton: FC<ComponentPropsWithoutRef<'button'>> = ({ onClick, children }) => {
     const SVG = () => {

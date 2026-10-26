@@ -10,7 +10,6 @@ vi.mock('@/components/RouterLink', () => ({
     default: (props: ComponentProps<'a'>) => <a {...props} />,
 }));
 
-
 describe('Footer', () => {
     const renderUtils = ({ route, preloadedState }: PathAndReduxState) => {
         const user = userEvent.setup();

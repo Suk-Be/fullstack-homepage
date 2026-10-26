@@ -1,5 +1,4 @@
-// eslint-disable-next-line
-export type PreloadedState<T> = Partial<T> | {};
+export type PreloadedState<T> = Partial<T>;
 
 export interface User {
     id: number;

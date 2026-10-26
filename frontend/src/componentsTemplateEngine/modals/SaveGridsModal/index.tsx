@@ -1,7 +1,7 @@
-import { LoadingSkeleton } from '@/components/auth/shared-components/LoadingSkeleton';
+import { LoadingSkeleton } from '@/components/auth/auth-shared-components/LoadingSkeleton';
 import Button from '@/componentsTemplateEngine/buttons/Button';
+import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/save-gridsmodal-shared/IsGridNameUnique';
 import SavedGridList from '@/componentsTemplateEngine/modals/SaveGridsModal/savedGridList';
-import { isGridNameUnique } from '@/componentsTemplateEngine/modals/SaveGridsModal/shared/IsGridNameUnique';
 import { CloseSVG } from '@/componentsTemplateEngine/svgs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectUserId, selectUserRole } from '@/store/selectors/loginSelectors';

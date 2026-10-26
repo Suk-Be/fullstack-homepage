@@ -1,4 +1,4 @@
-import Loading from '@/components/auth/shared-components/Loading';
+import Loading from '@/components/auth/auth-shared-components/Loading';
 import { BaseClient } from '@/plugins/axios';
 import type { AppDispatch } from '@/store';
 import { useAppSelector } from '@/store/hooks';

@@ -1,12 +1,12 @@
-import { SxProps, Theme, Typography, useTheme } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { typography } from '@/themes/themePrimitives';
+import { SxProps, Theme, Typography } from '@mui/material';
 import { ElementType, PropsWithChildren } from 'react';
 
 // HomePage
 interface LogoHPProps extends PropsWithChildren {
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)';
+    color?: typeof typography.brand | typeof typography.brandDark;
     marginTop?: string;
     fontSize?: string;
     lineHeight?: string;
@@ -17,7 +17,7 @@ const Logo = ({
     variant = 'h1',
     fontSize = '3rem',
     lineHeight = '1',
-    color = 'rgba(56,255,148, 1)',
+    color = typography.brand,
     marginTop = '0',
     sx,
     ...rest
@@ -49,14 +49,14 @@ const Logo = ({
 
 interface ClaimProps extends PropsWithChildren {
     fontSize?: '0.8rem' | '1.3rem' | '2.5rem';
-    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
+    color?: typeof typography.brand | typeof typography.brandDark | typeof typography.brandDark;
     marginBottom?: string;
     sx?: SxProps<Theme>;
 }
 
 const Claim = ({
     fontSize = '2.5rem',
-    color = 'rgba(56,255,148, 1)',
+    color = typography.brand,
     marginBottom = '1rem',
     children,
     sx,
@@ -85,7 +85,7 @@ const Claim = ({
 
 interface SubTitleProps extends PropsWithChildren {
     fontSize?: '0.8rem' | '1.3rem' | '2.5rem' | string;
-    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(33,29,29, 0.5)';
+    color?: typeof typography.brand | typeof typography.brandDark | typeof typography.brandDark;
     marginBottom?: string;
     sx?: SxProps<Theme>;
 }
@@ -97,12 +97,10 @@ const SubTitle = ({
     children,
     ...rest
 }: SubTitleProps) => {
-    const theme = useTheme();
     return (
         <Typography
             component="p"
             sx={{
-                color: alpha(theme.palette.grey[900], 0.5),
                 fontSize: fontSize,
                 fontStyle: 'normal',
                 marginBottom: marginBottom,
@@ -120,7 +118,7 @@ interface HeadlineHPPProps extends PropsWithChildren {
     marginBottom?: string;
     fontWeight?: 600 | 300;
     textAlign?: 'left' | 'center' | 'right';
-    color?: 'rgba(56,255,148, 1)' | 'rgba(33,29,29, 1)' | 'rgba(53,102,64, 1)';
+    color?: 'colorSecondary';
     variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     component?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     sx?: SxProps<Theme>;
@@ -138,6 +136,9 @@ const HeadlineHP = ({
     sx,
     ...rest
 }: HeadlineHPPProps) => {
+    const resolvedColor =
+        color === 'colorSecondary' ? 'var(--template-palette-headline-colorSecondary)' : color;
+
     return (
         <Typography
             component={component}
@@ -146,7 +147,7 @@ const HeadlineHP = ({
                 fontWeight: fontWeight,
                 fontSize: fontSize,
                 fontStyle: 'normal',
-                color: color,
+                color: resolvedColor,
                 marginBottom: marginBottom,
                 textAlign: textAlign,
                 ...sx,

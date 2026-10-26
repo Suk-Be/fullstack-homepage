@@ -12,6 +12,10 @@ const ListNumber = ({ children }: PropsWithChildren) => {
                 flexGrow: 0,
                 marginLeft: '0.25rem',
                 fontWeight: 800,
+
+                textAlign: 'center',
+                display: 'flex',
+                justifyContent: 'center',
             }}
         >
             {children}

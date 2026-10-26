@@ -1,4 +1,4 @@
-import GridElement from '@/componentsTemplateEngine/gridConfiguration/markUp/generatorElements/GridElement';
+import GridElement from '@/componentsTemplateEngine/gridConfigurations/markUp/generatorElements/GridElement';
 import { testId } from '@/utils/testId';
 import { twMerge } from 'tailwind-merge';
 

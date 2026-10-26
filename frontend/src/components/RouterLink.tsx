@@ -1,6 +1,6 @@
 // routerLink.tsx
 import React from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 
 /**
  * RouterLinkWrapper
@@ -31,16 +31,15 @@ import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router';
  */
 
 interface RouterLinkWrapperProps extends Omit<RouterLinkProps, 'to'> {
-  href: RouterLinkProps['to'];
+    href: RouterLinkProps['to'];
 }
 
-const RouterLinkWrapper = React.forwardRef<
-    HTMLAnchorElement,
-    RouterLinkWrapperProps
->((props, ref) => {
-    const { href, ...other } = props;
-    return <RouterLink ref={ref} to={href} {...other} />;
-});
+const RouterLinkWrapper = React.forwardRef<HTMLAnchorElement, RouterLinkWrapperProps>(
+    (props, ref) => {
+        const { href, ...other } = props;
+        return <RouterLink ref={ref} to={href} {...other} />;
+    },
+);
 
 RouterLinkWrapper.displayName = 'RouterLinkWrapper';
 

@@ -1,4 +1,4 @@
-import ToggleSignIn from '@/components/auth/Toggles';
+import ToggleSignIn from '@/components/auth/toggleSignUpSignIn';
 
 import loginReducer from '@/store/loginSlice';
 import userGridReducer from '@/store/userSaveGridsSlice';
