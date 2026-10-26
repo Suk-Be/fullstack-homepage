@@ -1,3 +1,4 @@
+import { brand } from '@/themes/themePrimitives';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
@@ -8,7 +9,7 @@ const Item = styled(Paper)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(56,255,148, 1)',
+    backgroundColor: brand.logo,
     ...theme.typography.body2,
     padding: theme.spacing(1),
     fontFamily: 'Fira Sans',
@@ -16,7 +17,6 @@ const Item = styled(Paper)(({ theme }) => ({
     fontSize: '1rem',
     color: 'rgba(33,29,29, 1)',
     ...theme.applyStyles('dark', {
-        backgroundColor: 'hsl(0, 0%, 90%)',
         color: 'rgba(0,0,0, 1)',
     }),
 }));

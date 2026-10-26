@@ -5,7 +5,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
-type ColorModeValue = 'system' | 'light' | 'dark';
+type ColorModeValue = 'light' | 'dark';
 type ColorThemeProps = {
     color: string;
 };
@@ -61,7 +61,7 @@ export const ColorMode = ({
                 onChange={handleChange}
                 sx={{ m: 0, alignItems: 'center', gap: 1 }}
             >
-                {['system', 'light', 'dark'].map((value) => (
+                {['light', 'dark'].map((value) => (
                     <FormControlLabel
                         key={value}
                         value={value}

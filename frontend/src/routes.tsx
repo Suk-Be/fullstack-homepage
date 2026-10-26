@@ -33,6 +33,7 @@ const routes: RouteObject[] = [
             { path: 'impressum', element: lazyPage('ImprintPage') },
             { path: 'datenschutz', element: lazyPage('DatenschutzPage') },
             { path: 'reset-password', element: lazyPage('ResetPasswordPage') },
+            ...(import.meta.env.DEV ? [{ path: 'mui', element: lazyPage('MuiPage') }] : []),
             {
                 element: <ProtectedApp />, // Auth-Check hier
                 children: [

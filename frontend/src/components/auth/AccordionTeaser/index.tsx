@@ -14,7 +14,6 @@ import {
     Link as MuiLink,
     Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 
 export default function AccordionExpandIcon() {
     return (
@@ -22,11 +21,7 @@ export default function AccordionExpandIcon() {
             <Card variant="outlined">
                 <Accordion>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleDown
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleDown />}
                         aria-controls="panel1-content"
                         id="panel1-header"
                         {...testId('accordion-projekte')}
@@ -98,11 +93,7 @@ export default function AccordionExpandIcon() {
                 </Accordion>
                 <Accordion defaultExpanded>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleUp
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleUp />}
                         aria-controls="panel2-content"
                         id="panel2-header"
                         {...testId('accordion-template-engine')}
@@ -134,11 +125,7 @@ export default function AccordionExpandIcon() {
                 </Accordion>
                 <Accordion defaultExpanded>
                     <AccordionSummary
-                        expandIcon={
-                            <ArrowCircleUp
-                                sx={{ color: (theme) => alpha(theme.palette.grey[900], 0.7) }}
-                            />
-                        }
+                        expandIcon={<ArrowCircleUp />}
                         aria-controls="panel2-content"
                         id="panel2-header"
                         {...testId('accordion-code-repository')}

@@ -7,12 +7,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# application folders
 node_modules
 dist
 dist-ssr
 *.local
 
+# test coverage folder
 coverage
+
+# documentation
+src/hooks/HookJSDocTemplate.ts
 
 # Editor directories and files
 .vscode/*

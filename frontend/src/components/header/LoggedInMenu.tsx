@@ -98,7 +98,7 @@ export default function LoggedInMenu() {
                                 gap: 1,
 
                                 '& li a': {
-                                    color: 'var(--template-palette-textColorInverse-loggedInMenu)',
+                                    color: 'var(--template-palette-textColorInverse-paper)',
                                     textDecoration: 'none',
                                     '&:hover': { textDecoration: 'none' },
                                 },
@@ -112,7 +112,7 @@ export default function LoggedInMenu() {
                         paper: {
                             sx: {
                                 backgroundColor:
-                                    'var(--template-palette-background-loggedInMenu) !important',
+                                    'var(--template-palette-background-paper) !important',
 
                                 minWidth: {
                                     xs: 'calc(100vw - 2.5rem)',
@@ -133,6 +133,7 @@ export default function LoggedInMenu() {
                             cursor: 'default',
                             '&:hover': { backgroundColor: 'transparent' },
                         }}
+                        onClick={handleClose}
                     >
                         <ColorMode color="var(--template-palette-textColorInverse-loggedInMenuColorTheme)" />
                     </MenuItem>

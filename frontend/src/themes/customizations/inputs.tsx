@@ -1,9 +1,9 @@
-import { brand, gray } from '@/themes/themePrimitives';
 import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutlineBlankRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
-import { outlinedInputClasses } from '@mui/material/OutlinedInput';
+import { outlinedInputClasses } from '@mui/material';
 import { alpha, Components, Theme } from '@mui/material/styles';
+import { brand, gray } from '../themePrimitives';
 
 const inputsCustomizations: Components<Theme> = {
     MuiCheckbox: {

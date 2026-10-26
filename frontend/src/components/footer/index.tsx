@@ -30,21 +30,21 @@ function FooterNav({ value, onChange }: { value: number; onChange?: (newValue: n
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        background: 'var(--template-palette-nav-bottom-backgroundColor)',
+                        background: 'var(--template-palette-background-default)',
                     }}
                 >
                     <BottomNavigationAction
                         component={RouterLinkWrapper}
                         href="/impressum"
                         label="Impressum"
-                        style={{ color: 'var(--template-palette-nav-bottom-text)' }}
+                        style={{ color: 'var(--template-palette-text-primary)' }}
                         {...testId('link-impressum-page')}
                     />
                     <BottomNavigationAction
                         component={RouterLinkWrapper}
                         href="/datenschutz"
                         label="Datenschutz"
-                        style={{ color: 'var(--template-palette-nav-bottom-text)' }}
+                        style={{ color: 'var(--template-palette-text-primary)' }}
                         {...testId('link-datenschutz-page')}
                     />
                 </BottomNavigation>

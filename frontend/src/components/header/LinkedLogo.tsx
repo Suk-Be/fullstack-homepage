@@ -18,15 +18,8 @@ const LinkedLogo = () => {
             }}
             {...testId('link-home-page')}
         >
-            <Logo
-                fontSize="1rem"
-                lineHeight="0.5"
-                color="rgba(33,29,29, 1)"
-                marginTop="1rem"
-                variant="h5"
-                component="h5"
-            />
-            <Claim fontSize="0.8rem" marginBottom="0rem" color="rgba(33,29,29, 1)">
+            <Logo fontSize="1rem" lineHeight="0.5" marginTop="1rem" variant="h5" component="h5" />
+            <Claim fontSize="0.8rem" marginBottom="0rem">
                 (Web Developer)
             </Claim>
         </MuiLink>

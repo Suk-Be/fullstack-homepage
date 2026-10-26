@@ -1,16 +1,16 @@
 import SignIn from '@/components/auth/toggleSignUpSignIn/signIn/index';
 import SignUp from '@/components/auth/toggleSignUpSignIn/signUp';
-import useToggle from '@/hooks/useToggle';
+import { useBoolean } from '@/hooks/useBoolean';
 
 const ToggleSignIn = () => {
-    const [showLogin, toggleShowLogin] = useToggle(true);
+    const toggleObj = useBoolean(true);
 
     return (
         <div>
-            {showLogin ? (
-                <SignIn onToggleAuth={toggleShowLogin} />
+            {toggleObj.value ? (
+                <SignIn onToggleAuth={toggleObj.toggle} />
             ) : (
-                <SignUp onToggleAuth={toggleShowLogin} />
+                <SignUp onToggleAuth={toggleObj.toggle} />
             )}
         </div>
     );

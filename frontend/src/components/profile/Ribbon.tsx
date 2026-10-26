@@ -40,9 +40,7 @@ const RibbonLayout = ({ children, variant = 'h2', component = 'h2' }: HeadlinePr
                 boxShadow: '0 calc(-1*10px) 0 inset #0005',
                 width: 'calc(100% + 2rem)',
 
-                // Dark Mode (hellgrau)
                 ...theme.applyStyles('dark', {
-                    background: 'hsl(0, 0%, 90%)',
                     color: 'rgba(0,0,0, 1)',
                 }),
             })}

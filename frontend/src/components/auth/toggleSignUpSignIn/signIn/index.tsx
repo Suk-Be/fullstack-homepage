@@ -1,18 +1,17 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
+import { AuthSocialButtons } from '@/components/auth/auth-shared-components/AuthSocialButtons';
 import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
-import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
-import { VisibilityIcon } from '@/components/auth/auth-shared-components/VisibilityIcon';
+import { LabeledTextField } from '@/components/auth/auth-shared-components/LabeledInputField';
+import { LabeledPasswordField } from '@/components/auth/auth-shared-components/LabeledPasswordField';
 import { Card, SignInContainer } from '@/components/ContainerElements';
-import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
-import useModalToggle from '@/hooks/useModalToggle';
-import useToggle from '@/hooks/useToggle';
+import { useBoolean } from '@/hooks/useBoolean';
+import { useInput } from '@/hooks/useInput';
 import { useAppDispatch } from '@/store/hooks';
 import { loginThunk } from '@/store/thunks/loginThunk';
 import setResponseErrorMessage from '@/utils/auth/setResponseErrorMessage';
-import { handleSignInUp as handleSignIn } from '@/utils/clickHandler';
 import { testId } from '@/utils/testId';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { Box, Divider, FormControl, FormLabel, TextField } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import Link from '@mui/material/Link';
 import { FormEvent, useState } from 'react';
 import ForgotPassword from './ForgotPassword';
@@ -29,26 +28,38 @@ interface ErrorState {
 }
 
 const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
-    // input field states
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    // validation states
+    // input error states
     const [fieldErrors, setFieldErrors] = useState<ErrorState>({
         email: { hasError: false, message: '' },
         password: { hasError: false, message: '' },
     });
 
-    // toggle buttons
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const { open, handleClose, handleClickOpen } = useModalToggle();
-    const [showPassword, togglePasswordVisibility] = useToggle(false);
+    // Clears the error state and removes rendered error for the given form field.
+    // @example eamil field: clearFieldError('email');
+    const clearFieldError = (field: keyof ErrorState) => {
+        setFieldErrors((prev) => ({
+            ...prev,
+            [field]: { hasError: false, message: '' },
+        }));
+    };
+
+    const inputs = {
+        email: useInput('', { onChange: () => clearFieldError('email') }),
+        password: useInput('', { onChange: () => clearFieldError('password') }),
+    };
+
+    const ui = {
+        modal: useBoolean(),
+        submitting: useBoolean(),
+        showPassword: useBoolean(),
+    };
 
     const dispatch = useAppDispatch();
 
     // execute validation, request, fields clearing and dispatches
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setIsSubmitting(true);
+        ui.submitting.setTrue();
 
         setFieldErrors({
             email: { hasError: false, message: '' },
@@ -56,7 +67,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         });
 
         const { isValid, emailError, emailErrorMessage, passwordError, passwordErrorMessage } =
-            validateSignInInputs({ email, password });
+            validateSignInInputs({ email: inputs.email.value, password: inputs.password.value });
 
         setFieldErrors({
             email: { hasError: emailError, message: emailErrorMessage },
@@ -64,16 +75,18 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
         });
 
         if (!isValid) {
-            setIsSubmitting(false);
+            ui.submitting.setFalse();
             return;
         }
 
         // 🔄 Dynamischer Import von loginThunk
-        const actionResult = await dispatch(loginThunk({ email, password }));
+        const actionResult = await dispatch(
+            loginThunk({ email: inputs.email.value, password: inputs.password.value }),
+        );
 
         if (loginThunk.fulfilled.match(actionResult)) {
-            setEmail('');
-            setPassword('');
+            inputs.email.setValue('');
+            inputs.password.setValue('');
             setFieldErrors({
                 email: { hasError: false, message: '' },
                 password: { hasError: false, message: '' },
@@ -107,16 +120,7 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
             });
         }
 
-        setIsSubmitting(false);
-    };
-
-    // Clears the error state and rendered error for the given form field.
-    // @example clearFieldError('email');
-    const clearFieldError = (field: keyof ErrorState) => {
-        setFieldErrors((prev) => ({
-            ...prev,
-            [field]: { hasError: false, message: '' },
-        }));
+        ui.submitting.setFalse();
     };
 
     return (
@@ -150,68 +154,43 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                         }}
                         {...testId('form')}
                     >
-                        <FormControl {...testId('email-input-login')}>
-                            <FormLabel htmlFor="email">Email</FormLabel>
-                            <TextField
-                                error={fieldErrors.email.hasError}
-                                helperText={fieldErrors.email.message}
-                                id="email"
-                                type="email"
-                                name="email"
-                                placeholder="ihreEmail@mustermann.com"
-                                autoComplete="email"
-                                autoFocus
-                                required
-                                fullWidth
-                                variant="outlined"
-                                color={fieldErrors.email.hasError ? 'error' : 'primary'}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    clearFieldError('email');
-                                }}
-                                value={email}
-                            />
-                        </FormControl>
-                        <FormControl sx={{ paddingBottom: '1rem' }}>
-                            <FormLabel htmlFor="password">Passwort</FormLabel>
-                            <TextField
-                                error={fieldErrors.password.hasError}
-                                helperText={fieldErrors.password.message}
-                                name="password"
-                                placeholder="••••••"
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                autoComplete="current-password"
-                                required
-                                fullWidth
-                                variant="outlined"
-                                color={fieldErrors.password.hasError ? 'error' : 'primary'}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: (
-                                            <VisibilityIcon
-                                                togglePassword={togglePasswordVisibility}
-                                                showPassword={showPassword}
-                                            />
-                                        ),
-                                    },
-                                }}
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    clearFieldError('password');
-                                }}
-                            />
-                        </FormControl>
+                        <LabeledTextField
+                            id="email"
+                            name="email"
+                            label="Email"
+                            type="email"
+                            placeholder="ihreEmail@mustermann.com"
+                            autoComplete="email"
+                            required
+                            value={inputs.email.value}
+                            onChange={inputs.email.onChange}
+                            error={fieldErrors.email.hasError}
+                            helperText={fieldErrors.email.message}
+                            color={fieldErrors.email.hasError ? 'error' : 'primary'}
+                        />
+
+                        <LabeledPasswordField
+                            id="password"
+                            name="password"
+                            label="Passwort"
+                            value={inputs.password.value}
+                            onChange={inputs.password.onChange}
+                            error={fieldErrors.password.hasError}
+                            helperText={fieldErrors.password.message}
+                            show={ui.showPassword.value}
+                            onToggleShow={ui.showPassword.toggle}
+                            sx={{ pb: '1rem' }}
+                        />
+
                         <ButtonDefault
-                            isSubmitting={isSubmitting}
+                            isSubmitting={ui.submitting.value}
                             btnName="Anmelden"
                             testIdName="form-button-login"
                         />
                         <Link
                             component="button"
                             type="button"
-                            onClick={handleClickOpen}
+                            onClick={ui.modal.setTrue}
                             variant="body2"
                             sx={{ alignSelf: 'center' }}
                             {...testId('mui-link')}
@@ -219,23 +198,12 @@ const SignIn = ({ onToggleAuth }: { onToggleAuth: () => void }) => {
                             Benötigen Sie ein neues Passwort?
                         </Link>
                     </Box>
+
                     <Divider>oder</Divider>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <RegisterButtonSocialite
-                            startIcon={<GithubIcon />}
-                            text="Anmelden mit Github"
-                            testIdIdentifier="form-button-login-with-github"
-                            clickHandler={() => handleSignIn('github')}
-                        />
-                        <RegisterButtonSocialite
-                            startIcon={<GoogleIcon />}
-                            text="Anmelden mit Google"
-                            testIdIdentifier="form-button-login-with-google"
-                            clickHandler={() => handleSignIn('google')}
-                        />
-                    </Box>
+
+                    <AuthSocialButtons mode="signin" />
                 </Card>
-                <ForgotPassword open={open} handleClose={handleClose} />
+                <ForgotPassword open={ui.modal.value} handleClose={ui.modal.setFalse} />
             </SignInContainer>
         </>
     );

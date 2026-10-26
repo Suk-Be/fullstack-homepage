@@ -56,7 +56,7 @@ const SectionImage = ({
             sx={{
                 marginRight: '2rem',
                 padding,
-                backgroundColor: 'var(--template-palette-backgroundColorInverse-default)',
+                backgroundColor: 'var(--template-palette-background-paperAccent)',
                 color: 'var(--template-palette-textColorInverse-primary)',
                 textAlign,
                 paddingTop: { xs: paddingTop, md: paddingTopMd },
@@ -98,7 +98,7 @@ const SectionRelative = ({ children, paddingBottom = '0px' }: SectionRelativePro
                 padding: '2rem',
                 marginRight: '2rem',
                 position: 'relative',
-                backgroundColor: 'var(--template-palette-backgroundColorInverse-default)',
+                backgroundColor: 'var(--template-palette-background-paperAccent)',
                 color: 'var(--template-palette-textColorInverse-primary)',
 
                 textAlign: 'left',
@@ -142,7 +142,7 @@ const SignInContainer = styled(Stack)(() => ({
         position: 'absolute',
         inset: 0,
         zIndex: -1,
-        backgroundImage: 'var(--template-palette-backgroundImage-signIn)',
+        backgroundImage: 'var(--template-palette-background-paperGradient)',
         backgroundRepeat: 'no-repeat',
         display: 'block',
     },

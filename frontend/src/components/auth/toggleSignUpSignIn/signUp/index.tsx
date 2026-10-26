@@ -1,22 +1,22 @@
 import AuthHeaderLayout from '@/components/auth/auth-shared-components/AuthHeaderLayout';
+import { AuthSocialButtons } from '@/components/auth/auth-shared-components/AuthSocialButtons';
 import { ButtonDefault } from '@/components/auth/auth-shared-components/ButtonDefault';
-import RegisterButtonSocialite from '@/components/auth/auth-shared-components/RegisterButtonSocialite';
-import { VisibilityIcon } from '@/components/auth/auth-shared-components/VisibilityIcon';
+import { LabeledTextField } from '@/components/auth/auth-shared-components/LabeledInputField';
+import { LabeledPasswordField } from '@/components/auth/auth-shared-components/LabeledPasswordField';
+import requestRegister from '@/components/auth/requests/requestRegister';
 import { Card, SignInContainer as SignUpContainer } from '@/components/ContainerElements';
-import { GithubIcon, GoogleIcon } from '@/components/icons/CustomIcons';
 import { ParagraphHP } from '@/components/TextElements';
-import useToggle from '@/hooks/useToggle';
+import { useBoolean } from '@/hooks/useBoolean';
 import { AppDispatch } from '@/store';
 import { logout } from '@/store/loginSlice';
-import { handleSignInUp as handleSignUp } from '@/utils/clickHandler';
 import { dispatchForceLogin } from '@/utils/redux/dispatchHelper';
 import { sanitizeWithFeedback } from '@/utils/sanitizeInput';
 import { testId } from '@/utils/testId';
 import { HowToReg as HowToRegIcon } from '@mui/icons-material';
-import { Box, Divider, FormControl, FormLabel, TextField, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import requestRegister from '../../requests/requestRegister';
+
 import validateInputs from './validateSignUpInputs';
 
 interface ErrorState {
@@ -43,6 +43,11 @@ interface RegisterFormData {
 type ValidationErrors = Partial<Record<keyof RegisterFormData, string>>;
 
 export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
+    const createErrorState = () => ({
+        hasError: false,
+        message: '',
+    });
+
     // laravel expects snake case and naming convention: password_confirmation
     const [form, setForm] = useState<RegisterFormData>({
         name: '',
@@ -51,7 +56,8 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: '',
     });
 
-    const createErrorState = () => ({ hasError: false, message: '' });
+    const [_, setErrors] = useState<ValidationErrors>({});
+
     const [fieldErrors, setFieldErrors] = useState<FrontendErrorsState>({
         name: createErrorState(),
         email: createErrorState(),
@@ -59,18 +65,36 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: createErrorState(),
     });
 
-    const [errors, setErrors] = useState<ValidationErrors>({});
+    /**
+     * Clears the error state for a specific form field.
+     * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
+     *
+     * @example
+     * clearFieldError('email');
+     */
+    const clearFieldError = (field: FrontendField) => {
+        setFieldErrors((prev) => ({
+            ...prev,
+            [field]: { hasError: false, message: '' },
+        }));
+        setErrors((prev) => {
+            // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+            const { [field]: _ignored, ...rest } = prev;
+            return rest;
+        });
+    };
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [showPassword, handleTogglePassword] = useToggle();
+    const ui = {
+        submitting: useBoolean(),
+        showPassword: useBoolean(),
+    };
 
     const dispatch: AppDispatch = useDispatch();
 
     // execute validations, submit and clearing fields
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setIsSubmitting(true);
+        ui.submitting.setTrue();
         setErrors({});
 
         // sanitize the name field with feedback
@@ -86,7 +110,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         });
 
         if (sanitizedName) {
-            setIsSubmitting(false);
+            ui.submitting.setFalse();
             return;
         }
 
@@ -114,7 +138,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
 
         // do not submit if validation fails
         if (!isValid) {
-            setIsSubmitting(false);
+            ui.submitting.setFalse();
             return;
         }
 
@@ -154,26 +178,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
             dispatch(logout());
         }
 
-        setIsSubmitting(false);
-    };
-
-    /**
-     * Clears the error state for a specific form field.
-     * @param {keyof ErrorState} field - The name of the field whose error state should be cleared.
-     *
-     * @example
-     * clearFieldError('email');
-     */
-    const clearFieldError = (field: FrontendField) => {
-        setFieldErrors((prev) => ({
-            ...prev,
-            [field]: { hasError: false, message: '' },
-        }));
-        setErrors((prev) => {
-            // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-            const { [field]: _ignored, ...rest } = prev;
-            return rest;
-        });
+        ui.submitting.setFalse();
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -213,139 +218,87 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
                         sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                         {...testId('form')}
                     >
-                        <FormControl>
-                            <FormLabel htmlFor="name">Benutzername</FormLabel>
-                            <TextField
-                                autoComplete="name"
-                                name="name"
-                                autoFocus
-                                required
-                                fullWidth
-                                id="name"
-                                placeholder="Max Mustermann"
-                                error={fieldErrors.name.hasError}
-                                helperText={fieldErrors.name.message}
-                                color={fieldErrors.name.hasError ? 'error' : 'primary'}
-                                value={form.name}
-                                onChange={handleChange}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="email">Email</FormLabel>
-                            <TextField
-                                required
-                                fullWidth
-                                id="email"
-                                placeholder="max@mustermann.com"
-                                name="email"
-                                autoComplete="email"
-                                variant="outlined"
-                                error={fieldErrors.email.hasError || !!errors.email}
-                                helperText={
-                                    fieldErrors.email.hasError ? (
-                                        <span {...testId('email-error')}>
-                                            {fieldErrors.email.message}
-                                        </span>
-                                    ) : null
-                                }
-                                color={fieldErrors.email.hasError ? 'error' : 'primary'}
-                                value={form.email}
-                                onChange={handleChange}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="password">Passwort</FormLabel>
-                            <TextField
-                                error={fieldErrors.password.hasError}
-                                helperText={fieldErrors.password.message}
-                                name="password"
-                                placeholder="••••••"
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                autoComplete="current-password"
-                                required
-                                fullWidth
-                                variant="outlined"
-                                color={fieldErrors.password.hasError ? 'error' : 'primary'}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: (
-                                            <VisibilityIcon
-                                                togglePassword={handleTogglePassword}
-                                                showPassword={showPassword}
-                                            />
-                                        ),
-                                    },
-                                }}
-                                value={form.password}
-                                onChange={handleChange}
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel htmlFor="password_confirmation">
-                                Passwort Bestätigung
-                            </FormLabel>
-                            <TextField
-                                required
-                                fullWidth
-                                name="password_confirmation"
-                                placeholder="••••••"
-                                type={showPassword ? 'text' : 'password'}
-                                id="password_confirmation"
-                                autoComplete="new-password"
-                                variant="outlined"
-                                error={fieldErrors.password_confirmation.hasError}
-                                helperText={fieldErrors.password_confirmation.message}
-                                color={
-                                    fieldErrors.password_confirmation.hasError ? 'error' : 'primary'
-                                }
-                                value={form.password_confirmation}
-                                onChange={handleChange}
-                                {...testId('form-input-password-confirmation')}
-                            />
-                        </FormControl>
-
+                        <LabeledTextField
+                            id="name"
+                            name="name"
+                            label="Benutzername"
+                            type="text"
+                            placeholder="Max Mustermann"
+                            autoComplete="name"
+                            autoFocus
+                            required
+                            value={form.name}
+                            onChange={handleChange}
+                            error={fieldErrors.name.hasError}
+                            helperText={fieldErrors.name.message}
+                            color={fieldErrors.name.hasError ? 'error' : 'primary'}
+                        />
+                        <LabeledTextField
+                            id="email"
+                            name="email"
+                            label="Email"
+                            type="email"
+                            placeholder="max@mustermann.com"
+                            autoComplete="email"
+                            required
+                            value={form.email}
+                            onChange={handleChange}
+                            error={fieldErrors.email.hasError}
+                            helperText={fieldErrors.email.message}
+                            color={fieldErrors.email.hasError ? 'error' : 'primary'}
+                        />
+                        <LabeledPasswordField
+                            id="password"
+                            name="password"
+                            label="Passwort"
+                            value={form.password}
+                            onChange={handleChange}
+                            error={fieldErrors.password.hasError}
+                            helperText={fieldErrors.password.message}
+                            show={ui.showPassword.value}
+                            onToggleShow={ui.showPassword.toggle}
+                        />
+                        <LabeledPasswordField
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            label="Passwort Bestätigung"
+                            value={form.password_confirmation}
+                            onChange={handleChange}
+                            error={fieldErrors.password_confirmation.hasError}
+                            helperText={fieldErrors.password_confirmation.message}
+                            show={ui.showPassword.value}
+                            onToggleShow={ui.showPassword.toggle}
+                            testId={testId('form-input-password-confirmation')}
+                        />
                         <ButtonDefault
-                            isSubmitting={isSubmitting}
+                            isSubmitting={ui.submitting.value}
                             btnName="Registrieren"
                             testIdName="form-button-register"
                         />
                     </Box>
-                    <Divider>
-                        <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-                    </Divider>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <RegisterButtonSocialite
-                            startIcon={<GithubIcon />}
-                            text="registrieren mit Github"
-                            testIdIdentifier="form-button-register-with-github"
-                            clickHandler={() => handleSignUp('github')}
-                        />
-                        <RegisterButtonSocialite
-                            startIcon={<GoogleIcon />}
-                            text="registrieren mit Google"
-                            clickHandler={() => handleSignUp('google')}
-                            testIdIdentifier="form-button-register-with-google"
-                        />
 
-                        <ParagraphHP
-                            marginTop="1rem"
-                            marginBottom="0.5rem"
-                            sx={{ textAlign: 'center' }}
+                    <Divider>
+                        <Typography sx={{ color: 'text.secondary' }}>oder</Typography>
+                    </Divider>
+
+                    <AuthSocialButtons mode="signup" />
+                    <ParagraphHP
+                        marginTop="1rem"
+                        marginBottom="0.5rem"
+                        sx={{ textAlign: 'center' }}
+                    >
+                        Es werden{' '}
+                        <a
+                            href="/datenschutz"
+                            style={{ color: '#1976d2' }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            {...testId('form-checkbox-datenschutz')}
                         >
-                            Es werden{' '}
-                            <a
-                                href="/datenschutz"
-                                style={{ color: '#1976d2' }}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                {...testId('form-checkbox-datenschutz')}
-                            >
-                                Cookies
-                            </a>{' '}
-                            eingesetzt, um Ihr Nutzererlebnis zu verbessern.
-                        </ParagraphHP>
-                    </Box>
+                            Cookies
+                        </a>{' '}
+                        eingesetzt, um Ihr Nutzererlebnis zu verbessern.
+                    </ParagraphHP>
                 </Card>
             </SignUpContainer>
         </>

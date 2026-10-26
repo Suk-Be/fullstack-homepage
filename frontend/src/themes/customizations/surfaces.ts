@@ -1,4 +1,4 @@
-import { gray } from '@/themes/themePrimitives';
+import { backgroundDark, gray } from '@/themes/themePrimitives';
 import { alpha, Components, Theme } from '@mui/material/styles';
 
 const surfacesCustomizations: Components<Theme> = {
@@ -28,6 +28,9 @@ const surfacesCustomizations: Components<Theme> = {
                     borderBottomLeftRadius: theme.shape.borderRadius,
                     borderBottomRightRadius: theme.shape.borderRadius,
                 },
+                ...theme.applyStyles('dark', {
+                    borderColor: backgroundDark.paperAccent,
+                }),
             }),
         },
     },
@@ -39,7 +42,7 @@ const surfacesCustomizations: Components<Theme> = {
                 '&:hover': { backgroundColor: gray[50] },
                 '&:focus-visible': { backgroundColor: 'transparent' },
                 ...theme.applyStyles('dark', {
-                    '&:hover': { backgroundColor: gray[800] },
+                    '&:hover': { backgroundColor: backgroundDark.paperAccent },
                 }),
             }),
         },
@@ -56,36 +59,34 @@ const surfacesCustomizations: Components<Theme> = {
     },
     MuiCard: {
         styleOverrides: {
-            root: ({ theme }) => {
-                return {
-                    padding: 16,
-                    gap: 16,
-                    transition: 'all 100ms ease',
-                    backgroundColor: gray[50],
-                    borderRadius: theme.shape.borderRadius,
+            root: ({ theme }) => ({
+                padding: 16,
+                gap: 16,
+                transition: 'all 100ms ease',
+                borderRadius: theme.shape.borderRadius,
+                boxShadow: 'none',
+                backgroundColor: gray[50],
+
+                ...theme.applyStyles('dark', {
+                    backgroundColor: alpha(gray[900], 0.4),
+                }),
+            }),
+        },
+        variants: [
+            {
+                props: { variant: 'outlined' },
+                style: ({ theme }) => ({
                     border: `1px solid ${theme.palette.divider}`,
                     boxShadow: 'none',
+                    backgroundColor: 'hsl(0, 0%, 100%)',
+
                     ...theme.applyStyles('dark', {
-                        backgroundColor: gray[800],
+                        border: `1px solid ${backgroundDark.paperAccent}`,
+                        backgroundColor: alpha(gray[900], 0.4),
                     }),
-                    variants: [
-                        {
-                            props: {
-                                variant: 'outlined',
-                            },
-                            style: {
-                                border: `1px solid ${theme.palette.divider}`,
-                                boxShadow: 'none',
-                                background: 'hsl(0, 0%, 100%)',
-                                ...theme.applyStyles('dark', {
-                                    background: alpha(gray[900], 0.4),
-                                }),
-                            },
-                        },
-                    ],
-                };
+                }),
             },
-        },
+        ],
     },
     MuiCardContent: {
         styleOverrides: {
