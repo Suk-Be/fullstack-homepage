@@ -30,7 +30,7 @@ const inputsCustomizations: Components<Theme> = {
                 '&.Mui-focusVisible': {
                     outline: `3px solid ${alpha(brand[500], 0.5)}`,
                     outlineOffset: '2px',
-                    borderColor: brand[400],
+                    borderColor: brand['logo'],
                 },
                 '&.Mui-checked': {
                     color: 'white',
@@ -49,7 +49,7 @@ const inputsCustomizations: Components<Theme> = {
                         borderColor: brand[300],
                     },
                     '&.Mui-focusVisible': {
-                        borderColor: brand[400],
+                        borderColor: brand['logo'],
                         outline: `3px solid ${alpha(brand[500], 0.5)}`,
                         outlineOffset: '2px',
                     },
@@ -87,7 +87,7 @@ const inputsCustomizations: Components<Theme> = {
                 },
                 [`&.${outlinedInputClasses.focused}`]: {
                     outline: `3px solid ${alpha(brand[500], 0.5)}`,
-                    borderColor: brand[400],
+                    borderColor: brand['logo'],
                 },
                 ...theme.applyStyles('dark', {
                     '&:hover': {

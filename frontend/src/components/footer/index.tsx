@@ -53,19 +53,23 @@ function FooterNav({ value, onChange }: { value: number; onChange?: (newValue: n
     );
 }
 
+const RoutedFooter = () => {
+    const { pathname } = useLocation(); // Nutzt getFooterValue über die URL
+    const value = getFooterValue(pathname);
+    return <FooterNav value={value} />;
+};
+
 const Footer = () => {
     const inRouter = useInRouterContext(); // boolean true es existiert ein router
+    const [value, setValue] = useState(0);
 
     // ✅ Tests / Storybook / isolated render: kein Router → alter State-Modus
-    if (!inRouter) {
-        const [value, setValue] = useState(0);
-        return <FooterNav value={value} onChange={setValue} />;
+    if (inRouter) {
+        return <RoutedFooter />;
     }
 
     // ✅ App: Router ist da → Route ist Source of Truth
-    const { pathname } = useLocation();
-    const value = getFooterValue(pathname);
-    return <FooterNav value={value} />;
+    return <FooterNav value={value} onChange={setValue} />;
 };
 
 export default Footer;

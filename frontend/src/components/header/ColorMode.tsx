@@ -6,9 +6,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
 type ColorModeValue = 'light' | 'dark';
-type ColorThemeProps = {
-    color: string;
-};
+interface ColorThemeProps {
+    color?: string;
+}
 
 export const ColorMode = ({
     color = 'var(--template-palette-textColorInverse-toggleTheme)',

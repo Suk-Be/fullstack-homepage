@@ -56,6 +56,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: '',
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, setErrors] = useState<ValidationErrors>({});
 
     const [fieldErrors, setFieldErrors] = useState<FrontendErrorsState>({

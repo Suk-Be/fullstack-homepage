@@ -34,6 +34,8 @@ const ResetPassword = () => {
 
     const resMessage = useResponse();
 
+    const setError = resMessage.error.set;
+
     // input error states
     const [fieldErrors, setFieldErrors] = useState<FormErrors>({
         password: { hasError: false, message: '' },
@@ -71,12 +73,12 @@ const ResetPassword = () => {
         if (urlToken) {
             setToken(urlToken);
         } else {
-            resMessage.error.set(ErrorMessages.ResetPassword.urlToken);
+            setError(ErrorMessages.ResetPassword.urlToken);
         }
         if (urlEmail) {
             setEmail(urlEmail);
         }
-    }, [location.search]);
+    }, [location.search, setError]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         // resets

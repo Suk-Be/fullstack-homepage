@@ -6,13 +6,13 @@
       "ES2023"
     ],
     "module": "ESNext",
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
       "@": [
-        "src"
+        "./src"
       ],
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "skipLibCheck": true,

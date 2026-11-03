@@ -105,9 +105,11 @@ beforeEach(() => {
         clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn(ApiClient, 'delete').mockResolvedValue({ data: {} } as any);
     vi.spyOn(ApiClient, 'patch').mockResolvedValue({
         data: { data: { name: renameUniqueGridName } },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 });
 
@@ -119,6 +121,7 @@ afterEach(() => {
 describe('SavedGridList', () => {
     it('renders "No grids saved yet" when there are no grids', () => {
         // pass no grids
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         renderUtils([] as any);
         expect(screen.getByText(/No grids saved yet/i)).toBeInTheDocument();
     });

@@ -10,8 +10,8 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Spy/Resolver für den Test
-let resolveSave: Function;
-let resolveFetch: Function;
+let resolveSave: (value: number | PromiseLike<number>) => void;
+let resolveFetch: (value: Record<string, unknown> | PromiseLike<Record<string, unknown>>) => void;
 
 vi.mock('@/store/thunks/userSaveGridsThunks', async () => {
     const { createAsyncThunk } = await import('@reduxjs/toolkit');
@@ -23,7 +23,7 @@ vi.mock('@/store/thunks/userSaveGridsThunks', async () => {
                 resolveSave = resolve;
             }),
     );
-    const fetchUserGridsThunk = createAsyncThunk<Record<string, any>, number>(
+    const fetchUserGridsThunk = createAsyncThunk<Record<string, unknown>, number>(
         'userGrids/fetchUserGrids',
         async () =>
             new Promise((resolve) => {
@@ -341,7 +341,7 @@ describe('SaveGridsModal', () => {
 
         expect(screen.getAllByTestId('loading-skeleton')).toHaveLength(4);
 
-        await act(async () => resolveSave?.({}));
+        await act(async () => resolveSave?.(1));
 
         await waitFor(() =>
             expect(screen.queryByTestId('loading-skeleton')).not.toBeInTheDocument(),

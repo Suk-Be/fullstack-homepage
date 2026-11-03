@@ -29,7 +29,8 @@ describe('UnitOfMeasurement', () => {
     });
 
     it('returns null for unknown unit (type-safety aside)', () => {
-        // falls mal jemand "any" nutzt oder falsche Daten reinkommen
+        // falls mal jemand "any" nutzt oder falsche Daten reinkommen^
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { container } = render(<UnitOfMeasurement unit={'nope' as any} />);
 
         expect(container).toBeEmptyDOMElement();

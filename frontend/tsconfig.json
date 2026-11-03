@@ -9,13 +9,13 @@
       "DOM.Iterable"
     ],
     "module": "ESNext",
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
       "@": [
-        "src"
+        "./src"
       ],
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "skipLibCheck": true,
