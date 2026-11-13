@@ -46,7 +46,12 @@ describe('requestRegister', () => {
 
     it('registriert einen neuen Benutzer erfolgreich', async () => {
         mockPost.mockResolvedValue({ data: { message: 'Die Registrierung hat geklappt!' } });
-        mockRequestMe.mockResolvedValue({ success: true, userId: userLoggedAdmin, role: 'admin' });
+        mockRequestMe.mockResolvedValue({
+            success: true,
+            userId: userLoggedAdmin,
+            userName: 'Admin User',
+            role: 'admin',
+        });
 
         const result = await requestRegister({ form: validForm });
 
@@ -54,6 +59,7 @@ describe('requestRegister', () => {
         expect(result.message).toBe('Die Registrierung hat geklappt!');
         if (result.success) {
             expect(result.userId).toBe(userLoggedAdmin);
+            expect(result.userName).toBe('Admin User');
         }
         expect(initializeCookies).toHaveBeenCalled();
     });

@@ -3,7 +3,7 @@ import RouterLinkWrapper from '@/components/RouterLink';
 import { type AppDispatch } from '@/store/';
 import { useAppSelector } from '@/store/hooks';
 import { logout } from '@/store/loginSlice';
-import { selectLoginState } from '@/store/selectors/loginSelectors';
+import { selectLoginState, selectUserInitials } from '@/store/selectors/loginSelectors';
 import { resetUserGrids } from '@/store/userSaveGridsSlice';
 import { testId } from '@/utils/testId';
 import { Avatar, Button, Grid, Menu, MenuItem, Link as MuiLink } from '@mui/material';
@@ -15,6 +15,7 @@ import LinkedLogo from './LinkedLogo';
 export default function LoggedInMenu() {
     const dispatch: AppDispatch = useDispatch();
     const { userId } = useAppSelector(selectLoginState);
+    const userInitials = useAppSelector(selectUserInitials);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -37,10 +38,6 @@ export default function LoggedInMenu() {
 
         setAnchorEl(null);
     };
-
-    // todo
-    // https://mui.com/material-ui/react-avatar/#letter-avatars
-    // Letter Avatars
 
     return (
         <Grid
@@ -71,7 +68,7 @@ export default function LoggedInMenu() {
                     onClick={handleClick}
                     {...testId('button-open-menu')}
                 >
-                    <Avatar alt="Hulk AI" src="https://sokdesign.de/images/avatar.jpg" />
+                    <Avatar alt={userInitials || 'User'}>{userInitials}</Avatar>
                 </Button>
                 <Menu
                     id="basic-menu"

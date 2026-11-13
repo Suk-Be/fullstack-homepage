@@ -68,7 +68,12 @@ describe('loginThunk', () => {
     it('should login successfully and update state', async () => {
         mockInitializeCookies.mockResolvedValue(undefined);
         mockPost.mockResolvedValue({ data: { message: 'Welcome' } });
-        mockRequestMe.mockResolvedValue({ success: true, userId: 42, role: userLoggedInNoAdmin });
+        mockRequestMe.mockResolvedValue({
+            success: true,
+            userId: 42,
+            userName: 'Admin Testuser',
+            role: userLoggedInNoAdmin,
+        });
 
         const store = makeStore();
 

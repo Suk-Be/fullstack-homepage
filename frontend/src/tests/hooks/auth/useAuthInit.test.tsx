@@ -38,8 +38,8 @@ vi.mock('@/store/userSaveGridsSlice', async (importOriginal) => {
 });
 
 vi.mock('@/utils/redux/dispatchHelper', () => ({
-    dispatchForceLogin: vi.fn((dispatch, id, role) => {
-        dispatch({ type: 'login/forceLogin', userId: id, role });
+    dispatchForceLogin: vi.fn((dispatch, userData) => {
+        dispatch({ type: 'login/forceLogin', ...userData });
     }),
 }));
 
@@ -76,6 +76,7 @@ describe('useAuthInit', () => {
         mockedRequestMe.mockResolvedValue({
             success: true,
             userId: userLoggedInNoAdmin,
+            userName: 'Mock User',
             role: 'user',
         });
 
@@ -86,8 +87,11 @@ describe('useAuthInit', () => {
             expect(mockedRequestMe).toHaveBeenCalled();
             expect(mockedDispatchForceLogin).toHaveBeenCalledWith(
                 expect.any(Function),
-                userLoggedInNoAdmin,
-                'user',
+                expect.objectContaining({
+                    userId: userLoggedInNoAdmin,
+                    userName: 'Mock User',
+                    role: 'user',
+                }),
             );
         });
     });

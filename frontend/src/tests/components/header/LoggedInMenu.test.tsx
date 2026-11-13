@@ -156,4 +156,33 @@ describe('LoggedInMenu', () => {
             expect(mockDispatch).toHaveBeenCalledWith(logout());
         });
     });
+
+    it('should render the user initials inside the Avatar when userName is present', () => {
+        renderWithProviders(<LoggedInMenu />, {
+            route: '/',
+            preloadedState: {
+                login: {
+                    isLoggedIn: true,
+                    userId: 1,
+                    userName: 'Max Mustermann',
+                    role: 'user',
+                    isLoading: false,
+                    error: null,
+                },
+            },
+        });
+
+        const openButton = screen.getByTestId('button-open-menu');
+        expect(openButton).toHaveTextContent('MM');
+    });
+
+    it('should render "U" as fallback inside the Avatar when userName is missing', () => {
+        renderWithProviders(<LoggedInMenu />, {
+            route: '/',
+            preloadedState: {},
+        });
+
+        const openButton = screen.getByTestId('button-open-menu');
+        expect(openButton).toHaveTextContent('U');
+    });
 });
