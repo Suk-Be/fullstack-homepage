@@ -13,6 +13,7 @@ const requestMe = async (): Promise<LoginSuccessResponse | LoginErrorResponse> =
         return {
             ...responseObj,
             userId: user.id,
+            userName: user.name,
             role: user.role,
         };
     } catch (error: unknown) {

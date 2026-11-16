@@ -27,11 +27,13 @@ const requestRegister = async ({
         });
 
         let userId: number | undefined = undefined;
+        let userName: string | undefined = undefined;
         let role: 'admin' | 'user' | undefined = undefined;
 
         const meResult = await requestMe();
         if (meResult?.success && meResult.userId !== undefined && meResult.role !== undefined) {
             userId = meResult.userId;
+            userName = meResult.userName;
             role = meResult.role;
         }
 
@@ -40,6 +42,7 @@ const requestRegister = async ({
                 formDataPost.data.message || 'Die Registrierung hat geklappt!',
             ),
             userId,
+            userName,
             role,
         } as LoginErrorResponse;
     } catch (error: unknown) {

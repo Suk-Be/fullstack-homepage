@@ -56,6 +56,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         password_confirmation: '',
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, setErrors] = useState<ValidationErrors>({});
 
     const [fieldErrors, setFieldErrors] = useState<FrontendErrorsState>({
@@ -147,7 +148,7 @@ export default function SignUp({ onToggleAuth }: { onToggleAuth: () => void }) {
         });
 
         if (result.success) {
-            dispatchForceLogin(dispatch, result.userId!, result.role!);
+            dispatchForceLogin(dispatch, result);
             // UserId in der Slice setzen, damit neue Grids korrekt gespeichert werden
             // dispatch(setUserIdForGrids(result.userId!));
 

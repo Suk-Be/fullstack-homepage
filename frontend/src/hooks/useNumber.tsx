@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type UseNumberOptions = {
+interface UseNumberOptions {
     onChange?: (value: number | null) => void;
 };
 

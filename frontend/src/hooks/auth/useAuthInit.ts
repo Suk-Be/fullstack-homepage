@@ -40,7 +40,7 @@ export const useAuthInit = () => {
                     logRequestState('requestMe', result);
 
                     if (result?.success && result.userId !== undefined) {
-                        dispatchForceLogin(dispatch, result.userId, result.role!);
+                        dispatchForceLogin(dispatch, result);
                     } else {
                         performLogout();
                     }

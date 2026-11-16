@@ -213,6 +213,7 @@ describe('SignUp - Form', () => {
         vi.mocked(requestMe).mockResolvedValueOnce({
             success: true,
             userId: 7,
+            userName: 'alice',
             role: 'user',
         });
 
@@ -238,7 +239,14 @@ describe('SignUp - Form', () => {
         // 🔹 Wait for assertions
         await waitFor(() => {
             // dispatchForceLogin check
-            expect(spyDispatchForceLogin).toHaveBeenCalledWith(mockDispatch, 7, 'user');
+            expect(spyDispatchForceLogin).toHaveBeenCalledWith(
+                mockDispatch,
+                expect.objectContaining({
+                    userId: 7,
+                    userName: 'alice',
+                    role: 'user',
+                }),
+            );
 
             // Form Reset check
             expect(nameInput).toHaveValue('');

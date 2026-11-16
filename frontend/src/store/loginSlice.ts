@@ -14,6 +14,7 @@ export interface LoginResult {
 
 export interface LoginState {
     userId?: number;
+    userName?: string;
     isLoggedIn: boolean;
     isLoading: boolean;
     error: string | null;
@@ -23,6 +24,7 @@ export interface LoginState {
 
 const initialState: LoginState = {
     userId: undefined,
+    userName: undefined,
     isLoggedIn: false,
     isLoading: true,
     error: null,
@@ -49,9 +51,14 @@ const loginSlice = createSlice({
         },
         forceLogin(
             state,
-            action: PayloadAction<{ userId: number; role: 'admin' | 'user' | null }>,
+            action: PayloadAction<{
+                userId: number;
+                userName: string;
+                role: 'admin' | 'user' | null;
+            }>,
         ) {
             state.userId = action.payload.userId;
+            state.userName = action.payload.userName;
             state.isLoggedIn = true;
             state.isLoading = false;
             state.error = null;
@@ -75,6 +82,7 @@ const loginSlice = createSlice({
             .addCase(loginThunk.fulfilled, (state, action) => {
                 if (action.payload.success) {
                     state.userId = action.payload.userId ?? undefined;
+                    state.userName = action.payload.userName ?? undefined;
                     state.role = action.payload.role ?? null;
                     state.isLoggedIn = true;
                 }

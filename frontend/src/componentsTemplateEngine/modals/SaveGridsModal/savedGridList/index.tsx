@@ -162,12 +162,14 @@ const SavedGridList = () => {
 
     // renderMarkup
     // renderMarkup and copy HTML code
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderMarkupForGrid = (grid: any) => {
         const { inlineStyles, gridItemsArray } = buildGridRenderPropsFromConfig(grid.config);
 
         return renderGridMarkup(inlineStyles, gridItemsArray);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function copyToClipboardForGrid(grid: any) {
         const { inlineStyles, gridItemsArray } = buildGridRenderPropsFromConfig(grid.config);
 

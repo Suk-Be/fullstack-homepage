@@ -22,6 +22,7 @@ export interface LoginSuccessResponse {
     success: true;
     message?: string | undefined;
     userId: number;
+    userName: string;
     role: 'admin' | 'user';
 }
 

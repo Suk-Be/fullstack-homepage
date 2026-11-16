@@ -17,6 +17,7 @@ describe('requestMe', () => {
 
         if (result.success) {
             expect(result.userId).toBe(userLoggedInNoAdmin);
+            expect(result.userName).toBe('Mock User');
             expect(result.role).toBe('user');
             expect(result.message).toMatch(/geholt/i);
         }

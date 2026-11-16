@@ -5,9 +5,9 @@ import { Box } from '@mui/material';
 
 type AuthMode = 'signin' | 'signup';
 
-type Props = {
+interface Props {
     mode: AuthMode;
-};
+}
 
 export function AuthSocialButtons({ mode }: Props) {
     const isSignUp = mode === 'signup';

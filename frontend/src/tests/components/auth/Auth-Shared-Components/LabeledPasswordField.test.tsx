@@ -12,9 +12,9 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={false}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
             />,
         );
 
@@ -31,9 +31,9 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={false}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
             />,
         );
 
@@ -45,9 +45,9 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={true}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
             />,
         );
 
@@ -64,7 +64,7 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={false}
                 onToggleShow={onToggleShow}
             />,
@@ -85,9 +85,9 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={false}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
                 error
                 helperText={<span data-testid="pw-error">Too short</span>}
             />,
@@ -104,9 +104,9 @@ describe('LabeledPasswordField', () => {
                 name="password"
                 label="Passwort"
                 value=""
-                onChange={() => {}}
+                onChange={vi.fn()}
                 show={false}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
                 testId={{ 'data-testid': 'password-field' }}
             />,
         );
@@ -126,7 +126,7 @@ describe('LabeledPasswordField', () => {
                 value=""
                 onChange={onChange}
                 show={false}
-                onToggleShow={() => {}}
+                onToggleShow={vi.fn()}
             />,
         );
 

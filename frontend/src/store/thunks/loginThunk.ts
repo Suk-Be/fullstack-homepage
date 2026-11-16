@@ -31,6 +31,7 @@ export const loginThunk = createAsyncThunk<
                 success: true,
                 message: response.data.message || 'Login erfolgreich!',
                 userId: meResult.userId,
+                userName: meResult.userName,
                 role: meResult.role,
             };
         } else {

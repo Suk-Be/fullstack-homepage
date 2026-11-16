@@ -179,7 +179,7 @@ const renderWithProvidersDOM = (
 
 const renderHookWithProviders = <
     Result,
-    Props extends Record<string, unknown> = {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
+    Props extends Record<string, unknown> = Record<string, unknown>,
 >(
     hook: (props: Props) => Result,
     {
@@ -193,7 +193,7 @@ const renderHookWithProviders = <
         route?: string;
         initialProps?: Props;
         store?: ReturnType<typeof setupStore>;
-    } & Omit<RenderHookOptions<Props>, 'wrapper'> = {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
+    } & Omit<RenderHookOptions<Props>, 'wrapper'> = {},
 ): RenderHookResult<Result, Props> => {
     const Wrapper = ({ children }: { children: ReactNode }) => (
         <ReduxProvider store={store}>

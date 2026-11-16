@@ -1,6 +1,6 @@
 import { FormControl, FormLabel, TextField, type SxProps, type Theme } from '@mui/material';
 
-type LabeledTextFieldProps = {
+interface LabeledTextFieldProps {
     id: string;
     name: string;
     label: string;
@@ -18,10 +18,12 @@ type LabeledTextFieldProps = {
     helperText?: React.ReactNode;
     color?: 'primary' | 'error';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     testId?: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rootTestId?: Record<string, any>;
     sx?: SxProps<Theme>;
-};
+}
 
 export function LabeledTextField({
     id,

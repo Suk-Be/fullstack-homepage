@@ -9,7 +9,7 @@ import {
     Theme,
 } from '@mui/material';
 
-type PasswordFieldProps = {
+interface PasswordFieldProps {
     id: string;
     name: string;
     label: string;
@@ -20,9 +20,10 @@ type PasswordFieldProps = {
     show: boolean;
     onToggleShow: () => void;
     autoComplete?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     testId?: Record<string, any>;
     sx?: SxProps<Theme>;
-};
+}
 
 export function LabeledPasswordField({
     id,
